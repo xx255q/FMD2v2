@@ -69,9 +69,8 @@ var
   DOWNLOADEDCHAPTERSDB_FILE,
   FAVORITES_FILE,
   FAVORITESDB_FILE,
-  CONFIG_FOLDER,
   SETTINGS_FILE,
-  BASE_FILE,
+  CONFIG_FILE,
   ACCOUNTS_FILE,
   MODULES_FILE,
   DATA_FOLDER,
@@ -223,15 +222,15 @@ begin
   settingsfile := TJSONIniFile.Create(SETTINGS_FILE);
 end;
 
-procedure ReadBaseFile;
+procedure ReadConfigFile;
 begin
-  if not FileExistsUTF8(BASE_FILE) then Exit;
-  with TJSONIniFile.Create(BASE_FILE) do
+  if not FileExistsUTF8(CONFIG_FILE) then Exit;
+  with TJSONIniFile.Create(CONFIG_FILE) do
     try
-      DEFAULT_SELECTED_WEBSITES:=ReadString('base','default_selected_websites',DEFAULT_SELECTED_WEBSITES);
-      DB_URL:=ReadString('base','db_url',DB_URL);
-      UPDATE_URL:=ReadString('base','update_url',UPDATE_URL);
-      UPDATE_PACKAGE_NAME:=ReadString('base','update_package_name',UPDATE_PACKAGE_NAME);
+      DEFAULT_SELECTED_WEBSITES:=ReadString('config','default_selected_websites',DEFAULT_SELECTED_WEBSITES);
+      DB_URL:=ReadString('config','db_url',DB_URL);
+      UPDATE_URL:=ReadString('config','update_url',UPDATE_URL);
+      UPDATE_PACKAGE_NAME:=ReadString('config','update_package_name',UPDATE_PACKAGE_NAME);
     finally
       Free;
     end;
@@ -242,8 +241,7 @@ begin
   FMD_DIRECTORY := CleanAndExpandDirectory(ADir);
   FMD_EXENAME := ExtractFileNameOnly(Application.ExeName);
 
-  CONFIG_FOLDER := FMD_DIRECTORY + 'config' + PathDelim;
-  BASE_FILE := CONFIG_FOLDER + 'base.json';
+  CONFIG_FILE := FMD_DIRECTORY + 'config.json';
 
   IMAGE_FOLDER := FMD_DIRECTORY + 'images' + PathDelim;
   CHANGELOG_FILE := FMD_DIRECTORY + 'changelog.txt';
@@ -255,7 +253,7 @@ begin
 
   BACKUP_FOLDER := FMD_DIRECTORY + 'backup' + PathDelim;
 
-  ReadBaseFile;
+  ReadConfigFile;
 end;
 
 procedure SetAppDataDirectory(const ADir: String);
@@ -264,7 +262,6 @@ begin
 
   DEFAULT_PATH := 'downloads' + PathDelim;
 
-  CONFIG_FOLDER := APPDATA_DIRECTORY + 'config' + PathDelim;
   DATA_FOLDER := APPDATA_DIRECTORY + 'data' + PathDelim;
   USERDATA_FOLDER := APPDATA_DIRECTORY + 'userdata' + PathDelim;
 

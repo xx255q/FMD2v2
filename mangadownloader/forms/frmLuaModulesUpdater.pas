@@ -771,7 +771,7 @@ begin
   FThreads := TFPList.Create;
   FDownloadedCount := 0;
   FStatusList := TStringList.Create;
-  FGitHubRepo := TGitHubRepo.Create(BASE_FILE, LUA_REPO_WORK_FILE, Self);
+  FGitHubRepo := TGitHubRepo.Create(CONFIG_FILE, LUA_REPO_WORK_FILE, Self);
 end;
 
 destructor TCheckUpdateThread.Destroy;

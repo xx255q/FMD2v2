@@ -1159,7 +1159,8 @@ begin
   DoAfterFMD := DO_NOTHING;
   Application.HintHidePause := 10000;
 
-  ForceDirectoriesUTF8(CONFIG_FOLDER);
+  ForceDirectoriesUTF8(USERDATA_FOLDER);
+  ForceDirectoriesUTF8(DATA_FOLDER);
 
   // load about
   LoadAbout;

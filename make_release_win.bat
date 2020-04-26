@@ -36,6 +36,7 @@ call :copycdir images
 call :copycdir licenses
 XCOPY /C /F /Y "%cdir%\languages\*.po" "%odir%\languages\"
 XCOPY /E /C /F /Y "%cdir%\dist\%~1" "%odir%\"
+XCOPY /F /Y "%cdir%\dist\config.json" "%odir%\"
 XCOPY /F /Y "%cdir%\changelog.txt" "%odir%\"
 XCOPY /F /Y "%cdir%\readme.rtf" "%odir%\"
 XCOPY /F /Y "%tdir%\fmd.exe" "%odir%\"
