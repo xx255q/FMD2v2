@@ -98,7 +98,6 @@ type
     function GetEnabledFavoritesCount: Integer; inline;
     function GetDisabledFavoritesCount: Integer; inline;
     function GetFavorite(const Index: Integer): TFavoriteContainer;
-    function ConvertToDB: Boolean;
   public
     Items: TFavoriteContainers;
     TaskThread: TFavoriteTask;
@@ -125,8 +124,6 @@ type
     // Merge manga information with a title that already exist in favorites
     procedure AddMerge(const ATitle, ACurrentChapter, ADownloadedChapterList, AWebsite,
       ASaveTo, ALink: String);
-    // Merge a favorites.ini with another favorites.ini
-    procedure MergeWith(const APath: String);
     // Free then delete favorite without any check, use with caution
     procedure FreeAndDelete(const Pos: Integer); overload;
     procedure FreeAndDelete(const T: TFavoriteContainer); overload;
@@ -173,7 +170,7 @@ resourcestring
 implementation
 
 uses
-  frmMain, frmNewChapter, FMDVars;
+  frmMain, frmNewChapter, FMDVars, DateUtils;
 
 { TFavoriteContainer }
 
@@ -231,7 +228,8 @@ begin
       Title,
       CurrentChapter,
       DownloadedChapterList,
-      SaveTo
+      SaveTo,
+      DateAdded
       );
 end;
 
@@ -284,6 +282,13 @@ begin
           finally
             DLChapters.Free;
           end;
+        end;
+
+        if not Terminated then
+        begin
+          Container.FavoriteInfo.DateLastChecked := Now;
+          if (NewMangaInfoChaptersPos.Count <> 0) or (NewMangaInfo.status = MangaInfo_StatusCompleted) then
+            Container.FavoriteInfo.DateLastUpdated := Now;
         end;
 
         // free unneeded objects
@@ -653,42 +658,6 @@ begin
   Result := Items[Index];
 end;
 
-function TFavoriteManager.ConvertToDB: Boolean;
-var
-  i: Integer;
-  s: String;
-begin
-  Result := False;
-  if not FileExistsUTF8(FAVORITES_FILE) then Exit;
-  with TIniFile.Create(FAVORITES_FILE) do
-  try
-    i := ReadInteger('general', 'NumberOfFavorites', 0);
-    if i > 0 then
-    begin
-      for i := 0 to i - 1 do
-      begin
-        s := IntToStr(i);
-        FFavoritesDB.Add(
-          i,
-          True,
-          ReadString(s, 'Website', ''),
-          RemoveHostFromURL(ReadString(s, 'Link', '')),
-          ReadString(s, 'Title', ''),
-          ReadString(s, 'CurrentChapter', ''),
-          GetParams(ReadString(s, 'DownloadedChapterList', '')),
-          ReadString(s, 'SaveTo', '')
-        );
-      end;
-      FFavoritesDB.Commit;
-    end;
-    Result := True;
-  finally
-    Free;
-  end;
-  if Result then
-    Result := DeleteFileUTF8(FAVORITES_FILE);
-end;
-
 constructor TFavoriteManager.Create;
 begin
   inherited Create;
@@ -698,7 +667,6 @@ begin
   Items := TFavoriteContainers.Create;;
   FFavoritesDB := TFavoritesDB.Create(FAVORITESDB_FILE);
   FFavoritesDB.Open;
-  ConvertToDB;
 end;
 
 destructor TFavoriteManager.Destroy;
@@ -919,6 +887,7 @@ begin
                     DownloadInfo.Title := FavoriteInfo.Title;
                     DownloadInfo.SaveTo := FavoriteInfo.SaveTo;
                     DownloadInfo.DateAdded := Now;
+                    DownloadInfo.DateLastDownload := Now;
 
                     for j := 0 to NewMangaInfoChaptersPos.Count - 1 do
                     begin
@@ -1044,6 +1013,9 @@ begin
         SaveTo := ASaveTo;
         Link := ALink;
         DownloadedChapterList := ADownloadedChapterList;
+        DateAdded := Now;
+        DateLastChecked := Now;
+        DateLastUpdated := Now;
       end;
       Status := STATUS_IDLE;
       SaveToDB(newfv);
@@ -1077,50 +1049,6 @@ begin
   except
     LeaveCriticalsection(CS_Favorites);
   end;
-end;
-
-procedure TFavoriteManager.MergeWith(const APath: String);
-var
-  mergeFile: TIniFile;
-  fstream: TFileStreamUTF8;
-  l, i: Cardinal;
-  infos: array of TFavoriteInfo;
-begin
-  if isRunning then
-    Exit;
-  if not FileExistsUTF8(APath) then
-    Exit;
-  isRunning := True;
-
-  fstream := TFileStreamUTF8.Create(APath, fmOpenRead);
-  mergeFile := TIniFile.Create(fstream);
-  try
-    with mergeFile do begin
-      l := mergeFile.ReadInteger('general', 'NumberOfFavorites', 0);
-      if l > 0 then
-      begin
-        SetLength(infos, l);
-        for i := 0 to l - 1 do
-          with infos[i] do begin
-            Title := ReadString(IntToStr(i), 'Title', '');
-            currentChapter := ReadString(IntToStr(i), 'CurrentChapter', '0');
-            downloadedChapterList := ReadString(IntToStr(i), 'DownloadedChapterList', '');
-            Website := ReadString(IntToStr(i), 'Website', '');
-            SaveTo := ReadString(IntToStr(i), 'SaveTo', '');
-            Link := ReadString(IntToStr(i), 'Link', '');
-
-            AddMerge(Title, currentChapter, downloadedChapterList, Website, SaveTo, Link);
-          end;
-      end;
-    end;
-    Sort(SortColumn);
-    Backup;
-  finally
-    fStream.Free;
-    mergeFile.Free;
-  end;
-  SetLength(infos, 0);
-  isRunning := False;
 end;
 
 procedure TFavoriteManager.FreeAndDelete(const Pos: Integer);
@@ -1193,6 +1121,9 @@ begin
               FavoriteInfo.CurrentChapter        := Fields[f_currentchapter].AsString;
               FavoriteInfo.DownloadedChapterList := Fields[f_downloadedchapterlist].AsString;
               FavoriteInfo.SaveTo                := Fields[f_saveto].AsString;
+              FavoriteInfo.DateAdded             := Fields[f_dateadded].AsDateTime;
+              FavoriteInfo.DateLastChecked       := Fields[f_datelastchecked].AsDateTime;
+              FavoriteInfo.DateLastUpdated       := Fields[f_datelastupdated].AsDateTime;
             end;
           FFavoritesDB.Table.Next;
         end;
@@ -1214,7 +1145,17 @@ begin
       EnterCriticalsection(CS_Favorites);
       for i := 0 to Items.Count - 1 do
         with Items[i], FavoriteInfo do
-          FFavoritesDB.InternalUpdate(i,FEnabled,Website,Link,Title,CurrentChapter,DownloadedChapterList,SaveTo);
+          FFavoritesDB.InternalUpdate(
+            i,
+            FEnabled,
+            Website,
+            Link,
+            Title,
+            CurrentChapter,
+            DownloadedChapterList,
+            SaveTo,
+            DateLastChecked,
+            DateLastUpdated);
       FFavoritesDB.Commit;
     finally
       LeaveCriticalsection(CS_Favorites);
@@ -1256,11 +1197,33 @@ function CompareFavoriteContainer(const Item1, Item2: TFavoriteContainer): Integ
       end;
   end;
 
+  function GetDateTime(ARow: TFavoriteContainer): TDateTime;
+  begin
+    with ARow.FavoriteInfo do
+      case ARow.Manager.SortColumn of
+        5: Result := DateAdded;
+        6: Result := DateLastChecked;
+        7: Result := DateLastUpdated;
+        else
+          Result := Now;
+      end;
+  end;
+
 begin
-  if Item1.Manager.SortDirection then
-    Result := NaturalCompareStr(GetStr(Item2), GetStr(Item1))
+  if (Item1.Manager.SortColumn >= 5) and (Item1.Manager.SortColumn <= 7) then
+  begin
+    if Item1.Manager.SortDirection then
+      Result := CompareDateTime(GetDateTime(Item2), GetDateTime(Item1))
+    else
+      Result := CompareDateTime(GetDateTime(Item1), GetDateTime(Item2));
+  end
   else
-    Result := NaturalCompareStr(GetStr(Item1), GetStr(Item2));
+  begin
+    if Item1.Manager.SortDirection then
+      Result := NaturalCompareStr(GetStr(Item2), GetStr(Item1))
+    else
+      Result := NaturalCompareStr(GetStr(Item1), GetStr(Item2));
+  end;
 end;
 
 procedure TFavoriteManager.Sort(const AColumn: Integer);

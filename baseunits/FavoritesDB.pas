@@ -19,11 +19,14 @@ type
   public
     constructor Create(const AFilename: String);
     procedure InternalUpdate(const AOrder:Integer;const AEnabled:Boolean;
-      const AWebsite,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo: String); inline;
+      const AWebsite,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo: String;
+      const ADateLastChecked,ADateLastUpdated: TDateTime); inline;
     procedure InternalAdd(const AOrder:Integer;const AEnabled:Boolean;
-      const AWebsite,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo: String); inline;
+      const AWebsite,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo: String;
+      const ADateAdded: TDateTime); inline;
     function Add(const AOrder:Integer;const AEnabled:Boolean;
-      const AWebsite,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo:String):Boolean;
+      const AWebsite,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo:String;
+      const ADateAdded: TDateTime):Boolean;
     procedure Delete(const AWebsite, ALink: String);
     procedure Commit; override;
     procedure Close; override;
@@ -40,6 +43,9 @@ const
   f_currentchapter         = 6;
   f_downloadedchapterlist  = 7;
   f_saveto                 = 8;
+  f_dateadded              = 9;
+  f_datelastchecked          = 10;
+  f_datelastupdated         = 11;
 
 implementation
 
@@ -68,13 +74,18 @@ begin
     '"title" TEXT,' +
     '"currentchapter" TEXT,' +
     '"downloadedchapterlist" TEXT,' +
-    '"saveto" TEXT';
-  FieldsParams := '"websitelink","order","enabled","website","link","title","currentchapter","downloadedchapterlist","saveto"';
+    '"saveto" TEXT,' +
+    '"dateadded" DATETIME,' +
+    '"datelastchecked" DATETIME,' +
+    '"datelastupdated" DATETIME';
+  FieldsParams := '"websitelink","order","enabled","website","link","title","currentchapter","downloadedchapterlist","saveto","dateadded","datelastchecked","datelastupdated"';
   SelectParams := 'SELECT * FROM ' + QuotedStrD(TableName) + ' ORDER BY "order"';
 end;
 
-procedure TFavoritesDB.InternalUpdate(const AOrder:Integer;const AEnabled:Boolean;
-  const AWebsite,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo:String);
+procedure TFavoritesDB.InternalUpdate(const AOrder: Integer;
+  const AEnabled: Boolean; const AWebsite, ALink, ATitle, ACurrentChapter,
+  ADownloadedChapterList, ASaveTo: String; const ADateLastChecked,
+  ADateLastUpdated: TDateTime);
 begin
   Connection.ExecuteDirect('UPDATE "favorites" SET ' +
     '"order"='+QuotedStr(AOrder)+', '+
@@ -82,12 +93,15 @@ begin
     '"title"='+QuotedStr(ATitle)+', '+
     '"currentchapter"='+QuotedStr(ACurrentChapter)+', '+
     '"downloadedchapterlist"='+QuotedStr(ADownloadedChapterList)+', '+
-    '"saveto"='+QuotedStr(ASaveTo)+
+    '"saveto"='+QuotedStr(ASaveTo)+', '+
+    '"datelastchecked"='+QuotedStr(Adatelastchecked)+', '+
+    '"datelastupdated"='+QuotedStr(Adatelastupdated)+
     ' WHERE "websitelink"='+QuotedStr(LowerCase(AWebsite+ALink)));
 end;
 
 procedure TFavoritesDB.InternalAdd(const AOrder:Integer;const AEnabled:Boolean;
-  const AWebsite,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo:String);
+  const AWebsite,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo:String;
+  const ADateAdded: TDateTime);
 begin
   Connection.ExecuteDirect('INSERT OR REPLACE INTO "favorites" (' +
     FieldsParams +
@@ -100,17 +114,21 @@ begin
     QuotedStr(ATitle) + ', ' +
     QuotedStr(ACurrentChapter)  + ', ' +
     QuotedStr(ADownloadedChapterList) + ', ' +
-    QuotedStr(ASaveTo) + ')');
+    QuotedStr(ASaveTo) + ',' +
+    QuotedStr(ADateAdded) + ',' +
+    QuotedStr(ADateAdded) + ',' +
+    QuotedStr(ADateAdded) + ')');
 end;
 
-function TFavoritesDB.Add(const AOrder:Integer;const AEnabled:Boolean;
-  const AWebsite,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo:String):Boolean;
+function TFavoritesDB.Add(const AOrder: Integer; const AEnabled: Boolean;
+  const AWebsite, ALink, ATitle, ACurrentChapter, ADownloadedChapterList,
+  ASaveTo: String; const ADateAdded: TDateTime): Boolean;
 begin
   Result := False;
   if (AWebsite = '') or (ALink = '') then Exit;
   if not Connection.Connected then Exit;
   try
-    InternalAdd(AOrder,AEnabled,AWebsite,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo);
+    InternalAdd(AOrder,AEnabled,AWebsite,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo,ADateAdded);
     Result := True;
     Inc(FCommitCount);
     if FCommitCount >= FAutoCommitCount then

@@ -145,7 +145,7 @@ end;
 
 procedure TImportFavorites.FMDHandle;
 begin
-  FavoriteManager.MergeWith(CleanAndExpandDirectory(edPath.Text) + 'works/favorites.ini');
+  // todo: legacy import
 
   MessageDlg('', RS_ImportCompleted,
                  mtConfirmation, [mbYes], 0)

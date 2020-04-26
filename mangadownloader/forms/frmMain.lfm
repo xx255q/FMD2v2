@@ -2316,13 +2316,13 @@ object MainForm: TMainForm
     object tsFavorites: TTabSheet
       Caption = 'Favorites'
       ChildSizing.TopBottomSpacing = 4
-      ClientHeight = 568
+      ClientHeight = 598
       ClientWidth = 845
       object vtFavorites: TVirtualStringTree
         AnchorSideTop.Control = edFavoritesSearch
         AnchorSideTop.Side = asrBottom
         Left = 0
-        Height = 534
+        Height = 564
         Top = 30
         Width = 845
         Align = alBottom
@@ -2360,6 +2360,18 @@ object MainForm: TMainForm
             Position = 4
             Text = 'Save to'
             Width = 200
+          end        
+          item
+            Position = 5
+            Text = 'Date added'
+          end        
+          item
+            Position = 6
+            Text = 'Last checked date'
+          end        
+          item
+            Position = 7
+            Text = 'Last updated date'
           end>
         Header.DefaultHeight = 24
         Header.Height = 23

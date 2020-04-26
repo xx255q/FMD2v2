@@ -4353,6 +4353,9 @@ begin
       2: CellText:=currentChapter;
       3: CellText:=website;
       4: CellText:=saveTo;
+      5: CellText:=DateTimeToStr(DateAdded);
+      6: CellText:=DateTimeToStr(DateLastChecked);
+      7: CellText:=DateTimeToStr(DateLastUpdated);
     end;
 end;
 

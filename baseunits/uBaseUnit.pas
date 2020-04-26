@@ -363,6 +363,9 @@ type
     Numbering,
     DownloadedChapterList,
     CurrentChapter: String;
+    DateAdded,
+    DateLastChecked,
+    DateLastUpdated: TDateTime;
   end;
 
   TCardinalList = specialize TFPGList<Cardinal>;

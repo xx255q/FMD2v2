@@ -2341,6 +2341,19 @@ msgctxt "TMAINFORM.VTFAVORITES.HEADER.COLUMNS[4].TEXT"
 msgid "Save to"
 msgstr "Şuraya kaydet"
 
+#: tmainform.vtfavorites.header.columns[5].text
+msgctxt "tmainform.vtfavorites.header.columns[5].text"
+msgid "Date added"
+msgstr ""
+
+#: tmainform.vtfavorites.header.columns[6].text
+msgid "Last checked date"
+msgstr ""
+
+#: tmainform.vtfavorites.header.columns[7].text
+msgid "Last updated date"
+msgstr ""
+
 #: tnewchapter.btcancel.caption
 msgctxt "TNEWCHAPTER.BTCANCEL.CAPTION"
 msgid "&Cancel"

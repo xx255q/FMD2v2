@@ -1309,7 +1309,7 @@ msgstr "Shounen Ai"
 
 #: tmainform.ckfiltershounenai.hint
 msgid "Often synonymous with yaoi, this can be thought of as somewhat less extreme. \"Boy''s Love\", so to speak"
-msgstr "Identik dengan yaoi, hanya agak kurang ekstrim. Bisa dikatakan \"Percintaan Antara Laki-laki\"."
+msgstr "Identik dengan yaoi, hanya agak kurang ekstrim. Bisa dikatakan \"Percintaan Antara Laki-laki\""
 
 #: tmainform.ckfiltersliceoflife.caption
 msgid "Slice of Life"
@@ -2342,6 +2342,19 @@ msgctxt "TMAINFORM.VTFAVORITES.HEADER.COLUMNS[4].TEXT"
 msgid "Save to"
 msgstr "Lokasi penyimpanan"
 
+#: tmainform.vtfavorites.header.columns[5].text
+msgctxt "tmainform.vtfavorites.header.columns[5].text"
+msgid "Date added"
+msgstr "Waktu ditambahkan"
+
+#: tmainform.vtfavorites.header.columns[6].text
+msgid "Last checked date"
+msgstr "Waktu terakhir diperiksa"
+
+#: tmainform.vtfavorites.header.columns[7].text
+msgid "Last updated date"
+msgstr "Waktu terakhir diperbarui"
+
 #: tnewchapter.btcancel.caption
 msgctxt "tnewchapter.btcancel.caption"
 msgid "&Cancel"
@@ -2554,7 +2567,7 @@ msgstr "Ditemukan %d bab baru"
 #: ufavoritesmanager.rs_favoritehasnewchapter
 #, object-pascal-format
 msgid "%s <%s> has %d new chapter(s)."
-msgstr "%s <%s> memiliki %d bab baru"
+msgstr "%s <%s> memiliki %d bab baru."
 
 #: ufavoritesmanager.rs_lblmangawillberemoved
 msgid "Completed manga will be removed:"

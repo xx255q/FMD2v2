@@ -2306,7 +2306,6 @@ msgid "Save to"
 msgstr "Save to"
 
 #: tmainform.vtdownload.header.columns[6].text
-#| msgid "Added"
 msgctxt "TMAINFORM.VTDOWNLOAD.HEADER.COLUMNS[6].TEXT"
 msgid "Date added"
 msgstr "Date added"
@@ -2337,6 +2336,19 @@ msgstr "Website"
 msgctxt "TMAINFORM.VTFAVORITES.HEADER.COLUMNS[4].TEXT"
 msgid "Save to"
 msgstr "Save to"
+
+#: tmainform.vtfavorites.header.columns[5].text
+msgctxt "tmainform.vtfavorites.header.columns[5].text"
+msgid "Date added"
+msgstr "Date added"
+
+#: tmainform.vtfavorites.header.columns[6].text
+msgid "Last checked date"
+msgstr "Last checked date"
+
+#: tmainform.vtfavorites.header.columns[7].text
+msgid "Last updated date"
+msgstr "Last updated date"
 
 #: tnewchapter.btcancel.caption
 msgctxt "TNEWCHAPTER.BTCANCEL.CAPTION"
