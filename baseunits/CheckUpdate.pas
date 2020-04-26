@@ -110,7 +110,6 @@ begin
   Synchronize(@SyncStartUpdate);
   if not Terminated and FHTTP.Get(UPDATE_URL) then
   begin
-    FHTTP.Document.LoadFromFile('latest_version.json');
     with TJSONIniFile.Create(FHTTP.Document, []) do
       try
         FNewVersionString := ReadString(fmd_target, 'version', '');
