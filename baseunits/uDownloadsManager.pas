@@ -835,6 +835,7 @@ var
   FailedRetryCount: Integer = 0;
 begin
   Container.ThreadState := True;
+  Container.DownloadInfo.DateLastDownload := Now;
   Container.DownloadInfo.TransferRate := FormatByteSize(Container.ReadCount, true);
   try
     if (Container.Website = '') and (Container.DownloadInfo.Website <> '') then
