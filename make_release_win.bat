@@ -9,9 +9,10 @@ SET repodl=https://github.com/dazedcat19/FMD2/releases/download/
 SET changelog_url=https://raw.githubusercontent.com/dazedcat19/FMD2/master/changelog.txt
 
 ECHO ^{>%update_file%
-ECHO   "_comment": "automatically build with make_release_win.bat">>%update_file%
+ECHO   "_comment": "automatically build with make_release_win.bat",>>%update_file%
 
 CALL :makerelease i386-win32 Win32 --no-write-project
+ECHO   ,>>%update_file%
 CALL :makerelease x86_64-win64 Win64 --no-write-project
 
 ECHO ^}>>%update_file%
@@ -46,8 +47,8 @@ DEL /F "%rdir%\%oname%"
 RMDIR /S /Q "%odir%"
 REM -----------------------------------------------------------
 ECHO   "%~1": {>>%update_file%
-ECHO     "version": "%fverb%">>%update_file%
-ECHO     "download_url": "%repodl%%fverb%/%oname%">>%update_file%
+ECHO     "version": "%fverb%",>>%update_file%
+ECHO     "download_url": "%repodl%%fverb%/%oname%",>>%update_file%
 ECHO     "changelog_url": "%changelog_url%">>%update_file%
 ECHO   }>>%update_file%
 ECHO ----------------------------------------------------------
