@@ -5696,7 +5696,7 @@ procedure TMainForm.SaveFormInformation;
 
 begin
   with settingsfile do
-  begin
+  try
     WriteInteger('form', 'DownloadsSplitter', psDownloads.Position);
     WriteInteger('form', 'MangaInfoSplitter', psInfo.Position);
     WriteInteger('form', 'pcMainPageIndex', pcMain.PageIndex);
@@ -5725,6 +5725,8 @@ begin
 
     // account
     savevt(AccountManagerForm.vtAccountList, 'vtAccountList');
+  finally
+    UpdateFile;
   end;
 end;
 
