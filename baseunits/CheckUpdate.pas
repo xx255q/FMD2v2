@@ -10,7 +10,7 @@ unit CheckUpdate;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, uBaseUnit, FMDOptions, httpsendthread,
+  SysUtils, Forms, Controls, uBaseUnit, FMDOptions, httpsendthread,
   BaseThread, SelfUpdater, fileinfo;
 
 type
@@ -41,7 +41,7 @@ resourcestring
 implementation
 
 uses
-  frmMain, frmUpdateDialog, FMDVars;
+  frmMain, frmUpdateDialog, FMDVars, jsonini;
 
 { TCheckUpdateThread }
 
@@ -99,29 +99,32 @@ begin
 end;
 
 procedure TCheckUpdateThread.Execute;
+var
+  fmd_target, changelog_url: String;
 begin
   FNewVersionString := '';
   FUpdateURL := '';
   FChangelog := '';
+  changelog_url := '';
+  fmd_target := lowercase(FMD_TARGETCPU + '-' + FMD_TARGETOS);
   Synchronize(@SyncStartUpdate);
   if not Terminated and FHTTP.Get(UPDATE_URL) then
   begin
-    with TStringList.Create do try
-      LoadFromStream(FHTTP.Document);
-      if Count <> 0 then begin
-        NameValueSeparator := '=';
-        FNewVersionString := Trim(Values['VERSION']);
-        if not TryStrToProgramVersion(FNewVersionString, FNewVersionNumber) then
+    with TJSONIniFile.Create(FHTTP.Document, []) do
+      try
+        if not TryStrToProgramVersion(ReadString(fmd_target, 'version', ''), FNewVersionNumber) then
           FNewVersionNumber := StrToProgramVersion('0.0.0.0');
         if NewerVersion(FNewVersionNumber, FMD_VERSION_NUMBER) then
-          FUpdateURL := Trim(Values[UpperCase(FMD_TARGETOS)]);
+        begin
+          FUpdateURL := ReadString(fmd_target, 'download_url', '');
+          changelog_url := ReadString(fmd_target, 'changelog_url', '');
+        end;
+      finally
+        Free;
       end;
-    finally
-      Free;
-    end;
   end;
 
-  if not Terminated and (FUpdateURL <> '') and FHTTP.Get(CHANGELOG_URL) then
+  if not Terminated and (FUpdateURL <> '') and FHTTP.Get(changelog_url) then
     FChangelog := StreamToString(FHTTP.Document);
   Synchronize(@SyncEndUpdate);
   if not Terminated and (FUpdateURL <> '') and (not isDlgCounter) then

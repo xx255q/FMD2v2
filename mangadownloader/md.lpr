@@ -73,7 +73,7 @@ begin
   if AppParams.IndexOf('--lua-dofile')<>-1 then
     AlwaysLoadLuaFromFile:=True;
 
-  with TIniFile.Create(CONFIG_FILE) do
+  with TIniFile.Create(SETTINGS_FILE) do
     try
       CheckInstance := ReadBool('general', 'OneInstanceOnly', True);
       EnableLogging := ReadBool('logger', 'Enabled', False);

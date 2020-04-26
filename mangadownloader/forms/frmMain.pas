@@ -968,7 +968,7 @@ uses
   frmImportFavorites, frmShutdownCounter, frmSelectDirectory,
   frmWebsiteSettings, WebsiteModules, FMDVars, RegExpr, sqlite3dyn, Clipbrd,
   ssl_openssl_lib, LazFileUtils, LazUTF8, webp, DBUpdater, pcre2, pcre2lib,
-  StatusBarDownload, LuaWebsiteModules, LuaBase, uBackupSettings;
+  LuaWebsiteModules, LuaBase, uBackupSettings;
 
 var
   // thread for open db
@@ -1285,7 +1285,7 @@ begin
   TransferRateGraph.Visible := False;
 
   // minimize on start
-  if configfile.ReadBool('general', 'MinimizeOnStart', False) then
+  if settingsfile.ReadBool('general', 'MinimizeOnStart', False) then
     Application.ShowMainForm := False;
 
   LoadFormInformation;
@@ -1451,7 +1451,7 @@ begin
   if not (Sender is TMenuItem) then Exit;
   if TMenuItem(Sender).Checked then Exit;
   TMenuItem(Sender).Checked := True;
-  configfile.WriteBool('general', 'SortChapterListAscending', miChapterListAscending.Checked);
+  settingsfile.WriteBool('general', 'SortChapterListAscending', miChapterListAscending.Checked);
   if Length(ChapterList) <> 0 then
   begin
     // invert chapterlist
@@ -1499,25 +1499,25 @@ end;
 procedure TMainForm.miFavoritesDefaultActionCheckNewChaptersClick(Sender: TObject);
 begin
   OptionDefaultAction := 3;
-  configfile.WriteInteger('favorites', 'DefaultAction', 3);
+  settingsfile.WriteInteger('favorites', 'DefaultAction', 3);
 end;
 
 procedure TMainForm.miFavoritesDefaultActionOpenFolderClick(Sender: TObject);
 begin
   OptionDefaultAction := 0;
-  configfile.WriteInteger('favorites', 'DefaultAction', 0);
+  settingsfile.WriteInteger('favorites', 'DefaultAction', 0);
 end;
 
 procedure TMainForm.miFavoritesDefaultActionRenameClick(Sender: TObject);
 begin
   OptionDefaultAction := 2;
-  configfile.WriteInteger('favorites', 'DefaultAction', 2);
+  settingsfile.WriteInteger('favorites', 'DefaultAction', 2);
 end;
 
 procedure TMainForm.miFavoritesDefaultActionShowInfoClick(Sender: TObject);
 begin
   OptionDefaultAction := 1;
-  configfile.WriteInteger('favorites', 'DefaultAction', 1);
+  settingsfile.WriteInteger('favorites', 'DefaultAction', 1);
 end;
 
 procedure TMainForm.miFavoritesEnableClick(Sender: TObject);
@@ -1940,7 +1940,7 @@ begin
     WebsiteSettingsForm.LoadWebsiteSettings;
     AccountManagerForm.LoadAccounts;
 
-    //load configfile
+    //load settings_file
     LoadMangaOptions;
     LoadOptions;
     ApplyOptions;
@@ -2039,7 +2039,7 @@ begin
   if Sender = miChapterListHideDownloaded then
   begin
     miChapterListHideDownloaded.Checked := not miChapterListHideDownloaded.Checked;
-    configfile.WriteBool('general', 'ChapterListHideDownloaded', miChapterListHideDownloaded.Checked);
+    settingsfile.WriteBool('general', 'ChapterListHideDownloaded', miChapterListHideDownloaded.Checked);
   end;
 
   FilterChapterList(edFilterMangaInfoChapters.Text, miChapterListHideDownloaded.Checked);
@@ -2074,7 +2074,7 @@ begin
   if Sender = miChapterListHighlight then
   begin
     miChapterListHighlight.Checked := not miChapterListHighlight.Checked;
-    configfile.WriteBool('general', 'HighlightDownloadedChapters', miChapterListHighlight.Checked);
+    settingsfile.WriteBool('general', 'HighlightDownloadedChapters', miChapterListHighlight.Checked);
   end;
   if Length(ChapterList) = 0 then Exit;
   if miChapterListHighlight.Checked then
@@ -2267,7 +2267,7 @@ end;
 procedure TMainForm.miHighlightNewMangaClick(Sender: TObject);
 begin
   miHighlightNewManga.Checked := not miHighlightNewManga.Checked;
-  configfile.WriteBool('general', 'HighLightNewManga', miHighlightNewManga.Checked);
+  settingsfile.WriteBool('general', 'HighLightNewManga', miHighlightNewManga.Checked);
   vtMangaList.Repaint;
 end;
 
@@ -2370,7 +2370,7 @@ begin
     Add(Node, RS_FiveYears, 8);
     Add(Node, RS_TenYears, 8);
 
-    Items[configfile.ReadInteger('general', 'DownloadFilterSelect', 0)].Selected := True;
+    Items[settingsfile.ReadInteger('general', 'DownloadFilterSelect', 0)].Selected := True;
   end;
 end;
 
@@ -2629,7 +2629,7 @@ end;
 
 procedure TMainForm.cbAddAsStoppedChange(Sender: TObject);
 begin
-  configfile.WriteBool('general', 'AddAsStopped', cbAddAsStopped.Checked);
+  settingsfile.WriteBool('general', 'AddAsStopped', cbAddAsStopped.Checked);
 end;
 
 procedure TMainForm.cbOptionAutoCheckFavIntervalChange(Sender: TObject);
@@ -2671,7 +2671,7 @@ begin
     Exit;
   if currentWebsite <> cbSelectManga.Items[cbSelectManga.ItemIndex] then
   begin
-    configfile.WriteInteger('form', 'SelectManga', cbSelectManga.ItemIndex);
+    settingsfile.WriteInteger('form', 'SelectManga', cbSelectManga.ItemIndex);
     currentWebsite := cbSelectManga.Items[cbSelectManga.ItemIndex];
     vtMangaList.Clear;
     if dataProcess = nil then
@@ -3569,7 +3569,7 @@ begin
   if Sender is TMenuItem then
   begin
     OptionLetFMDDo := TFMDDo(TMenuItem(Sender).Tag);
-    configfile.WriteInteger('general', 'LetFMDDo', Integer(OptionLetFMDDo));
+    settingsfile.WriteInteger('general', 'LetFMDDo', Integer(OptionLetFMDDo));
   end;
 end;
 
@@ -3886,7 +3886,7 @@ begin
   vtDownloadUpdateFilters(False);
   if OptionShowDownloadsTabOnNewTasks then
     pcMain.ActivePage := tsDownload;
-  configfile.WriteInteger('general', 'DownloadFilterSelect',
+  settingsfile.WriteInteger('general', 'DownloadFilterSelect',
     tvDownloadFilter.Selected.AbsoluteIndex);
 end;
 
@@ -4746,7 +4746,7 @@ end;
 procedure TMainForm.FillSaveTo;
 begin
   if LastUserPickedSaveTo = '' then
-    LastUserPickedSaveTo := Trim(configfile.ReadString('saveto', 'SaveTo', DEFAULT_PATH));
+    LastUserPickedSaveTo := Trim(settingsfile.ReadString('saveto', 'SaveTo', DEFAULT_PATH));
   if LastUserPickedSaveTo = '' then
     LastUserPickedSaveTo := DEFAULT_PATH;
   edSaveTo.Text := LastUserPickedSaveTo;
@@ -4903,7 +4903,7 @@ end;
 
 procedure TMainForm.LoadOptions;
 begin
-  with configfile do begin
+  with settingsfile do begin
     // general
     cbOptionOneInstanceOnly.Checked := ReadBool('general', 'OneInstanceOnly', True);
     cbOptionLiveSearch.Checked := ReadBool('general', 'LiveSearch', True);
@@ -5021,7 +5021,7 @@ begin
     cbOptionShowDownloadMangalistDialog.Checked := ReadBool('dialogs', 'ShowDownloadMangalistDialog', True);
 
     // misc
-    frmCustomColor.LoadFromIniFile(configfile);
+    frmCustomColor.LoadFromIniFile(settingsfile);
     ckEnableLogging.Checked := ReadBool('logger', 'Enabled', False);
     edLogFileName.Text := ReadString('logger', 'LogFileName', '');
     if edLogFileName.Text = '' then
@@ -5031,7 +5031,7 @@ end;
 
 procedure TMainForm.SaveOptions(const AShowDialog: Boolean);
 begin
-  with configfile do
+  with settingsfile do
     try
       // general
       WriteString('general', 'MangaListSelect', cbSelectManga.Items.CommaText);
@@ -5129,7 +5129,7 @@ begin
       WriteBool('dialogs', 'ShowDownloadMangalistDialog', cbOptionShowDownloadMangalistDialog.Checked);
 
       // misc
-      frmCustomColor.SaveToIniFile(configfile);
+      frmCustomColor.SaveToIniFile(settingsfile);
       WriteBool('logger', 'Enabled', ckEnableLogging.Checked);
       if edLogFileName.Text = '' then
         edLogFileName.Text := DEFAULT_LOG_FILE;
@@ -5390,7 +5390,7 @@ begin
   end;
 
   // load selected websites
-  s := configfile.ReadString('general', 'MangaListSelect', DEFAULT_SELECTED_WEBSITES);
+  s := settingsfile.ReadString('general', 'MangaListSelect', DEFAULT_SELECTED_WEBSITES);
   if Pos(SEPERATOR, s) <> 0 then
     ExtractParam(cbSelectManga.Items, s, SEPERATOR, False)
   else
@@ -5425,7 +5425,7 @@ begin
   // load last selected webssite
   if cbSelectManga.Items.Count > 0 then
   begin
-    i := configfile.ReadInteger('form', 'SelectManga', 0);
+    i := settingsfile.ReadInteger('form', 'SelectManga', 0);
     if i < 0 then
       i := 0;
     if i > cbSelectManga.Items.Count - 1 then
@@ -5606,7 +5606,7 @@ procedure TMainForm.LoadFormInformation;
   var
     i: Integer;
   begin
-    with configfile, vt.Header do
+    with settingsfile, vt.Header do
     begin
       SortColumn := ReadInteger(name, 'SortColumn', SortColumn);
       SortDirection := TSortDirection(ReadInteger(name, 'SortDirection', Integer(SortDirection)));
@@ -5619,7 +5619,7 @@ procedure TMainForm.LoadFormInformation;
   end;
 
 begin
-  with configfile do
+  with settingsfile do
   begin
     psDownloads.Position := ReadInteger('form', 'DownloadsSplitter', psDownloads.Position);
     psInfo.Position := ReadInteger('form', 'MangaInfoSplitter', psInfo.Position);
@@ -5679,7 +5679,7 @@ procedure TMainForm.SaveFormInformation;
   var
     i: Integer;
   begin
-    with configfile, vt.Header do
+    with settingsfile, vt.Header do
     begin
       WriteInteger(name, 'SortColumn', SortColumn);
       WriteInteger(name, 'SortDirection', Integer(SortDirection));
@@ -5692,7 +5692,7 @@ procedure TMainForm.SaveFormInformation;
   end;
 
 begin
-  with configfile do
+  with settingsfile do
   begin
     WriteInteger('form', 'DownloadsSplitter', psDownloads.Position);
     WriteInteger('form', 'MangaInfoSplitter', psInfo.Position);
@@ -5728,7 +5728,7 @@ end;
 procedure TMainForm.ShowDropTarget(const AShow: Boolean);
 begin
   ckDropTarget.Checked := AShow;
-  configfile.WriteBool('droptarget', 'Show', AShow);
+  settingsfile.WriteBool('droptarget', 'Show', AShow);
   if AShow then
   begin
     if FormDropTarget = nil then
@@ -5746,7 +5746,7 @@ end;
 
 procedure TMainForm.SaveDropTargetFormInformation;
 begin
-  with configfile do
+  with settingsfile do
   begin
     WriteBool('droptarget', 'Show', ckDropTarget.Checked);
     WriteInteger('droptarget', 'Mode', rgDropTargetMode.ItemIndex);
@@ -5771,7 +5771,7 @@ begin
     for i := 0 to AvailableLanguages.Count - 1 do
       cbLanguages.Items.Add(SimpleTranslator.AvailableLanguages.ValueFromIndex[i]);
     cbLanguages.ItemIndex := SimpleTranslator.AvailableLanguages.IndexOfName(
-    configfile.ReadString('languages', 'Selected', 'en'));
+    settingsfile.ReadString('languages', 'Selected', 'en'));
   end;
 end;
 
@@ -5906,8 +5906,8 @@ procedure TMainForm.OpenWithExternalProgram(const Dir, Filename: String);
 var
   ADir, AParam, Exe, Params: String;
 begin
-  Exe := Trim(configfile.ReadString('general', 'ExternalProgramPath', ''));
-  Params := Trim(configfile.ReadString('general', 'ExternalProgramParams', DEFAULT_EXPARAM));
+  Exe := Trim(settingsfile.ReadString('general', 'ExternalProgramPath', ''));
+  Params := Trim(settingsfile.ReadString('general', 'ExternalProgramParams', DEFAULT_EXPARAM));
 
   ADir := Trim(ChompPathDelim(CorrectPathSys(Dir)));
   AParam := Trim(ChompPathDelim(Filename));

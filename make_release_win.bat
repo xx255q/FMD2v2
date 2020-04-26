@@ -4,16 +4,17 @@ REM SET LAZ=C:\lazarus
 TITLE=FMD Release
 SET cdir=%CD%
 CD /D "%cdir%"
-SET repodl=https://github.com/fmd-project-team/FMD/releases/download/
-ECHO ; automatically build with make_release_win.bat>update
+SET update_file=latest_version.json
+SET repodl=https://github.com/dazedcat19/FMD2/releases/download/
+SET changelog_url=https://raw.githubusercontent.com/dazedcat19/FMD/master/changelog.txt
+
+ECHO ^{>%update_file%
+ECHO   "_comment": "automatically build with make_release_win.bat">>%update_file%
 
 CALL :makerelease i386-win32 Win32 --no-write-project
-ECHO WIN32=%repodl%%fverb%/%oname%>>update
-
 CALL :makerelease x86_64-win64 Win64 --no-write-project
-ECHO WIN64=%repodl%%fverb%/%oname%>>update
 
-ECHO VERSION=%fverb%>>update
+ECHO ^}>>%update_file%
 
 PAUSE
 GOTO :EOF
@@ -42,6 +43,12 @@ XCOPY /F /Y "%tdir%\updater.exe" "%odir%\"
 DEL /F "%rdir%\%oname%"
 "%cdir%\dist\%~1\7za" a "%rdir%\%oname%" "%odir%\*" -mx9 -ssw -stl -t7z -y
 RMDIR /S /Q "%odir%"
+REM -----------------------------------------------------------
+ECHO   "%~1": {>>%update_file%
+ECHO     "version": "%fverb%">>%update_file%
+ECHO     "download_url": "%repodl%%fverb%/%oname%">>%update_file%
+ECHO     "changelog_url": "%changelog_url%">>%update_file%
+ECHO   }>>%update_file%
 ECHO ----------------------------------------------------------
 GOTO :EOF
 

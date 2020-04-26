@@ -692,7 +692,7 @@ end;
 constructor TFavoriteManager.Create;
 begin
   inherited Create;
-  ForceDirectoriesUTF8(WORK_FOLDER);
+  ForceDirectoriesUTF8(USERDATA_FOLDER);
   InitCriticalSection(CS_Favorites);
   isRunning := False;
   Items := TFavoriteContainers.Create;;

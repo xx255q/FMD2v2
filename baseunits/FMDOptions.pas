@@ -5,22 +5,10 @@ unit FMDOptions;
 interface
 
 uses
-  Classes, SysUtils, IniFiles, fileinfo, FileUtil, Forms, Graphics, LazFileUtils, LazUTF8;
+  Classes, SysUtils, fileinfo, jsonini, FileUtil, Forms, Graphics,
+  LazFileUtils, LazUTF8;
 
 type
-
-  { TIniFileRun }
-
-  TIniFileRun = class(IniFiles.TMemIniFile)
-  private
-    FCSLock: TRTLCriticalSection;
-    FFileAge: LongInt;
-    FRealFileName: String;
-  public
-    constructor Create(const AFileName: String; AEscapeLineFeeds: Boolean = False); overload; override;
-    destructor Destroy; override;
-    procedure UpdateFile; override;
-  end;
 
   TFMDDo = (DO_NOTHING, DO_EXIT, DO_POWEROFF, DO_HIBERNATE, DO_UPDATE);
 
@@ -75,28 +63,22 @@ var
   CURRENT_ZIP_EXE,
   APPDATA_DIRECTORY,
   DEFAULT_PATH,
-  WORK_FOLDER,
-  WORK_FILE,
-  WORK_FILEDB,
+  USERDATA_FOLDER,
+  DOWNLOADSDB_FILE,
   DOWNLOADEDCHAPTERS_FILE,
   DOWNLOADEDCHAPTERSDB_FILE,
   FAVORITES_FILE,
   FAVORITESDB_FILE,
   CONFIG_FOLDER,
-  CONFIG_FILE,
-  REVISION_FILE,
-  UPDATE_FILE,
+  SETTINGS_FILE,
   BASE_FILE,
   ACCOUNTS_FILE,
   MODULES_FILE,
   DATA_FOLDER,
   IMAGE_FOLDER,
-  LANGUAGE_FILE,
   CHANGELOG_FILE,
   DEFAULT_LOG_FILE,
   README_FILE,
-  EXTRAS_FOLDER,
-  MANGAFOXTEMPLATE_FOLDER,
   LUA_WEBSITEMODULE_FOLDER,
   LUA_REPO_FOLDER,
   LUA_REPO_FILE,
@@ -106,19 +88,14 @@ var
   // program params
   AppParams: TStringList;
 
-  // ini files
-  revisionfile,
-  updatesfile: TIniFile;
-  configfile: TIniFileRun;
+  // json files
+  settingsfile: TJSONIniFile;
 
-  // base url, should be in base.ini
-  DEFAULT_SELECTED_WEBSITES: String = 'MangaDex,MangaHere,MangaInn,MangaReader';
-  DB_URL: String = 'https://sourceforge.net/projects/newfmd/files/data/<website>.7z/download';
-  UPDATE_URL: String = 'https://raw.githubusercontent.com/fmd-project-team/FMD/master/update';
-  CHANGELOG_URL: String = 'https://raw.githubusercontent.com/fmd-project-team/FMD/master/changelog.txt';
-  UPDATE_PACKAGE_NAME: String = 'updatepackage.7z';
-  MODULES_URL: String = 'https://api.github.com/repos/fmd-project-team/FMD/contents/lua/modules';
-  MODULES_URL2: String = 'https://github.com/fmd-project-team/FMD/file-list/master/lua/modules';
+  // base url, should be in base.json
+  DEFAULT_SELECTED_WEBSITES: String = '';
+  DB_URL: String = '';
+  UPDATE_URL: String = '';
+  UPDATE_PACKAGE_NAME: String = '';
 
   currentWebsite: String;
 
@@ -228,43 +205,6 @@ implementation
 
 uses process, UTF8Process;
 
-{ TIniFileRun }
-
-constructor TIniFileRun.Create(const AFileName: String; AEscapeLineFeeds: Boolean);
-begin
-  FRealFileName := AFileName;
-  if FileExistsUTF8(AFileName + RUN_EXE) then
-    DeleteFileUTF8(RUN_EXE);
-  if FileExistsUTF8(AFileName) then
-    CopyFile(AFileName, AFileName + RUN_EXE);
-  InitCriticalSection(FCSLock);
-  if FileExistsUTF8(AFileName) then
-    FFileAge := FileAgeUTF8(AFileName)
-  else
-    FFileAge := 0;
-  inherited Create(AFileName + RUN_EXE, AEscapeLineFeeds);
-end;
-
-destructor TIniFileRun.Destroy;
-begin
-  inherited Destroy;
-  DoneCriticalsection(FCSLock);
-  if FileExistsUTF8(FileName) then
-    DeleteFileUTF8(FileName);
-end;
-
-procedure TIniFileRun.UpdateFile;
-begin
-  if CacheUpdates and (Dirty = False) then Exit;
-  EnterCriticalSection(FCSLock);
-  try
-    inherited UpdateFile;
-    CopyFile(FileName, FRealFileName, [cffOverwriteFile, cffPreserveTime, cffCreateDestDirectory]);
-  finally
-    LeaveCriticalSection(FCSLock);
-  end;
-end;
-
 procedure FreeNil(var Obj);
 begin
   if Pointer(Obj) <> nil then
@@ -274,27 +214,24 @@ end;
 
 procedure FreeIniFiles;
 begin
-  FreeNil(configfile);
+  FreeNil(settingsfile);
 end;
 
 procedure SetIniFiles;
 begin
   FreeIniFiles;
-  configfile := TIniFileRun.Create(CONFIG_FILE);
+  settingsfile := TJSONIniFile.Create(SETTINGS_FILE);
 end;
 
 procedure ReadBaseFile;
 begin
   if not FileExistsUTF8(BASE_FILE) then Exit;
-  with TIniFile.Create(BASE_FILE) do
+  with TJSONIniFile.Create(BASE_FILE) do
     try
-      DEFAULT_SELECTED_WEBSITES:=ReadString('base','DEFAULT_SELECTED_WEBSITES',DEFAULT_SELECTED_WEBSITES);
-      DB_URL:=ReadString('base','DB_URL',DB_URL);
-      UPDATE_URL:=ReadString('base','UPDATE_URL',UPDATE_URL);
-      CHANGELOG_URL:=ReadString('base','CHANGELOG_URL',CHANGELOG_URL);
-      UPDATE_PACKAGE_NAME:=ReadString('base','UPDATE_PACKAGE_NAME',UPDATE_PACKAGE_NAME);
-      MODULES_URL:=ReadString('base','MODULES_URL',MODULES_URL);
-      MODULES_URL2:=ReadString('base','MODULES_URL2',MODULES_URL2);
+      DEFAULT_SELECTED_WEBSITES:=ReadString('base','default_selected_websites',DEFAULT_SELECTED_WEBSITES);
+      DB_URL:=ReadString('base','db_url',DB_URL);
+      UPDATE_URL:=ReadString('base','update_url',UPDATE_URL);
+      UPDATE_PACKAGE_NAME:=ReadString('base','update_package_name',UPDATE_PACKAGE_NAME);
     finally
       Free;
     end;
@@ -306,16 +243,11 @@ begin
   FMD_EXENAME := ExtractFileNameOnly(Application.ExeName);
 
   CONFIG_FOLDER := FMD_DIRECTORY + 'config' + PathDelim;
-  REVISION_FILE := CONFIG_FOLDER + 'revision.ini';
-  UPDATE_FILE := CONFIG_FOLDER + 'updates.ini';
-  BASE_FILE := CONFIG_FOLDER + 'base.ini';
+  BASE_FILE := CONFIG_FOLDER + 'base.json';
 
   IMAGE_FOLDER := FMD_DIRECTORY + 'images' + PathDelim;
-  LANGUAGE_FILE := FMD_DIRECTORY + 'languages.ini';
   CHANGELOG_FILE := FMD_DIRECTORY + 'changelog.txt';
   README_FILE := FMD_DIRECTORY + 'readme.rtf';
-  EXTRAS_FOLDER := FMD_DIRECTORY + 'extras' + PathDelim;
-  MANGAFOXTEMPLATE_FOLDER := EXTRAS_FOLDER + 'mangafoxtemplate' + PathDelim;
   DEFAULT_LOG_FILE := FMD_EXENAME + '.log';
   CURRENT_UPDATER_EXE := FMD_DIRECTORY + UPDATER_EXE;
   OLD_CURRENT_UPDATER_EXE := FMD_DIRECTORY + OLD_UPDATER_EXE;
@@ -333,21 +265,17 @@ begin
   DEFAULT_PATH := 'downloads' + PathDelim;
 
   CONFIG_FOLDER := APPDATA_DIRECTORY + 'config' + PathDelim;
-  CONFIG_FILE := CONFIG_FOLDER + 'config.ini';
-  ACCOUNTS_FILE := CONFIG_FOLDER + 'accounts.db';
-  MODULES_FILE := CONFIG_FOLDER + 'modules.json';
-  LUA_REPO_FILE := CONFIG_FOLDER + 'lua.json';
-  LUA_REPO_WORK_FILE := CONFIG_FOLDER + 'lua_repo.json';
-
   DATA_FOLDER := APPDATA_DIRECTORY + 'data' + PathDelim;
+  USERDATA_FOLDER := APPDATA_DIRECTORY + 'userdata' + PathDelim;
 
-  WORK_FOLDER := APPDATA_DIRECTORY + 'works' + PathDelim;
-  WORK_FILE := WORK_FOLDER + 'works.ini';
-  WORK_FILEDB := WORK_FOLDER + 'downloads.db';
-  DOWNLOADEDCHAPTERS_FILE := WORK_FOLDER + 'downloadedchapters.ini';
-  DOWNLOADEDCHAPTERSDB_FILE := WORK_FOLDER + 'downloadedchapters.db';
-  FAVORITES_FILE := WORK_FOLDER + 'favorites.ini';
-  FAVORITESDB_FILE := WORK_FOLDER + 'favorites.db';
+  SETTINGS_FILE := USERDATA_FOLDER + 'settings.json';
+  ACCOUNTS_FILE := USERDATA_FOLDER + 'accounts.db';
+  MODULES_FILE := USERDATA_FOLDER + 'modules.json';
+  LUA_REPO_FILE := USERDATA_FOLDER + 'lua.json';
+  LUA_REPO_WORK_FILE := USERDATA_FOLDER + 'lua_repo.json';
+  DOWNLOADSDB_FILE := USERDATA_FOLDER + 'downloads.db';
+  DOWNLOADEDCHAPTERSDB_FILE := USERDATA_FOLDER + 'downloadedchapters.db';
+  FAVORITESDB_FILE := USERDATA_FOLDER + 'favorites.db';
 
   LUA_WEBSITEMODULE_FOLDER := FMD_DIRECTORY + 'lua' + PathDelim + 'modules' + PathDelim;
   LUA_REPO_FOLDER := FMD_DIRECTORY + 'lua' + PathDelim;

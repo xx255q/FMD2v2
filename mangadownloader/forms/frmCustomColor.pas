@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Types, Forms, Graphics, Dialogs, ColorBox, ComCtrls,
-  VirtualTrees, FMDOptions, IniFiles;
+  VirtualTrees, FMDOptions, jsonini;
 
 type
   TColorItem = record
@@ -118,8 +118,8 @@ type
 procedure AddVT(const AVT: VirtualTrees.TVirtualStringTree); inline;
 procedure RemoveVT(const AVT: VirtualTrees.TVirtualStringTree); inline;
 procedure Apply;
-procedure LoadFromIniFile(const IniFile: TIniFile);
-procedure SaveToIniFile(const IniFile: TIniFile);
+procedure LoadFromIniFile(const AIniFile: TJSONIniFile);
+procedure SaveToIniFile(const AIniFile: TJSONIniFile);
 
 var
   CustomColorForm: TCustomColorForm;
@@ -289,11 +289,11 @@ begin
       ApplyBasicColorToVT(VTApplyList[i]);
 end;
 
-procedure LoadFromIniFile(const IniFile: TIniFile);
+procedure LoadFromIniFile(const AIniFile: TJSONIniFile);
 var
   i: Integer;
 begin
-  with IniFile do
+  with AIniFile do
   begin
     //basiclist
     for i := 0 to BasicListColors.Count - 1 do
@@ -319,11 +319,11 @@ begin
   end;
 end;
 
-procedure SaveToIniFile(const IniFile: TIniFile);
+procedure SaveToIniFile(const AIniFile: TJSONIniFile);
 var
   i: Integer;
 begin
-  with IniFile do
+  with AIniFile do
   begin
     //basiclist
     for i := 0 to BasicListColors.Count - 1 do

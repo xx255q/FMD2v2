@@ -11,7 +11,7 @@ unit frmImportFavorites;
 interface
 
 uses
-  Classes, SysUtils, Forms, Dialogs, StdCtrls, Buttons, DefaultTranslator, EditBtn,
+  Classes, SysUtils, Forms, Dialogs, StdCtrls, Buttons, EditBtn,
   lazutf8classes, LazFileUtils, uBaseUnit, WebsiteModules, FMDOptions, RegExpr,
   frmNewChapter;
 
@@ -87,7 +87,7 @@ begin
 
   if urlList.Count > 0 then
   begin
-    path:= CleanAndExpandDirectory(configfile.ReadString('saveto', 'SaveTo', ''));
+    path:= CleanAndExpandDirectory(settingsfile.ReadString('saveto', 'SaveTo', ''));
     regx := TRegExpr.Create;
     try
       regx.Expression := REGEX_HOST;

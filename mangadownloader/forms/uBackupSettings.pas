@@ -65,12 +65,12 @@ begin
     Parameters.Add(AFileName);
     Parameters.Add('-stl');
     Parameters.Add('-ssw');
-    Parameters.Add(CleanPath(CONFIG_FILE));
+    Parameters.Add(CleanPath(SETTINGS_FILE));
     Parameters.Add(CleanPath(ACCOUNTS_FILE));
     Parameters.Add(CleanPath(MODULES_FILE));
     Parameters.Add(CleanPath(LUA_REPO_FILE));
     Parameters.Add(CleanPath(LUA_REPO_WORK_FILE));
-    Parameters.Add(CleanPath(WORK_FILEDB));
+    Parameters.Add(CleanPath(DOWNLOADSDB_FILE));
     Parameters.Add(CleanPath(DOWNLOADEDCHAPTERSDB_FILE));
     Parameters.Add(CleanPath(FAVORITESDB_FILE));
     Execute;

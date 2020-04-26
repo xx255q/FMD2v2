@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, httpsendthread, FMDOptions, StatusBarDownload,
-  process, ComCtrls, Controls, Dialogs, Buttons;
+  process, Controls, Dialogs, Buttons;
 
 type
 

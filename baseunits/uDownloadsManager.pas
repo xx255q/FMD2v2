@@ -15,7 +15,7 @@ unit uDownloadsManager;
 interface
 
 uses
-  LazFileUtils, RegExpr, IniFiles, Classes, SysUtils, ExtCtrls, typinfo, fgl,
+  LazFileUtils, Classes, SysUtils, ExtCtrls, typinfo, fgl,
   blcksock, MultiLog, uBaseUnit, uPacker, uMisc, DownloadedChaptersDB, FMDOptions,
   httpsendthread, DownloadsDB, BaseThread, dateutils, strutils;
 
@@ -178,7 +178,6 @@ type
     procedure AddItemsActiveTask(const Item: TTaskContainer);
     procedure RemoveItemsActiveTask(const Item: TTaskContainer);
     function GetTask(const TaskId: Integer): TTaskContainer;
-    function ConvertToDB: Boolean;
   protected
     function GetTaskCount: Integer; inline;
     function GetTransferRate: Integer;
@@ -273,7 +272,7 @@ resourcestring
 implementation
 
 uses
-  frmMain, WebsiteModules, FMDVars, SimpleException;
+  frmMain, WebsiteModules, SimpleException;
 
 function IntToStr(Value: Cardinal): String;
 begin
@@ -1306,7 +1305,7 @@ begin
   inherited Create;
   InitCriticalSection(CS_Task);
   InitCriticalSection(CS_ItemsActiveTask);
-  ForceDirectoriesUTF8(WORK_FOLDER);
+  ForceDirectoriesUTF8(USERDATA_FOLDER);
   DownloadedChapters := TDownloadedChaptersDB.Create;
   DownloadedChapters.Filename := DOWNLOADEDCHAPTERSDB_FILE;
   DownloadedChapters.OnError := @MainForm.ExceptionHandler;
@@ -1326,7 +1325,7 @@ begin
   for ds := Low(StatusCount) to High(StatusCount) do
     StatusCount[ds] := 0;
   DisabledCount := 0;
-  FDownloadsDB := TDownloadsDB.Create(WORK_FILEDB);
+  FDownloadsDB := TDownloadsDB.Create(DOWNLOADSDB_FILE);
   FDownloadsDB.Open(False, False);
 end;
 
@@ -1346,59 +1345,12 @@ begin
   inherited Destroy;
 end;
 
-function TDownloadManager.ConvertToDB: Boolean;
-var
-  i, d: Integer;
-  s: String;
-begin
-  Result := False;
-  if not FileExistsUTF8(WORK_FILE) then Exit;
-  with TIniFile.Create(WORK_FILE) do
-  try
-    i := ReadInteger('general', 'NumberOfTasks', 0);
-    if i = 0 then Exit;
-    for i := 0 to i - 1 do
-    begin
-      d := -1;
-      s := 'task' + IntToStr(i);
-      FDownloadsDB.Add(d,
-        ReadBool(s, 'Enabled', True),
-        i,
-        GetEnumValue(TypeInfo(TDownloadStatusType), ReadString(s, 'TaskStatus', GetEnumName(TypeInfo(TDownloadStatusType), 0))),
-        ReadInteger(s, 'ChapterPtr', 0),
-        ReadInteger(s, 'NumberOfPages', 0),
-        ReadInteger(s, 'CurrentPage', 0),
-        ReadString(s, 'Website', ''),
-        RemoveHostFromURL(ReadString(s, 'Link', '')),
-        ReadString(s, 'Title', ''),
-        ReadString(s, 'Status', ''),
-        ReadString(s, 'Progress', ''),
-        ReadString(s, 'SaveTo', ''),
-        StrToFloatDef(ReadString(s, 'DateTime', ''), Now, FMDFormatSettings),
-        GetParams(ReadString(s, 'ChapterLinks', '') + ReadString(s, 'FailedChapterLinks', '')),
-        GetParams(ReadString(s, 'ChapterName', '') + ReadString(s, 'FailedChapterName', '')),
-        GetParams(ReadString(s, 'PageLinks', '')),
-        GetParams(ReadString(s, 'PageContainerLinks', '')),
-        GetParams(ReadString(s, 'Filenames', '')),
-        ReadString(s, 'CustomFileName', DEFAULT_FILENAME_CUSTOMRENAME),
-        '');
-    end;
-    FDownloadsDB.Commit;
-    Result := True;
-  finally
-    Free;
-  end;
-  if Result then
-    Result := DeleteFileUTF8(WORK_FILE);
-end;
-
 procedure TDownloadManager.Restore;
 var
   t: TTaskContainer;
   i: LongInt;
 begin
   if not FDownloadsDB.Connection.Connected then Exit;
-  ConvertToDB;
   if FDownloadsDB.OpenTable(False) then
   try
     if FDownloadsDB.RecordCount = 0 then Exit;
