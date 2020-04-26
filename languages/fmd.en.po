@@ -2306,9 +2306,14 @@ msgid "Save to"
 msgstr "Save to"
 
 #: tmainform.vtdownload.header.columns[6].text
+#| msgid "Added"
 msgctxt "TMAINFORM.VTDOWNLOAD.HEADER.COLUMNS[6].TEXT"
-msgid "Added"
-msgstr "Added"
+msgid "Date added"
+msgstr "Date added"
+
+#: tmainform.vtdownload.header.columns[7].text
+msgid "Last download date"
+msgstr "Last download date"
 
 #: tmainform.vtfavorites.header.columns[0].text
 msgid "#"
@@ -2623,4 +2628,3 @@ msgstr "Updating list"
 #, object-pascal-format
 msgid "Can not load WebP codec library \"%s\". Check your installation."
 msgstr "Can not load WebP codec library \"%s\". Check your installation."
-

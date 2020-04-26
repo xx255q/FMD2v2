@@ -360,7 +360,8 @@ begin
       DLManager.Items[p].downloadInfo.Website := website;
       DLManager.Items[p].downloadInfo.Link := URL;
       DLManager.Items[p].downloadInfo.Title := title;
-      DLManager.Items[p].downloadInfo.DateTime := Now;
+      DLManager.Items[p].downloadInfo.DateAdded := Now;
+      DLManager.Items[p].downloadInfo.DateLastDownload := Now;
 
       if FSavePath = '' then
       begin

@@ -918,7 +918,7 @@ begin
                     DownloadInfo.Link := FavoriteInfo.Link;
                     DownloadInfo.Title := FavoriteInfo.Title;
                     DownloadInfo.SaveTo := FavoriteInfo.SaveTo;
-                    DownloadInfo.dateTime := Now;
+                    DownloadInfo.DateAdded := Now;
 
                     for j := 0 to NewMangaInfoChaptersPos.Count - 1 do
                     begin

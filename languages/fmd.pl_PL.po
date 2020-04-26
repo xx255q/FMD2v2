@@ -2369,9 +2369,15 @@ msgid "Save to"
 msgstr "Zapisz do"
 
 #: tmainform.vtdownload.header.columns[6].text
+#, fuzzy
+#| msgid "Added"
 msgctxt "TMAINFORM.VTDOWNLOAD.HEADER.COLUMNS[6].TEXT"
-msgid "Added"
+msgid "Date added"
 msgstr "Dodano"
+
+#: tmainform.vtdownload.header.columns[7].text
+msgid "Last download date"
+msgstr ""
 
 #: tmainform.vtfavorites.header.columns[0].text
 msgid "#"

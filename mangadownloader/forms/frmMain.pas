@@ -2190,7 +2190,7 @@ begin
         begin
           ic.ChapterLinks.Text:=jc.ChapterLinks.Text+ic.ChapterLinks.Text;
           ic.ChapterName.Text:=jc.ChapterName.Text+ic.ChapterName.Text;
-          ic.DownloadInfo.dateTime:=jc.DownloadInfo.dateTime;
+          ic.DownloadInfo.DateAdded:=jc.DownloadInfo.DateAdded;
           DLManager.RemoveTask(j);
           Dec(i);
         end;
@@ -2475,7 +2475,8 @@ begin
           DownloadInfo.Website:=mangaInfo.website;
           DownloadInfo.Link:=mangaInfo.link;
           DownloadInfo.Title:=mangaInfo.title;
-          DownloadInfo.DateTime:=Now;
+          DownloadInfo.DateAdded:=Now;
+          DownloadInfo.DateLastDownload:=Now;
           DownloadInfo.SaveTo:=s;
           CurrentDownloadChapterPtr:=0;
           SaveToDB(newdl);
@@ -2503,7 +2504,7 @@ begin
   if mangaInfo.title <> '' then
   begin
     // save to
-	OverrideSaveTo(mangaInfo.website);
+    OverrideSaveTo(mangaInfo.website);
     s := edSaveTo.Text;
     if OptionGenerateMangaFolder then
       s := AppendPathDelim(s) + CustomRename(
@@ -4121,7 +4122,7 @@ begin
       2: HintText:=Progress;
       4: HintText:=Website;
       5: HintText:=SaveTo;
-      6: HintText:=DateTimeToStr(DateTime);
+      6: HintText:=DateTimeToStr(DateAdded);
     end;
 end;
 
@@ -4151,7 +4152,8 @@ begin
       3: CellText:=TransferRate;
       4: CellText:=Website;
       5: CellText:=SaveTo;
-      6: CellText:=DateTimeToStr(DateTime);
+      6: CellText:=DateTimeToStr(DateAdded);
+      7: CellText:=DateTimeToStr(DateLastDownload);
     end;
 end;
 
@@ -4587,7 +4589,7 @@ var
     begin
       with DLManager.Items[xNode^.Index] do
       begin
-        jdn := DateToJDN(DownloadInfo.DateTime);
+        jdn := DateToJDN(DownloadInfo.DateAdded);
         Visible := (jdn >= L) and (jdn <= H);;
         vtDownload.IsVisible[xNode] := Visible;
       end;

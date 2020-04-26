@@ -422,6 +422,7 @@ destructor TTaskThread.Destroy;
 var
   i: Integer;
 begin
+  Container.DownloadInfo.DateLastDownload := Now;
   EnterCriticalsection(FCS_THREADS);
   try
     if Threads.Count > 0 then
@@ -1188,7 +1189,7 @@ begin
     DownloadInfo.Status,
     DownloadInfo.Progress,
     DownloadInfo.SaveTo,
-    DownloadInfo.DateTime,
+    DownloadInfo.DateAdded,
     ChapterLinks.Text,
     ChapterName.Text,
     PageLinks.Text,
@@ -1365,29 +1366,30 @@ begin
           with t, FDownloadsDB.Table do
           begin
             Manager := Self;
-            DlId                      := Fields[f_dlid].AsInteger;
-            Enabled                   := Fields[f_enabled].AsBoolean;
-            Status                    := TDownloadStatusType(Fields[f_taskstatus].AsInteger);
-            CurrentDownloadChapterPtr := Fields[f_chapterptr].AsInteger;
-            PageNumber                := Fields[f_numberofpages].AsInteger;
-            CurrentPageNumber         := Fields[f_currentpage].AsInteger;
-            Website                   := Fields[f_website].AsString;
-            DownloadInfo.Website      := Website;
-            DownloadInfo.Link         := Fields[f_link].AsString;
-            DownloadInfo.Title        := Fields[f_title].AsString;
-            DownloadInfo.Status       := Fields[f_status].AsString;
-            DownloadInfo.Progress     := Fields[f_progress].AsString;
+            DlId                            := Fields[f_dlid].AsInteger;
+            Enabled                         := Fields[f_enabled].AsBoolean;
+            Status                          := TDownloadStatusType(Fields[f_taskstatus].AsInteger);
+            CurrentDownloadChapterPtr       := Fields[f_chapterptr].AsInteger;
+            PageNumber                      := Fields[f_numberofpages].AsInteger;
+            CurrentPageNumber               := Fields[f_currentpage].AsInteger;
+            Website                         := Fields[f_website].AsString;
+            DownloadInfo.Website            := Website;
+            DownloadInfo.Link               := Fields[f_link].AsString;
+            DownloadInfo.Title              := Fields[f_title].AsString;
+            DownloadInfo.Status             := Fields[f_status].AsString;
+            DownloadInfo.Progress           := Fields[f_progress].AsString;
             if Pos('/', DownloadInfo.Progress) <> 0 then
               DownCounter := StrToIntDef(Trim(ExtractWord(1, DownloadInfo.Progress, ['/'])), 0);
-            DownloadInfo.SaveTo       := Fields[f_saveto].AsString;
-            DownloadInfo.DateTime     := Fields[f_datetime].AsDateTime;
-            ChapterLinks.Text         := Fields[f_chapterslinks].AsString;
-            ChapterName.Text          := Fields[f_chaptersnames].AsString;
-            PageLinks.Text            := Fields[f_pagelinks].AsString;
-            PageContainerLinks.Text   := Fields[f_pagecontainerlinks].AsString;
-            FileNames.Text            := Fields[f_filenames].AsString;
-            CustomFileName            := Fields[f_customfilenames].AsString;
-            ChaptersStatus.Text       := Fields[f_chaptersstatus].AsString;
+            DownloadInfo.SaveTo             := Fields[f_saveto].AsString;
+            DownloadInfo.DateAdded          := Fields[f_dateadded].AsDateTime;
+            DownloadInfo.DateLastDownload   := Fields[f_datelastdownload].AsDateTime;
+            ChapterLinks.Text               := Fields[f_chapterslinks].AsString;
+            ChapterName.Text                := Fields[f_chaptersnames].AsString;
+            PageLinks.Text                  := Fields[f_pagelinks].AsString;
+            PageContainerLinks.Text         := Fields[f_pagecontainerlinks].AsString;
+            FileNames.Text                  := Fields[f_filenames].AsString;
+            CustomFileName                  := Fields[f_customfilenames].AsString;
+            ChaptersStatus.Text             := Fields[f_chaptersstatus].AsString;
             if not (Status in [STATUS_PREPARE, STATUS_DOWNLOAD]) then
               ClearDirty(i)
             else
@@ -1430,7 +1432,7 @@ begin
             DownloadInfo.Status,
             DownloadInfo.Progress,
             DownloadInfo.SaveTo,
-            DownloadInfo.DateTime,
+            DownloadInfo.DateLastDownload,
             ChapterLinks.Text,
             ChapterName.Text,
             PageLinks.Text,
@@ -1784,11 +1786,11 @@ function CompareTaskContainer(const Item1, Item2: TTaskContainer): Integer;
 
   function GetDateTime(ARow: TTaskContainer): TDateTime;
   begin
-    Result := ARow.DownloadInfo.DateTime;
+    Result := ARow.DownloadInfo.DateAdded;
   end;
 
 begin
-  if Item1.Manager.SortColumn = 6 then
+  if (Item1.Manager.SortColumn = 6) or (Item1.Manager.SortColumn = 7) then
   begin
     if Item1.Manager.SortDirection then
       Result := CompareDateTime(GetDateTime(Item2), GetDateTime(Item1))

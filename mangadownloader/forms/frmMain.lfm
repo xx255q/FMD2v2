@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 46
+  Left = 150
   Height = 657
-  Top = 65
+  Top = 47
   Width = 855
   ActiveControl = pcMain
   Caption = 'Free Manga Downloader'
@@ -19,10 +19,10 @@ object MainForm: TMainForm
     Height = 626
     Top = 8
     Width = 853
-    ActivePage = tsInformation
+    ActivePage = tsDownload
     Align = alClient
     ParentFont = False
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     OnChange = pcMainChange
     object tsDownload: TTabSheet
@@ -198,7 +198,7 @@ object MainForm: TMainForm
                 end
                 object tbSeparator1: TToolButton
                   Left = 153
-                  Height = 5
+                  Height = 25
                   Top = 0
                   Style = tbsDivider
                   Visible = False
@@ -374,8 +374,12 @@ object MainForm: TMainForm
                 end              
                 item
                   Position = 6
-                  Text = 'Added'
+                  Text = 'Date added'
                   Width = 80
+                end              
+                item
+                  Position = 7
+                  Text = 'Last download date'
                 end>
               Header.DefaultHeight = 17
               Header.Height = 23

@@ -2312,8 +2312,12 @@ msgstr "Lokasi penyimpanan"
 
 #: tmainform.vtdownload.header.columns[6].text
 msgctxt "tmainform.vtdownload.header.columns[6].text"
-msgid "Added"
-msgstr "Ditambahkan"
+msgid "Date added"
+msgstr "Waktu ditambahkan"
+
+#: tmainform.vtdownload.header.columns[7].text
+msgid "Last download date"
+msgstr "Waktu terakhir diunduh"
 
 #: tmainform.vtfavorites.header.columns[0].text
 msgid "#"
@@ -2628,4 +2632,3 @@ msgstr "Memutakhirkan daftar"
 #, object-pascal-format
 msgid "Can not load WebP codec library \"%s\". Check your installation."
 msgstr "Tidak dapat memuat pustaka kodek WebP \"%s\". Periksa instalasi Anda."
-
