@@ -51,7 +51,7 @@ type
 
 implementation
 
-uses jsonparser, jsonscanner, jsonConf, IniFiles, uBaseUnit;
+uses jsonConf, jsonini, uBaseUnit;
 
 function AppendURLDelim(const URL: String): String;
 begin
@@ -109,7 +109,7 @@ begin
   HTTP.ResetBasic;
 
   if FileExists(ConfigFile) then
-    with TIniFile.Create(ConfigFile) do
+    with TJSONIniFile.Create(ConfigFile) do
       try
         api_url      := ReadString               ('GitHub', 'api_url'     , '');
         download_url := ReadString               ('GitHub', 'download_url', '');

@@ -363,7 +363,6 @@ begin
   FModule.oflag := FModule.flag;
   FModule.flag := fDownloading;
   FOwner.FOwner.ListDirty;
-  //if FHTTP.GET(FModule.download_url) then
   if FHTTP.GET(FOwner.FGitHubRepo.GetDownloadURL(FModule.name)) then
   begin
     if ForceDirectories(LUA_REPO_FOLDER) then
@@ -376,7 +375,6 @@ begin
       if c then
       begin
         FHTTP.SaveDocumentToFile(f, False, FModule.last_modified);
-        //FHTTP.SaveDocumentToFile(f);
         if FileExists(f) then
         begin
           case FModule.oflag of

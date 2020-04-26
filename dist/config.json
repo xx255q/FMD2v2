@@ -2,14 +2,14 @@
   "config" : {
     "default_selected_websites" : "MangaFox,MangaHere,MangaInn,MangaReader",
     "db_url" : "https://raw.githubusercontent.com/fmd-project-team/FMD-WebsiteDatabases/master/packages/<website>.7z",
-    "update_url" : "https://raw.githubusercontent.com/dazedcat19/FMD/master/latest_version.json",
+    "update_url" : "https://raw.githubusercontent.com/dazedcat19/FMD2/master/latest_version.json",
     "update_package_name" : "updatepackage.7z"
   },
   "GitHub" : {
     "api_url" : "https://api.github.com/",
     "download_url" : "https://raw.githubusercontent.com/",
     "owner" : "dazedcat19",
-    "name" : "FMD",
+    "name" : "FMD2",
     "ref" : "master",
     "path" : "lua"
   }

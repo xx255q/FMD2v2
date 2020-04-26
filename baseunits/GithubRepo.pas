@@ -41,7 +41,7 @@ type
 
 implementation
 
-uses jsonparser, jsonscanner, IniFiles, uBaseUnit;
+uses jsonparser, jsonscanner, jsonini, uBaseUnit;
 
 { TGitHubRepo }
 
@@ -139,7 +139,7 @@ begin
   ConfigFile := AConfigFile;
   HTTP := THTTPSendThread.Create(AThread);
   if FileExists(ConfigFile) then
-    with TIniFile.Create(ConfigFile) do
+    with TJSONIniFile.Create(ConfigFile) do
       try
         api_url      := ReadString               ('GitHub', 'api_url'     , '');
         download_url := ReadString               ('GitHub', 'download_url', '');

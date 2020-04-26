@@ -6,7 +6,7 @@ SET cdir=%CD%
 CD /D "%cdir%"
 SET update_file=latest_version.json
 SET repodl=https://github.com/dazedcat19/FMD2/releases/download/
-SET changelog_url=https://raw.githubusercontent.com/dazedcat19/FMD/master/changelog.txt
+SET changelog_url=https://raw.githubusercontent.com/dazedcat19/FMD2/master/changelog.txt
 
 ECHO ^{>%update_file%
 ECHO   "_comment": "automatically build with make_release_win.bat">>%update_file%
