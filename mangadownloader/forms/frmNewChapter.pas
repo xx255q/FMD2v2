@@ -12,7 +12,7 @@ interface
 
 uses
   Classes, Forms, StdCtrls,
-  Buttons, DefaultTranslator, ExtCtrls;
+  Buttons, DefaultTranslator, ExtCtrls, uBaseForms;
 
 type
 
@@ -20,7 +20,7 @@ type
 
   { TNewChapter }
 
-  TNewChapter = class(TForm)
+  TNewChapter = class(TBaseForm)
     btDownload: TBitBtn;
     btCancel: TBitBtn;
     btQueue: TBitBtn;
