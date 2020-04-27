@@ -14,13 +14,13 @@ type
   TDownloadedChaptersDB = class(TSQliteData)
   private
     locklocate: TRTLCriticalSection;
-    function GetChapters(const AWebsiteLink: String): String;
-    procedure SetChapters(const AWebsiteLink: String; AValue: String);
+    function GetChapters(const AIdURI: String): String;
+    procedure SetChapters(const AIdURI: String; AValue: String);
   public
     constructor Create;
     destructor Destroy; override;
-    procedure Delete(const AWebsiteLink: String);
-    property Chapters[const AWebsiteLink: String]: String read GetChapters write SetChapters;
+    procedure Delete(const AIdURI: String);
+    property Chapters[const AIdURI: String]: String read GetChapters write SetChapters;
     function ImportFromIni(const AFilename: String): Boolean;
   end;
 
@@ -37,30 +37,30 @@ end;
 
 { TDownloadedChaptersDB }
 
-function TDownloadedChaptersDB.GetChapters(const AWebsiteLink: String): String;
+function TDownloadedChaptersDB.GetChapters(const AIdURI: String): String;
 begin
   Result := '';
-  if AWebsiteLink = '' then Exit;
+  if AIdURI = '' then Exit;
   if not Connected then Exit;
   EnterCriticalsection(locklocate);
   with Table do
     try
-      if Locate('websitelink', LowerCase(AWebsiteLink), []) then
+      if Locate('iduri', LowerCase(AIdURI), []) then
         Result := Fields[1].AsString;
     finally
       LeaveCriticalsection(locklocate);
     end;
 end;
 
-procedure TDownloadedChaptersDB.SetChapters(const AWebsiteLink: String; AValue: String);
+procedure TDownloadedChaptersDB.SetChapters(const AIdURI: String; AValue: String);
 begin
-  if AWebsiteLink = '' then Exit;
+  if AIdURI = '' then Exit;
   if AValue = '' then Exit;
   if not Connected then Exit;
   EnterCriticalsection(locklocate);
   with Table do
     try
-      if Locate('websitelink', LowerCase(AWebsiteLink), []) then
+      if Locate('iduri', LowerCase(AIdURI), []) then
       begin
         Edit;
         Fields[1].AsString := MergeCaseInsensitive([Fields[1].AsString, AValue]);
@@ -68,7 +68,7 @@ begin
       else
       begin
         Append;
-        Fields[0].AsString := LowerCase(AWebsiteLink);
+        Fields[0].AsString := LowerCase(AIdURI);
         Fields[1].AsString := AValue;
       end;
       try
@@ -88,9 +88,9 @@ begin
   AutoApplyUpdates := True;
   TableName := 'downloadedchapters';
   CreateParams :=
-    '"websitelink" VARCHAR(3000) NOT NULL PRIMARY KEY,' +
+    '"iduri" VARCHAR(3000) NOT NULL PRIMARY KEY,' +
     '"chapters" TEXT';
-  FieldsParams := '"websitelink","chapters"';
+  FieldsParams := '"iduri","chapters"';
   SelectParams := 'SELECT ' + FieldsParams + ' FROM ' + QuotedStrD(TableName);
 end;
 
@@ -100,13 +100,13 @@ begin
   DoneCriticalsection(locklocate);
 end;
 
-procedure TDownloadedChaptersDB.Delete(const AWebsiteLink: String);
+procedure TDownloadedChaptersDB.Delete(const AIdURI: String);
 begin
   if not Connected then Exit;
   EnterCriticalsection(locklocate);
   with Table do
     try
-      if Locate('websitelink', LowerCase(AWebsiteLink), []) then
+      if Locate('iduri', LowerCase(AIdURI), []) then
         Delete;
     finally
       LeaveCriticalsection(locklocate);

@@ -558,14 +558,6 @@ begin
       Break;
     end;
 end;
-//todo: locatemodule
-//function TWebsiteModules.LocateModule(const AWebsite: String;
-//  var M: TModuleContainer): Integer;
-//begin
-//  Result := LocateModule(AWebsite);
-//  if Result <> -1 then
-//  M := FModuleList[Result];
-//end;
 
 function TWebsiteModules.LocateModuleByHost(const AHost: String): Integer;
 
