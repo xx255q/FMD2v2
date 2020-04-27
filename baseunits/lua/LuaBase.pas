@@ -61,7 +61,6 @@ begin
 
   luaPushStringGlobal(L, 'PathDelim', PathDelim);
 
-  luaFMDRegister(L);
   luaBaseUnitRegister(L);
   luaRegExprRegister(L);
   luaPCRE2Register(L);

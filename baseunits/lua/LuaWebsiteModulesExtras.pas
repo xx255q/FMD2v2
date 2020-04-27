@@ -13,7 +13,7 @@ procedure luaWebsiteModulesExtrasRegisterAfterImageSaved(L: Plua_State);
 implementation
 
 uses
-  LuaClass, LuaUtils, MangaFoxWatermark;
+  LuaClass, LuaUtils, LuaFMD, MangaFoxWatermark;
 
 function mf_loadtemplate(L: Plua_State): Integer; cdecl;
 begin
@@ -34,6 +34,7 @@ end;
 
 procedure luaWebsiteModulesExtrasRegisterInit(L: Plua_State);
 begin
+  luaFMDRegister(L);
   luaPushFunctionGlobal(L, 'MangaFoxLoadTemplate', @mf_loadtemplate);
 end;
 
