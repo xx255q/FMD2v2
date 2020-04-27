@@ -152,7 +152,7 @@ begin
     L := LuaNewBaseState;
     try
       LuaPushMe(L);
-      luaPushObject(L, updateList, 'updatelist', @luaUpdateListManagerAddMetaTable);
+      luaPushObject(L, updateList, 'UPDATELIST', @luaUpdateListManagerAddMetaTable);
 
       LuaDoMe(L);
       LuaCallFunction(L, OnBeforeUpdateList);
@@ -175,7 +175,7 @@ begin
     L := LuaNewBaseState;
     try
       LuaPushMe(L);
-      luaPushObject(L, updateList, 'updatelist', @luaUpdateListManagerAddMetaTable);
+      luaPushObject(L, updateList, 'UPDATELIST', @luaUpdateListManagerAddMetaTable);
 
       LuaDoMe(L);
       LuaCallFunction(L, OnAfterUpdateList);
@@ -199,16 +199,16 @@ begin
     L := LuaNewBaseState;
     try
       LuaPushMe(L);
-      luaPushIntegerGlobal(L, 'page', Page);
-      luaPushIntegerGlobal(L, 'workptr', WorkPtr);
-      luaPushObject(L, MangaInfo.mangaInfo, 'mangainfo', @luaMangaInfoAddMetaTable);
-      luaPushObject(L, MangaInfo.FHTTP, 'http', @luaHTTPSendThreadAddMetaTable);
-      luaPushObject(L, updateList, 'updatelist', @luaUpdateListManagerAddMetaTable);
+      luaPushIntegerGlobal(L, 'PAGENUMBER', Page);
+      luaPushIntegerGlobal(L, 'WORKPTR', WorkPtr);
+      luaPushObject(L, MangaInfo.mangaInfo, 'MANGAINFO', @luaMangaInfoAddMetaTable);
+      luaPushObject(L, MangaInfo.FHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
+      luaPushObject(L, updateList, 'UPDATELIST', @luaUpdateListManagerAddMetaTable);
 
       LuaDoMe(L);
       LuaCallFunction(L, OnGetDirectoryPageNumber);
       Result := lua_tointeger(L, -1);
-      if lua_getglobal(L, 'page') <> 0 then
+      if lua_getglobal(L, 'PAGENUMBER') <> 0 then
         Page := lua_tointeger(L, -1);
     except
       on E: Exception do
@@ -230,12 +230,12 @@ begin
     L := LuaNewBaseState;
     try
       LuaPushMe(L);
-      luaPushObject(L, MangaInfo.mangaInfo, 'mangainfo', @luaMangaInfoAddMetaTable);
-      luaPushObject(L, MangaInfo.FHTTP, 'http', @luaHTTPSendThreadAddMetaTable);
-      luaPushStringGlobal(L, 'url', AURL);
-      luaPushObject(L, ANames, 'names', @luaStringsAddMetaTable);
-      luaPushObject(L, ALinks, 'links', @luaStringsAddMetaTable);
-      luaPushObject(L, updateList, 'updatelist', @luaUpdateListManagerAddMetaTable);
+      luaPushObject(L, MangaInfo.mangaInfo, 'MANGAINFO', @luaMangaInfoAddMetaTable);
+      luaPushObject(L, MangaInfo.FHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
+      luaPushStringGlobal(L, 'URL', AURL);
+      luaPushObject(L, ANames, 'NAMES', @luaStringsAddMetaTable);
+      luaPushObject(L, ALinks, 'LINKS', @luaStringsAddMetaTable);
+      luaPushObject(L, updateList, 'UPDATELIST', @luaUpdateListManagerAddMetaTable);
 
       LuaDoMe(L);
       LuaCallFunction(L, OnGetNameAndLink);
@@ -259,9 +259,9 @@ begin
     L := LuaNewBaseState;
     try
       LuaPushMe(L);
-      luaPushStringGlobal(L, 'url', AURL);
-      luaPushObject(L, MangaInfo.mangaInfo, 'mangainfo', @luaMangaInfoAddMetaTable);
-      luaPushObject(L, MangaInfo.FHTTP, 'http', @luaHTTPSendThreadAddMetaTable);
+      luaPushStringGlobal(L, 'URL', AURL);
+      luaPushObject(L, MangaInfo.mangaInfo, 'MANGAINFO', @luaMangaInfoAddMetaTable);
+      luaPushObject(L, MangaInfo.FHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
 
       LuaDoMe(L);
       LuaCallFunction(L, OnGetInfo);
@@ -284,7 +284,7 @@ begin
     L := LuaNewBaseState;
     try
       LuaPushMe(L);
-      luaPushObject(L, Task, 'task', @luaDownloadTaskMetaTable);
+      luaPushObject(L, Task, 'TASK', @luaDownloadTaskMetaTable);
 
       LuaDoMe(L);
       LuaCallFunction(L, OnTaskStart);
@@ -308,9 +308,9 @@ begin
     L := LuaNewBaseState;
     try
       LuaPushMe(L);
-      luaPushObject(L, DownloadThread.Task.Container, 'task', @luaDownloadTaskMetaTable);
-      luaPushObject(L, DownloadThread.FHTTP, 'http', @luaHTTPSendThreadAddMetaTable);
-      luaPushStringGlobal(L, 'url', AURL);
+      luaPushObject(L, DownloadThread.Task.Container, 'TASK', @luaDownloadTaskMetaTable);
+      luaPushObject(L, DownloadThread.FHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
+      luaPushStringGlobal(L, 'URL', AURL);
 
       LuaDoMe(L);
       LuaCallFunction(L, OnGetPageNumber);
@@ -334,10 +334,10 @@ begin
     L := LuaNewBaseState;
     try
       LuaPushMe(L);
-      luaPushObject(L, DownloadThread.Task.Container, 'task', @luaDownloadTaskMetaTable);
-      luaPushObject(L, DownloadThread.FHTTP, 'http', @luaHTTPSendThreadAddMetaTable);
-      luaPushIntegerGlobal(L, 'workid', DownloadThread.WorkId);
-      luaPushStringGlobal(L, 'url', AURL);
+      luaPushObject(L, DownloadThread.Task.Container, 'TASK', @luaDownloadTaskMetaTable);
+      luaPushObject(L, DownloadThread.FHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
+      luaPushIntegerGlobal(L, 'WORKID', DownloadThread.WorkId);
+      luaPushStringGlobal(L, 'URL', AURL);
 
       LuaDoMe(L);
       LuaCallFunction(L, OnGetImageURL);
@@ -361,10 +361,10 @@ begin
     L := LuaNewBaseState;
     try
       LuaPushMe(L);
-      luaPushObject(L, DownloadThread.Task.Container, 'task', @luaDownloadTaskMetaTable);
-      luaPushObject(L, DownloadThread.FHTTP, 'http', @luaHTTPSendThreadAddMetaTable);
-      luaPushIntegerGlobal(L, 'workid', DownloadThread.WorkId);
-      luaPushStringGlobal(L, 'url', AURL);
+      luaPushObject(L, DownloadThread.Task.Container, 'TASK', @luaDownloadTaskMetaTable);
+      luaPushObject(L, DownloadThread.FHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
+      luaPushIntegerGlobal(L, 'WORKID', DownloadThread.WorkId);
+      luaPushStringGlobal(L, 'URL', AURL);
 
       LuaDoMe(L);
       LuaCallFunction(L, OnBeforeDownloadImage);
@@ -388,10 +388,10 @@ begin
     L := LuaNewBaseState;
     try
       LuaPushMe(L);
-      luaPushObject(L, DownloadThread.Task.Container, 'task', @luaDownloadTaskMetaTable);
-      luaPushObject(L, DownloadThread.FHTTP, 'http', @luaHTTPSendThreadAddMetaTable);
-      luaPushIntegerGlobal(L, 'workid', DownloadThread.WorkId);
-      luaPushStringGlobal(L, 'url', AURL);
+      luaPushObject(L, DownloadThread.Task.Container, 'TASK', @luaDownloadTaskMetaTable);
+      luaPushObject(L, DownloadThread.FHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
+      luaPushIntegerGlobal(L, 'WORKID', DownloadThread.WorkId);
+      luaPushStringGlobal(L, 'URL', AURL);
 
       LuaDoMe(L);
       LuaCallFunction(L, OnDownloadImage);
@@ -415,9 +415,9 @@ begin
     L := LuaNewBaseState;
     try
       LuaPushMe(L);
-      luaPushObject(L, AHTTP, 'http', @luaHTTPSendThreadAddMetaTable);
-      luaPushStringGlobal(L, 'path', APath);
-      luaPushStringGlobal(L, 'name', AName);
+      luaPushObject(L, AHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
+      luaPushStringGlobal(L, 'PATH', APath);
+      luaPushStringGlobal(L, 'FILENAME', AName);
 
       LuaDoMe(L);
       LuaCallFunction(L, OnSaveImage);
@@ -440,7 +440,7 @@ begin
     L := LuaNewBaseState;
     try
       LuaPushMe(L);
-      luaPushStringGlobal(L, 'filename', AFilename);
+      luaPushStringGlobal(L, 'FILENAME', AFilename);
       luaWebsiteModulesExtrasRegisterAfterImageSaved(L);
 
       LuaDoMe(L);
@@ -464,7 +464,7 @@ begin
     L := LuaNewBaseState;
     try
       LuaPushMe(L);
-      luaPushObject(L, AHTTP, 'http', @luaHTTPSendThreadAddMetaTable);
+      luaPushObject(L, AHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
 
       LuaDoMe(L);
       LuaCallFunction(L, OnLogin);
