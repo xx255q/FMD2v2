@@ -20,20 +20,18 @@ procedure luaMangaInfoAddMetaTable(L: Plua_State; Obj: Pointer;
 begin
   with TMangaInfo(Obj) do
   begin
-    luaClassAddStringProperty(L, MetaTable, 'url', @url);
-    luaClassAddStringProperty(L, MetaTable, 'title', @title);
-    luaClassAddStringProperty(L, MetaTable, 'link', @link);
-    luaClassAddStringProperty(L, MetaTable, 'website', @website);
-    luaClassAddStringProperty(L, MetaTable, 'coverLink', @coverLink);
-    luaClassAddStringProperty(L, MetaTable, 'authors', @authors);
-    luaClassAddStringProperty(L, MetaTable, 'artists', @artists);
-    luaClassAddStringProperty(L, MetaTable, 'genres', @genres);
-    luaClassAddStringProperty(L, MetaTable, 'status', @status);
-    luaClassAddStringProperty(L, MetaTable, 'summary', @summary);
-    luaClassAddStringProperty(L, MetaTable, 'summary', @summary);
-    luaClassAddIntegerProperty(L, MetaTable, 'numChapter', @numChapter);
-    luaClassAddObject(L, MetaTable, chapterName, 'chapterNames');
-    luaClassAddObject(L, MetaTable, chapterLinks, 'chapterLinks');
+    luaClassAddStringProperty(L, MetaTable, 'URL', @url);
+    luaClassAddStringProperty(L, MetaTable, 'Title', @title);
+    luaClassAddStringProperty(L, MetaTable, 'Link', @link);
+    luaClassAddStringProperty(L, MetaTable, 'Website', @website);
+    luaClassAddStringProperty(L, MetaTable, 'CoverLink', @coverLink);
+    luaClassAddStringProperty(L, MetaTable, 'Authors', @authors);
+    luaClassAddStringProperty(L, MetaTable, 'Artists', @artists);
+    luaClassAddStringProperty(L, MetaTable, 'Genres', @genres);
+    luaClassAddStringProperty(L, MetaTable, 'Status', @status);
+    luaClassAddStringProperty(L, MetaTable, 'Summary', @summary);
+    luaClassAddObject(L, MetaTable, chapterName, 'ChapterNames');
+    luaClassAddObject(L, MetaTable, chapterLinks, 'ChapterLinks');
   end;
 end;
 
