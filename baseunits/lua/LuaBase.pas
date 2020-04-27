@@ -20,7 +20,7 @@ function LuaGetReturnString(const ReturnCode: Integer): String;
 function LuaDumpFileToStream(AFileName: String; AStripDebug: Boolean = False): TMemoryStream; overload;
 function LuaDumpFileToStream(L: Plua_State; AFileName: String;
   AStripDebug: Boolean = False): TMemoryStream; overload;
-function LuaLoadFromStream(L: Plua_State; AStream: TMemoryStream; AName: PAnsiChar): Integer;
+function LuaLoadFromStream(L: Plua_State; AStream: TMemoryStream; AName: PAnsiChar): Integer; inline;
 
 procedure LuaExecute(L: Plua_State; AStream: TMemoryStream; AFileName: String; NResult: Integer = 0);
 
@@ -158,7 +158,7 @@ begin
   try
     luaL_openlibs(L);
     try
-      Result := LuaDumpFileToStream(L, AFileName);
+      Result := LuaDumpFileToStream(L, AFileName, AStripDebug);
     except
       on E: Exception do
         Logger.SendError(E.Message + ': ' + luaGetString(L, -1));
@@ -177,7 +177,7 @@ begin
     Exit;
   Result := TMemoryStream.Create;
   try
-    if luaL_loadfile(L, PChar(AFileName)) <> 0 then
+    if luaL_loadfilex(L, PAnsiChar(AFileName), nil) <> 0 then
       raise Exception.Create('');
     if AStripDebug then
       strip := 0
@@ -217,7 +217,7 @@ var
   r: Integer;
 begin
   if AlwaysLoadLuaFromFile then
-    r := luaL_loadfile(L, PChar(AFileName))
+    r := luaL_loadfilex(L, PAnsiChar(AFileName), nil)
   else
     r := LuaLoadFromStream(L, AStream, PChar(AFileName));
   if r = 0 then
