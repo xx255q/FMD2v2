@@ -113,7 +113,7 @@ type
     TagPtr: Pointer;
     LuaModule: Pointer;
     ID: String;
-    Name: String;
+    WebsiteName: String;
     RootURL: String;
     Category: String;
     ActiveTaskCount: Integer;
@@ -179,15 +179,15 @@ type
   private
     FCSModules: TRTLCriticalSection;
     FModuleList: TModuleContainers;
-    function ModuleExist(const ModuleId: Integer): Boolean; inline;
-    function GetModule(const ModuleId: Integer): TModuleContainer;
+    function ModuleExist(const AModuleIndex: Integer): Boolean; inline;
+    function GetModule(const AModuleIndex: Integer): TModuleContainer;
     function GetCount: Integer;
-    function GetMaxTaskLimit(const ModuleId: Integer): Integer;
-    function GetMaxThreadPerTaskLimit(const ModuleId: Integer): Integer;
-    function GetMaxConnectionLimit(const ModuleId: Integer): Integer;
-    function GetActiveTaskCount(const ModuleId: Integer): Integer;
-    function GetActiveConnectionLimit(const ModuleId: Integer): Integer;
-    function GetWebsite(const ModuleId: Integer): String;
+    function GetMaxTaskLimit(const AModuleIndex: Integer): Integer;
+    function GetMaxThreadPerTaskLimit(const AModuleIndex: Integer): Integer;
+    function GetMaxConnectionLimit(const AModuleIndex: Integer): Integer;
+    function GetActiveTaskCount(const AModuleIndex: Integer): Integer;
+    function GetActiveConnectionLimit(const AModuleIndex: Integer): Integer;
+    function GetID(const AModuleIndex: Integer): String;
   public
     constructor Create;
     destructor Destroy; override;
@@ -259,21 +259,21 @@ type
     procedure LockModules;
     procedure UnlockModules;
 
-    property Module[const ModuleId: Integer]: TModuleContainer read GetModule; default;
+    property Module[const AModuleIndex: Integer]: TModuleContainer read GetModule; default;
     property Count: Integer read GetCount;
-    property Website[const ModuleId: Integer]: String read GetWebsite;
+    property ID[const AModuleIndex: Integer]: String read GetID;
 
-    property MaxTaskLimit[const ModuleId: Integer]: Integer read GetMaxTaskLimit;
-    property MaxThreadPerTaskLimit[const ModuleId: Integer]: Integer read GetMaxThreadPerTaskLimit;
-    property MaxConnectionLimit[const ModuleId: Integer]: Integer read GetMaxConnectionLimit;
-    property ActiveTaskCount[const ModuleId: Integer]: Integer read GetActiveTaskCount;
-    property ActiveConnectionCount[const ModuleId: Integer]: Integer read GetActiveConnectionLimit;
-    procedure IncActiveTaskCount(ModuleId: Integer);
-    procedure DecActiveTaskCount(ModuleId: Integer);
-    function CanCreateTask(ModuleId: Integer): Boolean;
-    procedure IncActiveConnectionCount(ModuleId: Integer);
-    procedure DecActiveConnectionCount(ModuleId: Integer);
-    function CanCreateConnection(ModuleId: Integer): Boolean;
+    property MaxTaskLimit[const AModuleIndex: Integer]: Integer read GetMaxTaskLimit;
+    property MaxThreadPerTaskLimit[const AModuleIndex: Integer]: Integer read GetMaxThreadPerTaskLimit;
+    property MaxConnectionLimit[const AModuleIndex: Integer]: Integer read GetMaxConnectionLimit;
+    property ActiveTaskCount[const AModuleIndex: Integer]: Integer read GetActiveTaskCount;
+    property ActiveConnectionCount[const AModuleIndex: Integer]: Integer read GetActiveConnectionLimit;
+    procedure IncActiveTaskCount(AModuleIndex: Integer);
+    procedure DecActiveTaskCount(AModuleIndex: Integer);
+    function CanCreateTask(AModuleIndex: Integer): Boolean;
+    procedure IncActiveConnectionCount(AModuleIndex: Integer);
+    procedure DecActiveConnectionCount(AModuleIndex: Integer);
+    function CanCreateConnection(AModuleIndex: Integer): Boolean;
 
     procedure LoadFromFile;
     procedure SaveToFile;
@@ -585,9 +585,9 @@ begin
   end;
 end;
 
-function TWebsiteModules.ModuleExist(const ModuleId: Integer): Boolean;
+function TWebsiteModules.ModuleExist(const AModuleIndex: Integer): Boolean;
 begin
-  Result := (ModuleId >= 0) and (ModuleId < FModuleList.Count);
+  Result := (AModuleIndex >= 0) and (AModuleIndex < FModuleList.Count);
 end;
 
 function TWebsiteModules.ModuleAvailable(const AModuleIndex: Integer;
@@ -858,44 +858,44 @@ begin
   LeaveCriticalsection(FCSModules);
 end;
 
-procedure TWebsiteModules.IncActiveTaskCount(ModuleId: Integer);
+procedure TWebsiteModules.IncActiveTaskCount(AModuleIndex: Integer);
 begin
-  if ModuleExist(ModuleId) then
-  FModuleList[ModuleId].IncActiveTaskCount;
+  if ModuleExist(AModuleIndex) then
+  FModuleList[AModuleIndex].IncActiveTaskCount;
 end;
 
-procedure TWebsiteModules.DecActiveTaskCount(ModuleId: Integer);
+procedure TWebsiteModules.DecActiveTaskCount(AModuleIndex: Integer);
 begin
-  if ModuleExist(ModuleId) then
-  FModuleList[ModuleId].DecActiveTaskCount;
+  if ModuleExist(AModuleIndex) then
+  FModuleList[AModuleIndex].DecActiveTaskCount;
 end;
 
-function TWebsiteModules.CanCreateTask(ModuleId: Integer): Boolean;
+function TWebsiteModules.CanCreateTask(AModuleIndex: Integer): Boolean;
 begin
   Result := True;
-  if ModuleExist(ModuleId) then
-  with FModuleList[ModuleId] do
+  if ModuleExist(AModuleIndex) then
+  with FModuleList[AModuleIndex] do
     if GetMaxTaskLimit > 0 then
       Result := ActiveTaskCount < GetMaxTaskLimit;
 end;
 
-procedure TWebsiteModules.IncActiveConnectionCount(ModuleId: Integer);
+procedure TWebsiteModules.IncActiveConnectionCount(AModuleIndex: Integer);
 begin
-  if ModuleExist(ModuleId) then
-  FModuleList[ModuleId].IncActiveConnectionCount;
+  if ModuleExist(AModuleIndex) then
+  FModuleList[AModuleIndex].IncActiveConnectionCount;
 end;
 
-procedure TWebsiteModules.DecActiveConnectionCount(ModuleId: Integer);
+procedure TWebsiteModules.DecActiveConnectionCount(AModuleIndex: Integer);
 begin
-  if ModuleExist(ModuleId) then
-  FModuleList[ModuleId].DecActiveConnectionCount;
+  if ModuleExist(AModuleIndex) then
+  FModuleList[AModuleIndex].DecActiveConnectionCount;
 end;
 
-function TWebsiteModules.CanCreateConnection(ModuleId: Integer): Boolean;
+function TWebsiteModules.CanCreateConnection(AModuleIndex: Integer): Boolean;
 begin
   Result := True;
-  if ModuleExist(ModuleId) then
-  with FModuleList[ModuleId] do
+  if ModuleExist(AModuleIndex) then
+  with FModuleList[AModuleIndex] do
     if GetMaxConnectionLimit > 0 then
       Result := ActiveConnectionCount < GetMaxConnectionLimit;
 end;
@@ -936,7 +936,7 @@ begin
         begin
           jo:=nil;
           for j:=ja.Count-1 downto 0 do
-            if ja.Objects[j].Get('Website','')=Name then
+            if ja.Objects[j].Get('ID','')=ID then
             begin
               jo:=ja.Objects[j];
               Break;
@@ -1008,7 +1008,7 @@ begin
       begin
         jo:=TJSONObject.Create;
         ja.Add(jo);
-        jo.Add('Website',Name);
+        jo.Add('ID',ID);
         jo.Add('Settings',js.ObjectToJSON(Settings));
         if Length(OptionList) <> 0 then
         begin
@@ -1050,10 +1050,11 @@ begin
   end;
 end;
 
-function TWebsiteModules.GetModule(const ModuleId: Integer): TModuleContainer;
+function TWebsiteModules.GetModule(const AModuleIndex: Integer
+  ): TModuleContainer;
 begin
-  if (ModuleId < 0) or (ModuleId >= FModuleList.Count) then Exit(nil);
-  Result := FModuleList[ModuleId];
+  if (AModuleIndex < 0) or (AModuleIndex >= FModuleList.Count) then Exit(nil);
+  Result := FModuleList[AModuleIndex];
 end;
 
 function TWebsiteModules.GetCount: Integer;
@@ -1061,41 +1062,41 @@ begin
   Result := FModuleList.Count;
 end;
 
-function TWebsiteModules.GetMaxTaskLimit(const ModuleId: Integer): Integer;
+function TWebsiteModules.GetMaxTaskLimit(const AModuleIndex: Integer): Integer;
 begin
-  if not ModuleExist(ModuleId) then Exit(0);
-  Result := FModuleList[ModuleId].GetMaxTaskLimit;
+  if not ModuleExist(AModuleIndex) then Exit(0);
+  Result := FModuleList[AModuleIndex].GetMaxTaskLimit;
 end;
 
-function TWebsiteModules.GetMaxThreadPerTaskLimit(const ModuleId: Integer
+function TWebsiteModules.GetMaxThreadPerTaskLimit(const AModuleIndex: Integer
   ): Integer;
 begin
-  if not ModuleExist(ModuleId) then Exit(0);
-  Result := FModuleList[ModuleId].Settings.MaxThreadPerTaskLimit;
+  if not ModuleExist(AModuleIndex) then Exit(0);
+  Result := FModuleList[AModuleIndex].Settings.MaxThreadPerTaskLimit;
 end;
 
-function TWebsiteModules.GetMaxConnectionLimit(const ModuleId: Integer): Integer;
+function TWebsiteModules.GetMaxConnectionLimit(const AModuleIndex: Integer): Integer;
 begin
-  if not ModuleExist(ModuleId) then Exit(0);
-  Result := FModuleList[ModuleId].GetMaxConnectionLimit;
+  if not ModuleExist(AModuleIndex) then Exit(0);
+  Result := FModuleList[AModuleIndex].GetMaxConnectionLimit;
 end;
 
-function TWebsiteModules.GetActiveTaskCount(const ModuleId: Integer): Integer;
+function TWebsiteModules.GetActiveTaskCount(const AModuleIndex: Integer): Integer;
 begin
-  if not ModuleExist(ModuleId) then Exit(0);
-  Result := FModuleList[ModuleId].ActiveTaskCount;
+  if not ModuleExist(AModuleIndex) then Exit(0);
+  Result := FModuleList[AModuleIndex].ActiveTaskCount;
 end;
 
-function TWebsiteModules.GetActiveConnectionLimit(const ModuleId: Integer): Integer;
+function TWebsiteModules.GetActiveConnectionLimit(const AModuleIndex: Integer): Integer;
 begin
-  if not ModuleExist(ModuleId) then Exit(0);
-  Result := FModuleList[ModuleId].ActiveConnectionCount;
+  if not ModuleExist(AModuleIndex) then Exit(0);
+  Result := FModuleList[AModuleIndex].ActiveConnectionCount;
 end;
 
-function TWebsiteModules.GetWebsite(const ModuleId: Integer): String;
+function TWebsiteModules.GetID(const AModuleIndex: Integer): String;
 begin
-  if not ModuleExist(ModuleId) then Exit('');
-  Result := FModuleList[ModuleId].Name;
+  if not ModuleExist(AModuleIndex) then Exit('');
+  Result := FModuleList[AModuleIndex].ID;
 end;
 
 procedure doInitialize;

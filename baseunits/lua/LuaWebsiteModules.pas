@@ -540,7 +540,7 @@ begin
       for i := 0 to TempModules.Count - 1 do
         with TempModules[i] do
         begin
-          s += Module.Name + ', ';
+          s += Module.ID + ', ';
           c.Modules.Add(TempModules[i]);
           Container := c;
           if OnBeforeUpdateList <> '' then
@@ -913,7 +913,7 @@ begin
   begin
     luaClassAddObject(L, MetaTable, Module.Guardian, 'Guardian', @luaCriticalSectionAddMetaTable);
     luaClassAddStringProperty(L, MetaTable, 'ID', @Module.ID);
-    luaClassAddStringProperty(L, MetaTable, 'Name', @Module.Name);
+    luaClassAddStringProperty(L, MetaTable, 'Name', @Module.WebsiteName);
     luaClassAddStringProperty(L, MetaTable, 'RootURL', @Module.RootURL);
     luaClassAddStringProperty(L, MetaTable, 'Category', @Module.Category);
     luaClassAddIntegerProperty(L, MetaTable, 'MaxTaskLimit', @Module.MaxTaskLimit);
