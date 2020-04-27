@@ -62,9 +62,9 @@ procedure luaClassAddIntegerProperty(L: Plua_State; MetaTable: Integer;
 procedure luaClassAddBooleanProperty(L: Plua_State; MetaTable: Integer;
   Name: PAnsiChar; P: Pointer); overload;
 procedure luaClassAddObject(L: Plua_State; MetaTable: Integer; Obj: TObject;
-  Name: String; AddMetaTable: TluaClassAddMetaTable = nil);
+  Name: PAnsiChar; AddMetaTable: TluaClassAddMetaTable = nil);
 procedure luaClassAddUserData(L: Plua_State; MetaTable: Integer; Obj: TObject;
-  Name: String);
+  Name: PAnsiChar);
 
 implementation
 
@@ -95,7 +95,11 @@ begin
     Exit;
 
   lua_getmetatable(L, 1); // 1 should be userdata
-  lua_pushstring(L, AnsiLowerCase(luaGetString(L, 2)));  // 2 should be the key
+  {$ifdef luaclass_caseinsensitive}
+  lua_pushstring(L, AnsiLowerCase(lua_tostring(L, 2)));  // 2 should be the key
+  {$else}
+  lua_pushstring(L, lua_tostring(L, 2));  // 2 should be the key
+  {$endif}
   lua_rawget(L, -2); // get metatable[key]
 
   if lua_istable(L, -1) then
@@ -127,7 +131,11 @@ begin
     Exit(0);
 
   lua_getmetatable(L, 1);
-  lua_pushstring(L, AnsiLowerCase(luaGetString(L, 2)));
+  {$ifdef luaclass_caseinsensitive}
+  lua_pushstring(L, AnsiLowerCase(lua_tostring(L, 2)));
+  {$else}
+  lua_pushstring(L, lua_tostring(L, 2));
+  {$endif}
   lua_rawget(L, -2);
 
   if lua_istable(L, -1) then
@@ -239,8 +247,12 @@ begin
   t := lua_gettop(L);
   while lr^.name <> nil do
   begin
+    {$ifdef luaclass_caseinsensitive}
     luaAddCFunctionToTable(L, t, PAnsiChar(LowerCase(lr^.name)), lr^.func);
     luaAddCFunctionToTable(L, t, PAnsiChar(firstUpcase(lr^.name)), lr^.func);
+    {$else}
+    luaAddCFunctionToTable(L, t, lr^.name, lr^.func);
+    {$endif}
     Inc(lr);
   end;
   if n <> '' then
@@ -323,7 +335,11 @@ end;
 procedure luaClassAddFunction(L: Plua_State; MetaTable, UserData: Integer;
   Name: PAnsiChar; Func: lua_CFunction);
 begin
+  {$ifdef luaclass_caseinsensitive}
   luaAddCClosureToTable(L, MetaTable, UserData, PAnsiChar(AnsiLowerCase(Name)), Func);
+  {$else}
+  luaAddCClosureToTable(L, MetaTable, UserData, Name, Func);
+  {$endif}
 end;
 
 procedure luaClassAddFunction(L: Plua_State; MetaTable, UserData: Integer;
@@ -344,7 +360,11 @@ procedure luaClassAddProperty(L: Plua_State; MetaTable, UserData: Integer;
 var
   t: Integer;
 begin
-  lua_pushstring(L, PAnsiChar(LowerCase(Name)));
+  {$ifdef luaclass_caseinsensitive}
+  lua_pushstring(L, PAnsiChar(AnsiLowerCase(Name)));
+  {$else}
+  lua_pushstring(L, Name);
+  {$endif}
   lua_newtable(L);
   t := lua_gettop(L);
 
@@ -374,7 +394,11 @@ procedure luaClassAddArrayProperty(L: Plua_State; MetaTable, UserData: Integer;
 var
   t, m: Integer;
 begin
+  {$ifdef luaclass_caseinsensitive}
   lua_pushstring(L, PAnsiChar(AnsiLowerCase(Name)));
+  {$else}
+  lua_pushstring(L, Name);
+  {$endif}
   lua_newtable(L);
   t := lua_gettop(L);
 
@@ -470,7 +494,11 @@ procedure luaClassAddVariable(L: Plua_State; MetaTable: Integer;
 var
   t: Integer;
 begin
+  {$ifdef luaclass_caseinsensitive}
   lua_pushstring(L, PAnsiChar(LowerCase(Name)));
+  {$else}
+  lua_pushstring(L, Name);
+  {$endif}
   lua_newtable(L);
   t := lua_gettop(L);
 
@@ -498,8 +526,8 @@ begin
   luaClassAddVariable(L, MetaTable, Name, P, @luaclass_bool_get, @luaclass_bool_set);
 end;
 
-procedure luaClassAddObject(L: Plua_State; MetaTable: Integer; Obj: TObject; Name: String;
-  AddMetaTable: TluaClassAddMetaTable);
+procedure luaClassAddObject(L: Plua_State; MetaTable: Integer; Obj: TObject;
+  Name: PAnsiChar; AddMetaTable: TluaClassAddMetaTable);
 var
   m, u: Integer;
 begin
@@ -507,7 +535,11 @@ begin
     AddMetaTable := classlist.FindAddMetaTable(Obj.ClassType);
   if AddMetaTable = nil then
     Exit;
+  {$ifdef luaclass_caseinsensitive}
   lua_pushstring(L, PAnsiChar(AnsiLowerCase(Name)));
+  {$else}
+  lua_pushstring(L, Name);
+  {$endif}
   luaClassNewUserData(L, m, u, Obj, False);
   AddMetaTable(L, Obj, m, u);
   lua_setmetatable(L, u);
@@ -515,9 +547,13 @@ begin
 end;
 
 procedure luaClassAddUserData(L: Plua_State; MetaTable: Integer; Obj: TObject;
-  Name: String);
+  Name: PAnsiChar);
 begin
+  {$ifdef luaclass_caseinsensitive}
   lua_pushstring(L, PAnsiChar(AnsiLowerCase(Name)));
+  {$else}
+  lua_pushstring(L, Name);
+  {$endif}
   luaPushUserData(L, Obj);
   lua_rawset(L, MetaTable);
 end;
