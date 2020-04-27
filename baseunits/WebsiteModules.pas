@@ -94,9 +94,9 @@ type
 
   TModuleContainer = class
   private
+    FIndex: Integer;
     FAccount: TWebsiteModuleAccount;
     FAccountSupport: Boolean;
-    FID: Integer;
     FSettings: TWebsiteModuleSettings;
     FTotalDirectory: Integer;
     FWebsiteBypass: TWebsiteBypass;
@@ -144,7 +144,7 @@ type
     constructor Create;
     destructor Destroy; override;
   public
-    property ID: Integer read FID;
+    property Index: Integer read FIndex;
     property TotalDirectory: Integer read FTotalDirectory write SetTotalDirectory;
     procedure AddOptionCheckBox(const ABindValue: PBoolean; const AName: String;
       const ACaption: PString);
@@ -193,75 +193,68 @@ type
     destructor Destroy; override;
 
     function AddModule: TModuleContainer;
-    function LocateModule(const AWebsite: String): Integer;
-    function LocateModule(const AWebsite: String; var M: TModuleContainer): Integer;
+    function LocateModuleByID(const AModuleID: String): Integer;
     function LocateModuleByHost(const AHost: String): Integer;
-    function ModuleAvailable(const ModuleId: Integer;
-      const ModuleMethod: TModuleMethod): Boolean; overload;
-    function ModuleAvailable(const AWebsite: String;
-      const ModuleMethod: TModuleMethod): Boolean; overload;
-    function ModuleAvailable(const AWebsite: String;
-      const ModuleMethod: TModuleMethod;
-      var OutIndex: Integer): Boolean; overload;
-    function ModuleAvailable(const AWebsite: String): Boolean; overload;
-    function ModuleAvailable(const AWebsite: String;
-      var OutIndex: Integer): Boolean; overload;
-    function ModuleAvailable(const AWebsite: String; var M: TModuleContainer): Boolean; overload;
+    function ModuleAvailable(const AModuleIndex: Integer; const ModuleMethod: TModuleMethod): Boolean; overload;
+    function ModuleAvailable(const AModuleID: String; const ModuleMethod: TModuleMethod): Boolean; overload;
+    function ModuleAvailable(const AModuleID: String; const ModuleMethod: TModuleMethod; var OutIndex: Integer): Boolean; overload;
+    function ModuleAvailable(const AModuleID: String): Boolean; overload;
+    function ModuleAvailable(const AModuleID: String; var OutIndex: Integer): Boolean; overload;
+    function ModuleAvailable(const AModuleID: String; var M: TModuleContainer): Boolean; overload;
 
     function BeforeUpdateList(const ModuleId: Integer): Boolean;
     function AfterUpdateList(const ModuleId: Integer): Boolean;
-    function GetDirectoryPageNumber(const MangaInfo: TMangaInformation;
-      var Page: Integer; const WorkPtr: Integer; const ModuleId: Integer): Integer; overload;
-    function GetDirectoryPageNumber(const MangaInfo: TMangaInformation;
-      var Page: Integer; const WorkPtr: Integer; const AWebsite: String): Integer; overload; inline;
+
+    function GetDirectoryPageNumber(const MangaInfo: TMangaInformation; var APageNumber: Integer; const WorkPtr: Integer; const AModuleIndex: Integer): Integer; overload;
+    function GetDirectoryPageNumber(const MangaInfo: TMangaInformation; var APageNumber: Integer; const WorkPtr: Integer; const AModuleID: String): Integer; overload; inline;
 
     function GetNameAndLink(const MangaInfo: TMangaInformation;
       const ANames, ALinks: TStringList; const AURL: String;
-      const ModuleId: Integer): Integer; overload;
+      const AModuleIndex: Integer): Integer; overload;
     function GetNameAndLink(const MangaInfo: TMangaInformation;
       const ANames, ALinks: TStringList;
-      const AURL, AWebsite: String): Integer; overload; inline;
+      const AURL, AModuleID: String): Integer; overload; inline;
 
     function GetInfo(const MangaInfo: TMangaInformation; const AURL: String;
-      const ModuleId: Integer): Integer; overload;
+      const AModuleIndex: Integer): Integer; overload;
     function GetInfo(const MangaInfo: TMangaInformation;
-      const AURL, AWebsite: String): Integer; overload; inline;
+      const AURL, AModuleID: String): Integer; overload; inline;
 
     function TaskStart(const Task: TTaskContainer;
-      const ModuleId: Integer): Boolean; overload;
+      const AModuleIndex: Integer): Boolean; overload;
     function TaskStart(const Task: TTaskContainer;
-      const AWebsite: String): Boolean; overload; inline;
+      const AModuleID: String): Boolean; overload; inline;
 
     function GetPageNumber(const DownloadThread: TDownloadThread;
-      const AURL: String; const ModuleId: Integer): Boolean; overload;
+      const AURL: String; const AModuleIndex: Integer): Boolean; overload;
     function GetPageNumber(const DownloadThread: TDownloadThread;
-      const AURL, AWebsite: String): Boolean; overload; inline;
+      const AURL, AModuleID: String): Boolean; overload; inline;
 
     function GetImageURL(const DownloadThread: TDownloadThread;
-      const AURL: String; const ModuleId: Integer): Boolean; overload;
+      const AURL: String; const AModuleIndex: Integer): Boolean; overload;
     function GetImageURL(const DownloadThread: TDownloadThread;
-      const AURL, AWebsite: String): Boolean; overload; inline;
+      const AURL, AModuleID: String): Boolean; overload; inline;
 
     function BeforeDownloadImage(const DownloadThread: TDownloadThread;
-      var AURL: String; const ModuleId: Integer): Boolean; overload;
+      var AURL: String; const AModuleIndex: Integer): Boolean; overload;
     function BeforeDownloadImage(const DownloadThread: TDownloadThread;
-      var AURL, AWebsite: String): Boolean; overload; inline;
+      var AURL, AModuleID: String): Boolean; overload; inline;
 
     function DownloadImage(const DownloadThread: TDownloadThread;
-      const AURL: String; const ModuleId: Integer): Boolean; overload;
+      const AURL: String; const AModuleIndex: Integer): Boolean; overload;
     function DownloadImage(const DownloadThread: TDownloadThread;
-      const AURL, AWebsite: String): Boolean; overload; inline;
+      const AURL, AModuleID: String): Boolean; overload; inline;
 
     function SaveImage(const AHTTP: THTTPSendThread;
-      const APath, AName: String; const ModuleId: Integer): String; overload;
+      const APath, AName: String; const AModuleIndex: Integer): String; overload;
     function SaveImage(const AHTTP: THTTPSendThread;
-      const APath, AName, AWebsite: String): String; overload; inline;
+      const APath, AName, AModuleID: String): String; overload; inline;
 
-    function AfterImageSaved(const AFilename: String; const ModuleId: Integer): Boolean; overload;
-    function AfterImageSaved(const AFilename, AWebsite: String): Boolean; overload; inline;
+    function AfterImageSaved(const AFilename: String; const AModuleIndex: Integer): Boolean; overload;
+    function AfterImageSaved(const AFilename, AModuleID: String): Boolean; overload; inline;
 
-    function Login(const AHTTP: THTTPSendThread; const ModuleId: Integer): Boolean; overload;
-    function Login(const AHTTP: THTTPSendThread; const AWebsite: String): Boolean; overload; inline;
+    function Login(const AHTTP: THTTPSendThread; const AModuleIndex: Integer): Boolean; overload;
+    function Login(const AHTTP: THTTPSendThread; const AModuleID: String): Boolean; overload; inline;
 
     procedure LockModules;
     procedure UnlockModules;
@@ -380,7 +373,7 @@ constructor TModuleContainer.Create;
 begin
   Guardian := TCriticalSection.Create;
   FSettings := TWebsiteModuleSettings.Create;
-  FID := -1;
+  FIndex := -1;
   ActiveTaskCount := 0;
   ActiveConnectionCount := 0;
   AccountSupport := False;
@@ -547,33 +540,32 @@ begin
   EnterCriticalsection(FCSModules);
   try
     Result := TModuleContainer.Create;
-    Result.FID := FModuleList.Add(Result);
+    Result.FIndex := FModuleList.Add(Result);
   finally
     LeaveCriticalsection(FCSModules);
   end;
 end;
 
-function TWebsiteModules.LocateModule(const AWebsite: String): Integer;
+function TWebsiteModules.LocateModuleByID(const AModuleID: String): Integer;
 var
   i: Integer;
 begin
   Result := -1;
-  if FModuleList.Count > 0 then
-    for i := FModuleList.Count - 1 downto 0 do
-      if SameText(FModuleList[i].Name, AWebsite) then
-      begin
-        Result := i;
-        Break;
-      end;
+  for i := FModuleList.Count-1 downto 0 do
+    if FModuleList[i].ID = AModuleID then
+    begin
+      Result := i;
+      Break;
+    end;
 end;
-
-function TWebsiteModules.LocateModule(const AWebsite: String;
-  var M: TModuleContainer): Integer;
-begin
-  Result := LocateModule(AWebsite);
-  if Result <> -1 then
-  M := FModuleList[Result];
-end;
+//todo: locatemodule
+//function TWebsiteModules.LocateModule(const AWebsite: String;
+//  var M: TModuleContainer): Integer;
+//begin
+//  Result := LocateModule(AWebsite);
+//  if Result <> -1 then
+//  M := FModuleList[Result];
+//end;
 
 function TWebsiteModules.LocateModuleByHost(const AHost: String): Integer;
 
@@ -606,12 +598,12 @@ begin
   Result := (ModuleId >= 0) and (ModuleId < FModuleList.Count);
 end;
 
-function TWebsiteModules.ModuleAvailable(const ModuleId: Integer;
+function TWebsiteModules.ModuleAvailable(const AModuleIndex: Integer;
   const ModuleMethod: TModuleMethod): Boolean;
 begin
   Result := False;
-  if ModuleExist(ModuleId) then
-  with FModuleList[ModuleId] do
+  if ModuleExist(AModuleIndex) then
+  with FModuleList[AModuleIndex] do
     case ModuleMethod of
       MMGetDirectoryPageNumber: Result := Assigned(OnGetDirectoryPageNumber);
       MMGetNameAndLink: Result := Assigned(OnGetNameAndLink);
@@ -627,36 +619,36 @@ begin
     end;
 end;
 
-function TWebsiteModules.ModuleAvailable(const AWebsite: String;
+function TWebsiteModules.ModuleAvailable(const AModuleID: String;
   const ModuleMethod: TModuleMethod): Boolean;
 begin
-  Result := ModuleAvailable(LocateModule(AWebsite), ModuleMethod);
+  Result := ModuleAvailable(LocateModuleByID(AModuleID), ModuleMethod);
 end;
 
-function TWebsiteModules.ModuleAvailable(const AWebsite: String;
+function TWebsiteModules.ModuleAvailable(const AModuleID: String;
   const ModuleMethod: TModuleMethod; var OutIndex: Integer): Boolean;
 begin
   Result := False;
-  OutIndex := LocateModule(AWebsite);
+  OutIndex := LocateModuleByID(AModuleID);
   Result := ModuleAvailable(OutIndex, ModuleMethod);
 end;
 
-function TWebsiteModules.ModuleAvailable(const AWebsite: String): Boolean;
+function TWebsiteModules.ModuleAvailable(const AModuleID: String): Boolean;
 begin
-  Result := (LocateModule(AWebsite) > -1);
+  Result := (LocateModuleByID(AModuleID) > -1);
 end;
 
-function TWebsiteModules.ModuleAvailable(const AWebsite: String;
+function TWebsiteModules.ModuleAvailable(const AModuleID: String;
   var OutIndex: Integer): Boolean;
 begin
-  OutIndex := LocateModule(AWebsite);
+  OutIndex := LocateModuleByID(AModuleID);
   Result := OutIndex > -1;
 end;
 
-function TWebsiteModules.ModuleAvailable(const AWebsite: String;
+function TWebsiteModules.ModuleAvailable(const AModuleID: String;
   var M: TModuleContainer): Boolean;
 begin
-  M := GetModule(LocateModule(AWebsite));
+  M := GetModule(LocateModuleByID(AModuleID));
   Result := M <> nil;
 end;
 
@@ -679,189 +671,189 @@ begin
 end;
 
 function TWebsiteModules.GetDirectoryPageNumber(
-  const MangaInfo: TMangaInformation; var Page: Integer; const WorkPtr: Integer;
-  const ModuleId: Integer): Integer;
+  const MangaInfo: TMangaInformation; var APageNumber: Integer; const WorkPtr: Integer;
+  const AModuleIndex: Integer): Integer;
 begin
-  Page := 1;
+  APageNumber := 1;
   Result := MODULE_NOT_FOUND;
-  if ModuleExist(ModuleId) then
-  with FModuleList[ModuleId] do
+  if ModuleExist(AModuleIndex) then
+  with FModuleList[AModuleIndex] do
     if Assigned(OnGetDirectoryPageNumber) then
-      Result := OnGetDirectoryPageNumber(MangaInfo, Page, WorkPtr, FModuleList[ModuleId]);
+      Result := OnGetDirectoryPageNumber(MangaInfo, APageNumber, WorkPtr, FModuleList[AModuleIndex]);
 end;
 
 function TWebsiteModules.GetDirectoryPageNumber(
-  const MangaInfo: TMangaInformation; var Page: Integer; const WorkPtr: Integer;
-  const AWebsite: String): Integer;
+  const MangaInfo: TMangaInformation; var APageNumber: Integer; const WorkPtr: Integer;
+  const AModuleID: String): Integer;
 begin
-  Result := GetDirectoryPageNumber(MangaInfo, Page, WorkPtr, LocateModule(AWebsite));
+  Result := GetDirectoryPageNumber(MangaInfo, APageNumber, WorkPtr, LocateModuleByID(AModuleID));
 end;
 
 function TWebsiteModules.GetNameAndLink(const MangaInfo: TMangaInformation;
-  const ANames, ALinks: TStringList; const AURL: String; const ModuleId: Integer
+  const ANames, ALinks: TStringList; const AURL: String; const AModuleIndex: Integer
   ): Integer;
 begin
   Result := MODULE_NOT_FOUND;
-  if ModuleExist(ModuleId) then
-  with FModuleList[ModuleId] do
+  if ModuleExist(AModuleIndex) then
+  with FModuleList[AModuleIndex] do
   if Assigned(OnGetNameAndLink) then
-    Result := OnGetNameAndLink(MangaInfo, ANames, ALinks, AURL, FModuleList[ModuleId]);
+    Result := OnGetNameAndLink(MangaInfo, ANames, ALinks, AURL, FModuleList[AModuleIndex]);
 end;
 
 function TWebsiteModules.GetNameAndLink(const MangaInfo: TMangaInformation;
-  const ANames, ALinks: TStringList; const AURL, AWebsite: String): Integer;
+  const ANames, ALinks: TStringList; const AURL, AModuleID: String): Integer;
 begin
-  Result := GetNameAndLink(MangaInfo, ANames, ALinks, AURL, LocateModule(AWebsite));
+  Result := GetNameAndLink(MangaInfo, ANames, ALinks, AURL, LocateModuleByID(AModuleID));
 end;
 
 function TWebsiteModules.GetInfo(const MangaInfo: TMangaInformation;
-  const AURL: String; const ModuleId: Integer): Integer;
+  const AURL: String; const AModuleIndex: Integer): Integer;
 begin
   Result := MODULE_NOT_FOUND;
-  if ModuleExist(ModuleId) then
-  with FModuleList[ModuleId] do
+  if ModuleExist(AModuleIndex) then
+  with FModuleList[AModuleIndex] do
     if Assigned(OnGetInfo) then
-      Result := OnGetInfo(MangaInfo, AURL, FModuleList[ModuleId]);
+      Result := OnGetInfo(MangaInfo, AURL, FModuleList[AModuleIndex]);
 end;
 
 function TWebsiteModules.GetInfo(const MangaInfo: TMangaInformation;
-  const AURL, AWebsite: String): Integer;
+  const AURL, AModuleID: String): Integer;
 begin
-  Result := GetInfo(MangaInfo, AURL, LocateModule(AWebsite));
+  Result := GetInfo(MangaInfo, AURL, LocateModuleByID(AModuleID));
 end;
 
 function TWebsiteModules.TaskStart(const Task: TTaskContainer;
-  const ModuleId: Integer): Boolean;
+  const AModuleIndex: Integer): Boolean;
 begin
   Result := False;
-  if ModuleExist(ModuleId) then
-  with FModuleList[ModuleId] do
+  if ModuleExist(AModuleIndex) then
+  with FModuleList[AModuleIndex] do
     if Assigned(OnTaskStart) then
-      Result := FModuleList[ModuleId].OnTaskStart(
-        Task, FModuleList[ModuleId]);
+      Result := FModuleList[AModuleIndex].OnTaskStart(
+        Task, FModuleList[AModuleIndex]);
 end;
 
 function TWebsiteModules.TaskStart(const Task: TTaskContainer;
-  const AWebsite: String): Boolean;
+  const AModuleID: String): Boolean;
 begin
-  Result := TaskStart(Task, LocateModule(AWebsite));
+  Result := TaskStart(Task, LocateModuleByID(AModuleID));
 end;
 
 function TWebsiteModules.GetPageNumber(const DownloadThread: TDownloadThread;
-  const AURL: String; const ModuleId: Integer): Boolean;
+  const AURL: String; const AModuleIndex: Integer): Boolean;
 begin
   Result := False;
-  if ModuleExist(ModuleId) then
-  if ModuleExist(ModuleId) then
-  with FModuleList[ModuleId] do
+  if ModuleExist(AModuleIndex) then
+  if ModuleExist(AModuleIndex) then
+  with FModuleList[AModuleIndex] do
     if Assigned(OnGetPageNumber) then
-      Result := OnGetPageNumber(DownloadThread, AURL, FModuleList[ModuleId]);
+      Result := OnGetPageNumber(DownloadThread, AURL, FModuleList[AModuleIndex]);
 end;
 
 function TWebsiteModules.GetPageNumber(const DownloadThread: TDownloadThread;
-  const AURL, AWebsite: String): Boolean;
+  const AURL, AModuleID: String): Boolean;
 begin
-  Result := GetPageNumber(DownloadThread, AURL, LocateModule(AWebsite));
+  Result := GetPageNumber(DownloadThread, AURL, LocateModuleByID(AModuleID));
 end;
 
 function TWebsiteModules.GetImageURL(const DownloadThread: TDownloadThread;
-  const AURL: String; const ModuleId: Integer): Boolean;
+  const AURL: String; const AModuleIndex: Integer): Boolean;
 begin
   Result := False;
-  if ModuleExist(ModuleId) then
-  with FModuleList[ModuleId] do
+  if ModuleExist(AModuleIndex) then
+  with FModuleList[AModuleIndex] do
     if Assigned(OnGetImageURL) then
-      Result := OnGetImageURL(DownloadThread, AURL, FModuleList[ModuleId]);
+      Result := OnGetImageURL(DownloadThread, AURL, FModuleList[AModuleIndex]);
 end;
 
 function TWebsiteModules.GetImageURL(const DownloadThread: TDownloadThread;
-  const AURL, AWebsite: String): Boolean;
+  const AURL, AModuleID: String): Boolean;
 begin
-  Result := GetImageURL(DownloadThread, AURL, LocateModule(AWebsite));
+  Result := GetImageURL(DownloadThread, AURL, LocateModuleByID(AModuleID));
 end;
 
 function TWebsiteModules.BeforeDownloadImage(
   const DownloadThread: TDownloadThread; var AURL: String;
-  const ModuleId: Integer): Boolean;
+  const AModuleIndex: Integer): Boolean;
 begin
   Result := False;
-  if ModuleExist(ModuleId) then
-  with FModuleList[ModuleId] do
+  if ModuleExist(AModuleIndex) then
+  with FModuleList[AModuleIndex] do
     if Assigned(OnBeforeDownloadImage) then
-      Result := OnBeforeDownloadImage(DownloadThread, AURL, FModuleList[ModuleId]);
+      Result := OnBeforeDownloadImage(DownloadThread, AURL, FModuleList[AModuleIndex]);
 end;
 
 function TWebsiteModules.BeforeDownloadImage(
-  const DownloadThread: TDownloadThread; var AURL, AWebsite: String): Boolean;
+  const DownloadThread: TDownloadThread; var AURL, AModuleID: String): Boolean;
 begin
-  Result := BeforeDownloadImage(DownloadThread, AURL, LocateModule(AWebsite));
+  Result := BeforeDownloadImage(DownloadThread, AURL, LocateModuleByID(AModuleID));
 end;
 
 function TWebsiteModules.DownloadImage(const DownloadThread: TDownloadThread;
-  const AURL: String; const ModuleId: Integer): Boolean;
+  const AURL: String; const AModuleIndex: Integer): Boolean;
 begin
   Result := False;
-  if ModuleExist(ModuleId) then
-  with FModuleList[ModuleId] do
+  if ModuleExist(AModuleIndex) then
+  with FModuleList[AModuleIndex] do
     if Assigned(OnDownloadImage) then
-      Result := OnDownloadImage(DownloadThread, AURL, FModuleList[ModuleId]);
+      Result := OnDownloadImage(DownloadThread, AURL, FModuleList[AModuleIndex]);
 end;
 
 function TWebsiteModules.DownloadImage(const DownloadThread: TDownloadThread;
-  const AURL, AWebsite: String): Boolean;
+  const AURL, AModuleID: String): Boolean;
 begin
-  Result := DownloadImage(DownloadThread, AURL, LocateModule(AWebsite));
+  Result := DownloadImage(DownloadThread, AURL, LocateModuleByID(AModuleID));
 end;
 
 function TWebsiteModules.SaveImage(const AHTTP: THTTPSendThread;
-  const APath, AName: String; const ModuleId: Integer): String;
+  const APath, AName: String; const AModuleIndex: Integer): String;
 begin
   Result := '';
-  if ModuleExist(ModuleId) then
-  with FModuleList[ModuleId] do
+  if ModuleExist(AModuleIndex) then
+  with FModuleList[AModuleIndex] do
     if Assigned(OnSaveImage) then
-      Result := OnSaveImage(AHTTP, APath, AName, FModuleList[ModuleId]);
+      Result := OnSaveImage(AHTTP, APath, AName, FModuleList[AModuleIndex]);
 end;
 
 function TWebsiteModules.SaveImage(const AHTTP: THTTPSendThread;
-  const APath, AName, AWebsite: String): String;
+  const APath, AName, AModuleID: String): String;
 begin
-  Result := SaveImage(AHTTP, APath, AName, LocateModule(AWebsite));
+  Result := SaveImage(AHTTP, APath, AName, LocateModuleByID(AModuleID));
 end;
 
 function TWebsiteModules.AfterImageSaved(const AFilename: String;
-  const ModuleId: Integer): Boolean;
+  const AModuleIndex: Integer): Boolean;
 begin
   Result := False;
-  if ModuleExist(ModuleId) then
-  with FModuleList[ModuleId] do
+  if ModuleExist(AModuleIndex) then
+  with FModuleList[AModuleIndex] do
     if Assigned(OnAfterImageSaved) then
-      Result := OnAfterImageSaved(AFilename, FModuleList[ModuleId]);
+      Result := OnAfterImageSaved(AFilename, FModuleList[AModuleIndex]);
 end;
 
-function TWebsiteModules.AfterImageSaved(const AFilename, AWebsite: String
+function TWebsiteModules.AfterImageSaved(const AFilename, AModuleID: String
   ): Boolean;
 begin
-  Result := AfterImageSaved(AFilename, LocateModule(AWebsite));
+  Result := AfterImageSaved(AFilename, LocateModuleByID(AModuleID));
 end;
 
 function TWebsiteModules.Login(const AHTTP: THTTPSendThread;
-  const ModuleId: Integer): Boolean;
+  const AModuleIndex: Integer): Boolean;
 begin
   Result := False;
-  if ModuleExist(ModuleId) then
-  with FModuleList[ModuleId] do
+  if ModuleExist(AModuleIndex) then
+  with FModuleList[AModuleIndex] do
     if Assigned(OnLogin) then
     begin
       PrepareHTTP(AHTTP);
-      Result := OnLogin(AHTTP, FModuleList[ModuleId]);
+      Result := OnLogin(AHTTP, FModuleList[AModuleIndex]);
     end;
 end;
 
 function TWebsiteModules.Login(const AHTTP: THTTPSendThread;
-  const AWebsite: String): Boolean;
+  const AModuleID: String): Boolean;
 begin
-  Result := Login(AHTTP, LocateModule(AWebsite));
+  Result := Login(AHTTP, LocateModuleByID(AModuleID));
 end;
 
 procedure TWebsiteModules.LockModules;
