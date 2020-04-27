@@ -111,6 +111,7 @@ type
     Guardian: TCriticalSection;
     Tag: Integer;
     TagPtr: Pointer;
+    LuaModule: Pointer;
     Website: String;
     RootURL: String;
     Category: String;
