@@ -198,7 +198,7 @@ var
 begin
   m:=PModuleContainer(Sender.GetNodeData(Node))^;
   case Column of
-    1:CellText:=m.Website;
+    1:CellText:=m.Name;
     2:CellText:=m.Account.Username;
     3: case m.Account.Status of
          asUnknown:CellText:=RS_Unknown;
@@ -255,7 +255,7 @@ begin
   m:=PModuleContainer(vtAccountList.GetNodeData(vtAccountList.GetFirstSelected))^;
   with TAccountSetForm.Create(Self) do
     try
-      Caption:=m.Website;
+      Caption:=m.Name;
       with m.Account do
       begin
         edUsername.Text:=Username;
@@ -301,13 +301,13 @@ begin
   m2:=PModuleContainer(Sender.GetNodeData(Node2))^;
   case Column of
     0: if m1.Account.Enabled=m2.Account.Enabled then
-         Result:=AnsiCompareStr(m1.Website,m2.Website)
+         Result:=AnsiCompareStr(m1.Name,m2.Name)
        else
          Result:=ifthen(m1.Account.Enabled>m2.Account.Enabled,1,-1);
-    1:Result:=AnsiCompareStr(m1.Website,m2.Website);
+    1:Result:=AnsiCompareStr(m1.Name,m2.Name);
     2:Result:=AnsiCompareStr(m1.Account.Username,m2.Account.Username);
     3: if m1.Account.Status=m2.Account.Status then
-         Result:=AnsiCompareStr(m1.Website,m2.Website)
+         Result:=AnsiCompareStr(m1.Name,m2.Name)
        else
          Result:=ifthen(m1.Account.Status>m2.Account.Status,1,-1);
   end;

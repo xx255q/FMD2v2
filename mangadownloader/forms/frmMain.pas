@@ -4691,7 +4691,7 @@ begin
           begin
             m := Modules.LocateModuleByHost(host);
             if m > -1 then
-              webs := Modules.Module[m].Website;
+              webs := Modules.Module[m].Name;
             if webs <> '' then
             begin
               if not ((MetaDataType = MD_AddToFavorites) and SitesWithoutFavorites(webs)) then
@@ -5364,7 +5364,7 @@ begin
         end
         else
           categoriesitem := TStringList(categories.Objects[j]);
-        categoriesitem.Add(module.Website);
+        categoriesitem.Add(module.Name);
       end;
     end;
 
@@ -5536,7 +5536,7 @@ begin
     host := LowerCase(host);
     i := Modules.LocateModuleByHost(host);
     if i <> -1 then
-      website := Modules.Module[i].Website;
+      website := Modules.Module[i].Name;
   end;
 
   if (website = '') or (link = '') then

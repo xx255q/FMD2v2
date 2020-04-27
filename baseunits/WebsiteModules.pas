@@ -112,7 +112,8 @@ type
     Tag: Integer;
     TagPtr: Pointer;
     LuaModule: Pointer;
-    Website: String;
+    ID: String;
+    Name: String;
     RootURL: String;
     Category: String;
     ActiveTaskCount: Integer;
@@ -559,7 +560,7 @@ begin
   Result := -1;
   if FModuleList.Count > 0 then
     for i := FModuleList.Count - 1 downto 0 do
-      if SameText(FModuleList[i].Website, AWebsite) then
+      if SameText(FModuleList[i].Name, AWebsite) then
       begin
         Result := i;
         Break;
@@ -951,7 +952,7 @@ begin
         begin
           jo:=nil;
           for j:=ja.Count-1 downto 0 do
-            if ja.Objects[j].Get('Website','')=Website then
+            if ja.Objects[j].Get('Website','')=Name then
             begin
               jo:=ja.Objects[j];
               Break;
@@ -1023,7 +1024,7 @@ begin
       begin
         jo:=TJSONObject.Create;
         ja.Add(jo);
-        jo.Add('Website',Website);
+        jo.Add('Website',Name);
         jo.Add('Settings',js.ObjectToJSON(Settings));
         if Length(OptionList) <> 0 then
         begin
@@ -1110,7 +1111,7 @@ end;
 function TWebsiteModules.GetWebsite(const ModuleId: Integer): String;
 begin
   if not ModuleExist(ModuleId) then Exit('');
-  Result := FModuleList[ModuleId].Website;
+  Result := FModuleList[ModuleId].Name;
 end;
 
 procedure doInitialize;

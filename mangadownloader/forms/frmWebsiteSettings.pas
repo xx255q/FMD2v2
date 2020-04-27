@@ -109,8 +109,8 @@ end;
 procedure TWebsiteSettingsForm.vtWebsiteCompareNodes(Sender: TBaseVirtualTree;
   Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
 begin
-  Result := AnsiCompareStr(PModuleContainer(Sender.GetNodeData(Node1))^.Website,
-    PModuleContainer(Sender.GetNodeData(Node2))^.Website);
+  Result := AnsiCompareStr(PModuleContainer(Sender.GetNodeData(Node1))^.Name,
+    PModuleContainer(Sender.GetNodeData(Node2))^.Name);
 end;
 
 procedure TWebsiteSettingsForm.vtWebsiteFocusChanged(Sender: TBaseVirtualTree;
@@ -122,7 +122,7 @@ end;
 procedure TWebsiteSettingsForm.vtWebsiteGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
 begin
-  CellText := PModuleContainer(Sender.GetNodeData(Node))^.Website;
+  CellText := PModuleContainer(Sender.GetNodeData(Node))^.Name;
 end;
 
 procedure TWebsiteSettingsForm.LoadWebsiteSettings;
@@ -135,8 +135,8 @@ begin
     items.OwnsObjects := False;
     items.Duplicates := dupIgnore;
     for i := Modules.Count - 1 downto 0 do
-      if items.IndexOf(Modules[i].Website) = -1 then
-        items.AddObject(Modules[i].Website, Modules[i]);
+      if items.IndexOf(Modules[i].Name) = -1 then
+        items.AddObject(Modules[i].Name, Modules[i]);
 
     vtWebsite.NodeDataSize := SizeOf(TModuleContainer);
     vtWebsite.BeginUpdate;

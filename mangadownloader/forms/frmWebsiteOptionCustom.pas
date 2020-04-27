@@ -414,10 +414,10 @@ begin
               else
                 cap := '';
               case OptionType of
-                woCheckBox: AddCheckbox(BindValue, Name, cap, Website, Website);
-                woEdit: AddEdit(BindValue, Name, cap, Website, Website);
-                woSpinEdit: AddSpinEdit(BindValue, Name, cap, Website, Website);
-                woComboBox: AddComboBox(BindValue, Name, cap, Website, Website, Items^);
+                woCheckBox: AddCheckbox(BindValue, Name, cap, Name, Name);
+                woEdit: AddEdit(BindValue, Name, cap, Name, Name);
+                woSpinEdit: AddSpinEdit(BindValue, Name, cap, Name, Name);
+                woComboBox: AddComboBox(BindValue, Name, cap, Name, Name, Items^);
               end;
             end;
 end;

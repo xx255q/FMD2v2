@@ -100,7 +100,7 @@ begin
         begin
           m := Modules.LocateModuleByHost(host);
           if m > -1 then
-            webs := Modules.Module[m].Website;
+            webs := Modules.Module[m].Name;
         end;
 
         if webs <> '' then

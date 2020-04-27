@@ -540,7 +540,7 @@ begin
       for i := 0 to TempModules.Count - 1 do
         with TempModules[i] do
         begin
-          s += Module.Website + ', ';
+          s += Module.Name + ', ';
           c.Modules.Add(TempModules[i]);
           Container := c;
           if OnBeforeUpdateList <> '' then
@@ -912,7 +912,8 @@ begin
   with TLuaWebsiteModule(Obj) do
   begin
     luaClassAddObject(L, MetaTable, Module.Guardian, 'Guardian', @luaCriticalSectionAddMetaTable);
-    luaClassAddStringProperty(L, MetaTable, 'Website', @Module.Website);
+    luaClassAddStringProperty(L, MetaTable, 'ID', @Module.ID);
+    luaClassAddStringProperty(L, MetaTable, 'Name', @Module.Name);
     luaClassAddStringProperty(L, MetaTable, 'RootURL', @Module.RootURL);
     luaClassAddStringProperty(L, MetaTable, 'Category', @Module.Category);
     luaClassAddIntegerProperty(L, MetaTable, 'MaxTaskLimit', @Module.MaxTaskLimit);
@@ -969,7 +970,7 @@ end;
 
 procedure luaWebsiteModuleRegister(L: Plua_State);
 begin
-  lua_register(L, 'NewModule', @_create);
+  lua_register(L, 'NewWebsiteModule', @_create);
 end;
 
 initialization
