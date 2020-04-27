@@ -21,14 +21,14 @@ type
     procedure InternalAdd(
       const Aenabled:Boolean;
       const Aorder,Ataskstatus,Achapterptr,Anumberofpages,Acurrentpage:Integer;
-      const Awebsite,Alink,Atitle,Astatus,Aprogress,Asaveto:String;
+      const Amoduleid,Auri,Atitle,Astatus,Aprogress,Asaveto:String;
       const Adateadded:TDateTime;
       const Achapterslinks,Achaptersnames,Apagelinks,Apagecontainerlinks,Afilenames,Acustomfilenames,Achaptersstatus:String); inline;
     procedure InternalUpdate(
       const Adlid:Integer;
       const Aenabled:Boolean;
       const Aorder,Ataskstatus,Achapterptr,Anumberofpages,Acurrentpage:Integer;
-      const Awebsite,Alink,Atitle,Astatus,Aprogress,Asaveto:String;
+      const Amoduleid,Auri,Atitle,Astatus,Aprogress,Asaveto:String;
       const Adatelastdownload:TDateTime;
       const Achapterslinks,Achaptersnames,Apagelinks,Apagecontainerlinks,Afilenames,Acustomfilenames,Achaptersstatus:String); inline;
     procedure InternalUpdateOrderEnabled(const Adlid,AOrder:Integer;const Aenabled:Boolean);
@@ -38,7 +38,7 @@ type
       var Adlid:Integer;
       const Aenabled:Boolean;
       const Aorder,Ataskstatus,Achapterptr,Anumberofpages,Acurrentpage:Integer;
-      const Awebsite,Alink,Atitle,Astatus,Aprogress,Asaveto:String;
+      const Amoduleid,Auri,Atitle,Astatus,Aprogress,Asaveto:String;
       const Adateadded:TDateTime;
       const Achapterslinks,Achaptersnames,Apagelinks,Apagecontainerlinks,Afilenames,Acustomfilenames,Achaptersstatus:String):Boolean;
     procedure Delete(const ADlId: Integer);
@@ -55,8 +55,8 @@ const
   f_chapterptr         = 4;
   f_numberofpages      = 5;
   f_currentpage        = 6;
-  f_website            = 7;
-  f_link               = 8;
+  f_moduleid           = 7;
+  f_uri                = 8;
   f_title              = 9;
   f_status             = 10;
   f_progress           = 11;
@@ -97,8 +97,8 @@ begin
     '"chapterptr" INTEGER,' +
     '"numberofpages" INTEGER,' +
     '"currentpage" INTEGER,' +
-    '"website" TEXT,' +
-    '"link" TEXT,' +
+    '"moduleid" TEXT,' +
+    '"uri" TEXT,' +
     '"title" TEXT,' +
     '"status" TEXT,' +
     '"progress" TEXT,' +
@@ -112,18 +112,18 @@ begin
     '"filenames" TEXT,' +
     '"customfilenames" TEXT,' +
     '"chaptersstatus" TEXT';
-  FieldsParams := '"dlid","enabled","order","taskstatus","chapterptr","numberofpages","currentpage","website","link","title","status","progress","saveto","dateadded","datelastdownload","chapterslinks","chaptersnames","pagelinks","pagecontainerlinks","filenames","customfilenames","chaptersstatus"';
+  FieldsParams := '"dlid","enabled","order","taskstatus","chapterptr","numberofpages","currentpage","moduleid","uri","title","status","progress","saveto","dateadded","datelastdownload","chapterslinks","chaptersnames","pagelinks","pagecontainerlinks","filenames","customfilenames","chaptersstatus"';
   SelectParams := 'SELECT ' + FieldsParams + ' FROM '+QuotedStrD(TableName)+' ORDER BY "order"';
 end;
 
 procedure TDownloadsDB.InternalAdd(
   const Aenabled:Boolean;
   const Aorder,Ataskstatus,Achapterptr,Anumberofpages,Acurrentpage:Integer;
-  const Awebsite,Alink,Atitle,Astatus,Aprogress,Asaveto:String;
+  const Amoduleid,Auri,Atitle,Astatus,Aprogress,Asaveto:String;
   const Adateadded:TDateTime;
   const Achapterslinks,Achaptersnames,Apagelinks,Apagecontainerlinks,Afilenames,Acustomfilenames,Achaptersstatus:String);
 begin
-  Connection.ExecuteDirect('INSERT INTO "downloads" ("enabled","order","taskstatus","chapterptr","numberofpages","currentpage","website","link","title","status","progress","saveto","dateadded","datelastdownload","chapterslinks","chaptersnames","pagelinks","pagecontainerlinks","filenames","customfilenames","chaptersstatus")' +
+  Connection.ExecuteDirect('INSERT INTO "downloads" ("enabled","order","taskstatus","chapterptr","numberofpages","currentpage","moduleid","uri","title","status","progress","saveto","dateadded","datelastdownload","chapterslinks","chaptersnames","pagelinks","pagecontainerlinks","filenames","customfilenames","chaptersstatus")' +
     ' VALUES (' +
     QuotedStr(Aenabled) + ', ' +
     QuotedStr(Aorder) + ', ' +
@@ -131,8 +131,8 @@ begin
     QuotedStr(Achapterptr) + ', ' +
     QuotedStr(Anumberofpages) + ', ' +
     QuotedStr(Acurrentpage) + ', ' +
-    QuotedStr(Awebsite) + ', ' +
-    QuotedStr(Alink) + ', ' +
+    QuotedStr(Amoduleid) + ', ' +
+    QuotedStr(Auri) + ', ' +
     QuotedStr(Atitle) + ', ' +
     QuotedStr(Astatus) + ', ' +
     QuotedStr(Aprogress) + ', ' +
@@ -153,7 +153,7 @@ procedure TDownloadsDB.InternalUpdate(
   const Adlid:Integer;
   const Aenabled:Boolean;
   const Aorder,Ataskstatus,Achapterptr,Anumberofpages,Acurrentpage:Integer;
-  const Awebsite,Alink,Atitle,Astatus,Aprogress,Asaveto:String;
+  const Amoduleid,Auri,Atitle,Astatus,Aprogress,Asaveto:String;
   const Adatelastdownload:TDateTime;
   const Achapterslinks,Achaptersnames,Apagelinks,Apagecontainerlinks,Afilenames,Acustomfilenames,Achaptersstatus:String);
 begin
@@ -164,8 +164,8 @@ begin
     '"chapterptr"=' +         QuotedStr(Achapterptr) + ', ' +
     '"numberofpages"=' +      QuotedStr(Anumberofpages) + ', ' +
     '"currentpage"=' +        QuotedStr(Acurrentpage) + ', ' +
-    '"website"=' +            QuotedStr(Awebsite) + ', ' +
-    '"link"=' +               QuotedStr(Alink) + ', ' +
+    '"moduleid"=' +           QuotedStr(Amoduleid) + ', ' +
+    '"uri"=' +                QuotedStr(Auri) + ', ' +
     '"title"=' +              QuotedStr(Atitle) + ', ' +
     '"status"=' +             QuotedStr(Astatus) + ', ' +
     '"progress"=' +           QuotedStr(Aprogress) + ', ' +
@@ -209,7 +209,7 @@ function TDownloadsDB.Add(
   var Adlid:Integer;
   const Aenabled:Boolean;
   const Aorder,Ataskstatus,Achapterptr,Anumberofpages,Acurrentpage:Integer;
-  const Awebsite,Alink,Atitle,Astatus,Aprogress,Asaveto:String;
+  const Amoduleid,Auri,Atitle,Astatus,Aprogress,Asaveto:String;
   const Adateadded:TDateTime;
   const Achapterslinks,Achaptersnames,Apagelinks,Apagecontainerlinks,Afilenames,Acustomfilenames,Achaptersstatus:String):Boolean;
 begin
@@ -218,14 +218,14 @@ begin
   try
     if Adlid = -1 then
     begin
-      InternalAdd(Aenabled,Aorder,Ataskstatus,Achapterptr,Anumberofpages,Acurrentpage,Awebsite,
-        Alink,Atitle,Astatus,Aprogress,Asaveto,Adateadded,Achapterslinks,Achaptersnames,Apagelinks,
+      InternalAdd(Aenabled,Aorder,Ataskstatus,Achapterptr,Anumberofpages,Acurrentpage,Amoduleid,
+        Auri,Atitle,Astatus,Aprogress,Asaveto,Adateadded,Achapterslinks,Achaptersnames,Apagelinks,
         Apagecontainerlinks,Afilenames,Acustomfilenames,Achaptersstatus);
       Adlid := Connection.GetInsertID;
     end
     else
-      InternalUpdate(Adlid,Aenabled,Aorder,Ataskstatus,Achapterptr,Anumberofpages,Acurrentpage,Awebsite,
-        Alink,Atitle,Astatus,Aprogress,Asaveto,Adateadded,Achapterslinks,Achaptersnames,Apagelinks,
+      InternalUpdate(Adlid,Aenabled,Aorder,Ataskstatus,Achapterptr,Anumberofpages,Acurrentpage,Amoduleid,
+        Auri,Atitle,Astatus,Aprogress,Asaveto,Adateadded,Achapterslinks,Achaptersnames,Apagelinks,
         Apagecontainerlinks,Afilenames,Acustomfilenames,Achaptersstatus);
     Inc(FCommitCount);
     if FCommitCount >= FAutoCommitCount then

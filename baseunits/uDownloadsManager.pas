@@ -117,14 +117,14 @@ type
   TTaskContainer = class
   private
     FStoredOrder: Integer;
-    FWebsite: String;
+    FModuleID: String;
     FStatus: TDownloadStatusType;
     FEnabled,
     FDirtyEnabled,
     FDirty: Boolean;
     procedure SetEnabled(AValue: Boolean);
     procedure SetStatus(AValue: TDownloadStatusType);
-    procedure SetWebsite(AValue: String);
+    procedure SetModuleID(AValue: String);
   public
     DlId: Integer;
     // critical section
@@ -143,7 +143,7 @@ type
     WorkCounter,
     DownCounter,
     PageNumber: Integer;
-    ModuleId: Integer;
+    ModuleIndex: Integer;
     //Status: TDownloadStatusType;
     ThreadState: Boolean;
     ChapterName,
@@ -161,7 +161,7 @@ type
     procedure ClearDirty(const AOrder: Integer = -1);
   public
     Visible: Boolean;
-    property Website: String read FWebsite write SetWebsite;
+    property ModuleID: String read FModuleID write SetModuleID;
     property Status: TDownloadStatusType read FStatus write SetStatus;
     property Enabled: Boolean read FEnabled write SetEnabled;
   end;
@@ -286,8 +286,8 @@ begin
   if FTask = AValue then Exit;
   FTask := AValue;
   with FTask.Container do
-    if ModuleId<>-1 then
-      WebsiteModules.Modules[ModuleId].PrepareHTTP(FHTTP);
+    if ModuleIndex<>-1 then
+      WebsiteModules.Modules[ModuleIndex].PrepareHTTP(FHTTP);
 end;
 
 procedure TDownloadThread.SockOnStatus(Sender: TObject;
@@ -309,7 +309,7 @@ destructor TDownloadThread.Destroy;
 begin
   EnterCriticalsection(Task.FCS_THREADS);
   try
-    Modules.DecActiveConnectionCount(Task.Container.ModuleId);
+    Modules.DecActiveConnectionCount(Task.Container.ModuleIndex);
     Task.Threads.Remove(Self);
   finally
     LeaveCriticalsection(Task.FCS_THREADS);
@@ -387,8 +387,8 @@ begin
   Result := False;
   Task.Container.PageNumber := 0;
 
-  if Modules.ModuleAvailable(Task.Container.ModuleId, MMGetPageNumber) then
-    Result := Modules.GetPageNumber(Self, URL, Task.Container.ModuleId);
+  if Modules.ModuleAvailable(Task.Container.ModuleIndex, MMGetPageNumber) then
+    Result := Modules.GetPageNumber(Self, URL, Task.Container.ModuleIndex);
   if Task.Container.PageLinks.Count > 0 then
     TrimStrings(Task.Container.PageLinks);
 end;
@@ -397,8 +397,8 @@ function TDownloadThread.GetLinkPageFromURL(const URL: String): Boolean;
 begin
   Result := False;
   if Task.Container.PageLinks[WorkId] <> 'W' then Exit;
-  if Modules.ModuleAvailable(Task.Container.ModuleId, MMGetImageURL) then
-    Result := Modules.GetImageURL(Self, URL, Task.Container.ModuleId);
+  if Modules.ModuleAvailable(Task.Container.ModuleIndex, MMGetImageURL) then
+    Result := Modules.GetImageURL(Self, URL, Task.Container.ModuleIndex);
 end;
 
 // ----- TTaskThread -----
@@ -434,7 +434,7 @@ begin
   while Threads.Count > 0 do
     Sleep(32);
 
-  Modules.DecActiveTaskCount(Container.ModuleId);
+  Modules.DecActiveTaskCount(Container.ModuleIndex);
   with Container do
   begin
     ThreadState := False;
@@ -579,7 +579,7 @@ function TTaskThread.GetExceptionInfo: String;
 begin
   Result :=
     '  Flag        : ' + GetEnumName(TypeInfo(TFlagType), Integer(Flag)) + LineEnding +
-    '  Website     : ' + Container.DownloadInfo.Website + LineEnding +
+    '  Website     : ' + Container.DownloadInfo.ModuleID + LineEnding +
     '  Title       : ' + Container.DownloadInfo.title + LineEnding +
     '  Chapterlink : ' + Container.ChapterLinks[Container.CurrentDownloadChapterPtr] + LineEnding +
     '  Chaptername : ' + Container.ChapterName[Container.CurrentDownloadChapterPtr] + LineEnding;
@@ -616,20 +616,20 @@ begin
   // download image
   savedFilename := '';
 
-  if Modules.ModuleAvailable(Task.Container.ModuleId, MMDownloadImage) and
+  if Modules.ModuleAvailable(Task.Container.ModuleIndex, MMDownloadImage) and
     (Task.Container.PageNumber = Task.Container.PageContainerLinks.Count) and
     (WorkId < Task.Container.PageContainerLinks.Count) then
       workURL := Task.Container.PageContainerLinks[WorkId];
 
   // OnBeforeDownloadImage
-  if Modules.ModuleAvailable(Task.Container.ModuleId, MMBeforeDownloadImage) then
-    Result := Modules.BeforeDownloadImage(Self, workURL, Task.Container.ModuleId);
+  if Modules.ModuleAvailable(Task.Container.ModuleIndex, MMBeforeDownloadImage) then
+    Result := Modules.BeforeDownloadImage(Self, workURL, Task.Container.ModuleIndex);
 
   if Result then
   begin
     // OnDownloadImage
-    if Modules.ModuleAvailable(Task.Container.ModuleId, MMDownloadImage) then
-      Result := Modules.DownloadImage(Self, workURL, Task.Container.ModuleId)
+    if Modules.ModuleAvailable(Task.Container.ModuleIndex, MMDownloadImage) then
+      Result := Modules.DownloadImage(Self, workURL, Task.Container.ModuleIndex)
     else
       Result := FHTTP.GET(workURL);
   end;
@@ -640,8 +640,8 @@ begin
     Result := savedFilename <> '';
     if not Result then
     begin
-      if Modules.ModuleAvailable(Task.Container.ModuleId, MMSaveImage) then
-        savedFilename := Modules.SaveImage(FHTTP, Task.CurrentWorkingDir, workFilename, Task.Container.ModuleId)
+      if Modules.ModuleAvailable(Task.Container.ModuleIndex, MMSaveImage) then
+        savedFilename := Modules.SaveImage(FHTTP, Task.CurrentWorkingDir, workFilename, Task.Container.ModuleIndex)
       else
         savedFilename := SaveImageStreamToFile(FHTTP, Task.CurrentWorkingDir, workFilename);
       Result := savedFilename <> '';
@@ -656,8 +656,8 @@ begin
   begin
     Task.Container.PageLinks[WorkId] := 'D';
     // OnAfterImageSaved
-    if Modules.ModuleAvailable(Task.Container.ModuleId, MMAfterImageSaved) then
-      Modules.AfterImageSaved(savedFilename, Task.Container.ModuleId);
+    if Modules.ModuleAvailable(Task.Container.ModuleIndex, MMAfterImageSaved) then
+      Modules.AfterImageSaved(savedFilename, Task.Container.ModuleIndex);
   end;
 end;
 
@@ -713,8 +713,8 @@ begin
   if Terminated then Exit;
 
   try
-  if Modules.MaxThreadPerTaskLimit[Container.ModuleId] > 0 then
-    currentMaxThread := Modules.MaxThreadPerTaskLimit[Container.ModuleId]
+  if Modules.MaxThreadPerTaskLimit[Container.ModuleIndex] > 0 then
+    currentMaxThread := Modules.MaxThreadPerTaskLimit[Container.ModuleIndex]
   else
     currentMaxThread := OptionMaxThreads;
   if currentMaxThread > OptionMaxThreads then
@@ -736,22 +736,22 @@ begin
     end;
   end;
 
-  if Modules.MaxConnectionLimit[Container.ModuleId] > 0 then
-    while (not Terminated) and (not Modules.CanCreateConnection(Container.ModuleId)) do
+  if Modules.MaxConnectionLimit[Container.ModuleIndex] > 0 then
+    while (not Terminated) and (not Modules.CanCreateConnection(Container.ModuleIndex)) do
       Sleep(SOCKHEARTBEATRATE)
   else
     while (not Terminated) and (Threads.Count >= currentMaxThread) do
       Sleep(SOCKHEARTBEATRATE);
 
-  currentMaxConnections := Modules.MaxConnectionLimit[Container.ModuleId];
+  currentMaxConnections := Modules.MaxConnectionLimit[Container.ModuleIndex];
   if currentMaxConnections <= 0 then
     currentMaxConnections := currentMaxThread;
 
   if (not Terminated) and (Threads.Count < currentMaxThread) then
     try
       EnterCriticalsection(FCS_THREADS);
-      if Modules.ActiveConnectionCount[Container.ModuleId] >= currentMaxConnections then Exit;
-      Modules.IncActiveConnectionCount(Container.ModuleId);
+      if Modules.ActiveConnectionCount[Container.ModuleIndex] >= currentMaxConnections then Exit;
+      Modules.IncActiveConnectionCount(Container.ModuleIndex);
       Threads.Add(TDownloadThread.Create);
       with TDownloadThread(Threads.Last) do begin
         Task := Self;
@@ -816,7 +816,7 @@ procedure TTaskThread.Execute;
         [Self.ClassName,
         c,
         Container.PageLinks.Count,
-        Container.Website,
+        Container.ModuleIndex,
         Container.DownloadInfo.Title,
         Container.ChapterLinks[Container.CurrentDownloadChapterPtr]]) + LineEnding + Trim(sf));
       Result := False;
@@ -838,10 +838,10 @@ begin
   Container.DownloadInfo.DateLastDownload := Now;
   Container.DownloadInfo.TransferRate := FormatByteSize(Container.ReadCount, true);
   try
-    if (Container.Website = '') and (Container.DownloadInfo.Website <> '') then
-      Container.Website := Container.DownloadInfo.Website;
-    if Container.ModuleId > -1 then
-      DynamicPageLink := Modules.Module[Container.ModuleId].DynamicPageLink
+    if (Container.ModuleID = '') and (Container.DownloadInfo.ModuleID <> '') then
+      Container.ModuleID := Container.DownloadInfo.ModuleID;
+    if Container.ModuleIndex > -1 then
+      DynamicPageLink := Modules.Module[Container.ModuleIndex].DynamicPageLink
     else
       DynamicPageLink := False;
 
@@ -879,12 +879,12 @@ begin
         Exit;
       end;
 
-      if Container.ModuleId > -1 then
-        Modules.TaskStart(Container, Container.ModuleId);
+      if Container.ModuleIndex > -1 then
+        Modules.TaskStart(Container, Container.ModuleIndex);
 
       // set current working custom filename
       CurrentCustomFileName :=  CustomRename(Container.CustomFileName,
-        Container.DownloadInfo.Website,
+        Container.DownloadInfo.ModuleID,
         Container.DownloadInfo.Title,
         '',
         '',
@@ -1087,12 +1087,12 @@ end;
 
 { TTaskContainer }
 
-procedure TTaskContainer.SetWebsite(AValue: String);
+procedure TTaskContainer.SetModuleID(AValue: String);
 begin
-  if FWebsite = AValue then Exit;
-  FWebsite := AValue;
-  DownloadInfo.Website := AValue;
-  ModuleId := Modules.LocateModule(AValue);
+  if FModuleID = AValue then Exit;
+  FModuleID := AValue;
+  DownloadInfo.ModuleID := AValue;
+  ModuleIndex := Modules.LocateModuleByID(FModuleID);
 end;
 
 procedure TTaskContainer.SetStatus(AValue: TDownloadStatusType);
@@ -1133,8 +1133,8 @@ begin
   PageLinks := TStringList.Create;
   PageContainerLinks := TStringList.Create;
   FileNames := TStringList.Create;
-  FWebsite := '';
-  ModuleId := -1;
+  FModuleID := '';
+  ModuleIndex := -1;
   ReadCount := 0;
   WorkCounter := 0;
   CurrentPageNumber := 0;
@@ -1184,8 +1184,8 @@ begin
     CurrentDownloadChapterPtr,
     PageNumber,
     CurrentPageNumber,
-    Website,
-    DownloadInfo.Link,
+    ModuleID,
+    DownloadInfo.URI,
     DownloadInfo.Title,
     DownloadInfo.Status,
     DownloadInfo.Progress,
@@ -1373,9 +1373,9 @@ begin
             CurrentDownloadChapterPtr       := Fields[f_chapterptr].AsInteger;
             PageNumber                      := Fields[f_numberofpages].AsInteger;
             CurrentPageNumber               := Fields[f_currentpage].AsInteger;
-            Website                         := Fields[f_website].AsString;
-            DownloadInfo.Website            := Website;
-            DownloadInfo.Link               := Fields[f_link].AsString;
+            ModuleID                        := Fields[f_moduleid].AsString;
+            DownloadInfo.ModuleID           := ModuleID;
+            DownloadInfo.URI                := Fields[f_uri].AsString;
             DownloadInfo.Title              := Fields[f_title].AsString;
             DownloadInfo.Status             := Fields[f_status].AsString;
             DownloadInfo.Progress           := Fields[f_progress].AsString;
@@ -1427,8 +1427,8 @@ begin
             CurrentDownloadChapterPtr,
             PageNumber,
             CurrentPageNumber,
-            Website,
-            DownloadInfo.Link,
+            ModuleID,
+            DownloadInfo.URI,
             DownloadInfo.Title,
             DownloadInfo.Status,
             DownloadInfo.Progress,
@@ -1516,10 +1516,10 @@ begin
     if tcount < OptionMaxParallel then
       for i := 0 to Items.Count - 1 do
         with Items[i] do
-          if (ModuleId<>-1) and
+          if (ModuleIndex<>-1) and
             (tcount < OptionMaxParallel) and
             (Status = STATUS_WAIT) and
-            Modules.CanCreateTask(ModuleId) then
+            Modules.CanCreateTask(ModuleIndex) then
           begin
             ActiveTask(i);
             Inc(tcount);
@@ -1571,9 +1571,9 @@ begin
     with Items[i] do
       if Status in [STATUS_DOWNLOAD, STATUS_PREPARE] then
         if (tcount < OptionMaxParallel) and
-          Modules.CanCreateTask(ModuleId) then
+          Modules.CanCreateTask(ModuleIndex) then
         begin
-          if ModuleId<>-1 then
+          if ModuleIndex<>-1 then
           begin
             Inc(tcount);
             ActiveTask(i);
@@ -1609,7 +1609,7 @@ begin
         Status := STATUS_DOWNLOAD;
         DownloadInfo.Status := RS_Downloading;
       end;
-      Modules.IncActiveTaskCount(ModuleId);
+      Modules.IncActiveTaskCount(ModuleIndex);
       Task := TTaskThread.Create;
       Task.Container := Items[taskID];
       AddItemsActiveTask(Task.Container);
@@ -1778,7 +1778,7 @@ function CompareTaskContainer(const Item1, Item2: TTaskContainer): Integer;
         1: Result := Status;
         2: Result := Progress;
         3: Result := TransferRate;
-        4: Result := Website;
+        4: Result := ModuleID;
         5: Result := SaveTo;
         else
           Result := '';

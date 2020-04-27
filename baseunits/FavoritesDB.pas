@@ -34,18 +34,18 @@ type
   end;
 
 const
-  f_websitelink            = 0;
+  f_iduri                  = 0;
   f_order                  = 1;
   f_enabled                = 2;
-  f_website                = 3;
-  f_link                   = 4;
+  f_moduleid               = 3;
+  f_uri                    = 4;
   f_title                  = 5;
   f_currentchapter         = 6;
   f_downloadedchapterlist  = 7;
   f_saveto                 = 8;
   f_dateadded              = 9;
-  f_datelastchecked          = 10;
-  f_datelastupdated         = 11;
+  f_datelastchecked        = 10;
+  f_datelastupdated        = 11;
 
 implementation
 
@@ -69,8 +69,8 @@ begin
     '"websitelink" VARCHAR(3000) NOT NULL PRIMARY KEY,' +
     '"order" INTEGER,' +
     '"enabled" BOOLEAN,' +
-    '"website" TEXT,' +
-    '"link" TEXT,' +
+    '"moduleid" TEXT,' +
+    '"uri" TEXT,' +
     '"title" TEXT,' +
     '"currentchapter" TEXT,' +
     '"downloadedchapterlist" TEXT,' +
@@ -78,7 +78,7 @@ begin
     '"dateadded" DATETIME,' +
     '"datelastchecked" DATETIME,' +
     '"datelastupdated" DATETIME';
-  FieldsParams := '"websitelink","order","enabled","website","link","title","currentchapter","downloadedchapterlist","saveto","dateadded","datelastchecked","datelastupdated"';
+  FieldsParams := '"websitelink","order","enabled","moduleid","uri","title","currentchapter","downloadedchapterlist","saveto","dateadded","datelastchecked","datelastupdated"';
   SelectParams := 'SELECT * FROM ' + QuotedStrD(TableName) + ' ORDER BY "order"';
 end;
 

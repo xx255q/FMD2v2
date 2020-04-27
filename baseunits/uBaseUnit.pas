@@ -317,19 +317,19 @@ type
 
   TMangaInfo = class
   public
-    url,
-    title,
-    link,
-    website,
-    coverLink,
-    authors,
-    artists,
-    genres,
-    status,
-    summary: String;
-    numChapter: Integer;
-    chapterName,
-    chapterLinks: TStringList;
+    URL,
+    Title,
+    URI,
+    ModuleID,
+    CoverURL,
+    Authors,
+    Artists,
+    Genres,
+    Status,
+    Summary: String;
+    NumChapter: Integer;
+    ChapterNames,
+    ChapterLinks: TStringList;
     constructor Create;
     destructor Destroy; override;
   end;
@@ -339,8 +339,8 @@ type
   { TDownloadInfo }
 
   TDownloadInfo = record
-    Website,
-    Link,
+    ModuleID,
+    URI,
     Title,
     SaveTo,
     Status,
@@ -356,9 +356,9 @@ type
   { TFavoriteInfo }
 
   TFavoriteInfo = record
-    Website,
+    ModuleID,
     Title,
-    Link,
+    URI,
     SaveTo,
     Numbering,
     DownloadedChapterList,
@@ -3681,19 +3681,19 @@ end;
 
 procedure TransferMangaInfo(var dest: TMangaInfo; const Source: TMangaInfo);
 begin
-  dest.url := Source.url;
-  dest.title := Source.title;
-  dest.link := Source.link;
-  dest.website := Source.website;
-  dest.coverLink := Source.coverLink;
-  dest.authors := Source.authors;
-  dest.artists := Source.artists;
-  dest.genres := Source.genres;
-  dest.status := Source.status;
-  dest.summary := Source.summary;
-  dest.numChapter := Source.numChapter;
-  dest.chapterName.Assign(Source.chapterName);
-  dest.chapterLinks.Assign(Source.chapterLinks);
+  dest.URL := Source.URL;
+  dest.Title := Source.Title;
+  dest.URI := Source.URI;
+  dest.ModuleID := Source.ModuleID;
+  dest.CoverURL := Source.CoverURL;
+  dest.Authors := Source.Authors;
+  dest.Artists := Source.Artists;
+  dest.Genres := Source.Genres;
+  dest.Status := Source.Status;
+  dest.Summary := Source.Summary;
+  dest.NumChapter := Source.NumChapter;
+  dest.ChapterNames.Assign(Source.ChapterNames);
+  dest.ChapterLinks.Assign(Source.ChapterLinks);
 end;
 
 function MangaInfoStatusIfPos(const SearchStr: String; const OngoingStr: String;
@@ -3714,24 +3714,24 @@ end;
 
 procedure GetBaseMangaInfo(const M: TMangaInfo; var B: TBaseMangaInfo);
 begin
-  B.title := M.title;
-  B.authors := M.authors;
-  B.artists := M.artists;
-  B.genres := M.genres;
-  B.status := M.status;
-  B.summary := M.summary;
-  B.numChapter := M.numChapter;
+  B.title := M.Title;
+  B.authors := M.Authors;
+  B.artists := M.Artists;
+  B.genres := M.Genres;
+  B.status := M.Status;
+  B.summary := M.Summary;
+  B.numChapter := M.NumChapter;
 end;
 
 procedure FillBaseMangaInfo(const M: TMangaInfo; var B: TBaseMangaInfo);
 begin
-  if Trim(M.title) = '' then M.title := B.title;
-  if Trim(M.authors) = '' then M.authors := B.authors;
-  if Trim(M.artists) = '' then M.artists := B.artists;
-  if Trim(M.genres) = '' then M.genres := B.genres;
-  if Trim(M.status) = '' then M.status := B.status;
-  if Trim(M.summary) = '' then M.summary := B.summary;
-  if M.numChapter = 0 then M.numChapter := B.numChapter;
+  if Trim(M.Title) = '' then M.Title := B.title;
+  if Trim(M.Authors) = '' then M.Authors := B.authors;
+  if Trim(M.Artists) = '' then M.Artists := B.artists;
+  if Trim(M.Genres) = '' then M.Genres := B.genres;
+  if Trim(M.Status) = '' then M.Status := B.status;
+  if Trim(M.Summary) = '' then M.Summary := B.summary;
+  if M.NumChapter = 0 then M.NumChapter := B.numChapter;
 end;
 
 { THTMLForm }
@@ -3781,14 +3781,14 @@ end;
 constructor TMangaInfo.Create;
 begin
   inherited Create;
-  chapterName := TStringList.Create;
-  chapterLinks := TStringList.Create;
+  ChapterNames := TStringList.Create;
+  ChapterLinks := TStringList.Create;
 end;
 
 destructor TMangaInfo.Destroy;
 begin
-  chapterName.Free;
-  chapterLinks.Free;
+  ChapterNames.Free;
+  ChapterLinks.Free;
   inherited Destroy;
 end;
 

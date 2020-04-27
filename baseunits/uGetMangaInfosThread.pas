@@ -27,7 +27,9 @@ type
   protected
     FMangaListNode: PVirtualNode;
     FCover: TPicture;
-    FTitle, FWebsite, FLink: String;
+    FModuleID,
+    FTitle,
+    FLink: String;
     FInfo: TMangaInformation;
     FNumChapter: Cardinal;
     // Return TRUE if we can load manga cover.
@@ -43,7 +45,7 @@ type
     constructor Create;
     destructor Destroy; override;
     property Title: String read FTitle write FTitle;
-    property Website: String read FWebsite write FWebsite;
+    property ModuleID: String read FModuleID write FModuleID;
     property Link: String read FLink write FLink;
     property MangaListNode: PVirtualNode read FMangaListNode write FMangaListNode;
   end;
@@ -68,24 +70,24 @@ procedure TGetMangaInfosThread.Execute;
   begin
     Result := False;
     try
-      FInfo.mangaInfo.website := Website;
-      FInfo.mangaInfo.link := Link;
-      FInfo.mangaInfo.title := Title;
-      FInfo.ModuleId := Modules.LocateModule(Website);
+      FInfo.mangaInfo.ModuleID := ModuleID;
+      FInfo.mangaInfo.URI := Link;
+      FInfo.mangaInfo.Title := Title;
+      FInfo.ModuleIndex := Modules.LocateModuleByID(ModuleID);
       data := MainForm.vtMangaList.GetNodeData(FMangaListNode);
       if Assigned(FMangaListNode) and (MainForm.cbSelectManga.ItemIndex<>-1) and
-        (website = MainForm.cbSelectManga.Items[MainForm.cbSelectManga.ItemIndex]) then
+        (ModuleID = MainForm.cbSelectManga.Items[MainForm.cbSelectManga.ItemIndex]) then
       begin
-        if FInfo.mangaInfo.title = '' then
-          FInfo.mangaInfo.title := data^.title;
-        FInfo.mangaInfo.link := data^.link;
-        FInfo.mangaInfo.authors := data^.authors;
-        FInfo.mangaInfo.artists := data^.artists;
-        FInfo.mangaInfo.status := data^.status;
-        FInfo.mangaInfo.summary := data^.summary;
-        FInfo.mangaInfo.numChapter := data^.numchapter;
-        FInfo.mangaInfo.genres := data^.genres;
-        FNumChapter := data^.numchapter;
+        if FInfo.mangaInfo.Title = '' then
+          FInfo.mangaInfo.Title := data^.Title;
+        FInfo.mangaInfo.URI := data^.URI;
+        FInfo.mangaInfo.Authors := data^.Authors;
+        FInfo.mangaInfo.Artists := data^.Artists;
+        FInfo.mangaInfo.Status := data^.Status;
+        FInfo.mangaInfo.Summary := data^.Summary;
+        FInfo.mangaInfo.NumChapter := data^.NumChapter;
+        FInfo.mangaInfo.Genres := data^.Genres;
+        FNumChapter := data^.NumChapter;
       end;
       FInfo.isGenerateFolderChapterName := OptionGenerateMangaFolder;
       FInfo.isRemoveUnicode := OptionChangeUnicodeCharacter;
@@ -93,36 +95,36 @@ procedure TGetMangaInfosThread.Execute;
       infob := INFORMATION_NOT_FOUND;
 
       //wait if there is concurrent connection limit
-      if Modules.MaxConnectionLimit[FInfo.ModuleId] > 0 then
+      if Modules.MaxConnectionLimit[FInfo.ModuleIndex] > 0 then
       begin
-        while not Modules.CanCreateConnection(FInfo.ModuleId) do
+        while not Modules.CanCreateConnection(FInfo.ModuleIndex) do
           Sleep(SOCKHEARTBEATRATE);
-        Modules.IncActiveConnectionCount(FInfo.ModuleId);
+        Modules.IncActiveConnectionCount(FInfo.ModuleIndex);
       end;
 
-      infob := FInfo.GetInfoFromURL(Website, Link);
+      infob := FInfo.GetInfoFromURL(ModuleID, Link);
 
       if Terminated or isExiting then Exit;
       if infob <> NO_ERROR then Exit;
 
       //set back if title changed
-      if (FInfo.mangaInfo.title <> '') and (FInfo.mangaInfo.title <> FTitle) then
-        FTitle := FInfo.mangaInfo.title;
+      if (FInfo.mangaInfo.Title <> '') and (FInfo.mangaInfo.Title <> FTitle) then
+        FTitle := FInfo.mangaInfo.Title;
 
       if Assigned(data) then
       begin
-        if dataProcess.WebsiteLoaded(Website) then
+        if dataProcess.WebsiteLoaded(ModuleID) then
         begin
-          if SitesWithoutInformation(website) then
+          if SitesWithoutInformation(ModuleID) then
           begin
-            if FInfo.mangaInfo.authors = '' then
-              FInfo.mangaInfo.authors := data^.authors;
-            if FInfo.mangaInfo.artists = '' then
-              FInfo.mangaInfo.artists := data^.artists;
-            if FInfo.mangaInfo.genres = '' then
-              FInfo.mangaInfo.genres := data^.genres;
-            if FInfo.mangaInfo.summary = '' then
-              FInfo.mangaInfo.summary := data^.summary;
+            if FInfo.mangaInfo.Authors = '' then
+              FInfo.mangaInfo.Authors := data^.Authors;
+            if FInfo.mangaInfo.Artists = '' then
+              FInfo.mangaInfo.Artists := data^.Artists;
+            if FInfo.mangaInfo.Genres = '' then
+              FInfo.mangaInfo.Genres := data^.Genres;
+            if FInfo.mangaInfo.Summary = '' then
+              FInfo.mangaInfo.Summary := data^.Summary;
           end;
 
           if not (Terminated or isExiting) then
@@ -149,10 +151,10 @@ begin
       Synchronize(MainThreadShowInfos);
       FCover.Clear;
       // If there's cover then we will load it to the TPicture component.
-      if OptionEnableLoadCover and (Trim(FInfo.mangaInfo.coverLink) <> '') then
+      if OptionEnableLoadCover and (Trim(FInfo.mangaInfo.CoverURL) <> '') then
         try
           FInfo.FHTTP.Document.Clear;
-          if FInfo.FHTTP.GET(FInfo.mangaInfo.coverLink) then
+          if FInfo.FHTTP.GET(FInfo.mangaInfo.CoverURL) then
             LoadCover;
         except
         end;
@@ -204,7 +206,7 @@ var node: PVirtualNode;
 begin
   TransferMangaInfo(mangaInfo, FInfo.mangaInfo);
   with MainForm do begin
-    if Assigned(FMangaListNode) and dataProcess.WebsiteLoaded(Website) then
+    if Assigned(FMangaListNode) and dataProcess.WebsiteLoaded(ModuleID) then
       begin
         vtMangaList.BeginUpdate;
         dataProcess.Refresh(dataProcess.Filtered);
@@ -250,7 +252,7 @@ end;
 
 destructor TGetMangaInfosThread.Destroy;
 begin
-  Modules.DecActiveConnectionCount(FInfo.ModuleId);
+  Modules.DecActiveConnectionCount(FInfo.ModuleIndex);
   GetInfosThread := nil;
   FCover := nil;
   FInfo.Free;

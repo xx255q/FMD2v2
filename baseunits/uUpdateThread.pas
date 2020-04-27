@@ -158,7 +158,7 @@ begin
     else
       Info := TMangaInformation.Create(Self, False);
     Info.isGetByUpdater := True;
-    info.ModuleId := manager.Module.ID;
+    info.ModuleIndex := manager.Module.Index;
 
     case CheckStyle of
       CS_DIRECTORY_COUNT:
@@ -205,12 +205,12 @@ begin
 
       CS_INFO:
       begin
-        Info.mangaInfo.title:=title;
-        Info.mangaInfo.link:=link;
+        Info.mangaInfo.Title:=title;
+        Info.mangaInfo.URI:=link;
         if link<>'' then begin
           Info.GetInfoFromURL(manager.website,link);
           // status = '-1' mean it's not exist and shouldn't be saved to database
-          if (not Terminated) and (Info.mangaInfo.status <> '-1') then
+          if (not Terminated) and (Info.mangaInfo.Status <> '-1') then
           begin
             EnterCriticalSection(manager.CS_AddInfoToData);
             try
@@ -702,13 +702,13 @@ begin
           // get directory page count
           directoryCount := 0;
           workPtr := 0;
-          Modules.AfterUpdateList(Module.ID);
-          Modules.BeforeUpdateList(Module.ID);
+          Modules.AfterUpdateList(Module.Index);
+          Modules.BeforeUpdateList(Module.Index);
           GetInfo(Module.TotalDirectory, CS_DIRECTORY_COUNT);
 
           if Terminated then
           begin
-              Modules.AfterUpdateList(Module.ID);
+              Modules.AfterUpdateList(Module.Index);
             Break;
           end;
 
@@ -730,7 +730,7 @@ begin
             if Terminated then Break;
           end;
 
-          Modules.BeforeUpdateList(Module.ID);
+          Modules.BeforeUpdateList(Module.Index);
           if Terminated then
             if not (OptionUpdateListNoMangaInfo and not(Module.SortedList)) then
               Break;

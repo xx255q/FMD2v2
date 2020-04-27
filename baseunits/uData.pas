@@ -23,8 +23,8 @@ type
   TMangaInformation = class(TObject)
   private
     FOwner: TBaseThread;
-    FModuleId: Integer;
-    procedure SetModuleId(AValue: Integer);
+    FModuleIndex: Integer;
+    procedure SetModuleIndex(AValue: Integer);
   public
     isGetByUpdater: Boolean;
     mangaInfo: TMangaInfo;
@@ -37,15 +37,15 @@ type
     constructor Create(AOwnerThread: TBaseThread = nil; ACreateInfo: Boolean = True);
     destructor Destroy; override;
     procedure ClearInfo;
-    function GetDirectoryPage(var APage: Integer; const AWebsite: String): Byte;
-    function GetNameAndLink(const ANames, ALinks: TStringList; const AWebsite, AURL: String): Byte;
-    function GetInfoFromURL(const AWebsite, AURL: String): Byte;
+    function GetDirectoryPage(var APage: Integer; const AModuleID: String): Byte;
+    function GetNameAndLink(const ANames, ALinks: TStringList; const AModuleID, AURL: String): Byte;
+    function GetInfoFromURL(const AModuleID, AURL: String): Byte;
     procedure SyncInfoToData(const ADataProcess: TDBDataProcess); overload;
-    procedure AddInfoToData(const ATitle, ALink: String; const ADataProcess: TDBDataProcess); overload;
+    procedure AddInfoToData(const ATitle, AURI: String; const ADataProcess: TDBDataProcess); overload;
     //wrapper
     function GetPage(var AOutput: TObject; AURL: String; const AReconnect: Integer = 0): Boolean; inline;
     property Thread: TBaseThread read FOwner;
-    property ModuleId: Integer read FModuleId write SetModuleId;
+    property ModuleIndex: Integer read FModuleIndex write SetModuleIndex;
   end;
 
 var
@@ -68,7 +68,7 @@ begin
   if ACreateInfo then
     mangaInfo := TMangaInfo.Create;
   isGetByUpdater := False;
-  ModuleId := -1;
+  ModuleIndex := -1;
   RemoveHostFromChapterLinks := True;
 end;
 
@@ -84,45 +84,45 @@ end;
 
 procedure TMangaInformation.ClearInfo;
 begin
-  mangaInfo.artists := '';
-  mangaInfo.authors := '';
-  mangaInfo.genres := '';
-  mangaInfo.summary := '';
-  mangaInfo.coverLink := '';
-  mangaInfo.numChapter := 0;
-  mangaInfo.status := '';
-  mangaInfo.title := '';
-  mangaInfo.url := '';
-  mangaInfo.website := '';
-  mangaInfo.chapterName.Clear;
-  mangaInfo.chapterLinks.Clear;
+  mangaInfo.Artists := '';
+  mangaInfo.Authors := '';
+  mangaInfo.Genres := '';
+  mangaInfo.Summary := '';
+  mangaInfo.CoverURL := '';
+  mangaInfo.NumChapter := 0;
+  mangaInfo.Status := '';
+  mangaInfo.Title := '';
+  mangaInfo.URL := '';
+  mangaInfo.ModuleID := '';
+  mangaInfo.ChapterNames.Clear;
+  mangaInfo.ChapterLinks.Clear;
 end;
 
-procedure TMangaInformation.SetModuleId(AValue: Integer);
+procedure TMangaInformation.SetModuleIndex(AValue: Integer);
 begin
-  if FModuleId = AValue then Exit;
-  FModuleId := AValue;
-  if (FModuleId <> -1) and Assigned(FHTTP) then
-    WebsiteModules.Modules[FModuleId].PrepareHTTP(FHTTP);
+  if FModuleIndex = AValue then Exit;
+  FModuleIndex := AValue;
+  if (FModuleIndex <> -1) and Assigned(FHTTP) then
+    WebsiteModules.Modules[FModuleIndex].PrepareHTTP(FHTTP);
 end;
 
-function TMangaInformation.GetDirectoryPage(var APage: Integer; const AWebsite: String): Byte;
+function TMangaInformation.GetDirectoryPage(var APage: Integer; const AModuleID: String): Byte;
 begin
   APage := 1;
 
   //load pagenumber_config if available
-  if  Modules[ModuleId].Settings.Enabled and (Modules[ModuleId].Settings.UpdateListDirectoryPageNumber > 0) then
+  if  Modules[ModuleIndex].Settings.Enabled and (Modules[ModuleIndex].Settings.UpdateListDirectoryPageNumber > 0) then
   begin
-    APage := Modules[ModuleId].Settings.UpdateListDirectoryPageNumber;
+    APage := Modules[ModuleIndex].Settings.UpdateListDirectoryPageNumber;
     BROWSER_INVERT := True;
     Exit(NO_ERROR);
   end;
 
   BROWSER_INVERT := False;
-  if ModuleId < 0 then
-    ModuleId := Modules.LocateModule(AWebsite);
-  if Modules.ModuleAvailable(ModuleId, MMGetDirectoryPageNumber) then
-    Result := Modules.GetDirectoryPageNumber(Self, APage, TUpdateListThread(Thread).workPtr, ModuleId)
+  if ModuleIndex < 0 then
+    ModuleIndex := Modules.LocateModuleByID(AModuleID);
+  if Modules.ModuleAvailable(ModuleIndex, MMGetDirectoryPageNumber) then
+    Result := Modules.GetDirectoryPageNumber(Self, APage, TUpdateListThread(Thread).workPtr, ModuleIndex)
   else
     Exit(INFORMATION_NOT_FOUND);
 
@@ -131,13 +131,13 @@ begin
 end;
 
 function TMangaInformation.GetNameAndLink(const ANames, ALinks: TStringList;
-  const AWebsite, AURL: String): Byte;
+  const AModuleID, AURL: String): Byte;
 begin
-  if ModuleId < 0 then
-    ModuleId := Modules.LocateModule(AWebsite);
-  if Modules.ModuleAvailable(ModuleId, MMGetNameAndLink) then
+  if ModuleIndex < 0 then
+    ModuleIndex := Modules.LocateModuleByID(AModuleID);
+  if Modules.ModuleAvailable(ModuleIndex, MMGetNameAndLink) then
   begin
-    Result := Modules.GetNameAndLink(Self, ANames, ALinks, AURL, ModuleId)
+    Result := Modules.GetNameAndLink(Self, ANames, ALinks, AURL, ModuleIndex)
   end
   else
     Exit(INFORMATION_NOT_FOUND);
@@ -147,7 +147,7 @@ begin
     RemoveHostFromURLsPair(ALinks, ANames);
 end;
 
-function TMangaInformation.GetInfoFromURL(const AWebsite, AURL: String): Byte;
+function TMangaInformation.GetInfoFromURL(const AModuleID, AURL: String): Byte;
 var
   s, s2: String;
   j, k: Integer;
@@ -159,74 +159,74 @@ begin
 
   GetBaseMangaInfo(mangaInfo, bmangaInfo);
 
-  mangaInfo.website := AWebsite;
-  mangaInfo.coverLink := '';
-  mangaInfo.numChapter := 0;
-  mangaInfo.chapterName.Clear;
-  mangaInfo.chapterLinks.Clear;
+  mangaInfo.ModuleID := AModuleID;
+  mangaInfo.CoverURL := '';
+  mangaInfo.NumChapter := 0;
+  mangaInfo.ChapterNames.Clear;
+  mangaInfo.ChapterLinks.Clear;
 
-  if ModuleId < 0 then
-    ModuleId := Modules.LocateModule(AWebsite);
-  if Modules.ModuleAvailable(ModuleId, MMGetInfo) then begin
-    mangaInfo.url := FillHost(Modules.Module[ModuleId].RootURL, AURL);
-    Result := Modules.GetInfo(Self, AURL, ModuleId);
+  if ModuleIndex < 0 then
+    ModuleIndex := Modules.LocateModuleByID(AModuleID);
+  if Modules.ModuleAvailable(ModuleIndex, MMGetInfo) then begin
+    mangaInfo.URL := FillHost(Modules.Module[ModuleIndex].RootURL, AURL);
+    Result := Modules.GetInfo(Self, AURL, ModuleIndex);
   end
   else
     Exit(INFORMATION_NOT_FOUND);
 
   with mangaInfo do begin
-    if link = '' then
-      link := RemoveHostFromURL(mangaInfo.url);
+    if URI = '' then
+      URI := RemoveHostFromURL(mangaInfo.URL);
 
     // cleanup info
-    coverLink := CleanURL(coverLink);
-    title := Trim(FixWhiteSpace(RemoveStringBreaks(CommonStringFilter(title))));
-    authors := Trim(FixWhiteSpace(RemoveStringBreaks(Trim(authors))));
-    artists := Trim(FixWhiteSpace(RemoveStringBreaks(Trim(artists))));
-    genres := Trim(FixWhiteSpace(RemoveStringBreaks(Trim(genres))));
+    CoverURL := CleanURL(CoverURL);
+    Title := Trim(FixWhiteSpace(RemoveStringBreaks(CommonStringFilter(Title))));
+    Authors := Trim(FixWhiteSpace(RemoveStringBreaks(Trim(Authors))));
+    Artists := Trim(FixWhiteSpace(RemoveStringBreaks(Trim(Artists))));
+    Genres := Trim(FixWhiteSpace(RemoveStringBreaks(Trim(Genres))));
 
-    authors := TrimRightChar(Trim(FixWhiteSpace(authors)), [',']);
-    artists := TrimRightChar(Trim(FixWhiteSpace(artists)), [',']);
-    genres := TrimRightChar(Trim(FixWhiteSpace(genres)), [',']);
+    Authors := TrimRightChar(Trim(FixWhiteSpace(Authors)), [',']);
+    Artists := TrimRightChar(Trim(FixWhiteSpace(Artists)), [',']);
+    Genres := TrimRightChar(Trim(FixWhiteSpace(Genres)), [',']);
 
-    summary := CleanMultilinedString(FixWhiteSpace(summary));
+    Summary := CleanMultilinedString(FixWhiteSpace(Summary));
 
     // fix info
-    if (LeftStr(authors, 1) = '<') or (authors = '-') or (authors = ':') then
-      authors := '';
-    if (LeftStr(artists, 1) = '<') or (artists = '-') or (artists = ':') then
-      artists := '';
-    if (summary = '-') or (summary = ':') then
-      summary := '';
-    if title = '' then
-      title := 'N/A';
+    if (LeftStr(Authors, 1) = '<') or (Authors = '-') or (Authors = ':') then
+      Authors := '';
+    if (LeftStr(Artists, 1) = '<') or (Artists = '-') or (Artists = ':') then
+      Artists := '';
+    if (Summary = '-') or (Summary = ':') then
+      Summary := '';
+    if Title = '' then
+      Title := 'N/A';
     FillBaseMangaInfo(mangaInfo, bmangaInfo);
 
     // cleanup chapters
-    if chapterLinks.Count > 0 then begin
-      while chapterName.Count < chapterLinks.Count do
-        chapterName.Add('');
-      while chapterLinks.Count < chapterName.Count do
-        chapterName.Delete(chapterName.Count - 1);
-      for j := 0 to chapterLinks.Count - 1 do begin
-        chapterLinks[j] := Trim(chapterLinks[j]);
-        chapterName[j] := Trim(chapterName[j]);
+    if ChapterLinks.Count > 0 then begin
+      while ChapterNames.Count < ChapterLinks.Count do
+        ChapterNames.Add('');
+      while ChapterLinks.Count < ChapterNames.Count do
+        ChapterNames.Delete(ChapterNames.Count - 1);
+      for j := 0 to ChapterLinks.Count - 1 do begin
+        ChapterLinks[j] := Trim(ChapterLinks[j]);
+        ChapterNames[j] := Trim(ChapterNames[j]);
       end;
     end;
 
     // remove duplicate chapter
-    if chapterLinks.Count > 0 then
+    if ChapterLinks.Count > 0 then
     begin
       j := 0;
-      while j < (chapterLinks.Count - 1) do
+      while j < (ChapterLinks.Count - 1) do
       begin
         del := False;
-        if (j + 1) < chapterLinks.Count then
-          for k := j + 1 to chapterLinks.Count - 1 do
-            if SameText(chapterLinks[j], chapterLinks[k]) then
+        if (j + 1) < ChapterLinks.Count then
+          for k := j + 1 to ChapterLinks.Count - 1 do
+            if SameText(ChapterLinks[j], ChapterLinks[k]) then
             begin
-              chapterLinks.Delete(j);
-              chapterName.Delete(j);
+              ChapterLinks.Delete(j);
+              ChapterNames.Delete(j);
               del := True;
               Break;
             end;
@@ -235,37 +235,37 @@ begin
       end;
     end;
 
-    if chapterLinks.Count > 0 then
+    if ChapterLinks.Count > 0 then
     begin
       // remove host from chapter links
       if RemoveHostFromChapterLinks then
-        RemoveHostFromURLsPair(chapterLinks, chapterName);
+        RemoveHostFromURLsPair(ChapterLinks, ChapterNames);
       // fixing chapter name
-      for j := 0 to chapterName.Count - 1 do
-        chapterName[j] := Trim(CleanString(RemoveStringBreaks(
-          CommonStringFilter(chapterName[j]))));
+      for j := 0 to ChapterNames.Count - 1 do
+        ChapterNames[j] := Trim(CleanString(RemoveStringBreaks(
+          CommonStringFilter(ChapterNames[j]))));
 
       //remove manga name from chapter
-      if OptionRemoveMangaNameFromChapter and (title <> '') then
+      if OptionRemoveMangaNameFromChapter and (Title <> '') then
       begin
-        s := LowerCase(title);
+        s := LowerCase(Title);
         j := Length(s);
-        for k := 0 to chapterName.Count - 1 do begin
-          s2 := LowerCase(chapterName[k]);
+        for k := 0 to ChapterNames.Count - 1 do begin
+          s2 := LowerCase(ChapterNames[k]);
           if Length(s2) > j then
             if Pos(s, s2) = 1 then begin
-              s2 := chapterName[k];
+              s2 := ChapterNames[k];
               Delete(s2, 1, j);
               s2 := Trim(s2);
               if LeftStr(s2, 2) = '- ' then
                 Delete(s2, 1, 2);
-              chapterName[k] := s2;
+              ChapterNames[k] := s2;
             end;
         end;
       end;
     end;
 
-    numChapter := chapterLinks.Count;
+    NumChapter := ChapterLinks.Count;
   end;
 end;
 
@@ -273,19 +273,19 @@ procedure TMangaInformation.SyncInfoToData(const ADataProcess: TDBDataProcess);
 begin
   if Assigned(ADataProcess) then
     with mangaInfo do
-      ADataProcess.UpdateData(title, link, authors, artists, genres, status, summary,
-        numChapter, website);
+      ADataProcess.UpdateData(Title, URI, Authors, Artists, Genres, Status, Summary,
+        NumChapter, ModuleID);
 end;
 
-procedure TMangaInformation.AddInfoToData(const ATitle, ALink: String; const ADataProcess: TDBDataProcess);
+procedure TMangaInformation.AddInfoToData(const ATitle, AURI: String; const ADataProcess: TDBDataProcess);
 begin
   if Assigned(ADataProcess) then
   begin
-    if (mangaInfo.title = '') and (ATitle <> '') then mangaInfo.title := ATitle;
-    if (mangaInfo.link = '') and (ALink <> '') then mangaInfo.link := ALink;
+    if (mangaInfo.Title = '') and (ATitle <> '') then mangaInfo.Title := ATitle;
+    if (mangaInfo.URI = '') and (AURI <> '') then mangaInfo.URI := AURI;
     with mangaInfo do
-      ADataProcess.AddData(title, link, authors, artists, genres, status,
-        StringBreaks(summary), numChapter, Now);
+      ADataProcess.AddData(Title, URI, Authors, Artists, Genres, Status,
+        StringBreaks(Summary), NumChapter, Now);
   end;
 end;
 

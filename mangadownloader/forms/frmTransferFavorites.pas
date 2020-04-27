@@ -132,7 +132,7 @@ begin
       while Assigned(node) do
       begin
         data := Owner.vtFavs.GetNodeData(node);
-        if data^.Fav.Website = db.Website then
+        if data^.Fav.ModuleID = db.Website then
         begin
           data^.NewLink := '';
           data^.State := 0;
@@ -294,7 +294,7 @@ begin
   Data := Sender.GetNodeData(Node);
   case Column of
     1: CellText := Data^.Fav.FavoriteInfo.Title;
-    2: CellText := Data^.Fav.FavoriteInfo.Website;
+    2: CellText := Data^.Fav.FavoriteInfo.ModuleID;
   end;
 end;
 

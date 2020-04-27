@@ -24,12 +24,12 @@ type
 
   TSilentThreadMetaData = class
   private
-    ModuleId: Integer;
+    FModuleIndex: Integer;
   public
     MetaDataType: TMetaDataType;
     Website, Title, URL, SaveTo: String;
     constructor Create(const AType: TMetaDataType;
-      const AWebsite, AManga, AURL, APath: String);
+      const AModuleID, AManga, AURL, APath: String);
   end;
 
   TSilentThreadManager = class;
@@ -122,7 +122,7 @@ begin
     begin
       if Terminated then Break;
       with MetaDatas[i] do
-        if (Threads.Count < OptionMaxThreads) and Modules.CanCreateConnection(ModuleId) then
+        if (Threads.Count < OptionMaxThreads) and Modules.CanCreateConnection(FModuleIndex) then
           Manager.Checkout(i)
         else
           Inc(i);
@@ -193,7 +193,7 @@ end;
 procedure TSilentThreadManager.Checkout(Index: Integer);
 begin
   if (Index < 0) or (Index >= MetaDatas.Count) then Exit;
-  Modules.IncActiveConnectionCount(MetaDatas[Index].ModuleId);
+  Modules.IncActiveConnectionCount(MetaDatas[Index].FModuleIndex);
   EnterCriticalsection(FCS_THREADS);
   try
     case MetaDatas[Index].MetaDataType of
@@ -207,7 +207,7 @@ begin
       title := MetaDatas[Index].Title;
       URL := MetaDatas[Index].URL;
       SavePath := MetaDatas[Index].SaveTo;
-      ModuleId := MetaDatas[Index].ModuleId;
+      ModuleId := MetaDatas[Index].FModuleIndex;
       Start;
       MetaDatas[Index].Free;
       MetaDatas.Delete(Index);
@@ -299,15 +299,15 @@ end;
 { TSilentThreadMetaData }
 
 constructor TSilentThreadMetaData.Create(const AType: TMetaDataType;
-  const AWebsite, AManga, AURL, APath: String);
+  const AModuleID, AManga, AURL, APath: String);
 begin
   inherited Create;
   MetaDataType := AType;
-  Website := AWebsite;
+  Website := AModuleID;
   Title := AManga;
   URL := AURL;
   SaveTo := APath;
-  ModuleId := Modules.LocateModule(Website);
+  FModuleIndex := Modules.LocateModuleByID(Website);
 end;
 
 { TSilentThread }
@@ -317,32 +317,32 @@ var
   s: String;
   i, p: Integer;
 begin
-  if Info.mangaInfo.numChapter = 0 then
+  if Info.mangaInfo.NumChapter = 0 then
     Exit;
   try
     with MainForm do
     begin
       // add a new download task
       p := DLManager.AddTask;
-      DLManager.Items[p].Website := website;
+      DLManager.Items[p].ModuleID := website;
 
       if Trim(title) = '' then
-        title := Info.mangaInfo.title;
-      for i := 0 to Info.mangaInfo.numChapter - 1 do
+        title := Info.mangaInfo.Title;
+      for i := 0 to Info.mangaInfo.NumChapter - 1 do
       begin
         // generate folder name
         s := CustomRename(OptionChapterCustomRename,
                           website,
                           title,
-                          info.mangaInfo.authors,
-                          Info.mangaInfo.artists,
-                          Info.mangaInfo.chapterName.Strings[i],
+                          info.mangaInfo.Authors,
+                          Info.mangaInfo.Artists,
+                          Info.mangaInfo.ChapterNames.Strings[i],
                           Format('%.4d', [i + 1]),
                           OptionChangeUnicodeCharacter,
                           OptionChangeUnicodeCharacterStr);
         DLManager.Items[p].chapterName.Add(s);
         DLManager.Items[p].chapterLinks.Add(
-          Info.mangaInfo.chapterLinks.Strings[i]);
+          Info.mangaInfo.ChapterLinks.Strings[i]);
       end;
 
       if cbAddAsStopped.Checked then
@@ -357,8 +357,8 @@ begin
       end;
 
       DLManager.Items[p].currentDownloadChapterPtr := 0;
-      DLManager.Items[p].downloadInfo.Website := website;
-      DLManager.Items[p].downloadInfo.Link := URL;
+      DLManager.Items[p].downloadInfo.ModuleID := website;
+      DLManager.Items[p].downloadInfo.URI := URL;
       DLManager.Items[p].downloadInfo.Title := title;
       DLManager.Items[p].downloadInfo.DateAdded := Now;
       DLManager.Items[p].downloadInfo.DateLastDownload := Now;
@@ -374,8 +374,8 @@ begin
             OptionMangaCustomRename,
             website,
             title,
-            info.mangaInfo.authors,
-            info.mangaInfo.artists,
+            info.mangaInfo.Authors,
+            info.mangaInfo.Artists,
             '',
             '',
             OptionChangeUnicodeCharacter,
@@ -388,12 +388,12 @@ begin
       DLManager.CheckAndActiveTask(False);
 
       // save downloaded chapters
-      if Info.mangaInfo.chapterLinks.Count > 0 then
+      if Info.mangaInfo.ChapterLinks.Count > 0 then
       begin
-        DLManager.DownloadedChapters.Chapters[Info.mangaInfo.website + URL]:=
-          Info.mangaInfo.chapterLinks.Text;
-        FavoriteManager.AddToDownloadedChaptersList(Info.mangaInfo.website,
-          URL, Info.mangaInfo.chapterLinks);
+        DLManager.DownloadedChapters.Chapters[Info.mangaInfo.ModuleID + URL]:=
+          Info.mangaInfo.ChapterLinks.Text;
+        FavoriteManager.AddToDownloadedChaptersList(Info.mangaInfo.ModuleID,
+          URL, Info.mangaInfo.ChapterLinks);
       end;
     end;
   except
@@ -406,8 +406,8 @@ procedure TSilentThread.Execute;
 begin
   Synchronize(Manager.UpdateLoadStatus);
   try
-    Info.ModuleId := Self.ModuleId;
-    Info.mangaInfo.title := title;
+    Info.ModuleIndex := Self.ModuleId;
+    Info.mangaInfo.Title := title;
     if Info.GetInfoFromURL(website, URL) = NO_ERROR then
       if not Terminated then
         Synchronize(MainThreadAfterChecking);
@@ -451,7 +451,7 @@ begin
     with MainForm do
     begin
       if Trim(title) = '' then
-        title := Info.mangaInfo.title;
+        title := Info.mangaInfo.Title;
       if FSavePath = '' then
       begin
         FillSaveTo;
@@ -465,17 +465,17 @@ begin
           OptionMangaCustomRename,
           website,
           title,
-          info.mangaInfo.authors,
-          info.mangaInfo.artists,
+          info.mangaInfo.Authors,
+          info.mangaInfo.Artists,
           '',
           '',
           OptionChangeUnicodeCharacter,
           OptionChangeUnicodeCharacterStr);
       if Trim(title) = '' then
-        title := Info.mangaInfo.title;
+        title := Info.mangaInfo.Title;
       FavoriteManager.Add(title,
-        IntToStr(Info.mangaInfo.numChapter),
-        info.mangaInfo.chapterLinks.Text,
+        IntToStr(Info.mangaInfo.NumChapter),
+        info.mangaInfo.ChapterLinks.Text,
         website,
         s,
         URL);
