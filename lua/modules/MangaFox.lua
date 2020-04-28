@@ -1,11 +1,11 @@
 function Init()
-  if tonumber(fmd.revision) < 4268 then return end
+  if tonumber(FMD.Revision) < 4268 then return end
 
-  m = NewModule()
-  m.Category ='English'
-  m.Website ='MangaFox'
-  m.RootURL ='https://fanfox.net'
-
+  m = NewWebsiteModule()
+  m.ID                       = '0d3653a8d9b747a381374f32e0a1641e'
+  m.Name                     = 'FanFox'
+  m.Category                 = 'English'
+  m.RootURL                  = 'https://fanfox.net'
   m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
   m.OnGetNameAndLink         = 'GetNameAndLink'
   m.OnGetInfo                = 'GetInfo'
@@ -15,13 +15,13 @@ function Init()
   m.AddOptionCheckBox('mf_removewatermark', 'Remove watermark', true)
   m.AddOptionCheckBox('mf_saveaspng', 'Save as PNG', false)
 
-  MangaFoxLoadTemplate(fmd.lua_directory .. 'extras' .. PathDelim .. 'mangafoxtemplate')
+  MangaFoxLoadTemplate(FMD.LuaDirectory .. 'extras' .. PathDelim .. 'mangafoxtemplate')
 end
 
 function GetDirectoryPageNumber()
-  if http.GET(module.RootURL .. '/directory/?az') then
-    local x = TXQuery.Create(http.Document)
-    page = tonumber(x.xpathstring('//div[@class="pager-list"]//a[last()-1]')) or 1
+  if HTTP.GET(MODULE.RootURL .. '/directory/?az') then
+    local x = TXQuery.Create(HTTP.Document)
+    PAGENUMBER = tonumber(x.XPathString('//div[@class="pager-list"]//a[last()-1]')) or 1
     return no_error
   else
     return net_problem
@@ -29,8 +29,8 @@ function GetDirectoryPageNumber()
 end
 
 function GetNameAndLink()
-  if http.get(module.RootURL .. '/directory/' .. IncStr(url) .. '.html?az') then
-    TXQuery.Create(http.Document).xpathhrefall('//ul[contains(@class, "manga-list")]/li/a', links, names)
+  if HTTP.GET(MODULE.RootURL .. '/directory/' .. IncStr(URL) .. '.html?az') then
+    TXQuery.Create(HTTP.Document).XPathHREFAll('//ul[contains(@class, "manga-list")]/li/a', Links, Names)
     return no_error
   else
     return net_problem
@@ -38,21 +38,21 @@ function GetNameAndLink()
 end
 
 function GetInfo()
-  mangainfo.url = MaybeFillHost(module.rooturl, url)
-  http.cookies.values['isAdult'] = '1'
-  if http.get(mangainfo.url) then
-    local x = TXQuery.Create(http.Document)
-    mangainfo.title     = x.XPathString('//span[@class="detail-info-right-title-font"]')
-    mangainfo.coverlink = MaybeFillHost(module.rooturl, x.XPathString('//img[@class="detail-info-cover-img"]/@src'))
-    mangainfo.authors   = x.XPathString('//p[@class="detail-info-right-say"]/a')
-    mangainfo.genres    = x.XPathStringAll('//p[@class="detail-info-right-tag-list"]/a')
-    mangainfo.summary   = x.XPathString('//p[@class="fullcontent"]')
-    mangainfo.status    = MangaInfoStatusIfPos(x.XPathString('//span[@class="detail-info-right-title-tip"]'))
-	for _, v in ipairs(x.xpathi('//ul[@class="detail-main-list"]/li/a')) do
-      mangainfo.chapterlinks.add(v.getAttribute('href'):gsub('1%.html$', ''))
-      mangainfo.chapternames.add(x.xpathstring('./div/p[@class="title3"]', v))
+  MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
+  HTTP.Cookies.Values['isAdult'] = '1'
+  if HTTP.GET(MANGAINFO.URL) then
+    local x = TXQuery.Create(HTTP.Document)
+    MANGAINFO.Title     = x.XPathString('//span[@class="detail-info-right-title-font"]')
+    MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//img[@class="detail-info-cover-img"]/@src'))
+    MANGAINFO.Authors   = x.XPathString('//p[@class="detail-info-right-say"]/a')
+    MANGAINFO.Genres    = x.XPathStringAll('//p[@class="detail-info-right-tag-list"]/a')
+    MANGAINFO.Summary   = x.XPathString('//p[@class="fullcontent"]')
+    MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//span[@class="detail-info-right-title-tip"]'))
+	for _, v in ipairs(x.XPathI('//ul[@class="detail-main-list"]/li/a')) do
+      MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'):gsub('1%.html$', ''))
+      MANGAINFO.ChapterNames.Add(x.XPathString('./div/p[@class="title3"]', v))
     end
-    InvertStrings(mangainfo.chapterlinks, mangainfo.chapternames)
+    InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
     return no_error
   else
     return net_problem
@@ -60,44 +60,44 @@ function GetInfo()
 end
 
 function GetPageNumber()
-  task.pagelinks.clear()
-  task.pagenumber = 0
-  http.cookies.values['isAdult'] = '1'
-  local aurl = MaybeFillHost(module.rooturl, url):gsub('1%.html$', '')
+  TASK.PageLinks.Clear()
+  TASK.PageNumber = 0
+  HTTP.Cookies.Values['isAdult'] = '1'
+  local aurl = MaybeFillHost(MODULE.RootURL, URL):gsub('1%.html$', '')
   local lurl = aurl .. '1.html'
-  if http.get(lurl) then
-    local x = TXQuery.Create(http.Document)
+  if HTTP.GET(lurl) then
+    local x = TXQuery.Create(HTTP.Document)
     local key = ExecJS('var $=function(){return{val:function(){}}},newImgs,guidkey;' .. x.XPathString('//script[contains(., "eval")]') .. ';newImgs||guidkey;')
     if key:len() > 16 then
-      task.pagelinks.commatext = key
+      TASK.PageLinks.CommaText = key
     else
       local s = x.XPathString('//script[contains(., "chapterid")]')
 	  local cid = s:match('chapterid%s*=%s*(.-)%s*;') or '0'
-	  task.pagenumber = tonumber(s:match('imagecount%s*=%s*(%d-)%s*;') or '0')
-      if task.pagenumber == nil then task.pagenumber = 1 end
+	  TASK.PageNumber = tonumber(s:match('imagecount%s*=%s*(%d-)%s*;') or '0')
+      if TASK.PageNumber == nil then TASK.PageNumber = 1 end
       local page = 1
-      while page <= task.pagenumber do
-        http.reset()
-        http.headers.values['Pragma'] = 'no-cache'
-        http.headers.values['Cache-Control'] = 'no-cache'
-        http.headers.values['Referer'] = lurl
-        if http.xhr(aurl .. string.format('chapterfun.ashx?cid=%s&page=%d&key=%s', cid, page, key)) then
-		  s = http.document.tostring()
+      while page <= TASK.PageNumber do
+        HTTP.Reset()
+        HTTP.Headers.Values['Pragma'] = 'no-cache'
+        HTTP.Headers.Values['Cache-Control'] = 'no-cache'
+        HTTP.Headers.Values['Referer'] = lurl
+        if HTTP.XHR(aurl .. string.format('chapterfun.ashx?cid=%s&page=%d&key=%s', cid, page, key)) then
+		  s = HTTP.Document.ToString()
           if s ~= '' then
             s = ExecJS(s .. ';d;')
 			for i in s:gmatch('[^,]+') do
-			  task.pagelinks.add(i)
+			  TASK.PageLinks.Add(i)
 			end
           end
         end
 		-- sometimes the server will give more images than the actual chapter have
 		-- it is an ads or file not found(404 not found)
 		-- remove invalid images here
-		while task.pagelinks.count>task.pagenumber do
-		  task.pagelinks.delete(task.pagelinks.count-1)
+		while TASK.PageLinks.Count > TASK.PageNumber do
+		  TASK.PageLinks.Delete(TASK.PageLinks.Count-1)
 		end
-        if task.pagelinks.count >= task.pagenumber then break end
-        page = task.pagelinks.count + 1
+        if TASK.PageLinks.Count >= TASK.PageNumber then break end
+        page = TASK.PageLinks.Count + 1
         Sleep(2000) -- without minimum delay of 2 seconds server will only give 2 images for each xhr request
       end
     end
@@ -108,8 +108,8 @@ function GetPageNumber()
 end
 
 function AfterImageSaved()
-  if module.GetOption('mf_removewatermark') then
-    MangaFoxRemoveWatermark(filename, module.GetOption('mf_saveaspng'))
+  if MODULE.GetOption('mf_removewatermark') then
+    MangaFoxRemoveWatermark(FILENAME, MODULE.GetOption('mf_saveaspng'))
   end
   return true
 end;
