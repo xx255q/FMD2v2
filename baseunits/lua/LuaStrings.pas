@@ -180,8 +180,7 @@ const
     (name: 'Create'; func: @strings_create),
     (name: nil; func: nil)
     );
-  methods: packed array [0..15] of luaL_Reg = (
-    (name: 'Count'; func: @strings_getcount),
+  methods: packed array [0..14] of luaL_Reg = (
     (name: 'LoadFromFile'; func: @strings_loadfromfile),
     (name: 'LoadFromStream'; func: @strings_loadfromstream),
     (name: 'SetText'; func: @strings_settext),
