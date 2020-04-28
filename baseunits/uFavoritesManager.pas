@@ -1116,7 +1116,7 @@ begin
               Enabled                            := Fields[f_enabled].AsBoolean;
               FavoriteInfo.ModuleID              := Fields[f_moduleid].AsString;
               ModuleID                           := FavoriteInfo.ModuleID;
-              FavoriteInfo.Link                   := Fields[f_uri].AsString;
+              FavoriteInfo.Link                  := Fields[f_link].AsString;
               FavoriteInfo.Title                 := Fields[f_title].AsString;
               FavoriteInfo.CurrentChapter        := Fields[f_currentchapter].AsString;
               FavoriteInfo.DownloadedChapterList := Fields[f_downloadedchapterlist].AsString;

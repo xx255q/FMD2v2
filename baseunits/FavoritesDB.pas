@@ -34,11 +34,11 @@ type
   end;
 
 const
-  f_iduri                  = 0;
+  f_idlink                  = 0;
   f_order                  = 1;
   f_enabled                = 2;
   f_moduleid               = 3;
-  f_uri                    = 4;
+  f_link                   = 4;
   f_title                  = 5;
   f_currentchapter         = 6;
   f_downloadedchapterlist  = 7;
@@ -70,7 +70,7 @@ begin
     '"order" INTEGER,' +
     '"enabled" BOOLEAN,' +
     '"moduleid" TEXT,' +
-    '"uri" TEXT,' +
+    '"link" TEXT,' +
     '"title" TEXT,' +
     '"currentchapter" TEXT,' +
     '"downloadedchapterlist" TEXT,' +
@@ -78,7 +78,7 @@ begin
     '"dateadded" DATETIME,' +
     '"datelastchecked" DATETIME,' +
     '"datelastupdated" DATETIME';
-  FieldsParams := '"websitelink","order","enabled","moduleid","uri","title","currentchapter","downloadedchapterlist","saveto","dateadded","datelastchecked","datelastupdated"';
+  FieldsParams := '"websitelink","order","enabled","moduleid","link","title","currentchapter","downloadedchapterlist","saveto","dateadded","datelastchecked","datelastupdated"';
   SelectParams := 'SELECT * FROM ' + QuotedStrD(TableName) + ' ORDER BY "order"';
 end;
 
