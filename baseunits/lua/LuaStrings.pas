@@ -180,7 +180,8 @@ const
     (name: 'Create'; func: @strings_create),
     (name: nil; func: nil)
     );
-  methods: packed array [0..14] of luaL_Reg = (
+  methods: packed array [0..15] of luaL_Reg = (
+    (name: 'Count'; func: @strings_getcount),
     (name: 'LoadFromFile'; func: @strings_loadfromfile),
     (name: 'LoadFromStream'; func: @strings_loadfromstream),
     (name: 'SetText'; func: @strings_settext),
@@ -198,9 +199,9 @@ const
     (name: nil; func: nil)
     );
   props: packed array[0..6] of lual_Reg_prop = (
+    (name: 'Count'; funcget: @strings_getcount; funcset: nil),
     (name: 'Text'; funcget: @strings_gettext; funcset: @strings_settext),
     (name: 'CommaText'; funcget: @strings_getcommatext; funcset: @strings_setcommatext),
-    (name: 'Count'; funcget: @strings_getcount; funcset: nil),
     (name: 'DelimitedText'; funcget: @strings_getdelimitedtext; funcset: @strings_setdelimitedtext),
     (name: 'Delimiter'; funcget: @strings_getdelimiter; funcset: @strings_setdelimiter),
     (name: 'NameValueSeparator'; funcget: @strings_namevalueseparatorget; funcset: @strings_namevalueseparatorset),

@@ -84,21 +84,28 @@ end;
 
 const
   methods: packed array [0..8] of luaL_Reg = (
+    (name: 'Count'; func: @ixqvalue_count),
+    (name: 'ToString'; func: @ixqvalue_tostring),
     (name: 'Get'; func: @ixqvalue_get),
     (name: 'GetAttribute'; func: @ixqvalue_getattribute),
     (name: 'GetProperty'; func: @ixqvalue_getproperty),
     (name: 'InnerHTML'; func: @ixqvalue_innerHTML),
     (name: 'OuterHTML'; func: @ixqvalue_outerHTML),
     (name: 'InnerText'; func: @ixqvalue_innerText),
-    (name: 'ToString'; func: @ixqvalue_tostring),
-    (name: 'Count'; func: @ixqvalue_count),
     (name: nil; func: nil)
+    );
+
+  props: packed array[0..2] of lual_Reg_prop = (
+    (name: 'Count'; funcget: @ixqvalue_count; funcset: nil),
+    (name: 'ToString'; funcget: @ixqvalue_tostring; funcset: nil),
+    (name: nil; funcget: nil; funcset: nil)
     );
 
 procedure luaIXQValueAddMetaTable(L: Plua_State; Obj: Pointer;
   MetaTable, UserData: Integer; AutoFree: Boolean = False);
 begin
   luaClassAddFunction(L, MetaTable, UserData, methods);
+  luaClassAddProperty(L, MetaTable, UserData, props);
 end;
 
 procedure luaIXQValuePush(L: Plua_State; Obj: TLuaIXQValue);
