@@ -358,7 +358,7 @@ begin
 
       DLManager.Items[p].currentDownloadChapterPtr := 0;
       DLManager.Items[p].downloadInfo.ModuleID := website;
-      DLManager.Items[p].downloadInfo.URI := URL;
+      DLManager.Items[p].downloadInfo.Link := URL;
       DLManager.Items[p].downloadInfo.Title := title;
       DLManager.Items[p].downloadInfo.DateAdded := Now;
       DLManager.Items[p].downloadInfo.DateLastDownload := Now;

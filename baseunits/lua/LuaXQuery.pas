@@ -189,9 +189,9 @@ const
     (name: 'XPath'; func: @xquery_xpath),
     (name: 'XPathI'; func: @xquery_xpathi),
     (name: 'XPathString'; func: @xquery_xpathstring),
-    (name: 'XpathStringAll'; func: @xquery_xpathstringall),
-    (name: 'XpathHREFAll'; func: @xquery_xpathhrefall),
-    (name: 'XpathHREFTitleAll'; func: @xquery_xpathhreftitleall),
+    (name: 'XPathStringAll'; func: @xquery_xpathstringall),
+    (name: 'XPathHREFAll'; func: @xquery_xpathhrefall),
+    (name: 'XPathHREFTitleAll'; func: @xquery_xpathhreftitleall),
     (name: 'XPathCount'; func: @xquery_xpathcount),
     (name: nil; func: nil)
     );

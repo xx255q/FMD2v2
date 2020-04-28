@@ -774,7 +774,7 @@ end;
 
 procedure TLuaWebsiteModule.LuaPushMe(L: Plua_State);
 begin
-  luaPushObject(L, Self, 'module', @luaWebsiteModuleAddMetaTable);
+  luaPushObject(L, Self, 'MODULE', @luaWebsiteModuleAddMetaTable);
   luaPushIntegerGlobal(L, 'no_error', NO_ERROR);
   luaPushIntegerGlobal(L, 'net_problem', NET_PROBLEM);
   luaPushIntegerGlobal(L, 'information_not_found', INFORMATION_NOT_FOUND);

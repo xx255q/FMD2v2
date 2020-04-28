@@ -41,7 +41,7 @@ type
     function GetNameAndLink(const ANames, ALinks: TStringList; const AModuleID, AURL: String): Byte;
     function GetInfoFromURL(const AModuleID, AURL: String): Byte;
     procedure SyncInfoToData(const ADataProcess: TDBDataProcess); overload;
-    procedure AddInfoToData(const ATitle, AURI: String; const ADataProcess: TDBDataProcess); overload;
+    procedure AddInfoToData(const ATitle, ALink: String; const ADataProcess: TDBDataProcess); overload;
     //wrapper
     function GetPage(var AOutput: TObject; AURL: String; const AReconnect: Integer = 0): Boolean; inline;
     property Thread: TBaseThread read FOwner;
@@ -88,7 +88,7 @@ begin
   mangaInfo.Authors := '';
   mangaInfo.Genres := '';
   mangaInfo.Summary := '';
-  mangaInfo.CoverURL := '';
+  mangaInfo.CoverLink := '';
   mangaInfo.NumChapter := 0;
   mangaInfo.Status := '';
   mangaInfo.Title := '';
@@ -160,7 +160,7 @@ begin
   GetBaseMangaInfo(mangaInfo, bmangaInfo);
 
   mangaInfo.ModuleID := AModuleID;
-  mangaInfo.CoverURL := '';
+  mangaInfo.CoverLink := '';
   mangaInfo.NumChapter := 0;
   mangaInfo.ChapterNames.Clear;
   mangaInfo.ChapterLinks.Clear;
@@ -175,11 +175,11 @@ begin
     Exit(INFORMATION_NOT_FOUND);
 
   with mangaInfo do begin
-    if URI = '' then
-      URI := RemoveHostFromURL(mangaInfo.URL);
+    if Link = '' then
+      Link := RemoveHostFromURL(mangaInfo.URL);
 
     // cleanup info
-    CoverURL := CleanURL(CoverURL);
+    CoverLink := CleanURL(CoverLink);
     Title := Trim(FixWhiteSpace(RemoveStringBreaks(CommonStringFilter(Title))));
     Authors := Trim(FixWhiteSpace(RemoveStringBreaks(Trim(Authors))));
     Artists := Trim(FixWhiteSpace(RemoveStringBreaks(Trim(Artists))));
@@ -273,18 +273,18 @@ procedure TMangaInformation.SyncInfoToData(const ADataProcess: TDBDataProcess);
 begin
   if Assigned(ADataProcess) then
     with mangaInfo do
-      ADataProcess.UpdateData(Title, URI, Authors, Artists, Genres, Status, Summary,
+      ADataProcess.UpdateData(Title, Link, Authors, Artists, Genres, Status, Summary,
         NumChapter, ModuleID);
 end;
 
-procedure TMangaInformation.AddInfoToData(const ATitle, AURI: String; const ADataProcess: TDBDataProcess);
+procedure TMangaInformation.AddInfoToData(const ATitle, ALink: String; const ADataProcess: TDBDataProcess);
 begin
   if Assigned(ADataProcess) then
   begin
     if (mangaInfo.Title = '') and (ATitle <> '') then mangaInfo.Title := ATitle;
-    if (mangaInfo.URI = '') and (AURI <> '') then mangaInfo.URI := AURI;
+    if (mangaInfo.Link = '') and (ALink <> '') then mangaInfo.Link := ALink;
     with mangaInfo do
-      ADataProcess.AddData(Title, URI, Authors, Artists, Genres, Status,
+      ADataProcess.AddData(Title, Link, Authors, Artists, Genres, Status,
         StringBreaks(Summary), NumChapter, Now);
   end;
 end;

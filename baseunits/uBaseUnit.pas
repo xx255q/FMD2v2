@@ -319,9 +319,9 @@ type
   public
     URL,
     Title,
-    URI,
+    Link,
     ModuleID,
-    CoverURL,
+    CoverLink,
     Authors,
     Artists,
     Genres,
@@ -340,7 +340,7 @@ type
 
   TDownloadInfo = record
     ModuleID,
-    URI,
+    Link,
     Title,
     SaveTo,
     Status,
@@ -358,7 +358,7 @@ type
   TFavoriteInfo = record
     ModuleID,
     Title,
-    URI,
+    Link,
     SaveTo,
     Numbering,
     DownloadedChapterList,
@@ -3683,9 +3683,9 @@ procedure TransferMangaInfo(var dest: TMangaInfo; const Source: TMangaInfo);
 begin
   dest.URL := Source.URL;
   dest.Title := Source.Title;
-  dest.URI := Source.URI;
+  dest.Link := Source.Link;
   dest.ModuleID := Source.ModuleID;
-  dest.CoverURL := Source.CoverURL;
+  dest.CoverLink := Source.CoverLink;
   dest.Authors := Source.Authors;
   dest.Artists := Source.Artists;
   dest.Genres := Source.Genres;

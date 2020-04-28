@@ -117,8 +117,8 @@ type
     // Return true if a manga exist in favorites
     function LocateManga(const ATitle, AWebsite: String): TFavoriteContainer;
     function IsMangaExist(const ATitle, AWebsite: String): Boolean; inline;
-    function LocateMangaByURI(const AModuleID, AURI: String): TFavoriteContainer;
-    function IsMangaExistByURI(const AModuleID, AURI: String): Boolean; inline;
+    function LocateMangaByLink(const AModuleID, ALink: String): TFavoriteContainer;
+    function IsMangaExistByLink(const AModuleID, ALink: String): Boolean; inline;
     // Add new manga to the list
     procedure Add(const ATitle, ACurrentChapter, ADownloadedChapterList, AWebsite, ASaveTo, ALink: String);
     // Merge manga information with a title that already exist in favorites
@@ -224,7 +224,7 @@ begin
       i,
       FEnabled,
       ModuleID,
-      URI,
+      Link,
       Title,
       CurrentChapter,
       DownloadedChapterList,
@@ -246,7 +246,7 @@ var
   DLChapters: TStringList;
   i: Integer;
 begin
-  if (Container.FavoriteInfo.URI) = '' then Exit;
+  if (Container.FavoriteInfo.Link) = '' then Exit;
 
   Synchronize(SyncStatus);
   with Container do
@@ -254,7 +254,7 @@ begin
       // get new manga info
       FMangaInformation.isGetByUpdater := False;
       //FMangaInformation.mangaInfo.Title := FavoriteInfo.Title; // retrieve the original title so custom rename can remove them
-      FMangaInformation.GetInfoFromURL(FavoriteInfo.ModuleID, FavoriteInfo.URI);
+      FMangaInformation.GetInfoFromURL(FavoriteInfo.ModuleID, FavoriteInfo.Link);
       if not Terminated then
       begin
         NewMangaInfo := FMangaInformation.mangaInfo;
@@ -713,7 +713,7 @@ begin
       try
         for i := 0 to Items.Count - 1 do
           with Items[i] do
-            if FEnabled and (Status = STATUS_IDLE) and (Trim(FavoriteInfo.URI) <> '') then
+            if FEnabled and (Status = STATUS_IDLE) and (Trim(FavoriteInfo.Link) <> '') then
               Status := STATUS_CHECK;
       finally
         LeaveCriticalsection(CS_Favorites);
@@ -883,7 +883,7 @@ begin
                     Manager := DLManager;
                     CurrentDownloadChapterPtr := 0;
                     ModuleID := FavoriteInfo.ModuleID;
-                    DownloadInfo.URI := FavoriteInfo.URI;
+                    DownloadInfo.Link := FavoriteInfo.Link;
                     DownloadInfo.Title := FavoriteInfo.Title;
                     DownloadInfo.SaveTo := FavoriteInfo.SaveTo;
                     DownloadInfo.DateAdded := Now;
@@ -918,7 +918,7 @@ begin
                     // add to downloaded chapter list
                     FavoriteInfo.downloadedChapterList := MergeCaseInsensitive([FavoriteInfo.DownloadedChapterList, chapterLinks.Text]);
                     // add to downloaded chapter list in downloadmanager
-                    DLManager.DownloadedChapters.Chapters[FavoriteInfo.ModuleID + FavoriteInfo.URI] := chapterLinks.Text;
+                    DLManager.DownloadedChapters.Chapters[FavoriteInfo.ModuleID + FavoriteInfo.Link] := chapterLinks.Text;
                   end;
                   // free unused objects
                   FreeAndNil(NewMangaInfo);
@@ -978,7 +978,7 @@ begin
   Result := LocateManga(ATitle, AWebsite) <> nil;
 end;
 
-function TFavoriteManager.LocateMangaByURI(const AModuleID, AURI: String): TFavoriteContainer;
+function TFavoriteManager.LocateMangaByLink(const AModuleID, ALink: String): TFavoriteContainer;
 var
   i: Integer;
 begin
@@ -986,13 +986,13 @@ begin
   if Items.Count <> 0 then
     for i := 0 to Items.Count - 1 do
       with Items[i].FavoriteInfo do
-        if SameText(AModuleID, ModuleID) and SameText(AURI, URI) then
+        if SameText(AModuleID, ModuleID) and SameText(ALink, Link) then
           Exit(Items[i]);
 end;
 
-function TFavoriteManager.IsMangaExistByURI(const AModuleID, AURI: String): Boolean;
+function TFavoriteManager.IsMangaExistByLink(const AModuleID, ALink: String): Boolean;
 begin
-  Result := LocateMangaByURI(AModuleID, AURI) <> nil;
+  Result := LocateMangaByLink(AModuleID, ALink) <> nil;
 end;
 
 procedure TFavoriteManager.Add(const ATitle, ACurrentChapter, ADownloadedChapterList,
@@ -1011,7 +1011,7 @@ begin
         Title := ATitle;
         CurrentChapter := ACurrentChapter;
         SaveTo := ASaveTo;
-        URI := ALink;
+        Link := ALink;
         DownloadedChapterList := ADownloadedChapterList;
         DateAdded := Now;
         DateLastChecked := Now;
@@ -1042,7 +1042,7 @@ begin
         Title := ATitle;
         CurrentChapter := ACurrentChapter;
         SaveTo := ASaveTo;
-        URI := ALink;
+        Link := ALink;
         DownloadedChapterList := ADownloadedChapterList;
       end;
     end;
@@ -1054,7 +1054,7 @@ end;
 procedure TFavoriteManager.FreeAndDelete(const Pos: Integer);
 begin
   with Items[Pos].FavoriteInfo do
-    FFavoritesDB.Delete(ModuleID, URI);
+    FFavoritesDB.Delete(ModuleID, Link);
   Items[Pos].Free;
   Items.Delete(Pos);
 end;
@@ -1062,7 +1062,7 @@ end;
 procedure TFavoriteManager.FreeAndDelete(const T: TFavoriteContainer);
 begin
   with T.FavoriteInfo do
-    FFavoritesDB.Delete(ModuleID, URI);
+    FFavoritesDB.Delete(ModuleID, Link);
   T.Free;
   Items.Remove(T);
 end;
@@ -1116,7 +1116,7 @@ begin
               Enabled                            := Fields[f_enabled].AsBoolean;
               FavoriteInfo.ModuleID              := Fields[f_moduleid].AsString;
               ModuleID                           := FavoriteInfo.ModuleID;
-              FavoriteInfo.URI                   := Fields[f_uri].AsString;
+              FavoriteInfo.Link                   := Fields[f_uri].AsString;
               FavoriteInfo.Title                 := Fields[f_title].AsString;
               FavoriteInfo.CurrentChapter        := Fields[f_currentchapter].AsString;
               FavoriteInfo.DownloadedChapterList := Fields[f_downloadedchapterlist].AsString;
@@ -1149,7 +1149,7 @@ begin
             i,
             FEnabled,
             ModuleID,
-            URI,
+            Link,
             Title,
             CurrentChapter,
             DownloadedChapterList,
@@ -1172,7 +1172,7 @@ begin
     EnterCriticalsection(CS_Favorites);
     for i := 0 to Items.Count - 1 do
       with Items[i].FavoriteInfo do
-        if SameText(AWebsite, ModuleID) and SameText(ALink, URI) then
+        if SameText(AWebsite, ModuleID) and SameText(ALink, Link) then
         begin
           DownloadedChapterList := MergeCaseInsensitive([DownloadedChapterList, AValue.Text]);
           Break;

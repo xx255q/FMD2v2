@@ -1185,7 +1185,7 @@ begin
     PageNumber,
     CurrentPageNumber,
     ModuleID,
-    DownloadInfo.URI,
+    DownloadInfo.Link,
     DownloadInfo.Title,
     DownloadInfo.Status,
     DownloadInfo.Progress,
@@ -1375,7 +1375,7 @@ begin
             CurrentPageNumber               := Fields[f_currentpage].AsInteger;
             ModuleID                        := Fields[f_moduleid].AsString;
             DownloadInfo.ModuleID           := ModuleID;
-            DownloadInfo.URI                := Fields[f_uri].AsString;
+            DownloadInfo.Link               := Fields[f_link].AsString;
             DownloadInfo.Title              := Fields[f_title].AsString;
             DownloadInfo.Status             := Fields[f_status].AsString;
             DownloadInfo.Progress           := Fields[f_progress].AsString;
@@ -1428,7 +1428,7 @@ begin
             PageNumber,
             CurrentPageNumber,
             ModuleID,
-            DownloadInfo.URI,
+            DownloadInfo.Link,
             DownloadInfo.Title,
             DownloadInfo.Status,
             DownloadInfo.Progress,

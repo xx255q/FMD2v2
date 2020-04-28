@@ -71,7 +71,7 @@ procedure TGetMangaInfosThread.Execute;
     Result := False;
     try
       FInfo.mangaInfo.ModuleID := ModuleID;
-      FInfo.mangaInfo.URI := Link;
+      FInfo.mangaInfo.Link := Link;
       FInfo.mangaInfo.Title := Title;
       FInfo.ModuleIndex := Modules.LocateModuleByID(ModuleID);
       data := MainForm.vtMangaList.GetNodeData(FMangaListNode);
@@ -80,7 +80,7 @@ procedure TGetMangaInfosThread.Execute;
       begin
         if FInfo.mangaInfo.Title = '' then
           FInfo.mangaInfo.Title := data^.Title;
-        FInfo.mangaInfo.URI := data^.URI;
+        FInfo.mangaInfo.Link := data^.Link;
         FInfo.mangaInfo.Authors := data^.Authors;
         FInfo.mangaInfo.Artists := data^.Artists;
         FInfo.mangaInfo.Status := data^.Status;
@@ -151,10 +151,10 @@ begin
       Synchronize(MainThreadShowInfos);
       FCover.Clear;
       // If there's cover then we will load it to the TPicture component.
-      if OptionEnableLoadCover and (Trim(FInfo.mangaInfo.CoverURL) <> '') then
+      if OptionEnableLoadCover and (Trim(FInfo.mangaInfo.CoverLink) <> '') then
         try
           FInfo.FHTTP.Document.Clear;
-          if FInfo.FHTTP.GET(FInfo.mangaInfo.CoverURL) then
+          if FInfo.FHTTP.GET(FInfo.mangaInfo.CoverLink) then
             LoadCover;
         except
         end;

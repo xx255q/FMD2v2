@@ -741,7 +741,7 @@ type
     procedure OverrideSaveTo(const AModuleID: String);
 
     // View manga information
-    procedure ViewMangaInfo(const AURI, AModuleID, ATitle, ASaveTo: String;
+    procedure ViewMangaInfo(const ALink, AModuleID, ATitle, ASaveTo: String;
       const ASender: TObject; const AMangaListNode: PVirtualNode = nil);
 
     // Show manga information
@@ -839,8 +839,8 @@ type
   PMangaInfoData = ^TMangaInfoData;
 
   TMangaInfoData = record
-    Website,
-    URI,
+    ModuleID,
+    Link,
     Title,
     TitleFormat,
     Authors,
@@ -2067,7 +2067,7 @@ procedure TMainForm.miDownloadViewMangaInfoClick(Sender: TObject);
 begin
   if Assigned(vtDownload.FocusedNode) then
     with DLManager.Items[vtDownload.FocusedNode^.Index].DownloadInfo do
-      ViewMangaInfo(URI, ModuleID, Title, SaveTo, miDownloadViewMangaInfo);
+      ViewMangaInfo(Link, ModuleID, Title, SaveTo, miDownloadViewMangaInfo);
 end;
 
 procedure TMainForm.miChapterListHighlightClick(Sender: TObject);
@@ -2079,7 +2079,7 @@ begin
   end;
   if Length(ChapterList) = 0 then Exit;
   if miChapterListHighlight.Checked then
-    DLManager.GetDownloadedChaptersState(mangaInfo.ModuleID + mangaInfo.URI,
+    DLManager.GetDownloadedChaptersState(mangaInfo.ModuleID + mangaInfo.Link,
       ChapterList)
   else
     ClearChapterListState;
@@ -2144,7 +2144,7 @@ begin
             FavoriteManager.Lock;
             for i := 0 to FavoriteManager.Count - 1 do
             begin
-              if SameText(DLManager[xNode^.Index].DownloadInfo.URI, FavoriteManager[i].FavoriteInfo.URI)
+              if SameText(DLManager[xNode^.Index].DownloadInfo.Link, FavoriteManager[i].FavoriteInfo.Link)
                 and SameText(DLManager[xNode^.Index].DownloadInfo.ModuleID, FavoriteManager[i].FavoriteInfo.ModuleID) then
                 begin
                   FavoriteManager.FreeAndDelete(i);
@@ -2234,7 +2234,7 @@ begin
     begin
       if vtFavorites.Selected[xNode] then
         with FavoriteManager.Items[xNode^.Index].FavoriteInfo do
-          SilentThreadManager.Add(MD_DownloadAll, ModuleID, Title, URI, SaveTo);
+          SilentThreadManager.Add(MD_DownloadAll, ModuleID, Title, Link, SaveTo);
       xNode := vtFavorites.GetNextSelected(xNode);
     end;
   except
@@ -2262,7 +2262,7 @@ procedure TMainForm.miFavoritesViewInfosClick(Sender: TObject);
 begin
   if Assigned(vtFavorites.FocusedNode) then
     with FavoriteManager.Items[vtFavorites.FocusedNode^.Index].FavoriteInfo do
-      ViewMangaInfo(URI, ModuleID, Title, SaveTo, miFavoritesViewInfos);
+      ViewMangaInfo(Link, ModuleID, Title, SaveTo, miFavoritesViewInfos);
 end;
 
 procedure TMainForm.miHighlightNewMangaClick(Sender: TObject);
@@ -2474,7 +2474,7 @@ begin
           end;
           ModuleID:=mangaInfo.ModuleID;
           DownloadInfo.ModuleID:=mangaInfo.ModuleID;
-          DownloadInfo.URI:=mangaInfo.URI;
+          DownloadInfo.Link:=mangaInfo.Link;
           DownloadInfo.Title:=mangaInfo.Title;
           DownloadInfo.DateAdded:=Now;
           DownloadInfo.DateLastDownload:=Now;
@@ -2485,8 +2485,8 @@ begin
         if OptionSortDownloadsWhenAddingNewDownloadTasks then
           DLManager.Sort(DLManager.SortColumn);
       end;
-      DLManager.DownloadedChapters.Chapters[mangaInfo.ModuleID+mangaInfo.URI]:=links.Text;
-      FavoriteManager.AddToDownloadedChaptersList(mangaInfo.ModuleID,mangaInfo.URI,links);
+      DLManager.DownloadedChapters.Chapters[mangaInfo.ModuleID+mangaInfo.Link]:=links.Text;
+      FavoriteManager.AddToDownloadedChaptersList(mangaInfo.ModuleID,mangaInfo.Link,links);
       DLManager.CheckAndActiveTask;
       if OptionShowDownloadsTabOnNewTasks then
         pcMain.ActivePage:=tsDownload;
@@ -2520,7 +2520,7 @@ begin
           OptionChangeUnicodeCharacterStr);
 
     FavoriteManager.Add(mangaInfo.Title, IntToStr(mangaInfo.NumChapter), mangaInfo.ChapterLinks.Text,
-      mangaInfo.ModuleID, s, mangaInfo.URI);
+      mangaInfo.ModuleID, s, mangaInfo.Link);
     vtFavorites.NodeDataSize := SizeOf(TFavoriteInfo);
     UpdateVtFavorites;
     vtFavoritesFilterRefresh;
@@ -3048,7 +3048,7 @@ begin
     while Assigned(xNode) do
     begin
       data := vtMangaList.GetNodeData(xNode);
-      SilentThreadManager.Add(MD_AddToFavorites, data^.Website, data^.Title, data^.URI);
+      SilentThreadManager.Add(MD_AddToFavorites, data^.ModuleID, data^.Title, data^.Link);
       xNode := vtMangaList.GetNextSelected(xNode);
     end;
   finally
@@ -3513,7 +3513,7 @@ begin
           end;
 		  
       if AllowedToCreate then
-        SilentThreadManager.Add(MD_DownloadAll, data^.Website, data^.Title, data^.URI);
+        SilentThreadManager.Add(MD_DownloadAll, data^.ModuleID, data^.Title, data^.Link);
       xNode := vtMangaList.GetNextSelected(xNode);
     end;
   except
@@ -3527,7 +3527,7 @@ procedure TMainForm.miMangaListViewInfosClick(Sender: TObject);
 begin
   if Assigned(vtMangaList.FocusedNode) then begin
     with PMangaInfoData(vtMangaList.GetNodeData(vtMangaList.FocusedNode))^ do
-      ViewMangaInfo(URI, Website, Title, '', miMangaListViewInfos, vtMangaList.FocusedNode);
+      ViewMangaInfo(Link, ModuleID, Title, '', miMangaListViewInfos, vtMangaList.FocusedNode);
     if pcInfo.ActivePage <> tsInfoManga then
       pcInfo.ActivePage := tsInfoManga;
   end;
@@ -3668,7 +3668,7 @@ begin
       miDownloadOpenWith.Enabled := vtDownload.SelectedCount = 1;
       miDownloadOpenFolder.Enabled := miDownloadOpenWith.Enabled;
       miDownloadViewMangaInfo.Enabled := miDownloadOpenFolder.Enabled and
-        (DLManager[vtDownload.FocusedNode^.Index].DownloadInfo.URI <> '');
+        (DLManager[vtDownload.FocusedNode^.Index].DownloadInfo.Link <> '');
       miDownloadEnable.Enabled := iEnable;
       miDownloadDisable.Enabled := iDisable;
     end;
@@ -3749,7 +3749,7 @@ begin
     if (vtFavorites.SelectedCount = 1) and Assigned(vtFavorites.FocusedNode) then
     begin
       miFavoritesViewInfos.Enabled := True;
-      miFavoritesDownloadAll.Enabled := (Trim(FavoriteManager[vtFavorites.FocusedNode^.Index].FavoriteInfo.URI) <> '');
+      miFavoritesDownloadAll.Enabled := (Trim(FavoriteManager[vtFavorites.FocusedNode^.Index].FavoriteInfo.Link) <> '');
       miFavoritesDelete.Enabled := True;
       miFavoritesChangeSaveTo.Enabled := True;
       miFavoritesOpenFolder.Enabled := DirectoryExistsUTF8(FavoriteManager.Items[vtFavorites.FocusedNode^.Index].FavoriteInfo.SaveTo);
@@ -4225,7 +4225,7 @@ begin
     if not Enabled then Exit;
     C := Brush.Color;
     Brush.Color := clNone;
-    if Trim(FavoriteInfo.URI) = '' then
+    if Trim(FavoriteInfo.Link) = '' then
       Brush.Color := CL_FVBrokenFavorite
     else
     begin
@@ -4300,7 +4300,7 @@ begin
   if Node^.Index>=FavoriteManager.Count then Exit;
   with FavoriteManager.Items[Node^.Index].FavoriteInfo do
     case Column of
-      1: if Trim(URI)='' then HintText:=RS_HintFavoriteProblem
+      1: if Trim(Link)='' then HintText:=RS_HintFavoriteProblem
          else HintText:=Title;
       2: HintText:=currentChapter;
       3: HintText:=ModuleID;
@@ -4315,7 +4315,7 @@ begin
   if vtFavorites.Header.Columns[Column].Position<>1 then Exit;
   with FavoriteManager.Items[Node^.Index] do
   begin
-    if Trim(FavoriteInfo.URI)='' then
+    if Trim(FavoriteInfo.Link)='' then
       ImageIndex:=16
     else
       case FavoriteManager.Items[Node^.Index].Status of
@@ -4456,7 +4456,7 @@ begin
   with data^ do
   begin
     if dataProcess.FilterAllSites then
-      HintText += RS_InfoWebsite + LineEnding + Website + LineEnding2;
+      HintText += RS_InfoWebsite + LineEnding + ModuleID + LineEnding2;
     HintText += RS_InfoTitle + LineEnding + Title;
     if Authors <> '' then
       HintText += LineEnding2 + RS_InfoAuthors + LineEnding + Authors;
@@ -4772,13 +4772,13 @@ begin
   end;
 end;
 
-procedure TMainForm.ViewMangaInfo(const AURI, AModuleID, ATitle, ASaveTo: String;
+procedure TMainForm.ViewMangaInfo(const ALink, AModuleID, ATitle, ASaveTo: String;
   const ASender: TObject; const AMangaListNode: PVirtualNode);
 var
   i: Integer;
   fav: TFavoriteContainer;
 begin
-  if (AURI = '') or (AModuleID = '') then Exit;
+  if (ALink = '') or (AModuleID = '') then Exit;
 
   // terminate exisiting getmangainfo thread
   if Assigned(GetInfosThread) then
@@ -4791,7 +4791,7 @@ begin
   // set the UI
   i := Modules.LocateModuleByID(AModuleID);
   if i <> -1 then
-    edURL.Text := FillHost(Modules.Module[i].RootURL, AURI);
+    edURL.Text := FillHost(Modules.Module[i].RootURL, ALink);
   pcMain.ActivePage := tsInformation;
   imCover.Picture.Assign(nil);
   rmInformation.Clear;
@@ -4818,7 +4818,7 @@ begin
 
   DisableAddToFavorites(AModuleID);
   //check if manga already in FavoriteManager list
-  fav := FavoriteManager.LocateMangaByURI(AModuleID, AURI);
+  fav := FavoriteManager.LocateMangaByLink(AModuleID, ALink);
   if fav <> nil then
   begin
     btAddToFavorites.Enabled := False;
@@ -4837,7 +4837,7 @@ begin
   else
     GetInfosThread.Title := ATitle;
   GetInfosThread.ModuleID := AModuleID;
-  GetInfosThread.Link := AURI;
+  GetInfosThread.Link := ALink;
   GetInfosThread.Start;
 end;
 
@@ -4896,7 +4896,7 @@ begin
 
   btDownload.Enabled := (clbChapterList.RootNodeCount > 0);
   btDownloadSplit.Enabled := btDownload.Enabled;
-  btReadOnline.Enabled := (mangaInfo.URI <> '');
+  btReadOnline.Enabled := (mangaInfo.Link <> '');
 end;
 
 procedure TMainForm.RunGetList;
@@ -5987,7 +5987,7 @@ begin
   data := Sender.GetNodeData(Node);
   with data^ do
   begin
-    URI := dataProcess.Value[Node^.Index, DATA_PARAM_LINK];
+    Link := dataProcess.Value[Node^.Index, DATA_PARAM_LINK];
     Title := dataProcess.Value[Node^.Index, DATA_PARAM_TITLE];
     Authors := dataProcess.Value[Node^.Index, DATA_PARAM_AUTHORS];
     Artists := dataProcess.Value[Node^.Index, DATA_PARAM_ARTISTS];
@@ -5995,11 +5995,11 @@ begin
     Status := dataProcess.Value[Node^.Index, DATA_PARAM_STATUS];
     NumChapter := dataProcess.ValueInt[Node^.Index, DATA_PARAM_NUMCHAPTER];
     JDN := dataProcess.ValueInt[Node^.Index, DATA_PARAM_JDN];
-    Website := dataProcess.WebsiteName[Node^.Index];
+    ModuleID := dataProcess.WebsiteName[Node^.Index];
     Summary := dataProcess.Value[Node^.Index, DATA_PARAM_SUMMARY];
     TitleFormat := Title + ' (' + IntToStr(NumChapter) + ')';
     if dataProcess.FilterAllSites then
-      TitleFormat += ' [' + Website + ']';
+      TitleFormat += ' [' + ModuleID + ']';
   end;
 end;
 
