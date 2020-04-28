@@ -526,6 +526,14 @@ begin
   m := nil;
   DoInit(AFileName, m);
 
+  // remove modules without id
+  for i := TempModules.Count-1 downto 0 do
+    if TempModules[i].Module.ID = '' then
+    begin
+      TempModules[i].Free;
+      TempModules.Delete(I);
+    end;
+
   if TempModules.Count <> 0 then
     with LuaWebsiteModulesManager do
     begin
