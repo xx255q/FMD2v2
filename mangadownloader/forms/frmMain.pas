@@ -2472,7 +2472,6 @@ begin
             DownloadInfo.Status:=Format('[%d/%d] %s',[0,ChapterLinks.Count,RS_Waiting]);
             Status:=STATUS_WAIT;
           end;
-          ModuleID:=mangaInfo.ModuleID;
           DownloadInfo.ModuleID:=mangaInfo.ModuleID;
           DownloadInfo.Link:=mangaInfo.Link;
           DownloadInfo.Title:=mangaInfo.Title;

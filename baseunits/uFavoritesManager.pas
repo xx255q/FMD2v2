@@ -890,7 +890,7 @@ begin
                   begin
                     Manager := DLManager;
                     CurrentDownloadChapterPtr := 0;
-                    ModuleID := FavoriteInfo.ModuleID;
+                    DownloadInfo.ModuleID := FavoriteInfo.ModuleID;
                     DownloadInfo.Link := FavoriteInfo.Link;
                     DownloadInfo.Title := FavoriteInfo.Title;
                     DownloadInfo.SaveTo := FavoriteInfo.SaveTo;

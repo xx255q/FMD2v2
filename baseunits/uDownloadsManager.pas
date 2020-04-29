@@ -117,14 +117,12 @@ type
   TTaskContainer = class
   private
     FStoredOrder: Integer;
-    FModuleID: String;
     FStatus: TDownloadStatusType;
     FEnabled,
     FDirtyEnabled,
     FDirty: Boolean;
     procedure SetEnabled(AValue: Boolean);
     procedure SetStatus(AValue: TDownloadStatusType);
-    procedure SetModuleID(AValue: String);
   public
     DlId: Integer;
     // critical section
@@ -161,7 +159,6 @@ type
     procedure ClearDirty(const AOrder: Integer = -1);
   public
     Visible: Boolean;
-    property ModuleID: String read FModuleID write SetModuleID;
     property Status: TDownloadStatusType read FStatus write SetStatus;
     property Enabled: Boolean read FEnabled write SetEnabled;
   end;
@@ -816,7 +813,7 @@ procedure TTaskThread.Execute;
         [Self.ClassName,
         c,
         Container.PageLinks.Count,
-        Container.ModuleID,
+        Container.DownloadInfo.Website,
         Container.DownloadInfo.Title,
         Container.ChapterLinks[Container.CurrentDownloadChapterPtr]]) + LineEnding + Trim(sf));
       Result := False;
@@ -838,8 +835,6 @@ begin
   Container.DownloadInfo.DateLastDownloaded := Now;
   Container.DownloadInfo.TransferRate := FormatByteSize(Container.ReadCount, true);
   try
-    if (Container.ModuleID = '') and (Container.DownloadInfo.ModuleID <> '') then
-      Container.ModuleID := Container.DownloadInfo.ModuleID;
     if Container.ModuleIndex > -1 then
       DynamicPageLink := Modules.Module[Container.ModuleIndex].DynamicPageLink
     else
@@ -1084,14 +1079,6 @@ end;
 
 { TTaskContainer }
 
-procedure TTaskContainer.SetModuleID(AValue: String);
-begin
-  if FModuleID = AValue then Exit;
-  FModuleID := AValue;
-  DownloadInfo.ModuleID := AValue;
-  ModuleIndex := Modules.LocateModuleByID(FModuleID);
-end;
-
 procedure TTaskContainer.SetStatus(AValue: TDownloadStatusType);
 begin
   if FStatus = AValue then Exit;
@@ -1130,7 +1117,6 @@ begin
   PageLinks := TStringList.Create;
   PageContainerLinks := TStringList.Create;
   FileNames := TStringList.Create;
-  FModuleID := '';
   ModuleIndex := -1;
   ReadCount := 0;
   WorkCounter := 0;
@@ -1181,7 +1167,7 @@ begin
     CurrentDownloadChapterPtr,
     PageNumber,
     CurrentPageNumber,
-    ModuleID,
+    DownloadInfo.ModuleID,
     DownloadInfo.Link,
     DownloadInfo.Title,
     DownloadInfo.Status,
@@ -1367,8 +1353,7 @@ begin
             CurrentDownloadChapterPtr       := Fields[f_chapterptr].AsInteger;
             PageNumber                      := Fields[f_numberofpages].AsInteger;
             CurrentPageNumber               := Fields[f_currentpage].AsInteger;
-            ModuleID                        := Fields[f_moduleid].AsString;
-            DownloadInfo.ModuleID           := ModuleID;
+            DownloadInfo.ModuleID           := Fields[f_moduleid].AsString;
             DownloadInfo.Link               := Fields[f_link].AsString;
             DownloadInfo.Title              := Fields[f_title].AsString;
             DownloadInfo.Status             := Fields[f_status].AsString;
@@ -1421,7 +1406,7 @@ begin
             CurrentDownloadChapterPtr,
             PageNumber,
             CurrentPageNumber,
-            ModuleID,
+            DownloadInfo.ModuleID,
             DownloadInfo.Link,
             DownloadInfo.Title,
             DownloadInfo.Status,
