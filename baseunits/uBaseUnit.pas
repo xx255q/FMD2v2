@@ -349,12 +349,14 @@ type
     DateAdded,
     DateLastDownloaded: TDateTime;
     iProgress: Integer;
-    Module: Pointer;
     private
+      FModule: Pointer;
       FModuleID: String;
+      procedure SetModule(AValue: Pointer);
       procedure SetModuleID(AValue: String);
     public
       property ModuleID: String read FModuleID write SetModuleID;
+      property Module: Pointer read FModule write SetModule;
       function Website: String;
   end;
 
@@ -372,11 +374,13 @@ type
     DateAdded,
     DateLastChecked,
     DateLastUpdated: TDateTime;
-    Module: Pointer;
     private
+      FModule: Pointer;
       FModuleID: String;
+      procedure SetModule(AValue: Pointer);
       procedure SetModuleID(AValue: String);
     public
+      property Module: Pointer read FModule write SetModule;
       property ModuleID: String read FModuleID write SetModuleID;
       function Website: String;
   end;
@@ -3753,13 +3757,21 @@ procedure TDownloadInfo.SetModuleID(AValue: String);
 begin
   if FModuleID = AValue then Exit;
   FModuleID := AValue;
-  Module := Modules.LocateModule(FModuleID);
+  FModule := Modules.LocateModule(FModuleID);
+end;
+
+procedure TDownloadInfo.SetModule(AValue: Pointer);
+begin
+  if FModule = AValue then Exit;
+  FModule := AValue;
+  if Assigned(FModule) then
+    FModuleID := TModuleContainer(FModule).ID;
 end;
 
 function TDownloadInfo.Website: String;
 begin
-  if Assigned(Module) then
-    Result := TModuleContainer(Module).Name
+  if Assigned(FModule) then
+    Result := TModuleContainer(FModule).Name
   else
     Result := '';
 end;
@@ -3770,13 +3782,21 @@ procedure TFavoriteInfo.SetModuleID(AValue: String);
 begin
   if FModuleID = AValue then Exit;
   FModuleID := AValue;
-  Module := Modules.LocateModule(FModuleID);
+  FModule := Modules.LocateModule(FModuleID);
+end;
+
+procedure TFavoriteInfo.SetModule(AValue: Pointer);
+begin
+  if FModule = AValue then Exit;
+  FModule := AValue;
+  if Assigned(FModule) then
+    FModuleID := TModuleContainer(FModule).ID;
 end;
 
 function TFavoriteInfo.Website: String;
 begin
-  if Assigned(Module) then
-    Result := TModuleContainer(Module).Name
+  if Assigned(FModule) then
+    Result := TModuleContainer(FModule).Name
   else
     Result := '';
 end;
