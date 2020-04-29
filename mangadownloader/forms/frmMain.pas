@@ -4120,7 +4120,7 @@ begin
          end;
       1: HintText:=Status;
       2: HintText:=Progress;
-      4: HintText:=ModuleID;
+      4: HintText:=Website;
       5: HintText:=SaveTo;
       6: HintText:=DateTimeToStr(DateAdded);
     end;
@@ -4150,7 +4150,7 @@ begin
            else CellText:=Progress;
          end;
       3: CellText:=TransferRate;
-      4: CellText:=ModuleID;
+      4: CellText:=Website;
       5: CellText:=SaveTo;
       6: CellText:=DateTimeToStr(DateAdded);
       7: CellText:=DateTimeToStr(DateLastDownloaded);
