@@ -1527,11 +1527,14 @@ procedure TDownloadManager.SetTaskActive(const taskID: Integer);
 begin
   if not Items[taskID].Enabled then Exit;
   with Items[taskID] do
+  begin
+    if DownloadInfo.Module = nil then Exit;
     if not (ThreadState or (Status in [STATUS_FINISH, STATUS_WAIT])) then
     begin
       Status := STATUS_WAIT;
       DownloadInfo.Status := Format('[%d/%d] %s',[CurrentDownloadChapterPtr+1,ChapterLinks.Count,RS_Waiting]);
     end;
+  end;
 end;
 
 procedure TDownloadManager.CheckAndActiveTaskAtStartup;
@@ -1542,6 +1545,12 @@ begin
   tcount := 0;
   for i := 0 to Items.Count - 1 do
     with Items[i] do
+      if (Status = STATUS_WAIT) and (DownloadInfo.Module = nil) then
+      begin
+        Status := STATUS_STOP;
+        DownloadInfo.Status := Format('[%d/%d] %s',[CurrentDownloadChapterPtr+1,ChapterLinks.Count,RS_Stopped]);
+      end
+      else
       if Status in [STATUS_DOWNLOAD, STATUS_PREPARE] then
       begin
         if DownloadInfo.Module = nil then
@@ -1573,8 +1582,10 @@ end;
 procedure TDownloadManager.ActiveTask(const taskID: Integer);
 begin
   if not Items[taskID].Enabled then Exit;
-  if Items[taskID].Status = STATUS_FINISH then Exit;
   with Items[taskID] do
+  begin
+    if DownloadInfo.Module = nil then Exit;
+    if Status = STATUS_FINISH then Exit;
     if not ThreadState then
     begin
       if not (Status in [STATUS_DOWNLOAD, STATUS_PREPARE]) then
@@ -1591,6 +1602,7 @@ begin
         Task.Start;
       end;
     end;
+  end;
 end;
 
 procedure TDownloadManager.StopTask(const taskID: Integer;
@@ -1622,7 +1634,7 @@ begin
   begin
     for i := 0 to Items.Count - 1 do
       with Items[i] do
-        if  Enabled and (Status <> STATUS_FINISH) and (not ThreadState) then
+        if Assigned(DownloadInfo.Module) and Enabled and (Status <> STATUS_FINISH) and (not ThreadState) then
         begin
           Status := STATUS_WAIT;
           DownloadInfo.Status := Format('[%d/%d] %s',[CurrentDownloadChapterPtr+1,ChapterLinks.Count,RS_Waiting]);
