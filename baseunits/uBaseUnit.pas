@@ -347,7 +347,7 @@ type
     Progress,
     TransferRate: String;
     DateAdded,
-    DateLastDownload: TDateTime;
+    DateLastDownloaded: TDateTime;
     iProgress: Integer;
   end;
 

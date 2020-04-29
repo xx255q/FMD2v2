@@ -2311,8 +2311,8 @@ msgid "Date added"
 msgstr "Date added"
 
 #: tmainform.vtdownload.header.columns[7].text
-msgid "Last download date"
-msgstr "Last download date"
+msgid "Last downloaded date"
+msgstr "Last downloaded date"
 
 #: tmainform.vtfavorites.header.columns[0].text
 msgid "#"

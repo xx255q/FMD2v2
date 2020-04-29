@@ -29,7 +29,7 @@ type
       const Aenabled:Boolean;
       const Aorder,Ataskstatus,Achapterptr,Anumberofpages,Acurrentpage:Integer;
       const Amoduleid,Alink,Atitle,Astatus,Aprogress,Asaveto:String;
-      const Adatelastdownload:TDateTime;
+      const Adatelastdownloaded:TDateTime;
       const Achapterslinks,Achaptersnames,Apagelinks,Apagecontainerlinks,Afilenames,Acustomfilenames,Achaptersstatus:String); inline;
     procedure InternalUpdateOrderEnabled(const Adlid,AOrder:Integer;const Aenabled:Boolean);
     procedure InternalUpdateOrder(const Adlid,AOrder:Integer);
@@ -48,7 +48,7 @@ type
   end;
 
 const
-  f_dlid               = 0;
+  f_id                 = 0;
   f_enabled            = 1;
   f_order              = 2;
   f_taskstatus         = 3;
@@ -62,7 +62,7 @@ const
   f_progress           = 11;
   f_saveto             = 12;
   f_dateadded          = 13;
-  f_datelastdownload   = 14;
+  f_datelastdownloaded = 14;
   f_chapterslinks      = 15;
   f_chaptersnames      = 16;
   f_pagelinks          = 17;
@@ -90,7 +90,7 @@ begin
   TableName := 'downloads';
   Table.PacketRecords := 1;
   CreateParams :=
-    '"dlid" INTEGER PRIMARY KEY,' +
+    '"id" INTEGER PRIMARY KEY,' +
     '"enabled" BOOLEAN,' +
     '"order" INTEGER,' +
     '"taskstatus" INTEGER,' +
@@ -104,7 +104,7 @@ begin
     '"progress" TEXT,' +
     '"saveto" TEXT,' +
     '"dateadded" DATETIME,' +
-    '"datelastdownload" DATETIME,' +
+    '"datelastdownloaded" DATETIME,' +
     '"chapterslinks" TEXT,' +
     '"chaptersnames" TEXT,' +
     '"pagelinks" TEXT,' +
@@ -112,7 +112,7 @@ begin
     '"filenames" TEXT,' +
     '"customfilenames" TEXT,' +
     '"chaptersstatus" TEXT';
-  FieldsParams := '"dlid","enabled","order","taskstatus","chapterptr","numberofpages","currentpage","moduleid","link","title","status","progress","saveto","dateadded","datelastdownload","chapterslinks","chaptersnames","pagelinks","pagecontainerlinks","filenames","customfilenames","chaptersstatus"';
+  FieldsParams := '"id","enabled","order","taskstatus","chapterptr","numberofpages","currentpage","moduleid","link","title","status","progress","saveto","dateadded","datelastdownloaded","chapterslinks","chaptersnames","pagelinks","pagecontainerlinks","filenames","customfilenames","chaptersstatus"';
   SelectParams := 'SELECT ' + FieldsParams + ' FROM '+QuotedStrD(TableName)+' ORDER BY "order"';
 end;
 
@@ -123,7 +123,7 @@ procedure TDownloadsDB.InternalAdd(
   const Adateadded:TDateTime;
   const Achapterslinks,Achaptersnames,Apagelinks,Apagecontainerlinks,Afilenames,Acustomfilenames,Achaptersstatus:String);
 begin
-  Connection.ExecuteDirect('INSERT INTO "downloads" ("enabled","order","taskstatus","chapterptr","numberofpages","currentpage","moduleid","link","title","status","progress","saveto","dateadded","datelastdownload","chapterslinks","chaptersnames","pagelinks","pagecontainerlinks","filenames","customfilenames","chaptersstatus")' +
+  Connection.ExecuteDirect('INSERT INTO "downloads" ("enabled","order","taskstatus","chapterptr","numberofpages","currentpage","moduleid","link","title","status","progress","saveto","dateadded","datelastdownloaded","chapterslinks","chaptersnames","pagelinks","pagecontainerlinks","filenames","customfilenames","chaptersstatus")' +
     ' VALUES (' +
     QuotedStr(Aenabled) + ', ' +
     QuotedStr(Aorder) + ', ' +
@@ -154,7 +154,7 @@ procedure TDownloadsDB.InternalUpdate(
   const Aenabled:Boolean;
   const Aorder,Ataskstatus,Achapterptr,Anumberofpages,Acurrentpage:Integer;
   const Amoduleid,Alink,Atitle,Astatus,Aprogress,Asaveto:String;
-  const Adatelastdownload:TDateTime;
+  const Adatelastdownloaded:TDateTime;
   const Achapterslinks,Achaptersnames,Apagelinks,Apagecontainerlinks,Afilenames,Acustomfilenames,Achaptersstatus:String);
 begin
   Connection.ExecuteDirect('UPDATE "downloads" SET ' +
@@ -165,12 +165,12 @@ begin
     '"numberofpages"=' +      QuotedStr(Anumberofpages) + ', ' +
     '"currentpage"=' +        QuotedStr(Acurrentpage) + ', ' +
     '"moduleid"=' +           QuotedStr(Amoduleid) + ', ' +
-    '"link"=' +                QuotedStr(Alink) + ', ' +
+    '"link"=' +               QuotedStr(Alink) + ', ' +
     '"title"=' +              QuotedStr(Atitle) + ', ' +
     '"status"=' +             QuotedStr(Astatus) + ', ' +
     '"progress"=' +           QuotedStr(Aprogress) + ', ' +
     '"saveto"=' +             QuotedStr(Asaveto) + ', ' +
-    '"datelastdownload"=' +   QuotedStr(Adatelastdownload) + ', ' +
+    '"datelastdownloaded"=' + QuotedStr(Adatelastdownloaded) + ', ' +
     '"chapterslinks"=' +      QuotedStr(Achapterslinks) + ', ' +
     '"chaptersnames"=' +      QuotedStr(Achaptersnames) + ', ' +
     '"pagelinks"=' +          QuotedStr(Apagelinks) + ', ' +
@@ -178,7 +178,7 @@ begin
     '"filenames"=' +          QuotedStr(Afilenames) + ', ' +
     '"customfilenames"=' +    QuotedStr(Acustomfilenames) + ', ' +
     '"chaptersstatus"=' +     QuotedStr(Achaptersstatus) +
-    ' WHERE "dlid"=' + QuotedStr(Adlid));
+    ' WHERE "id"=' + QuotedStr(Adlid));
 end;
 
 procedure TDownloadsDB.InternalUpdateOrderEnabled(const Adlid, AOrder: Integer;
@@ -187,14 +187,14 @@ begin
   Connection.ExecuteDirect('UPDATE "downloads" SET ' +
     '"enabled"=' +            QuotedStr(Aenabled) + ', ' +
     '"order"=' +              QuotedStr(Aorder) +
-    ' WHERE "dlid"=' +        QuotedStr(Adlid));
+    ' WHERE "id"=' +        QuotedStr(Adlid));
 end;
 
 procedure TDownloadsDB.InternalUpdateOrder(const Adlid, AOrder: Integer);
 begin
   Connection.ExecuteDirect('UPDATE "downloads" SET ' +
     '"order"=' +       QuotedStr(AOrder)+
-    ' WHERE "dlid"=' + QuotedStr(Adlid));
+    ' WHERE "id"=' + QuotedStr(Adlid));
 end;
 
 procedure TDownloadsDB.InternalUpdateEnabled(const Adlid: Integer;
@@ -202,7 +202,7 @@ procedure TDownloadsDB.InternalUpdateEnabled(const Adlid: Integer;
 begin
   Connection.ExecuteDirect('UPDATE "downloads" SET ' +
     '"enabled"='     + QuotedStr(Aenabled)+
-    ' WHERE "dlid"=' + QuotedStr(Adlid));
+    ' WHERE "id"=' + QuotedStr(Adlid));
 end;
 
 function TDownloadsDB.Add(
@@ -243,7 +243,7 @@ begin
   if not Connection.Connected then Exit;
   try
     Connection.ExecuteDirect(
-      'DELETE FROM "downloads" WHERE "dlid"=' + QuotedStr(ADlId));
+      'DELETE FROM "downloads" WHERE "id"=' + QuotedStr(ADlId));
     Inc(FCommitCount);
     if FCommitCount >= FAutoCommitCount then
       Commit;

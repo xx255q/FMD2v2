@@ -2477,7 +2477,7 @@ begin
           DownloadInfo.Link:=mangaInfo.Link;
           DownloadInfo.Title:=mangaInfo.Title;
           DownloadInfo.DateAdded:=Now;
-          DownloadInfo.DateLastDownload:=Now;
+          DownloadInfo.DateLastDownloaded:=Now;
           DownloadInfo.SaveTo:=s;
           CurrentDownloadChapterPtr:=0;
           SaveToDB(newdl);
@@ -4154,7 +4154,7 @@ begin
       4: CellText:=ModuleID;
       5: CellText:=SaveTo;
       6: CellText:=DateTimeToStr(DateAdded);
-      7: CellText:=DateTimeToStr(DateLastDownload);
+      7: CellText:=DateTimeToStr(DateLastDownloaded);
     end;
 end;
 

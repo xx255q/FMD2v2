@@ -422,7 +422,7 @@ destructor TTaskThread.Destroy;
 var
   i: Integer;
 begin
-  Container.DownloadInfo.DateLastDownload := Now;
+  Container.DownloadInfo.DateLastDownloaded := Now;
   EnterCriticalsection(FCS_THREADS);
   try
     if Threads.Count > 0 then
@@ -835,7 +835,7 @@ var
   FailedRetryCount: Integer = 0;
 begin
   Container.ThreadState := True;
-  Container.DownloadInfo.DateLastDownload := Now;
+  Container.DownloadInfo.DateLastDownloaded := Now;
   Container.DownloadInfo.TransferRate := FormatByteSize(Container.ReadCount, true);
   try
     if (Container.ModuleID = '') and (Container.DownloadInfo.ModuleID <> '') then
@@ -1364,7 +1364,7 @@ begin
           with t, FDownloadsDB.Table do
           begin
             Manager := Self;
-            DlId                            := Fields[f_dlid].AsInteger;
+            DlId                            := Fields[f_id].AsInteger;
             Enabled                         := Fields[f_enabled].AsBoolean;
             Status                          := TDownloadStatusType(Fields[f_taskstatus].AsInteger);
             CurrentDownloadChapterPtr       := Fields[f_chapterptr].AsInteger;
@@ -1380,7 +1380,7 @@ begin
               DownCounter := StrToIntDef(Trim(ExtractWord(1, DownloadInfo.Progress, ['/'])), 0);
             DownloadInfo.SaveTo             := Fields[f_saveto].AsString;
             DownloadInfo.DateAdded          := Fields[f_dateadded].AsDateTime;
-            DownloadInfo.DateLastDownload   := Fields[f_datelastdownload].AsDateTime;
+            DownloadInfo.DateLastDownloaded   := Fields[f_datelastdownloaded].AsDateTime;
             ChapterLinks.Text               := Fields[f_chapterslinks].AsString;
             ChapterName.Text                := Fields[f_chaptersnames].AsString;
             PageLinks.Text                  := Fields[f_pagelinks].AsString;
@@ -1430,7 +1430,7 @@ begin
             DownloadInfo.Status,
             DownloadInfo.Progress,
             DownloadInfo.SaveTo,
-            DownloadInfo.DateLastDownload,
+            DownloadInfo.DateLastDownloaded,
             ChapterLinks.Text,
             ChapterName.Text,
             PageLinks.Text,
