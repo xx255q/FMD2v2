@@ -383,7 +383,7 @@ begin
             fFailedDownload: FOwner.AddStatus(Format(RS_StatusRedownloaded, [FModule.name]));
           end;
           FModule.flag := fDownloaded;
-          FOwner.FDownloadedCount := InterLockedIncrement(FOwner.FDownloadedCount);
+          InterLockedIncrement(FOwner.FDownloadedCount);
         end;
       end;
     end;

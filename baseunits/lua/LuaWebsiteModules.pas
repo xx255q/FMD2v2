@@ -607,14 +607,14 @@ constructor TLuaWebsiteModulesLoaderThread.Create(
   const AOwner: TLuaWebsiteModulesLoader);
 begin
   FOwner:=AOwner;
-  FOwner.FThreadCount:=InterLockedIncrement(FOwner.FThreadCount);
+  InterLockedIncrement(FOwner.FThreadCount);
   FreeOnTerminate:=True;
   inherited Create(False);
 end;
 
 destructor TLuaWebsiteModulesLoaderThread.Destroy;
 begin
-  FOwner.FThreadCount:=InterLockedDecrement(FOwner.FThreadCount);
+  InterLockedDecrement(FOwner.FThreadCount);
   inherited Destroy;
 end;
 

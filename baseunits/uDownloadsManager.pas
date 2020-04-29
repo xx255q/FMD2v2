@@ -366,7 +366,7 @@ begin
     begin
       EnterCriticalSection(Task.Container.CS_Container);
       try
-        Task.Container.DownCounter := InterLockedIncrement(Task.Container.DownCounter);
+        InterLockedIncrement(Task.Container.DownCounter);
         Task.Container.DownloadInfo.Progress :=
           Format('%d/%d', [Task.Container.DownCounter, Task.Container.PageNumber]);
       finally
@@ -726,12 +726,12 @@ begin
     if ((Flag = CS_GETPAGELINK) and (s <> 'W')) or
       ((Flag = CS_DOWNLOAD) and (s = 'D')) then
     begin
-      Container.WorkCounter := InterLockedIncrement(Container.WorkCounter);
-      Container.DownCounter := InterLockedIncrement(Container.DownCounter);
+      InterLockedIncrement(Container.WorkCounter);
+      InterLockedIncrement(Container.DownCounter);
       Container.DownloadInfo.Progress :=
         Format('%d/%d', [Container.DownCounter, Container.PageNumber]);
       if Flag = CS_GETPAGELINK then
-        Container.CurrentPageNumber := InterLockedIncrement(Container.CurrentPageNumber);
+        InterLockedIncrement(Container.CurrentPageNumber);
       Exit;
     end;
   end;
@@ -757,10 +757,10 @@ begin
         Task := Self;
         WorkId := Container.WorkCounter;
         Start;
-        Container.WorkCounter := InterLockedIncrement(Container.WorkCounter);
+        InterLockedIncrement(Container.WorkCounter);
       end;
       if Flag = CS_GETPAGELINK then
-        Container.CurrentPageNumber := InterLockedIncrement(Container.CurrentPageNumber);
+        InterLockedIncrement(Container.CurrentPageNumber);
     finally
       LeaveCriticalsection(FCS_THREADS);
     end;
@@ -960,8 +960,7 @@ begin
         begin
           if Terminated then Exit;
           Checkout;
-          Container.DownloadInfo.iProgress :=
-            InterLockedIncrement(Container.DownloadInfo.iProgress);
+          InterLockedIncrement(Container.DownloadInfo.iProgress);
         end;
         WaitForThreads;
         if Terminated then Exit;
@@ -1001,8 +1000,7 @@ begin
         begin
           if Terminated then Exit;
           Checkout;
-          Container.DownloadInfo.iProgress :=
-            InterLockedIncrement(Container.DownloadInfo.iProgress);
+          InterLockedIncrement(Container.DownloadInfo.iProgress);
         end;
         WaitForThreads;
         if Terminated then Exit;
@@ -1045,8 +1043,7 @@ begin
       Container.CurrentPageNumber := 0;
       Container.PageLinks.Clear;
       Container.PageContainerLinks.Clear;
-      Container.CurrentDownloadChapterPtr :=
-        InterLockedIncrement(Container.CurrentDownloadChapterPtr);
+      InterLockedIncrement(Container.CurrentDownloadChapterPtr);
 
       if (Container.CurrentDownloadChapterPtr = Container.ChapterLinks.Count) and
          (FailedRetryCount < OptionRetryFailedTask) then

@@ -460,22 +460,22 @@ end;
 
 procedure TModuleContainer.IncActiveTaskCount;
 begin
-  ActiveTaskCount := InterLockedIncrement(ActiveTaskCount);
+  InterLockedIncrement(ActiveTaskCount);
 end;
 
 procedure TModuleContainer.DecActiveTaskCount;
 begin
-  ActiveTaskCount := InterLockedDecrement(ActiveTaskCount);
+  InterLockedDecrement(ActiveTaskCount);
 end;
 
 procedure TModuleContainer.IncActiveConnectionCount;
 begin
-  ActiveConnectionCount := InterLockedIncrement(ActiveConnectionCount);
+  InterLockedIncrement(ActiveConnectionCount);
 end;
 
 procedure TModuleContainer.DecActiveConnectionCount;
 begin
-  ActiveConnectionCount := InterLockedDecrement(ActiveConnectionCount);
+  InterLockedDecrement(ActiveConnectionCount);
 end;
 
 function TModuleContainer.GetMaxConnectionLimit: Integer;

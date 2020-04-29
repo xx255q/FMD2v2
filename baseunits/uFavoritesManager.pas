@@ -706,7 +706,7 @@ begin
         begin
           Status := STATUS_CHECK;
           if Assigned(TaskThread) then
-            TaskThread.FPendingCount := InterLockedIncrement(TaskThread.FPendingCount);
+            InterLockedIncrement(TaskThread.FPendingCount);
         end;
     end
     else
