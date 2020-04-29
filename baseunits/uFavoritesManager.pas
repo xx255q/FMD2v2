@@ -11,9 +11,9 @@ unit uFavoritesManager;
 interface
 
 uses
-  Classes, SysUtils, fgl, Dialogs, IniFiles, lazutf8classes, LazFileUtils,
-  uBaseUnit, uData, uDownloadsManager, WebsiteModules,
-  FMDOptions, httpsendthread, FavoritesDB, BaseThread, SimpleException, VirtualTrees;
+  Classes, SysUtils, fgl, Dialogs, ExtCtrls, IniFiles, lazutf8classes,
+  LazFileUtils, uBaseUnit, uData, uDownloadsManager, WebsiteModules, FMDOptions,
+  httpsendthread, FavoritesDB, BaseThread, SimpleException, VirtualTrees;
 
 type
   TFavoriteManager = class;
@@ -26,7 +26,6 @@ type
   private
     FMangaInformation: TMangaInformation;
   protected
-    procedure SyncStatus;
     procedure Execute; override;
   public
     WorkId: Cardinal;
@@ -44,12 +43,16 @@ type
   private
     FBtnCaption: String;
     FPendingCount: Integer;
+    FNeedRepaint: Integer;
+    FTimerRepaint: TTimer;
   protected
+    procedure TimerRepaintOnTimer(Sender: TObject);
     procedure SyncStartChecking;
     procedure SyncFinishChecking;
     procedure SyncUpdateBtnCaption;
     procedure Checkout;
     procedure Execute; override;
+    procedure UpdateStatus;
   public
     CS_Threads: TRTLCriticalSection;
     Manager: TFavoriteManager;
@@ -221,12 +224,6 @@ end;
 
 { TFavoriteThread }
 
-procedure TFavoriteThread.SyncStatus;
-begin
-  if MainForm.pcMain.ActivePage = MainForm.tsFavorites then
-    MainForm.vtFavorites.Repaint;
-end;
-
 procedure TFavoriteThread.Execute;
 var
   DLChapters: TStringList;
@@ -234,7 +231,7 @@ var
 begin
   if (Container.FavoriteInfo.Link) = '' then Exit;
 
-  Synchronize(SyncStatus);
+  Task.UpdateStatus;
   with Container do
     try
       // get new manga info
@@ -322,11 +319,18 @@ begin
   end;
   FMangaInformation.Free;
   if not Terminated then
-    Synchronize(SyncStatus);
+    Task.UpdateStatus;
   inherited Destroy;
 end;
 
 { TFavoriteTask }
+
+procedure TFavoriteTask.TimerRepaintOnTimer(Sender: TObject);
+begin
+  if FNeedRepaint > 0 then
+    FNeedRepaint := InterlockedExchange(FNeedRepaint, 0);
+  FormMain.vtFavorites.Repaint;
+end;
 
 procedure TFavoriteTask.SyncStartChecking;
 begin
@@ -451,6 +455,12 @@ begin
   inherited Create(True);
   InitCriticalSection(CS_Threads);
   Threads := TFavoriteThreads.Create;
+
+  FNeedRepaint := 0;
+  FTimerRepaint := TTimer.Create(nil);
+  FTimerRepaint.Interval := 500;
+  FTimerRepaint.OnTimer := TimerRepaintOnTimer;
+  FTimerRepaint.Enabled := True;
 end;
 
 destructor TFavoriteTask.Destroy;
@@ -507,10 +517,17 @@ begin
     LeaveCriticalsection(Manager.CS_Favorites);
   end;
 
+  FTimerRepaint.Free;
+
   // reset the ui
   if not isExiting then
     Synchronize(SyncFinishChecking);
   inherited Destroy;
+end;
+
+procedure TFavoriteTask.UpdateStatus;
+begin
+  FNeedRepaint := InterlockedIncrement(FNeedRepaint);
 end;
 
 { TFavoriteManager }
