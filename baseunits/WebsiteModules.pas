@@ -166,6 +166,7 @@ type
     function GetMaxThreadPerTaskLimit: Integer;
 
     function CanCreateConnection: Boolean;
+    function CanCreateTask: Boolean;
 
     property Settings: TWebsiteModuleSettings read FSettings write FSettings;
     property AccountSupport: Boolean read FAccountSupport write SetAccountSupport;
@@ -506,6 +507,14 @@ function TModuleContainer.CanCreateConnection: Boolean;
 begin
   if GetMaxConnectionLimit > 0 then
     Result := ActiveConnectionCount < GetMaxConnectionLimit
+  else
+    Result := True;
+end;
+
+function TModuleContainer.CanCreateTask: Boolean;
+begin
+  if GetMaxTaskLimit > 0 then
+    Result := ActiveTaskCount < GetMaxTaskLimit
   else
     Result := True;
 end;
@@ -903,9 +912,7 @@ function TWebsiteModules.CanCreateTask(AModuleIndex: Integer): Boolean;
 begin
   Result := True;
   if ModuleExist(AModuleIndex) then
-  with FModuleList[AModuleIndex] do
-    if GetMaxTaskLimit > 0 then
-      Result := ActiveTaskCount < GetMaxTaskLimit;
+  Result := FModuleList[AModuleIndex].CanCreateTask;
 end;
 
 procedure TWebsiteModules.IncActiveConnectionCount(AModuleIndex: Integer);
