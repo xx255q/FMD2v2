@@ -328,8 +328,10 @@ end;
 procedure TFavoriteTask.TimerRepaintOnTimer(Sender: TObject);
 begin
   if FNeedRepaint > 0 then
-    FNeedRepaint := InterlockedExchange(FNeedRepaint, 0);
-  FormMain.vtFavorites.Repaint;
+  begin
+    InterlockedExchange(FNeedRepaint, 0);
+    FormMain.vtFavorites.Repaint;
+  end;
 end;
 
 procedure TFavoriteTask.SyncStartChecking;
@@ -527,7 +529,7 @@ end;
 
 procedure TFavoriteTask.UpdateStatus;
 begin
-  FNeedRepaint := InterlockedIncrement(FNeedRepaint);
+  InterlockedIncrement(FNeedRepaint);
 end;
 
 { TFavoriteManager }
