@@ -8,6 +8,7 @@ unit uBaseUnit;
 
 {$mode objfpc}{$H+}
 {$MACRO ON}
+{$modeswitch advancedrecords}
 
 interface
 
@@ -355,8 +356,7 @@ type
 
   { TFavoriteInfo }
 
-  TFavoriteInfo = record
-    ModuleID,
+  TFavoriteInfo = packed record
     Title,
     Link,
     SaveTo,
@@ -366,6 +366,13 @@ type
     DateAdded,
     DateLastChecked,
     DateLastUpdated: TDateTime;
+    Module: Pointer;
+    private
+      FModuleID: String;
+      procedure SetModuleID(AValue: String);
+    public
+      property ModuleID: String read FModuleID write SetModuleID;
+      function Website: String;
   end;
 
   TCardinalList = specialize TFPGList<Cardinal>;
@@ -3732,6 +3739,23 @@ begin
   if Trim(M.Status) = '' then M.Status := B.status;
   if Trim(M.Summary) = '' then M.Summary := B.summary;
   if M.NumChapter = 0 then M.NumChapter := B.numChapter;
+end;
+
+{ TFavoriteInfo }
+
+procedure TFavoriteInfo.SetModuleID(AValue: String);
+begin
+  if FModuleID = AValue then Exit;
+  FModuleID := AValue;
+  Module := Modules.LocateModule(FModuleID);
+end;
+
+function TFavoriteInfo.Website: String;
+begin
+  if Assigned(Module) then
+    Result := TModuleContainer(Module).Name
+  else
+    Result := '';
 end;
 
 { THTMLForm }
