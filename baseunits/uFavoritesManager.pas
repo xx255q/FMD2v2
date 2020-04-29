@@ -64,10 +64,7 @@ type
   TFavoriteContainer = class
   private
     FEnabled: Boolean;
-    FModuleIndex: Integer;
-    FModuleID: String;
     procedure SetEnabled(AValue: Boolean);
-    procedure SetModuleID(AValue: String);
   public
     Tag: Integer;
     FavoriteInfo: TFavoriteInfo;
@@ -79,8 +76,6 @@ type
     constructor Create;
     destructor Destroy; override;
     procedure SaveToDB(const AOrder: Integer = -1);
-    property ModuleIndex: Integer read FModuleIndex;
-    property ModuleID: String read FModuleID write SetModuleID;
     property Enabled: Boolean read FEnabled write SetEnabled;
   end;
 
@@ -174,14 +169,6 @@ uses
 
 { TFavoriteContainer }
 
-procedure TFavoriteContainer.SetModuleID(AValue: String);
-begin
-  if FModuleID = AValue then Exit;
-  FModuleID := AValue;
-  FavoriteInfo.ModuleID := AValue;
-  FModuleIndex := Modules.LocateModuleByID(FavoriteInfo.ModuleID);
-end;
-
 procedure TFavoriteContainer.SetEnabled(AValue: Boolean);
 begin
   if FEnabled = AValue then Exit;
@@ -190,7 +177,6 @@ end;
 
 constructor TFavoriteContainer.Create;
 begin
-  FModuleIndex := -1;
   FEnabled := True;
   Tag := 0;
 end;
@@ -329,7 +315,7 @@ begin
 
   EnterCriticalsection(Task.CS_Threads);
   try
-    Modules.DecActiveConnectionCount(Container.ModuleIndex);
+    TModuleContainer(Container.FavoriteInfo.Module).DecActiveConnectionCount;
     Task.Threads.Remove(Self);
   finally
     LeaveCriticalsection(Task.CS_Threads);
@@ -391,12 +377,15 @@ begin
     with Manager.Items[i] do
       if (Status = STATUS_CHECK) then
       begin
+        if FavoriteInfo.Module = nil then
+          Status := STATUS_IDLE
+        else
         if (Threads.Count < OptionMaxThreads) and
-          Modules.CanCreateConnection(ModuleIndex) then
+          TModuleContainer(FavoriteInfo.Module).CanCreateConnection then
         begin
           EnterCriticalsection(CS_Threads);
           try
-            Modules.IncActiveConnectionCount(ModuleIndex);
+            TModuleContainer(FavoriteInfo.Module).IncActiveConnectionCount;
             Status := STATUS_CHECKING;
             Thread := TFavoriteThread.Create;
             Threads.Add(Thread);
@@ -1006,8 +995,8 @@ begin
     newfv := Items.Add(TFavoriteContainer.Create);
     with Items[newfv] do begin
       Manager := Self;
-      ModuleID := AWebsite;
       with FavoriteInfo do begin
+        ModuleID := AWebsite;
         Title := ATitle;
         CurrentChapter := ACurrentChapter;
         SaveTo := ASaveTo;
@@ -1037,8 +1026,8 @@ begin
     Items.Add(TFavoriteContainer.Create);
     with Items.Last do begin
       Manager := Self;
-      ModuleID := AWebsite;
       with FavoriteInfo do begin
+        ModuleID := AWebsite;
         Title := ATitle;
         CurrentChapter := ACurrentChapter;
         SaveTo := ASaveTo;
@@ -1114,8 +1103,7 @@ begin
               Manager                            := Self;
               Status                             := STATUS_IDLE;
               Enabled                            := Fields[f_enabled].AsBoolean;
-              ModuleID                           := Fields[f_moduleid].AsString;
-              FavoriteInfo.ModuleID              := ModuleID;
+              FavoriteInfo.ModuleID              := Fields[f_moduleid].AsString;
               FavoriteInfo.Link                  := Fields[f_link].AsString;
               FavoriteInfo.Title                 := Fields[f_title].AsString;
               FavoriteInfo.CurrentChapter        := Fields[f_currentchapter].AsString;
