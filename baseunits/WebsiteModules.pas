@@ -165,6 +165,8 @@ type
     function GetMaxTaskLimit: Integer;
     function GetMaxThreadPerTaskLimit: Integer;
 
+    function CanCreateConnection: Boolean;
+
     property Settings: TWebsiteModuleSettings read FSettings write FSettings;
     property AccountSupport: Boolean read FAccountSupport write SetAccountSupport;
     property Account: TWebsiteModuleAccount read FAccount write FAccount;
@@ -179,6 +181,7 @@ type
   private
     FCSModules: TRTLCriticalSection;
     FModuleList: TModuleContainers;
+    FLastLocateModule: TModuleContainer;
     function ModuleExist(const AModuleIndex: Integer): Boolean; inline;
     function GetModule(const AModuleIndex: Integer): TModuleContainer;
     function GetCount: Integer;
@@ -193,6 +196,7 @@ type
     destructor Destroy; override;
 
     function AddModule: TModuleContainer;
+    function LocateModule(const AModuleID: String): TModuleContainer;
     function LocateModuleByID(const AModuleID: String): Integer;
     function LocateModuleByHost(const AHost: String): Integer;
     function ModuleAvailable(const AModuleIndex: Integer; const ModuleMethod: TModuleMethod): Boolean; overload;
@@ -498,6 +502,14 @@ begin
     Result:=MaxThreadPerTaskLimit;
 end;
 
+function TModuleContainer.CanCreateConnection: Boolean;
+begin
+  if GetMaxConnectionLimit > 0 then
+    Result := ActiveConnectionCount < GetMaxConnectionLimit
+  else
+    Result := True;
+end;
+
 procedure TModuleContainer.AddOption(const AOptionType: TWebsiteOptionType;
   const ABindValue: Pointer; const AName: String; const ACaption: PString;
   const AItems: PString);
@@ -521,6 +533,7 @@ constructor TWebsiteModules.Create;
 begin
   InitCriticalSection(FCSModules);
   FModuleList := TModuleContainers.Create;
+  FLastLocateModule := nil;
 end;
 
 destructor TWebsiteModules.Destroy;
@@ -544,6 +557,22 @@ begin
   finally
     LeaveCriticalsection(FCSModules);
   end;
+end;
+
+function TWebsiteModules.LocateModule(const AModuleID: String
+  ): TModuleContainer;
+var
+  i: Integer;
+begin
+  if Assigned(FLastLocateModule) and (FLastLocateModule.ID = AModuleID) then
+    Exit(FLastLocateModule);
+  for i := FModuleList.Count-1 downto 0 do
+    if FModuleList[i].ID = AModuleID then
+    begin
+      FLastLocateModule := FModuleList[i];
+      Exit(FLastLocateModule);
+    end;
+  Result := nil;
 end;
 
 function TWebsiteModules.LocateModuleByID(const AModuleID: String): Integer;
@@ -895,9 +924,7 @@ function TWebsiteModules.CanCreateConnection(AModuleIndex: Integer): Boolean;
 begin
   Result := True;
   if ModuleExist(AModuleIndex) then
-  with FModuleList[AModuleIndex] do
-    if GetMaxConnectionLimit > 0 then
-      Result := ActiveConnectionCount < GetMaxConnectionLimit;
+  Result := FModuleList[AModuleIndex].CanCreateConnection;
 end;
 
 procedure TWebsiteModules.LoadFromFile;
