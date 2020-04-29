@@ -921,7 +921,7 @@ begin
   begin
     luaClassAddObject(L, MetaTable, Module.Guardian, 'Guardian', @luaCriticalSectionAddMetaTable);
     luaClassAddStringProperty(L, MetaTable, 'ID', @Module.ID);
-    luaClassAddStringProperty(L, MetaTable, 'Name', @Module.WebsiteName);
+    luaClassAddStringProperty(L, MetaTable, 'Name', @Module.Name);
     luaClassAddStringProperty(L, MetaTable, 'RootURL', @Module.RootURL);
     luaClassAddStringProperty(L, MetaTable, 'Category', @Module.Category);
     luaClassAddIntegerProperty(L, MetaTable, 'MaxTaskLimit', @Module.MaxTaskLimit);

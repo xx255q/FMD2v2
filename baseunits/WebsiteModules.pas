@@ -113,7 +113,7 @@ type
     TagPtr: Pointer;
     LuaModule: Pointer;
     ID: String;
-    WebsiteName: String;
+    Name: String;
     RootURL: String;
     Category: String;
     ActiveTaskCount: Integer;
