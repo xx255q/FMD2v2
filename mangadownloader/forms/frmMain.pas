@@ -2079,7 +2079,7 @@ begin
   end;
   if Length(ChapterList) = 0 then Exit;
   if miChapterListHighlight.Checked then
-    DLManager.GetDownloadedChaptersState(mangaInfo.ModuleID + mangaInfo.Link,
+    DLManager.GetDownloadedChaptersState(mangaInfo.ModuleID, mangaInfo.Link,
       ChapterList)
   else
     ClearChapterListState;
@@ -2485,7 +2485,7 @@ begin
         if OptionSortDownloadsWhenAddingNewDownloadTasks then
           DLManager.Sort(DLManager.SortColumn);
       end;
-      DLManager.DownloadedChapters.Chapters[mangaInfo.ModuleID+mangaInfo.Link]:=links.Text;
+      DLManager.DownloadedChapters.Chapters[mangaInfo.ModuleID, mangaInfo.Link]:=links.Text;
       FavoriteManager.AddToDownloadedChaptersList(mangaInfo.ModuleID,mangaInfo.Link,links);
       DLManager.CheckAndActiveTask;
       if OptionShowDownloadsTabOnNewTasks then

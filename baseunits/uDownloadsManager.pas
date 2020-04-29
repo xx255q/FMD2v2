@@ -215,8 +215,8 @@ type
     procedure Backup;
 
     // These methods relate to highlight downloaded chapters.
-    procedure GetDownloadedChaptersState(const Alink: String;
-      var Chapters: array of TChapterStateItem);
+    procedure GetDownloadedChaptersState(const AModuleID, ALink: String;
+      var AChapters: array of TChapterStateItem);
 
     // Add new task to the list.
     function AddTask: Integer;
@@ -1312,9 +1312,6 @@ begin
   DownloadedChapters.Filename := DOWNLOADEDCHAPTERSDB_FILE;
   DownloadedChapters.OnError := @MainForm.ExceptionHandler;
   DownloadedChapters.Open;
-  if FileExistsUTF8(DOWNLOADEDCHAPTERS_FILE) then
-    if DownloadedChapters.ImportFromIni(DOWNLOADEDCHAPTERS_FILE) then
-      DeleteFileUTF8(DOWNLOADEDCHAPTERS_FILE);
 
   Items := TTaskContainers.Create;
   ItemsActiveTask := TTaskContainers.Create;
@@ -1464,22 +1461,23 @@ begin
   end;
 end;
 
-procedure TDownloadManager.GetDownloadedChaptersState(const Alink: String;
-  var Chapters: array of TChapterStateItem);
+procedure TDownloadManager.GetDownloadedChaptersState(const AModuleID,
+  ALink: String; var AChapters: array of TChapterStateItem);
 var
   s: TStringList;
   i, p: Integer;
 begin
+  if Length(AChapters) = 0 then Exit;
   s := TStringList.Create;
   try
     s.Sorted := True;
-    s.AddText(DownloadedChapters.Chapters[Alink]);
+    s.AddText(DownloadedChapters.Chapters[AModuleID, ALink]);
     if s.Count > 0 then
-      for i := Low(Chapters) to High(Chapters) do
-        Chapters[i].Downloaded := s.Find(LowerCase(Chapters[i].Link), p)
+      for i := Low(AChapters) to High(AChapters) do
+        AChapters[i].Downloaded := s.Find(LowerCase(AChapters[i].Link), p)
     else
-      for i := Low(Chapters) to High(Chapters) do
-        Chapters[i].Downloaded := False;
+      for i := Low(AChapters) to High(AChapters) do
+        AChapters[i].Downloaded := False;
   finally
     s.Free;
   end;

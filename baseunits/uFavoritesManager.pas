@@ -918,7 +918,7 @@ begin
                     // add to downloaded chapter list
                     FavoriteInfo.downloadedChapterList := MergeCaseInsensitive([FavoriteInfo.DownloadedChapterList, chapterLinks.Text]);
                     // add to downloaded chapter list in downloadmanager
-                    DLManager.DownloadedChapters.Chapters[FavoriteInfo.ModuleID + FavoriteInfo.Link] := chapterLinks.Text;
+                    DLManager.DownloadedChapters.Chapters[FavoriteInfo.ModuleID, FavoriteInfo.Link] := chapterLinks.Text;
                   end;
                   // free unused objects
                   FreeAndNil(NewMangaInfo);

@@ -390,7 +390,7 @@ begin
       // save downloaded chapters
       if Info.mangaInfo.ChapterLinks.Count > 0 then
       begin
-        DLManager.DownloadedChapters.Chapters[Info.mangaInfo.ModuleID + URL]:=
+        DLManager.DownloadedChapters.Chapters[Info.mangaInfo.ModuleID, URL]:=
           Info.mangaInfo.ChapterLinks.Text;
         FavoriteManager.AddToDownloadedChaptersList(Info.mangaInfo.ModuleID,
           URL, Info.mangaInfo.ChapterLinks);
