@@ -339,8 +339,7 @@ type
 
   { TDownloadInfo }
 
-  TDownloadInfo = record
-    ModuleID,
+  TDownloadInfo = packed record
     Link,
     Title,
     SaveTo,
@@ -350,6 +349,13 @@ type
     DateAdded,
     DateLastDownloaded: TDateTime;
     iProgress: Integer;
+    Module: Pointer;
+    private
+      FModuleID: String;
+      procedure SetModuleID(AValue: String);
+    public
+      property ModuleID: String read FModuleID write SetModuleID;
+      function Website: String;
   end;
 
   PFavoriteInfo = ^TFavoriteInfo;
@@ -3739,6 +3745,23 @@ begin
   if Trim(M.Status) = '' then M.Status := B.status;
   if Trim(M.Summary) = '' then M.Summary := B.summary;
   if M.NumChapter = 0 then M.NumChapter := B.numChapter;
+end;
+
+{ TDownloadInfo }
+
+procedure TDownloadInfo.SetModuleID(AValue: String);
+begin
+  if FModuleID = AValue then Exit;
+  FModuleID := AValue;
+  Module := Modules.LocateModule(FModuleID);
+end;
+
+function TDownloadInfo.Website: String;
+begin
+  if Assigned(Module) then
+    Result := TModuleContainer(Module).Name
+  else
+    Result := '';
 end;
 
 { TFavoriteInfo }
