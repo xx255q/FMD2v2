@@ -1114,8 +1114,8 @@ begin
               Manager                            := Self;
               Status                             := STATUS_IDLE;
               Enabled                            := Fields[f_enabled].AsBoolean;
-              FavoriteInfo.ModuleID              := Fields[f_moduleid].AsString;
-              ModuleID                           := FavoriteInfo.ModuleID;
+              ModuleID                           := Fields[f_moduleid].AsString;
+              FavoriteInfo.ModuleID              := ModuleID;
               FavoriteInfo.Link                  := Fields[f_link].AsString;
               FavoriteInfo.Title                 := Fields[f_title].AsString;
               FavoriteInfo.CurrentChapter        := Fields[f_currentchapter].AsString;

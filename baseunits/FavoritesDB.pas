@@ -34,7 +34,7 @@ type
   end;
 
 const
-  f_idlink                  = 0;
+  f_id                     = 0;
   f_order                  = 1;
   f_enabled                = 2;
   f_moduleid               = 3;
@@ -66,7 +66,7 @@ begin
   TableName := 'favorites';
   Table.PacketRecords := 1;
   CreateParams :=
-    '"websitelink" VARCHAR(3000) NOT NULL PRIMARY KEY,' +
+    '"id" VARCHAR(3000) NOT NULL PRIMARY KEY,' +
     '"order" INTEGER,' +
     '"enabled" BOOLEAN,' +
     '"moduleid" TEXT,' +
@@ -78,7 +78,7 @@ begin
     '"dateadded" DATETIME,' +
     '"datelastchecked" DATETIME,' +
     '"datelastupdated" DATETIME';
-  FieldsParams := '"websitelink","order","enabled","moduleid","link","title","currentchapter","downloadedchapterlist","saveto","dateadded","datelastchecked","datelastupdated"';
+  FieldsParams := '"id","order","enabled","moduleid","link","title","currentchapter","downloadedchapterlist","saveto","dateadded","datelastchecked","datelastupdated"';
   SelectParams := 'SELECT * FROM ' + QuotedStrD(TableName) + ' ORDER BY "order"';
 end;
 
@@ -96,7 +96,7 @@ begin
     '"saveto"='+QuotedStr(ASaveTo)+', '+
     '"datelastchecked"='+QuotedStr(Adatelastchecked)+', '+
     '"datelastupdated"='+QuotedStr(Adatelastupdated)+
-    ' WHERE "websitelink"='+QuotedStr(LowerCase(AWebsite+ALink)));
+    ' WHERE "id"='+QuotedStr(LowerCase(AWebsite+ALink)));
 end;
 
 procedure TFavoritesDB.InternalAdd(const AOrder:Integer;const AEnabled:Boolean;
@@ -145,7 +145,7 @@ begin
   if not Connection.Connected then Exit;
   try
     Connection.ExecuteDirect(
-      'DELETE FROM "favorites" WHERE "websitelink"=' + QuotedStr(LowerCase(AWebsite + ALink)));
+      'DELETE FROM "favorites" WHERE "id"=' + QuotedStr(LowerCase(AWebsite + ALink)));
     Inc(FCommitCount);
     if FCommitCount >= FAutoCommitCount then
       Commit;
