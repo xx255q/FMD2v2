@@ -696,15 +696,18 @@ end;
 procedure TFavoriteManager.CheckForNewChapter(FavoriteIndex: Integer);
 var
   i: Integer;
+  toCheckCount: Integer;
 begin
   if isDlgCounter then Exit;
   try
+    toCheckCount := 0;
     if FavoriteIndex > -1 then
     begin
       with Items[FavoriteIndex] do
-        if FEnabled and (Status = STATUS_IDLE) then
+        if Assigned(FavoriteInfo.Module) and FEnabled and (Status = STATUS_IDLE) then
         begin
           Status := STATUS_CHECK;
+          Inc(toCheckCount);
           if Assigned(TaskThread) then
             InterLockedIncrement(TaskThread.FPendingCount);
         end;
@@ -721,13 +724,16 @@ begin
       try
         for i := 0 to Items.Count - 1 do
           with Items[i] do
-            if FEnabled and (Status = STATUS_IDLE) and (Trim(FavoriteInfo.Link) <> '') then
+            if Assigned(FavoriteInfo.Module) and FEnabled and (Status = STATUS_IDLE) and (Trim(FavoriteInfo.Link) <> '') then
+            begin
               Status := STATUS_CHECK;
+              Inc(toCheckCount);
+            end;
       finally
         LeaveCriticalsection(CS_Favorites);
       end;
     end;
-    if TaskThread = nil then
+    if (toCheckCount > 0) and (TaskThread = nil) then
     begin
       TaskThread := TFavoriteTask.Create;
       TaskThread.Manager := Self;
