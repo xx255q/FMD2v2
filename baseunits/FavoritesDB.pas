@@ -19,13 +19,13 @@ type
   public
     constructor Create(const AFilename: String);
     procedure InternalUpdate(const AOrder:Integer;const AEnabled:Boolean;
-      const AWebsite,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo: String;
+      const AModuleID,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo: String;
       const ADateLastChecked,ADateLastUpdated: TDateTime); inline;
     procedure InternalAdd(const AOrder:Integer;const AEnabled:Boolean;
-      const AWebsite,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo: String;
+      const AModuleID,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo: String;
       const ADateAdded: TDateTime); inline;
     function Add(const AOrder:Integer;const AEnabled:Boolean;
-      const AWebsite,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo:String;
+      const AModuleID,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo:String;
       const ADateAdded: TDateTime):Boolean;
     procedure Delete(const AWebsite, ALink: String);
     procedure Commit; override;
@@ -83,7 +83,7 @@ begin
 end;
 
 procedure TFavoritesDB.InternalUpdate(const AOrder: Integer;
-  const AEnabled: Boolean; const AWebsite, ALink, ATitle, ACurrentChapter,
+  const AEnabled: Boolean; const AModuleID, ALink, ATitle, ACurrentChapter,
   ADownloadedChapterList, ASaveTo: String; const ADateLastChecked,
   ADateLastUpdated: TDateTime);
 begin
@@ -96,20 +96,20 @@ begin
     '"saveto"='+QuotedStr(ASaveTo)+', '+
     '"datelastchecked"='+QuotedStr(Adatelastchecked)+', '+
     '"datelastupdated"='+QuotedStr(Adatelastupdated)+
-    ' WHERE "id"='+QuotedStr(LowerCase(AWebsite+ALink)));
+    ' WHERE "id"='+QuotedStr(LowerCase(AModuleID+ALink)));
 end;
 
 procedure TFavoritesDB.InternalAdd(const AOrder:Integer;const AEnabled:Boolean;
-  const AWebsite,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo:String;
+  const AModuleID,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo:String;
   const ADateAdded: TDateTime);
 begin
   Connection.ExecuteDirect('INSERT OR REPLACE INTO "favorites" (' +
     FieldsParams +
     ') VALUES (' +
-    QuotedStr(LowerCase(AWebsite + ALink)) + ', ' +
+    QuotedStr(LowerCase(AModuleID + ALink)) + ', ' +
     QuotedStr(AOrder) + ', ' +
     QuotedStr(AEnabled) + ', ' +
-    QuotedStr(AWebsite) + ', ' +
+    QuotedStr(AModuleID) + ', ' +
     QuotedStr(ALink) + ', ' +
     QuotedStr(ATitle) + ', ' +
     QuotedStr(ACurrentChapter)  + ', ' +
@@ -121,14 +121,14 @@ begin
 end;
 
 function TFavoritesDB.Add(const AOrder: Integer; const AEnabled: Boolean;
-  const AWebsite, ALink, ATitle, ACurrentChapter, ADownloadedChapterList,
+  const AModuleID, ALink, ATitle, ACurrentChapter, ADownloadedChapterList,
   ASaveTo: String; const ADateAdded: TDateTime): Boolean;
 begin
   Result := False;
-  if (AWebsite = '') or (ALink = '') then Exit;
+  if (AModuleID = '') or (ALink = '') then Exit;
   if not Connection.Connected then Exit;
   try
-    InternalAdd(AOrder,AEnabled,AWebsite,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo,ADateAdded);
+    InternalAdd(AOrder,AEnabled,AModuleID,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo,ADateAdded);
     Result := True;
     Inc(FCommitCount);
     if FCommitCount >= FAutoCommitCount then
