@@ -4303,7 +4303,7 @@ begin
       1: if Trim(Link)='' then HintText:=RS_HintFavoriteProblem
          else HintText:=Title;
       2: HintText:=currentChapter;
-      3: HintText:=ModuleID;
+      3: HintText:=Website;
       4: HintText:=saveTo;
     end;
 end;
@@ -4351,7 +4351,7 @@ begin
       0: CellText:=IntToStr(Node^.Index+1);
       1: CellText:=Title;
       2: CellText:=currentChapter;
-      3: CellText:=ModuleID;
+      3: CellText:=Website;
       4: CellText:=saveTo;
       5: CellText:=DateTimeToStr(DateAdded);
       6: CellText:=DateTimeToStr(DateLastChecked);

@@ -132,7 +132,7 @@ begin
       while Assigned(node) do
       begin
         data := Owner.vtFavs.GetNodeData(node);
-        if data^.Fav.ModuleID = db.Website then
+        if data^.Fav.FavoriteInfo.ModuleID = db.Website then
         begin
           data^.NewLink := '';
           data^.State := 0;
