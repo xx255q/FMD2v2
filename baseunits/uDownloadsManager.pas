@@ -1486,11 +1486,12 @@ begin
       if Items[i].ThreadState then
         Inc(tcount);
 
+    // item with missing module should be already checked by CheckAndActiveTaskAtStartup
+    // and their status should be STATUS_STOP
     if tcount < OptionMaxParallel then
       for i := 0 to Items.Count - 1 do
         with Items[i] do
-          if Assigned(DownloadInfo.Module) and
-            (Status = STATUS_WAIT) and
+          if (Status = STATUS_WAIT) and
             (tcount < OptionMaxParallel) and
             TModuleContainer(DownloadInfo.Module).CanCreateTask then
           begin
@@ -1545,32 +1546,26 @@ begin
   tcount := 0;
   for i := 0 to Items.Count - 1 do
     with Items[i] do
-      if (Status = STATUS_WAIT) and (DownloadInfo.Module = nil) then
-      begin
-        Status := STATUS_STOP;
-        DownloadInfo.Status := Format('[%d/%d] %s',[CurrentDownloadChapterPtr+1,ChapterLinks.Count,RS_Stopped]);
-      end
-      else
-      if Status in [STATUS_DOWNLOAD, STATUS_PREPARE] then
+    begin
+      if Status in [STATUS_DOWNLOAD, STATUS_PREPARE, STATUS_WAIT] then
       begin
         if DownloadInfo.Module = nil then
         begin
           Status := STATUS_STOP;
           DownloadInfo.Status := Format('[%d/%d] %s',[CurrentDownloadChapterPtr+1,ChapterLinks.Count,RS_Stopped]);
         end
-        else
-        if (tcount < OptionMaxParallel) and
-          TModuleContainer(DownloadInfo.Module).CanCreateTask then
+        else if (tcount < OptionMaxParallel) and  TModuleContainer(DownloadInfo.Module).CanCreateTask then
         begin
           Inc(tcount);
           ActiveTask(i);
         end
-        else
+        else if Status <> STATUS_WAIT then
         begin
           Status := STATUS_WAIT;
           DownloadInfo.Status := Format('[%d/%d] %s',[CurrentDownloadChapterPtr+1,ChapterLinks.Count,RS_Waiting]);
         end;
       end;
+    end;
   //force to check task if all task loaded is STATUS_WAIT
   if tcount = 0 then
     CheckAndActiveTask
@@ -1584,8 +1579,8 @@ begin
   if not Items[taskID].Enabled then Exit;
   with Items[taskID] do
   begin
-    if DownloadInfo.Module = nil then Exit;
     if Status = STATUS_FINISH then Exit;
+    if DownloadInfo.Module = nil then Exit;
     if not ThreadState then
     begin
       if not (Status in [STATUS_DOWNLOAD, STATUS_PREPARE]) then
