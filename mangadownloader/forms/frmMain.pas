@@ -2234,7 +2234,7 @@ begin
     begin
       if vtFavorites.Selected[xNode] then
         with FavoriteManager.Items[xNode^.Index].FavoriteInfo do
-          SilentThreadManager.Add(MD_DownloadAll, ModuleID, Title, Link, SaveTo);
+          SilentThreadManager.Add(MD_DownloadAll, TModuleContainer(Module), Title, Link, SaveTo);
       xNode := vtFavorites.GetNextSelected(xNode);
     end;
   except
@@ -3047,7 +3047,7 @@ begin
     while Assigned(xNode) do
     begin
       data := vtMangaList.GetNodeData(xNode);
-      SilentThreadManager.Add(MD_AddToFavorites, data^.ModuleID, data^.Title, data^.Link);
+      SilentThreadManager.Add(MD_AddToFavorites, Modules.LocateModule(data^.ModuleID), data^.Title, data^.Link);
       xNode := vtMangaList.GetNextSelected(xNode);
     end;
   finally
@@ -3512,7 +3512,7 @@ begin
           end;
 		  
       if AllowedToCreate then
-        SilentThreadManager.Add(MD_DownloadAll, data^.ModuleID, data^.Title, data^.Link);
+        SilentThreadManager.Add(MD_DownloadAll, Modules.LocateModule(data^.ModuleID), data^.Title, data^.Link);
       xNode := vtMangaList.GetNextSelected(xNode);
     end;
   except
@@ -4693,7 +4693,7 @@ begin
             if Assigned(m) then
             begin
               if not ((MetaDataType = MD_AddToFavorites) and not(m.FavoriteAvailable)) then
-                SilentThreadManager.Add(MetaDataType, m.ID, '', link);
+                SilentThreadManager.Add(MetaDataType, m, '', link);
             end;
           end;
         end;
