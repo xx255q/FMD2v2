@@ -280,20 +280,27 @@ type
 
   PMangaListItem = ^TMangaListItem;
 
-  TMangaListItem = record
+  TMangaListItem = packed record
     Text: String;
     JDN: Longint;
   end;
 
   PSingleItem = ^TSingleItem;
 
-  TSingleItem = record
+  TSingleItem = packed record
     Text: String;
+  end;
+
+  PNamePointerItem = ^TNamePointerItem;
+
+  TNamePointerItem = packed record
+    Name: String;
+    P: Pointer;
   end;
 
   PChapterStateItem = ^TChapterStateItem;
 
-  TChapterStateItem = record
+  TChapterStateItem = packed record
     Index: Integer;
     Title,
     Link: String;
@@ -302,7 +309,7 @@ type
 
   PBaseMangaInfo = ^TBaseMangaInfo;
 
-  TBaseMangaInfo = record
+  TBaseMangaInfo = packed record
     title,
     authors,
     artists,
