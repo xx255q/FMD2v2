@@ -180,6 +180,8 @@ type
     procedure ChangeStatusCount(const OldStatus, NewStatus: TDownloadStatusType);
     procedure DecStatusCount(const Status: TDownloadStatusType);
     procedure IncStatusCount(const Status: TDownloadStatusType);
+    // it has no data validation, only StartTask after all data check passed
+    procedure StartTask(const taskID: Integer);
   public
     CS_Task,
     CS_ItemsActiveTask: TRTLCriticalSection;
@@ -222,7 +224,6 @@ type
     procedure CheckAndActiveTask(const isCheckForFMDDo: Boolean = False);
     // Active a stopped task.
     procedure SetTaskActive(const taskID: Integer);
-    procedure ActiveTask(const taskID: Integer);
     // Stop a download/wait task.
     procedure StopTask(const taskID: Integer; const isCheckForActive: Boolean =
       True; isWaitFor: Boolean = False);
@@ -1495,7 +1496,7 @@ begin
             (tcount < OptionMaxParallel) and
             TModuleContainer(DownloadInfo.Module).CanCreateTask then
           begin
-            ActiveTask(i);
+            StartTask(i);
             Inc(tcount);
           end;
   finally
@@ -1526,16 +1527,12 @@ end;
 
 procedure TDownloadManager.SetTaskActive(const taskID: Integer);
 begin
-  if not Items[taskID].Enabled then Exit;
   with Items[taskID] do
-  begin
-    if DownloadInfo.Module = nil then Exit;
-    if not (ThreadState or (Status in [STATUS_FINISH, STATUS_WAIT])) then
+    if not(ThreadState or (Status in [STATUS_FINISH, STATUS_WAIT])) and Enabled and Assigned(DownloadInfo.Module) then
     begin
       Status := STATUS_WAIT;
       DownloadInfo.Status := Format('[%d/%d] %s',[CurrentDownloadChapterPtr+1,ChapterLinks.Count,RS_Waiting]);
     end;
-  end;
 end;
 
 procedure TDownloadManager.CheckAndActiveTaskAtStartup;
@@ -1557,7 +1554,7 @@ begin
         else if (tcount < OptionMaxParallel) and  TModuleContainer(DownloadInfo.Module).CanCreateTask then
         begin
           Inc(tcount);
-          ActiveTask(i);
+          StartTask(i);
         end
         else if Status <> STATUS_WAIT then
         begin
@@ -1574,29 +1571,15 @@ begin
   MainForm.UpdateVtDownload;
 end;
 
-procedure TDownloadManager.ActiveTask(const taskID: Integer);
+procedure TDownloadManager.StartTask(const taskID: Integer);
 begin
-  if not Items[taskID].Enabled then Exit;
   with Items[taskID] do
   begin
-    if Status = STATUS_FINISH then Exit;
-    if DownloadInfo.Module = nil then Exit;
-    if not ThreadState then
-    begin
-      if not (Status in [STATUS_DOWNLOAD, STATUS_PREPARE]) then
-      begin
-        Status := STATUS_DOWNLOAD;
-        DownloadInfo.Status := RS_Downloading;
-      end;
-      if Assigned(DownloadInfo.Module) then
-      begin
-        TModuleContainer(DownloadInfo.Module).IncActiveTaskCount;
-        Task := TTaskThread.Create;
-        Task.Container := Items[taskID];
-        AddItemsActiveTask(Task.Container);
-        Task.Start;
-      end;
-    end;
+    TModuleContainer(DownloadInfo.Module).IncActiveTaskCount;
+    Task := TTaskThread.Create;
+    Task.Container := Items[taskID];
+    AddItemsActiveTask(Task.Container);
+    Task.Start;
   end;
 end;
 
@@ -1629,7 +1612,7 @@ begin
   begin
     for i := 0 to Items.Count - 1 do
       with Items[i] do
-        if Assigned(DownloadInfo.Module) and Enabled and (Status <> STATUS_FINISH) and (not ThreadState) then
+        if (Status <> STATUS_FINISH) and Assigned(DownloadInfo.Module) and (not ThreadState) and Enabled then
         begin
           Status := STATUS_WAIT;
           DownloadInfo.Status := Format('[%d/%d] %s',[CurrentDownloadChapterPtr+1,ChapterLinks.Count,RS_Waiting]);
