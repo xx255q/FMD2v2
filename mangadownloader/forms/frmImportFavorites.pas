@@ -103,7 +103,7 @@ begin
         begin
           SilentThreadManager.Add(
             MD_AddToFavorites,
-            m.ID,
+            m,
             mangaList[i],
             RemoveHostFromURL(urlList[i]),
             path);
