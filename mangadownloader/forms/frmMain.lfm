@@ -2651,11 +2651,11 @@ object MainForm: TMainForm
     object tsOption: TTabSheet
       Caption = 'Options'
       ChildSizing.TopBottomSpacing = 4
-      ClientHeight = 568
+      ClientHeight = 598
       ClientWidth = 845
       object pcOptions: TPageControl
         Left = 0
-        Height = 470
+        Height = 500
         Top = 4
         Width = 845
         ActivePage = tsGeneral
@@ -2670,30 +2670,30 @@ object MainForm: TMainForm
           ChildSizing.TopBottomSpacing = 8
           ChildSizing.HorizontalSpacing = 4
           ChildSizing.VerticalSpacing = 4
-          ClientHeight = 442
+          ClientHeight = 472
           ClientWidth = 837
           object sbGeneralSettings: TScrollBox
             Left = 4
-            Height = 426
+            Height = 456
             Top = 8
             Width = 829
             HorzScrollBar.Page = 300
-            VertScrollBar.Page = 426
+            VertScrollBar.Page = 439
             Align = alClient
             BorderStyle = bsNone
             ChildSizing.LeftRightSpacing = 4
             ChildSizing.TopBottomSpacing = 8
             ChildSizing.HorizontalSpacing = 4
             ChildSizing.VerticalSpacing = 4
-            ClientHeight = 426
-            ClientWidth = 812
+            ClientHeight = 456
+            ClientWidth = 829
             TabOrder = 0
             object gbOptionExternal: TGroupBox
               AnchorSideTop.Side = asrBottom
               Left = 4
               Height = 118
               Top = 313
-              Width = 650
+              Width = 667
               Anchors = [akTop, akLeft, akRight]
               BorderSpacing.Top = 20
               Caption = 'External program'
@@ -2702,14 +2702,14 @@ object MainForm: TMainForm
               ChildSizing.HorizontalSpacing = 4
               ChildSizing.VerticalSpacing = 4
               ClientHeight = 98
-              ClientWidth = 646
+              ClientWidth = 663
               ParentFont = False
               TabOrder = 0
               object lbOptionExternal: TLabel
                 Left = 4
                 Height = 15
                 Top = 4
-                Width = 638
+                Width = 655
                 Align = alTop
                 Caption = 'Open manga by using external program:'
                 ParentColor = False
@@ -2718,7 +2718,7 @@ object MainForm: TMainForm
                 Left = 4
                 Height = 15
                 Top = 50
-                Width = 638
+                Width = 655
                 Align = alTop
                 Caption = 'Parameters:'
                 ParentColor = False
@@ -2730,7 +2730,7 @@ object MainForm: TMainForm
                 Left = 4
                 Height = 23
                 Top = 69
-                Width = 611
+                Width = 628
                 Anchors = [akTop, akLeft, akRight]
                 TabOrder = 1
                 TextHint = 'External program parameters'
@@ -2740,7 +2740,7 @@ object MainForm: TMainForm
                 AnchorSideLeft.Side = asrBottom
                 AnchorSideTop.Control = edOptionExternalParams
                 AnchorSideTop.Side = asrCenter
-                Left = 619
+                Left = 636
                 Height = 15
                 Top = 73
                 Width = 13
@@ -2755,7 +2755,7 @@ object MainForm: TMainForm
                 Left = 4
                 Height = 23
                 Top = 23
-                Width = 638
+                Width = 655
                 Align = alTop
                 ButtonWidth = 23
                 Glyph.Data = {
@@ -2840,7 +2840,7 @@ object MainForm: TMainForm
               Left = 4
               Height = 15
               Top = 8
-              Width = 804
+              Width = 821
               Align = alTop
               Caption = 'Language:'
               ParentColor = False
@@ -3116,11 +3116,11 @@ object MainForm: TMainForm
         end
         object tsConnections: TTabSheet
           Caption = 'Connections'
-          ClientHeight = 442
+          ClientHeight = 472
           ClientWidth = 837
           object sbDownloadConnections: TScrollBox
             Left = 0
-            Height = 442
+            Height = 472
             Top = 0
             Width = 837
             HorzScrollBar.Page = 455
@@ -3131,7 +3131,7 @@ object MainForm: TMainForm
             ChildSizing.TopBottomSpacing = 8
             ChildSizing.HorizontalSpacing = 4
             ChildSizing.VerticalSpacing = 4
-            ClientHeight = 442
+            ClientHeight = 472
             ClientWidth = 837
             TabOrder = 0
             object cbOptionUseProxy: TCheckBox
@@ -4655,7 +4655,7 @@ object MainForm: TMainForm
       object btOptionApply: TBitBtn
         Left = 8
         Height = 45
-        Top = 510
+        Top = 540
         Width = 125
         Anchors = [akLeft, akBottom]
         AutoSize = True

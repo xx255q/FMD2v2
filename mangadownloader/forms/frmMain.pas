@@ -4404,9 +4404,14 @@ end;
 // options
 
 procedure TMainForm.btOptionApplyClick(Sender: TObject);
+var
+  oldOptionMaxParallel: Integer;
 begin
   SaveOptions(True);
+  oldOptionMaxParallel := OptionMaxParallel;
   ApplyOptions;
+  if OptionMaxParallel > oldOptionMaxParallel then
+    DLManager.CheckAndActiveTask();
   if not Self.Focused then Self.SetFocus;
 end;
 
