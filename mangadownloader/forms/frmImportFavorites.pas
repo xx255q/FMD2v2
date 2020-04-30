@@ -59,10 +59,10 @@ var
   urlList,
   mangaList: TStringList;
   host,
-  webs,
   path: String;
-  i, m: Integer;
+  i: Integer;
   regx: TRegExpr;
+  m: TModuleContainer;
 begin
   if NOT FileExistsUTF8(CleanAndExpandDirectory(edPath.Text) + 'Config/Bookmarks') then
     exit;
@@ -94,20 +94,16 @@ begin
       for i:= 0 to urlList.Count-1 do
       begin
         host := '';
-        webs := '';
+        m := nil;
         host := LowerCase(regx.Replace(urlList[i], '$2', True));
         if host <> '' then
-        begin
           m := Modules.LocateModuleByHost(host);
-          if m > -1 then
-            webs := Modules.Module[m].ID;
-        end;
 
-        if webs <> '' then
+        if Assigned(m) then
         begin
           SilentThreadManager.Add(
             MD_AddToFavorites,
-            webs,
+            m.ID,
             mangaList[i],
             RemoveHostFromURL(urlList[i]),
             path);
