@@ -198,8 +198,8 @@ type
 
     function AddModule: TModuleContainer;
     function LocateModule(const AModuleID: String): TModuleContainer;
+    function LocateModuleByHost(const AHost: String): TModuleContainer;
     function LocateModuleByID(const AModuleID: String): Integer;
-    function LocateModuleByHost(const AHost: String): Integer;
     function ModuleAvailable(const AModuleIndex: Integer; const ModuleMethod: TModuleMethod): Boolean; overload;
     function ModuleAvailable(const AModuleID: String; const ModuleMethod: TModuleMethod): Boolean; overload;
     function ModuleAvailable(const AModuleID: String; const ModuleMethod: TModuleMethod; var OutIndex: Integer): Boolean; overload;
@@ -578,10 +578,39 @@ begin
   for i := FModuleList.Count-1 downto 0 do
     if FModuleList[i].ID = AModuleID then
     begin
-      FLastLocateModule := FModuleList[i];
+      InterlockedExchange(Pointer(FLastLocateModule), Pointer(FModuleList[i]));
       Exit(FLastLocateModule);
     end;
   Result := nil;
+end;
+
+function TWebsiteModules.LocateModuleByHost(const AHost: String
+  ): TModuleContainer;
+
+  function PosModule(const s: String): TModuleContainer;
+  var
+    i: Integer;
+  begin
+    for i := FModuleList.Count - 1 downto 0 do
+      if Pos(s, LowerCase(FModuleList[i].RootURL)) <> 0 then
+        Exit(FModuleList[i]);
+    Result := nil;
+  end;
+var
+  h: String;
+begin
+  h := LowerCase(AHost);
+  if Assigned(FLastLocateModule) and (Pos(h, FLastLocateModule.RootURL) <> 0) then
+    Exit(FLastLocateModule);
+  Result := PosModule(h);
+  if Result = nil then
+  begin
+    SplitURL(h, @h, nil, False, False);
+    if h = '' then Exit;
+    Result := PosModule(h);
+  end;
+  if Assigned(Result) then
+    InterlockedExchange(Pointer(FLastLocateModule), Pointer(Result));
 end;
 
 function TWebsiteModules.LocateModuleByID(const AModuleID: String): Integer;
@@ -595,32 +624,6 @@ begin
       Result := i;
       Break;
     end;
-end;
-
-function TWebsiteModules.LocateModuleByHost(const AHost: String): Integer;
-
-  function PosModule(const s: String): Integer;
-  var
-    i: Integer;
-  begin
-    for i := FModuleList.Count - 1 downto 0 do
-      if Pos(s, LowerCase(FModuleList[i].RootURL)) <> 0 then
-        Exit(i);
-    Result := -1;
-  end;
-var
-  h: String;
-begin
-  Result := -1;
-  if FModuleList.Count = 0 then Exit;
-  h := LowerCase(AHost);
-  Result := PosModule(h);
-  if Result = -1 then
-  begin
-    SplitURL(h, @h, nil, False, False);
-    if h = '' then Exit;
-    Result := PosModule(h);
-  end;
 end;
 
 function TWebsiteModules.ModuleExist(const AModuleIndex: Integer): Boolean;
