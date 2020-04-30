@@ -475,7 +475,6 @@ object MainForm: TMainForm
             OnFreeNode = vtMangaListFreeNode
             OnGetText = vtMangaListGetText
             OnGetHint = vtMangaListGetHint
-            OnGetNodeDataSize = vtMangaListGetNodeDataSize
             OnInitNode = vtMangaListInitNode
           end
           object cbSelectManga: TComboBox
@@ -2658,11 +2657,11 @@ object MainForm: TMainForm
         Height = 500
         Top = 4
         Width = 845
-        ActivePage = tsGeneral
+        ActivePage = tsWebsites
         Align = alTop
         Anchors = [akTop, akLeft, akRight, akBottom]
         ParentFont = False
-        TabIndex = 0
+        TabIndex = 6
         TabOrder = 0
         object tsGeneral: TTabSheet
           Caption = 'General'
@@ -4245,11 +4244,11 @@ object MainForm: TMainForm
           ChildSizing.TopBottomSpacing = 8
           ChildSizing.HorizontalSpacing = 4
           ChildSizing.VerticalSpacing = 4
-          ClientHeight = 442
+          ClientHeight = 472
           ClientWidth = 837
           object pcWebsiteOptions: TPageControl
             Left = 4
-            Height = 426
+            Height = 456
             Top = 8
             Width = 829
             ActivePage = tsWebsiteSelection
@@ -4258,11 +4257,11 @@ object MainForm: TMainForm
             TabOrder = 0
             object tsWebsiteSelection: TTabSheet
               Caption = 'Websites'
-              ClientHeight = 398
+              ClientHeight = 428
               ClientWidth = 821
               object vtOptionMangaSiteSelection: TVirtualStringTree
                 Left = 0
-                Height = 363
+                Height = 393
                 Top = 35
                 Width = 821
                 Align = alClient
@@ -4284,7 +4283,6 @@ object MainForm: TMainForm
                 TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toShowRoot, toShowTreeLines, toThemeAware, toUseBlendedImages]
                 OnFreeNode = vtOptionMangaSiteSelectionFreeNode
                 OnGetText = vtOptionMangaSiteSelectionGetText
-                OnGetNodeDataSize = vtOptionMangaSiteSelectionGetNodeDataSize
               end
               object pnlWebsitesTool: TPanel
                 Left = 2

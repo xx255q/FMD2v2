@@ -663,16 +663,12 @@ type
     procedure vtMangaListGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle;
       var HintText: String);
-    procedure vtMangaListGetNodeDataSize(Sender: TBaseVirtualTree;
-      var NodeDataSize: Integer);
     procedure vtMangaListGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
     procedure vtMangaListInitNode(Sender: TBaseVirtualTree; ParentNode,
       Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
     procedure vtOptionMangaSiteSelectionFreeNode(Sender : TBaseVirtualTree;
       Node : PVirtualNode);
-    procedure vtOptionMangaSiteSelectionGetNodeDataSize(Sender: TBaseVirtualTree;
-      var NodeDataSize: Integer);
     procedure vtOptionMangaSiteSelectionGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
       var CellText: String);
@@ -1267,6 +1263,11 @@ begin
   LuaModulesUpdaterForm := TLuaModulesUpdaterForm.Create(Self);
   EmbedForm(LuaModulesUpdaterForm, tsWebsiteModules);
 
+  // init vt
+  vtDownload.NodeDataSize := SizeOf(TDownloadInfo);
+  vtFavorites.NodeDataSize := SizeOf(TFavoriteInfo);
+  vtMangaList.NodeDataSize := SizeOf(TMangaInfoData);
+  vtOptionMangaSiteSelection.NodeDataSize := SizeOf(TSingleItem);
   AddVT(Self.vtMangaList);
   AddVT(Self.clbChapterList);
   AddVT(Self.vtDownload);
@@ -2520,7 +2521,6 @@ begin
 
     FavoriteManager.Add(mangaInfo.Title, IntToStr(mangaInfo.NumChapter), mangaInfo.ChapterLinks.Text,
       mangaInfo.ModuleID, s, mangaInfo.Link);
-    vtFavorites.NodeDataSize := SizeOf(TFavoriteInfo);
     UpdateVtFavorites;
     vtFavoritesFilterRefresh;
     btAddToFavorites.Enabled := False;
@@ -4484,12 +4484,6 @@ begin
   end;
 end;
 
-procedure TMainForm.vtMangaListGetNodeDataSize(Sender: TBaseVirtualTree;
-  var NodeDataSize: Integer);
-begin
-  NodeDataSize := SizeOf(TMangaInfoData);
-end;
-
 procedure TMainForm.vtMangaListGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
   var CellText: String);
@@ -5998,12 +5992,6 @@ procedure TMainForm.vtOptionMangaSiteSelectionFreeNode(
   Sender : TBaseVirtualTree; Node : PVirtualNode);
 begin
   Finalize(PSingleItem(Sender.GetNodeData(Node))^);
-end;
-
-procedure TMainForm.vtOptionMangaSiteSelectionGetNodeDataSize(Sender: TBaseVirtualTree;
-  var NodeDataSize: Integer);
-begin
-  NodeDataSize := SizeOf(TSingleItem);
 end;
 
 procedure TMainForm.vtOptionMangaSiteSelectionGetText(Sender: TBaseVirtualTree;
