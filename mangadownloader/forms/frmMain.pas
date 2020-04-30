@@ -5371,12 +5371,9 @@ begin
         data := vtOptionMangaSiteSelection.GetNodeData(nodei);
         data^.Name := categoriesitem[j];
         data^.P := categoriesitem.Objects[j];
-        AvailableWebsites.Add(s);
       end;
     end;
     vtOptionMangaSiteSelection.EndUpdate;
-    AvailableWebsites.Duplicates := dupIgnore;
-    AvailableWebsites.Sorted := True;
   finally
     categories.Free;
   end;

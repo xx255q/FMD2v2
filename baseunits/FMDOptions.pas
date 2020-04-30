@@ -97,9 +97,6 @@ var
 
   currentWebsite: String;
 
-  // available website
-  AvailableWebsites: TStringList;
-
   // general
   DoAfterFMD: TFMDDo;
   OptionLetFMDDo: TFMDDo = DO_NOTHING;
@@ -312,8 +309,6 @@ begin
   AppParams.NameValueSeparator:='=';
   GetProgramVersion(FMD_VERSION_NUMBER);
   FMD_VERSION_STRING := ProgramversionToStr(FMD_VERSION_NUMBER);
-  AvailableWebsites := TStringList.Create;
-  AvailableWebsites.Sorted := False;
   SetFMDdirectory(ExtractFilePath(Application.ExeName));
   SetAppDataDirectory(FMD_DIRECTORY);
 end;
@@ -321,7 +316,6 @@ end;
 procedure doFinalization;
 begin
   FreeIniFiles;
-  AvailableWebsites.Free;
   AppParams.Free;
 end;
 
