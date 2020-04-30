@@ -31,10 +31,7 @@ type
     FLink: String;
     FInfo: TMangaInformation;
     FNumChapter: Cardinal;
-    // Return TRUE if we can load manga cover.
     FIsHasMangaCover: Boolean;
-    procedure SetModule(const AValue: Pointer);
-    // Flush this thread, means that the result will not be shown.
   protected
     procedure Execute; override;
     procedure MainThreadSyncInfos;
@@ -57,11 +54,6 @@ procedure TGetMangaInfosThread.MainThreadSyncInfos;
 begin
   FInfo.SyncInfoToData(DataProcess);
   dataProcess.Commit;
-end;
-
-procedure TGetMangaInfosThread.SetModule(const AValue: Pointer);
-begin
-
 end;
 
 procedure TGetMangaInfosThread.Execute;
