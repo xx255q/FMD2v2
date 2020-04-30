@@ -676,7 +676,7 @@ type
     procedure vtOptionMangaSiteSelectionGetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
       var CellText: String);
-    procedure DisableAddToFavorites(webs: String);
+    procedure DisableAddToFavorites(const AModule: Pointer);
   private
     PrevWindowState: TWindowState;
     procedure vtDownloadMoveItems(NextIndex : Cardinal; Mode : TDropMode);
@@ -738,10 +738,10 @@ type
 
     // fill edSaveTo with default path
     procedure FillSaveTo;
-    procedure OverrideSaveTo(const AModuleID: String);
+    procedure OverrideSaveTo(const AModule: Pointer);
 
     // View manga information
-    procedure ViewMangaInfo(const ALink, AModuleID, ATitle, ASaveTo: String;
+    procedure ViewMangaInfo(const AModule: Pointer; const ALink, ATitle, ASaveTo: String;
       const ASender: TObject; const AMangaListNode: PVirtualNode = nil);
 
     // Show manga information
@@ -2067,7 +2067,7 @@ procedure TMainForm.miDownloadViewMangaInfoClick(Sender: TObject);
 begin
   if Assigned(vtDownload.FocusedNode) then
     with DLManager.Items[vtDownload.FocusedNode^.Index].DownloadInfo do
-      ViewMangaInfo(Link, ModuleID, Title, SaveTo, miDownloadViewMangaInfo);
+      ViewMangaInfo(Module, Link, Title, SaveTo, miDownloadViewMangaInfo);
 end;
 
 procedure TMainForm.miChapterListHighlightClick(Sender: TObject);
@@ -2262,7 +2262,7 @@ procedure TMainForm.miFavoritesViewInfosClick(Sender: TObject);
 begin
   if Assigned(vtFavorites.FocusedNode) then
     with FavoriteManager.Items[vtFavorites.FocusedNode^.Index].FavoriteInfo do
-      ViewMangaInfo(Link, ModuleID, Title, SaveTo, miFavoritesViewInfos);
+      ViewMangaInfo(Module, Link, Title, SaveTo, miFavoritesViewInfos);
 end;
 
 procedure TMainForm.miHighlightNewMangaClick(Sender: TObject);
@@ -2504,7 +2504,7 @@ begin
   if mangaInfo.Title <> '' then
   begin
     // save to
-    OverrideSaveTo(mangaInfo.ModuleID);
+    OverrideSaveTo(Modules.LocateModule(mangaInfo.ModuleID));
     s := edSaveTo.Text;
     if OptionGenerateMangaFolder then
       s := AppendPathDelim(s) + CustomRename(
@@ -2582,9 +2582,9 @@ begin
   end;
 end;
 
-procedure TMainForm.DisableAddToFavorites(webs: String);
+procedure TMainForm.DisableAddToFavorites(const AModule: Pointer);
 begin
-  btAddToFavorites.Enabled := not SitesWithoutFavorites(webs);
+  btAddToFavorites.Enabled := Assigned(AModule) and TModuleContainer(AModule).FavoriteAvailable;
 end;
 
 procedure TMainForm.FMDInstanceReceiveMsg(Sender: TObject);
@@ -3526,7 +3526,7 @@ procedure TMainForm.miMangaListViewInfosClick(Sender: TObject);
 begin
   if Assigned(vtMangaList.FocusedNode) then begin
     with PMangaInfoData(vtMangaList.GetNodeData(vtMangaList.FocusedNode))^ do
-      ViewMangaInfo(Link, ModuleID, Title, '', miMangaListViewInfos, vtMangaList.FocusedNode);
+      ViewMangaInfo(Modules.LocateModule(ModuleID), Link, Title, '', miMangaListViewInfos, vtMangaList.FocusedNode);
     if pcInfo.ActivePage <> tsInfoManga then
       pcInfo.ActivePage := tsInfoManga;
   end;
@@ -4664,9 +4664,10 @@ end;
 
 procedure TMainForm.AddSilentThread(URL: string; MetaDataType: TMetaDataType);
 var
-  i, m: Integer;
-  host, link, webs: String;
+  i: Integer;
+  host, link: String;
   URls: TStringList;
+  m: TModuleContainer;
 begin
   if Trim(URL) = '' then Exit;
   URLs := TStringList.Create;
@@ -4683,18 +4684,16 @@ begin
         begin
           host := '';
           link := '';
-          webs := '';
           host := LowerCase(Replace(URls[i], '$2', True));
           link := Replace(URls[i], '$4', True);
+          m := nil;
           if (host <> '') and (link <> '') then
           begin
             m := Modules.LocateModuleByHost(host);
-            if m > -1 then
-              webs := Modules.Module[m].ID;
-            if webs <> '' then
+            if Assigned(m) then
             begin
-              if not ((MetaDataType = MD_AddToFavorites) and SitesWithoutFavorites(webs)) then
-                SilentThreadManager.Add(MetaDataType, webs, '', link);
+              if not ((MetaDataType = MD_AddToFavorites) and not(m.FavoriteAvailable)) then
+                SilentThreadManager.Add(MetaDataType, m.ID, '', link);
             end;
           end;
         end;
@@ -4757,27 +4756,24 @@ begin
   edSaveTo.Text := LastUserPickedSaveTo;
 end;
 
-procedure TMainForm.OverrideSaveTo(const AModuleID: String);
+procedure TMainForm.OverrideSaveTo(const AModule: Pointer);
 var
-  i: Integer;
   s: String;
 begin
-  i := Modules.LocateModuleByID(AModuleID);
-  if i <> -1 then
+  if Assigned(AModule) then
   begin
-    s := Modules.Module[i].Settings.OverrideSettings.SaveToPath;
+    s := TModuleContainer(AModule).Settings.OverrideSettings.SaveToPath;
     if s <> '' then
       edSaveTo.Text := s;
   end;
 end;
 
-procedure TMainForm.ViewMangaInfo(const ALink, AModuleID, ATitle, ASaveTo: String;
-  const ASender: TObject; const AMangaListNode: PVirtualNode);
+procedure TMainForm.ViewMangaInfo(const AModule: Pointer; const ALink, ATitle,
+  ASaveTo: String; const ASender: TObject; const AMangaListNode: PVirtualNode);
 var
-  i: Integer;
   fav: TFavoriteContainer;
 begin
-  if (ALink = '') or (AModuleID = '') then Exit;
+  if (ALink = '') or (AModule = nil) then Exit;
 
   // terminate exisiting getmangainfo thread
   if Assigned(GetInfosThread) then
@@ -4788,9 +4784,7 @@ begin
     end;
 
   // set the UI
-  i := Modules.LocateModuleByID(AModuleID);
-  if i <> -1 then
-    edURL.Text := FillHost(Modules.Module[i].RootURL, ALink);
+  edURL.Text := FillHost(TModuleContainer(AModule).RootURL, ALink);
   pcMain.ActivePage := tsInformation;
   imCover.Picture.Assign(nil);
   rmInformation.Clear;
@@ -4809,15 +4803,15 @@ begin
   edSaveTo.Text := ASaveTo;
   LastViewMangaInfoSender := ASender;
   if edSaveTo.Text = '' then
-	FillSaveTo;
+    FillSaveTo;
   
   if (LastViewMangaInfoSender <> miDownloadViewMangaInfo) and (LastViewMangaInfoSender <> miFavoritesViewInfos) then
-    OverrideSaveTo(AModuleID);
+    OverrideSaveTo(AModule);
   
 
-  DisableAddToFavorites(AModuleID);
+  DisableAddToFavorites(AModule);
   //check if manga already in FavoriteManager list
-  fav := FavoriteManager.LocateMangaByLink(AModuleID, ALink);
+  fav := FavoriteManager.LocateMangaByLink(TModuleContainer(AModule).ID, ALink);
   if fav <> nil then
   begin
     btAddToFavorites.Enabled := False;
@@ -4835,7 +4829,7 @@ begin
     GetInfosThread.Title := ''      // retrieve the original title so custom rename can remove them
   else
     GetInfosThread.Title := ATitle;
-  GetInfosThread.ModuleID := AModuleID;
+  GetInfosThread.ModuleID := TModuleContainer(AModule).ID;
   GetInfosThread.Link := ALink;
   GetInfosThread.Start;
 end;
@@ -5522,28 +5516,24 @@ end;
 
 procedure TMainForm.edURLButtonClick(Sender: TObject);
 var
-  i: Integer;
-  moduleid,
-  host,
-  link: String;
+  host, link: String;
+  m: TModuleContainer;
 begin
   btDownload.Enabled := False;
   btDownloadSplit.Enabled := btDownload.Enabled;
   btAddToFavorites.Enabled := False;
   btReadOnline.Enabled := False;
 
-  moduleid := '';
   SplitURL(edURL.Text, @host, @link);
+  m := nil;
 
   if (host <> '') and (link <> '') then
   begin
     host := LowerCase(host);
-    i := Modules.LocateModuleByHost(host);
-    if i <> -1 then
-      moduleid := Modules.Module[i].ID;
+    m := Modules.LocateModuleByHost(Host);
   end;
 
-  if (moduleid = '') or (link = '') then
+  if (m = nil) or (link = '') then
   begin
     tmAnimateMangaInfo.Enabled := False;
     pbWait.Visible := False;
@@ -5551,7 +5541,7 @@ begin
     Exit;
   end;
 
-  ViewMangaInfo(link, moduleid, '', '', edURL);
+  ViewMangaInfo(m, link, '', '', edURL);
 end;
 
 procedure TMainForm.edURLKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
