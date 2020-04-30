@@ -11,7 +11,7 @@ interface
 
 uses
   Classes, SysUtils, fgl, uData, uDownloadsManager, FMDOptions, httpsendthread,
-  WebsiteModulesSettings, Process, LazLogger, WebsiteBypass, RegExpr, fpjson, jsonparser,
+  WebsiteModulesSettings, WebsiteBypass, RegExpr, fpjson, jsonparser,
   jsonscanner, fpjsonrtti, uBaseUnit, httpcookiemanager, syncobjs;
 
 const
