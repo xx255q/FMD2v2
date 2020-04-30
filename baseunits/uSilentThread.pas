@@ -414,10 +414,9 @@ procedure TSilentThread.Execute;
 begin
   Synchronize(Manager.UpdateLoadStatus);
   try
-    Info.ModuleIndex := ;
-    Info.ModuleIndex := Module.Index;
+    Info.Module := Module;
     Info.MangaInfo.Title := Title;
-    if Info.GetInfoFromURL(Module.ID, URL) = NO_ERROR then
+    if Info.GetInfoFromURL(URL) = NO_ERROR then
       if not Terminated then
         Synchronize(MainThreadAfterChecking);
   except

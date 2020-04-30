@@ -201,8 +201,8 @@ begin
       LuaPushMe(L);
       luaPushIntegerGlobal(L, 'PAGENUMBER', Page);
       luaPushIntegerGlobal(L, 'WORKPTR', WorkPtr);
-      luaPushObject(L, MangaInfo.mangaInfo, 'MANGAINFO', @luaMangaInfoAddMetaTable);
-      luaPushObject(L, MangaInfo.FHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
+      luaPushObject(L, MangaInfo.MangaInfo, 'MANGAINFO', @luaMangaInfoAddMetaTable);
+      luaPushObject(L, MangaInfo.HTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
       luaPushObject(L, updateList, 'UPDATELIST', @luaUpdateListManagerAddMetaTable);
 
       LuaDoMe(L);
@@ -230,8 +230,8 @@ begin
     L := LuaNewBaseState;
     try
       LuaPushMe(L);
-      luaPushObject(L, MangaInfo.mangaInfo, 'MANGAINFO', @luaMangaInfoAddMetaTable);
-      luaPushObject(L, MangaInfo.FHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
+      luaPushObject(L, MangaInfo.MangaInfo, 'MANGAINFO', @luaMangaInfoAddMetaTable);
+      luaPushObject(L, MangaInfo.HTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
       luaPushStringGlobal(L, 'URL', AURL);
       luaPushObject(L, ANames, 'NAMES', @luaStringsAddMetaTable);
       luaPushObject(L, ALinks, 'LINKS', @luaStringsAddMetaTable);
@@ -260,8 +260,8 @@ begin
     try
       LuaPushMe(L);
       luaPushStringGlobal(L, 'URL', AURL);
-      luaPushObject(L, MangaInfo.mangaInfo, 'MANGAINFO', @luaMangaInfoAddMetaTable);
-      luaPushObject(L, MangaInfo.FHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
+      luaPushObject(L, MangaInfo.MangaInfo, 'MANGAINFO', @luaMangaInfoAddMetaTable);
+      luaPushObject(L, MangaInfo.HTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
 
       LuaDoMe(L);
       LuaCallFunction(L, OnGetInfo);

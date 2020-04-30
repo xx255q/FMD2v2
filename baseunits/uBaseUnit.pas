@@ -321,7 +321,7 @@ type
     URL,
     Title,
     Link,
-    ModuleID,
+    ModuleID, //todo: replace with tmodulecontainer
     CoverLink,
     Authors,
     Artists,

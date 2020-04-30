@@ -234,14 +234,15 @@ begin
   Task.UpdateStatus;
   with Container do
     try
+      FMangaInformation.Module := FavoriteInfo.Module;
       // get new manga info
       FMangaInformation.isGetByUpdater := False;
-      //FMangaInformation.mangaInfo.Title := FavoriteInfo.Title; // retrieve the original title so custom rename can remove them
-      FMangaInformation.GetInfoFromURL(FavoriteInfo.ModuleID, FavoriteInfo.Link);
+      //FMangaInformation.MangaInfo.Title := FavoriteInfo.Title; // retrieve the original title so custom rename can remove them
+      FMangaInformation.GetInfoFromURL(FavoriteInfo.Link);
       if not Terminated then
       begin
-        NewMangaInfo := FMangaInformation.mangaInfo;
-        FMangaInformation.mangaInfo := nil;
+        NewMangaInfo := FMangaInformation.MangaInfo;
+        FMangaInformation.MangaInfo := nil;
         NewMangaInfoChaptersPos := TCardinalList.Create;
         // update current chapters count immedietly
         FavoriteInfo.CurrentChapter := IntToStr(NewMangaInfo.ChapterLinks.Count);

@@ -4828,14 +4828,11 @@ begin
   end;
 
   // start the thread
-  GetInfosThread := TGetMangaInfosThread.Create;
-  GetInfosThread.MangaListNode := AMangaListNode;
+  GetInfosThread := TGetMangaInfosThread.Create(AModule, ALink, AMangaListNode);
   if (ASender = miDownloadViewMangaInfo) or (ASender = miFavoritesViewInfos) then
     GetInfosThread.Title := ''      // retrieve the original title so custom rename can remove them
   else
     GetInfosThread.Title := ATitle;
-  GetInfosThread.ModuleID := TModuleContainer(AModule).ID;
-  GetInfosThread.Link := ALink;
   GetInfosThread.Start;
 end;
 

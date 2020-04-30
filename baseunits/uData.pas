@@ -23,29 +23,27 @@ type
   TMangaInformation = class(TObject)
   private
     FOwner: TBaseThread;
-    FModuleIndex: Integer;
-    procedure SetModuleIndex(AValue: Integer);
+    FModule: Pointer;
+    procedure SetModule(const AValue: Pointer);
   public
+    HTTP: THTTPSendThread;
+    MangaInfo: TMangaInfo;
+    Parse: TStringList;
     isGetByUpdater: Boolean;
-    mangaInfo: TMangaInfo;
-    parse: TStringList;
     isGenerateFolderChapterName: Boolean;
     isRemoveUnicode: Boolean;
-    RemoveHostFromChapterLinks: Boolean;
-    FHTTP: THTTPSendThread;
+    isRemoveHostFromChapterLinks: Boolean;
 
     constructor Create(AOwnerThread: TBaseThread = nil; ACreateInfo: Boolean = True);
     destructor Destroy; override;
     procedure ClearInfo;
-    function GetDirectoryPage(var APage: Integer; const AModuleID: String): Byte;
-    function GetNameAndLink(const ANames, ALinks: TStringList; const AModuleID, AURL: String): Byte;
-    function GetInfoFromURL(const AModuleID, AURL: String): Byte;
+    function GetDirectoryPage(var APage: Integer): Byte;
+    function GetNameAndLink(const ANames, ALinks: TStringList; AURL: String): Byte;
+    function GetInfoFromURL(const AURL: String): Byte;
     procedure SyncInfoToData(const ADataProcess: TDBDataProcess); overload;
     procedure AddInfoToData(const ATitle, ALink: String; const ADataProcess: TDBDataProcess); overload;
-    //wrapper
-    function GetPage(var AOutput: TObject; AURL: String; const AReconnect: Integer = 0): Boolean; inline;
     property Thread: TBaseThread read FOwner;
-    property ModuleIndex: Integer read FModuleIndex write SetModuleIndex;
+    property Module: Pointer read FModule write SetModule;
   end;
 
 var
@@ -62,67 +60,64 @@ constructor TMangaInformation.Create(AOwnerThread: TBaseThread; ACreateInfo: Boo
 begin
   inherited Create;
   FOwner := AOwnerThread;
-  FHTTP := THTTPSendThread.Create(AOwnerThread);
-  FHTTP.Headers.NameValueSeparator := ':';
-  parse := TStringList.Create;
+  HTTP := THTTPSendThread.Create(AOwnerThread);
+  HTTP.Headers.NameValueSeparator := ':';
+  Parse := TStringList.Create;
   if ACreateInfo then
-    mangaInfo := TMangaInfo.Create;
+    MangaInfo := TMangaInfo.Create;
   isGetByUpdater := False;
-  ModuleIndex := -1;
-  RemoveHostFromChapterLinks := True;
+  isRemoveHostFromChapterLinks := True;
 end;
 
 destructor TMangaInformation.Destroy;
 begin
-  if Assigned(mangaInfo) then
-    mangaInfo.Free;
-  if Assigned(parse) then
-    parse.Free;
-  FHTTP.Free;
+  if Assigned(MangaInfo) then
+    MangaInfo.Free;
+  if Assigned(Parse) then
+    Parse.Free;
+  HTTP.Free;
   inherited Destroy;
 end;
 
 procedure TMangaInformation.ClearInfo;
 begin
-  mangaInfo.Artists := '';
-  mangaInfo.Authors := '';
-  mangaInfo.Genres := '';
-  mangaInfo.Summary := '';
-  mangaInfo.CoverLink := '';
-  mangaInfo.NumChapter := 0;
-  mangaInfo.Status := '';
-  mangaInfo.Title := '';
-  mangaInfo.URL := '';
-  mangaInfo.ModuleID := '';
-  mangaInfo.ChapterNames.Clear;
-  mangaInfo.ChapterLinks.Clear;
+  MangaInfo.Artists := '';
+  MangaInfo.Authors := '';
+  MangaInfo.Genres := '';
+  MangaInfo.Summary := '';
+  MangaInfo.CoverLink := '';
+  MangaInfo.NumChapter := 0;
+  MangaInfo.Status := '';
+  MangaInfo.Title := '';
+  MangaInfo.URL := '';
+  MangaInfo.ModuleID := '';
+  MangaInfo.ChapterNames.Clear;
+  MangaInfo.ChapterLinks.Clear;
 end;
 
-procedure TMangaInformation.SetModuleIndex(AValue: Integer);
+procedure TMangaInformation.SetModule(const AValue: Pointer);
 begin
-  if FModuleIndex = AValue then Exit;
-  FModuleIndex := AValue;
-  if (FModuleIndex <> -1) and Assigned(FHTTP) then
-    WebsiteModules.Modules[FModuleIndex].PrepareHTTP(FHTTP);
+  if FModule = AValue then Exit;
+  FModule := AValue;
+  if Assigned(FModule) and Assigned(HTTP) then
+    TModuleContainer(FModule).PrepareHTTP(HTTP);
 end;
 
-function TMangaInformation.GetDirectoryPage(var APage: Integer; const AModuleID: String): Byte;
+function TMangaInformation.GetDirectoryPage(var APage: Integer): Byte;
 begin
   APage := 1;
 
   //load pagenumber_config if available
-  if  Modules[ModuleIndex].Settings.Enabled and (Modules[ModuleIndex].Settings.UpdateListDirectoryPageNumber > 0) then
+  if  TModuleContainer(FModule).Settings.Enabled and (TModuleContainer(FModule).Settings.UpdateListDirectoryPageNumber > 0) then
   begin
-    APage := Modules[ModuleIndex].Settings.UpdateListDirectoryPageNumber;
+    APage := TModuleContainer(FModule).Settings.UpdateListDirectoryPageNumber;
     BROWSER_INVERT := True;
     Exit(NO_ERROR);
   end;
 
   BROWSER_INVERT := False;
-  if ModuleIndex < 0 then
-    ModuleIndex := Modules.LocateModuleByID(AModuleID);
-  if Modules.ModuleAvailable(ModuleIndex, MMGetDirectoryPageNumber) then
-    Result := Modules.GetDirectoryPageNumber(Self, APage, TUpdateListThread(Thread).workPtr, ModuleIndex)
+  if Assigned(TModuleContainer(FModule).OnGetDirectoryPageNumber) then
+    Result := TModuleContainer(FModule).OnGetDirectoryPageNumber(Self, APage, TUpdateListThread(Thread).workPtr, TModuleContainer(FModule))
   else
     Exit(INFORMATION_NOT_FOUND);
 
@@ -131,14 +126,10 @@ begin
 end;
 
 function TMangaInformation.GetNameAndLink(const ANames, ALinks: TStringList;
-  const AModuleID, AURL: String): Byte;
+  AURL: String): Byte;
 begin
-  if ModuleIndex < 0 then
-    ModuleIndex := Modules.LocateModuleByID(AModuleID);
-  if Modules.ModuleAvailable(ModuleIndex, MMGetNameAndLink) then
-  begin
-    Result := Modules.GetNameAndLink(Self, ANames, ALinks, AURL, ModuleIndex)
-  end
+  if Assigned(TModuleContainer(FModule).OnGetNameAndLink) then
+    Result := TModuleContainer(FModule).OnGetNameAndLink(Self, ANames, ALinks, AURL, TModuleContainer(FModule))
   else
     Exit(INFORMATION_NOT_FOUND);
 
@@ -147,7 +138,7 @@ begin
     RemoveHostFromURLsPair(ALinks, ANames);
 end;
 
-function TMangaInformation.GetInfoFromURL(const AModuleID, AURL: String): Byte;
+function TMangaInformation.GetInfoFromURL(const AURL: String): Byte;
 var
   s, s2: String;
   j, k: Integer;
@@ -157,26 +148,25 @@ begin
   if Trim(AURL) = '' then
     Exit(INFORMATION_NOT_FOUND);
 
-  GetBaseMangaInfo(mangaInfo, bmangaInfo);
+  GetBaseMangaInfo(MangaInfo, bmangaInfo);
 
-  mangaInfo.ModuleID := AModuleID;
-  mangaInfo.CoverLink := '';
-  mangaInfo.NumChapter := 0;
-  mangaInfo.ChapterNames.Clear;
-  mangaInfo.ChapterLinks.Clear;
+  MangaInfo.ModuleID := TModuleContainer(FModule).ID; //todo: use tmodulecontainer
+  MangaInfo.CoverLink := '';
+  MangaInfo.NumChapter := 0;
+  MangaInfo.ChapterNames.Clear;
+  MangaInfo.ChapterLinks.Clear;
 
-  if ModuleIndex < 0 then
-    ModuleIndex := Modules.LocateModuleByID(AModuleID);
-  if Modules.ModuleAvailable(ModuleIndex, MMGetInfo) then begin
-    mangaInfo.URL := FillHost(Modules.Module[ModuleIndex].RootURL, AURL);
-    Result := Modules.GetInfo(Self, AURL, ModuleIndex);
+  if Assigned(TModuleContainer(FModule).OnGetInfo) then
+  begin
+    MangaInfo.URL := FillHost(TModuleContainer(FModule).RootURL, AURL);
+    Result := TModuleContainer(FModule).OnGetInfo(Self, AURL, TModuleContainer(FModule));
   end
   else
     Exit(INFORMATION_NOT_FOUND);
 
-  with mangaInfo do begin
+  with MangaInfo do begin
     if Link = '' then
-      Link := RemoveHostFromURL(mangaInfo.URL);
+      Link := RemoveHostFromURL(MangaInfo.URL);
 
     // cleanup info
     CoverLink := CleanURL(CoverLink);
@@ -200,7 +190,7 @@ begin
       Summary := '';
     if Title = '' then
       Title := 'N/A';
-    FillBaseMangaInfo(mangaInfo, bmangaInfo);
+    FillBaseMangaInfo(MangaInfo, bmangaInfo);
 
     // cleanup chapters
     if ChapterLinks.Count > 0 then begin
@@ -238,7 +228,7 @@ begin
     if ChapterLinks.Count > 0 then
     begin
       // remove host from chapter links
-      if RemoveHostFromChapterLinks then
+      if isRemoveHostFromChapterLinks then
         RemoveHostFromURLsPair(ChapterLinks, ChapterNames);
       // fixing chapter name
       for j := 0 to ChapterNames.Count - 1 do
@@ -272,7 +262,7 @@ end;
 procedure TMangaInformation.SyncInfoToData(const ADataProcess: TDBDataProcess);
 begin
   if Assigned(ADataProcess) then
-    with mangaInfo do
+    with MangaInfo do
       ADataProcess.UpdateData(Title, Link, Authors, Artists, Genres, Status, Summary,
         NumChapter, ModuleID);
 end;
@@ -281,17 +271,12 @@ procedure TMangaInformation.AddInfoToData(const ATitle, ALink: String; const ADa
 begin
   if Assigned(ADataProcess) then
   begin
-    if (mangaInfo.Title = '') and (ATitle <> '') then mangaInfo.Title := ATitle;
-    if (mangaInfo.Link = '') and (ALink <> '') then mangaInfo.Link := ALink;
-    with mangaInfo do
+    if (MangaInfo.Title = '') and (ATitle <> '') then MangaInfo.Title := ATitle;
+    if (MangaInfo.Link = '') and (ALink <> '') then MangaInfo.Link := ALink;
+    with MangaInfo do
       ADataProcess.AddData(Title, Link, Authors, Artists, Genres, Status,
         StringBreaks(Summary), NumChapter, Now);
   end;
-end;
-
-function TMangaInformation.GetPage(var AOutput: TObject; AURL: String; const AReconnect: Integer): Boolean;
-begin
-  Result := uBaseUnit.GetPage(FHTTP, AOutput, AURL, AReconnect);
 end;
 
 end.

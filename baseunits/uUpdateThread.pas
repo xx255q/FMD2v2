@@ -21,15 +21,17 @@ type
   { TUpdateListThread }
 
   TUpdateListThread = class(TBaseThread)
+  private
+    FModule: TModuleContainer;
   protected
-    Info: TMangaInformation;
     procedure Execute; override;
   public
+    info: TMangaInformation;
     checkStyle: TCheckStyleType;
     manager: TUpdateListManagerThread;
     workPtr: Integer;
     title, link: String;
-    constructor Create;
+    constructor Create(const AModule: TModuleContainer);
     destructor Destroy; override;
   end;
 
@@ -128,9 +130,10 @@ const
 
 { TUpdateListThread }
 
-constructor TUpdateListThread.Create;
+constructor TUpdateListThread.Create(const AModule: TModuleContainer);
 begin
   inherited Create(True);
+  FModule := AModule;
 end;
 
 destructor TUpdateListThread.Destroy;
@@ -142,8 +145,8 @@ begin
   finally
     LeaveCriticalsection(manager.CS_Threads);
   end;
-  if Assigned(Info) then
-    Info.Free;
+  if Assigned(info) then
+    info.Free;
   inherited Destroy;
 end;
 
@@ -154,15 +157,15 @@ var
 begin
   try
     if checkStyle = CS_INFO then
-      Info := TMangaInformation.Create(Self, True)
+      info := TMangaInformation.Create(Self, True)
     else
-      Info := TMangaInformation.Create(Self, False);
-    Info.isGetByUpdater := True;
-    info.ModuleIndex := manager.Module.Index;
+      info := TMangaInformation.Create(Self, False);
+    info.isGetByUpdater := True;
+    info.Module := FModule;
 
     case CheckStyle of
       CS_DIRECTORY_COUNT:
-          info.GetDirectoryPage(manager.Module.TotalDirectoryPage[workPtr], manager.website);
+          info.GetDirectoryPage(manager.Module.TotalDirectoryPage[workPtr]);
 
       //get names and links
       CS_DIRECTORY_PAGE:
@@ -172,7 +175,7 @@ begin
         try
           if BROWSER_INVERT then
             workPtr := manager.Module.TotalDirectoryPage[manager.Module.CurrentDirectoryIndex] - workPtr -1;
-          Info.GetNameAndLink(names, links, manager.website, IntToStr(workPtr));
+          info.GetNameAndLink(names, links, IntToStr(workPtr));
 
           //if website has sorted list by latest added
           //we will stop at first found against current db
@@ -205,16 +208,16 @@ begin
 
       CS_INFO:
       begin
-        Info.mangaInfo.Title:=title;
-        Info.mangaInfo.Link:=link;
+        info.MangaInfo.Title:=title;
+        info.MangaInfo.Link:=link;
         if link<>'' then begin
-          Info.GetInfoFromURL(manager.website,link);
+          info.GetInfoFromURL(link);
           // status = '-1' mean it's not exist and shouldn't be saved to database
-          if (not Terminated) and (Info.mangaInfo.Status <> '-1') then
+          if (not Terminated) and (info.MangaInfo.Status <> '-1') then
           begin
             EnterCriticalSection(manager.CS_AddInfoToData);
             try
-              Info.AddInfoToData(title,link,manager.mainDataProcess);
+              info.AddInfoToData(title,link,manager.mainDataProcess);
               manager.CheckCommit(manager.numberOfThreads);
             finally
               LeaveCriticalSection(manager.CS_AddInfoToData);
@@ -423,7 +426,7 @@ begin
         try
           if Module.ActiveConnectionCount >= conlimit then Exit;
           Module.IncActiveConnectionCount;
-          t := TUpdateListThread.Create;
+          t := TUpdateListThread.Create(Module);
           Threads.Add(t);
           if cs=CS_INFO then begin
             t.title:=tempDataProcess.Value[workPtr,DATA_PARAM_TITLE];

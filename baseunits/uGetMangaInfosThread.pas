@@ -24,17 +24,18 @@ type
   { TGetMangaInfosThread }
 
   TGetMangaInfosThread = class(TBaseThread)
-  protected
-    FMangaListNode: PVirtualNode;
+  private
+    FNode: PVirtualNode;
     FCover: TPicture;
-    FModuleID,
     FTitle,
     FLink: String;
     FInfo: TMangaInformation;
     FNumChapter: Cardinal;
     // Return TRUE if we can load manga cover.
     FIsHasMangaCover: Boolean;
+    procedure SetModule(const AValue: Pointer);
     // Flush this thread, means that the result will not be shown.
+  protected
     procedure Execute; override;
     procedure MainThreadSyncInfos;
     procedure MainThreadShowInfos;
@@ -42,12 +43,9 @@ type
     procedure MainThreadShowCannotGetInfo;
     procedure LoadCover;
   public
-    constructor Create;
+    constructor Create(const AModule: Pointer; const ALink: String; const ANode: PVirtualNode);
     destructor Destroy; override;
     property Title: String read FTitle write FTitle;
-    property ModuleID: String read FModuleID write FModuleID;
-    property Link: String read FLink write FLink;
-    property MangaListNode: PVirtualNode read FMangaListNode write FMangaListNode;
   end;
 
 implementation
@@ -61,7 +59,14 @@ begin
   dataProcess.Commit;
 end;
 
+procedure TGetMangaInfosThread.SetModule(const AValue: Pointer);
+begin
+
+end;
+
 procedure TGetMangaInfosThread.Execute;
+var
+  m: TModuleContainer;
 
   function GetMangaInfo: Boolean;
   var
@@ -70,23 +75,21 @@ procedure TGetMangaInfosThread.Execute;
   begin
     Result := False;
     try
-      FInfo.mangaInfo.ModuleID := ModuleID;
-      FInfo.mangaInfo.Link := Link;
-      FInfo.mangaInfo.Title := Title;
-      FInfo.ModuleIndex := Modules.LocateModuleByID(ModuleID);
-      data := MainForm.vtMangaList.GetNodeData(FMangaListNode);
-      if Assigned(FMangaListNode) and (MainForm.cbSelectManga.ItemIndex<>-1) and
-        (ModuleID = MainForm.cbSelectManga.Items[MainForm.cbSelectManga.ItemIndex]) then
+      FInfo.MangaInfo.Link := FLink;
+      FInfo.MangaInfo.Title := FTitle;
+      data := MainForm.vtMangaList.GetNodeData(FNode);
+      if Assigned(FNode) and (MainForm.cbSelectManga.ItemIndex<>-1) and
+        (m.ID = MainForm.cbSelectManga.Items[MainForm.cbSelectManga.ItemIndex]) then  //todo: use tmodulecontainer
       begin
-        if FInfo.mangaInfo.Title = '' then
-          FInfo.mangaInfo.Title := data^.Title;
-        FInfo.mangaInfo.Link := data^.Link;
-        FInfo.mangaInfo.Authors := data^.Authors;
-        FInfo.mangaInfo.Artists := data^.Artists;
-        FInfo.mangaInfo.Status := data^.Status;
-        FInfo.mangaInfo.Summary := data^.Summary;
-        FInfo.mangaInfo.NumChapter := data^.NumChapter;
-        FInfo.mangaInfo.Genres := data^.Genres;
+        if FInfo.MangaInfo.Title = '' then
+          FInfo.MangaInfo.Title := data^.Title;
+        FInfo.MangaInfo.Link := data^.Link;
+        FInfo.MangaInfo.Authors := data^.Authors;
+        FInfo.MangaInfo.Artists := data^.Artists;
+        FInfo.MangaInfo.Status := data^.Status;
+        FInfo.MangaInfo.Summary := data^.Summary;
+        FInfo.MangaInfo.NumChapter := data^.NumChapter;
+        FInfo.MangaInfo.Genres := data^.Genres;
         FNumChapter := data^.NumChapter;
       end;
       FInfo.isGenerateFolderChapterName := OptionGenerateMangaFolder;
@@ -95,36 +98,36 @@ procedure TGetMangaInfosThread.Execute;
       infob := INFORMATION_NOT_FOUND;
 
       //wait if there is concurrent connection limit
-      if Modules.MaxConnectionLimit[FInfo.ModuleIndex] > 0 then
+      if m.MaxConnectionLimit > 0 then
       begin
-        while not Modules.CanCreateConnection(FInfo.ModuleIndex) do
+        while not m.CanCreateConnection do
           Sleep(SOCKHEARTBEATRATE);
-        Modules.IncActiveConnectionCount(FInfo.ModuleIndex);
+        m.IncActiveConnectionCount;
       end;
 
-      infob := FInfo.GetInfoFromURL(ModuleID, Link);
+      infob := FInfo.GetInfoFromURL(FLink);
 
       if Terminated or isExiting then Exit;
       if infob <> NO_ERROR then Exit;
 
       //set back if title changed
-      if (FInfo.mangaInfo.Title <> '') and (FInfo.mangaInfo.Title <> FTitle) then
-        FTitle := FInfo.mangaInfo.Title;
+      if (FInfo.MangaInfo.Title <> '') and (FInfo.MangaInfo.Title <> FTitle) then
+        FTitle := FInfo.MangaInfo.Title;
 
       if Assigned(data) then
       begin
-        if dataProcess.WebsiteLoaded(ModuleID) then
+        if dataProcess.WebsiteLoaded(m.ID) then //todo: use tmodulecontainer
         begin
-          if SitesWithoutInformation(ModuleID) then
+          if not(m.InformationAvailable) then
           begin
-            if FInfo.mangaInfo.Authors = '' then
-              FInfo.mangaInfo.Authors := data^.Authors;
-            if FInfo.mangaInfo.Artists = '' then
-              FInfo.mangaInfo.Artists := data^.Artists;
-            if FInfo.mangaInfo.Genres = '' then
-              FInfo.mangaInfo.Genres := data^.Genres;
-            if FInfo.mangaInfo.Summary = '' then
-              FInfo.mangaInfo.Summary := data^.Summary;
+            if FInfo.MangaInfo.Authors = '' then
+              FInfo.MangaInfo.Authors := data^.Authors;
+            if FInfo.MangaInfo.Artists = '' then
+              FInfo.MangaInfo.Artists := data^.Artists;
+            if FInfo.MangaInfo.Genres = '' then
+              FInfo.MangaInfo.Genres := data^.Genres;
+            if FInfo.MangaInfo.Summary = '' then
+              FInfo.MangaInfo.Summary := data^.Summary;
           end;
 
           if not (Terminated or isExiting) then
@@ -139,6 +142,7 @@ procedure TGetMangaInfosThread.Execute;
   end;
 
 begin
+  m := TModuleContainer(FInfo.Module);
   try
     if not GetMangaInfo then
     begin
@@ -151,10 +155,10 @@ begin
       Synchronize(MainThreadShowInfos);
       FCover.Clear;
       // If there's cover then we will load it to the TPicture component.
-      if OptionEnableLoadCover and (Trim(FInfo.mangaInfo.CoverLink) <> '') then
+      if OptionEnableLoadCover and (Trim(FInfo.MangaInfo.CoverLink) <> '') then
         try
-          FInfo.FHTTP.Document.Clear;
-          if FInfo.FHTTP.GET(FInfo.mangaInfo.CoverLink) then
+          FInfo.HTTP.Document.Clear;
+          if FInfo.HTTP.GET(FInfo.MangaInfo.CoverLink) then
             LoadCover;
         except
         end;
@@ -182,7 +186,7 @@ var
   bmp:TMemBitmap;
 begin
   FIsHasMangaCover:=false;
-  with FInfo.FHTTP do
+  with FInfo.HTTP do
   if GetImageStreamExt(Document)='webp' then
   begin
     bmp:=nil;
@@ -197,22 +201,22 @@ begin
       Exit;
   end
   else
-    FCover.LoadFromStream(FInfo.FHTTP.Document);
+    FCover.LoadFromStream(FInfo.HTTP.Document);
   FIsHasMangaCover:=True;
 end;
 
 procedure TGetMangaInfosThread.MainThreadShowInfos;
 var node: PVirtualNode;
 begin
-  TransferMangaInfo(mangaInfo, FInfo.mangaInfo);
+  TransferMangaInfo(mangaInfo, FInfo.MangaInfo);
   with MainForm do begin
-    if Assigned(FMangaListNode) and dataProcess.WebsiteLoaded(ModuleID) then
+    if Assigned(FNode) and dataProcess.WebsiteLoaded(TModuleContainer(FInfo.Module).ID) then   //todo: use tmodulecontainer
       begin
         vtMangaList.BeginUpdate;
         dataProcess.Refresh(dataProcess.Filtered);
-        vtMangaList.ReinitNode(FMangaListNode, False);
+        vtMangaList.ReinitNode(FNode, False);
         if dataProcess.Filtered then begin
-          node := vtMangaList.GetNextVisible(FMangaListNode, False);
+          node := vtMangaList.GetNextVisible(FNode, False);
           while Assigned(node) do begin
             vtMangaList.ReinitNode(node, False);
             node := vtMangaList.GetNextVisible(node, False);
@@ -241,18 +245,21 @@ begin
   end;
 end;
 
-constructor TGetMangaInfosThread.Create;
+constructor TGetMangaInfosThread.Create(const AModule: Pointer;
+  const ALink: String; const ANode: PVirtualNode);
 begin
   inherited Create(True);
-  FInfo := TMangaInformation.Create(Self);
   FCover := MainForm.mangaCover;
   FIsHasMangaCover := False;
-  FMangaListNode := nil;
+  FInfo := TMangaInformation.Create(Self);
+  FInfo.Module := AModule;
+  FLink := ALink;
+  FNode := ANode;
 end;
 
 destructor TGetMangaInfosThread.Destroy;
 begin
-  Modules.DecActiveConnectionCount(FInfo.ModuleIndex);
+  TModuleContainer(FInfo.Module).DecActiveConnectionCount;
   GetInfosThread := nil;
   FCover := nil;
   FInfo.Free;
