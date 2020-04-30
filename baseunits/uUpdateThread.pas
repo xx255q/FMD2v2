@@ -674,10 +674,10 @@ begin
     while websitePtr < websites.Count do
     begin
       FThreadAborted:=True;
-      website := websites.Strings[websitePtr];
-      module := Modules.LocateModule(website);
+      module := TModuleContainer(websites.Objects[websitePtr]);
       if Assigned(module) then
       begin
+        website := module.Name;
         Inc(websitePtr);
 
         cloghead:=Self.ClassName+', '+Module.Name+': ';

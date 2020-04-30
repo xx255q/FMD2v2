@@ -3285,45 +3285,41 @@ end;
 
 procedure TMainForm.mnUpdate1ClickClick(Sender: TObject);
 var
-  i, j, e: Cardinal;
-  f: Boolean;
-  st: TStringList;
+  m: TModuleContainer;
+  i, j, c_list_count, in_list_count: Integer;
+  in_list: Boolean;
 begin
   if (not isUpdating) then
   begin
     isUpdating := True;
     updateList := TUpdateListManagerThread.Create;
-    for i := 0 to cbSelectManga.Items.Count - 1 do
-      updateList.websites.Add(cbSelectManga.Items[i]);
+    for i := 0 to cbSelectManga.Items.Count-1 do
+    begin
+      m := TModuleContainer(cbSelectManga.Items.Objects[i]);
+      updateList.websites.AddObject(m.Name, m);
+    end;
     updateList.Start;
   end
   else
   begin
-    e := 0;
-    if (updateList.websites.Count > 0) and (cbSelectManga.Items.Count > 0) then
+    // look if it's already in the update list
+    in_list_count := 0;
+    c_list_count := updateList.websites.Count-1;
+    for i := 0 to cbSelectManga.Items.Count-1 do
     begin
-      st := TStringList.Create;
-      st.Assign(updateList.websites);
-      for i := 0 to st.Count - 1 do
-      begin
-        st[i] := Trim(StringReplace(st[i], UTF8Encode(WideString(#$2714)), '', []));
-      end;
-      for i := 0 to cbSelectManga.Items.Count - 1 do
-      begin
-        f := False;
-        for j := 0 to st.Count - 1 do
-          if cbSelectManga.Items[i] = st[j] then
-          begin
-            Inc(e);
-            f := True;
-            Break;
-          end;
-        if not f then
-          updateList.websites.Add(cbSelectManga.Items[i]);
-      end;
-      st.Free;
+      in_list := False;
+      m := TModuleContainer(cbSelectManga.Items.Objects[i]);
+      for j := 0 to c_list_count do
+        if m = updateList.websites.Objects[j] then
+        begin
+          in_list := True;
+          Inc(in_list_count);
+          Break;
+        end;
+      if in_list = False then
+        updateList.websites.AddObject(m.Name, m);
     end;
-    if (e > 0) and (e = cbSelectManga.Items.Count) then
+    if (in_list_count <> 0) and (in_list_count = cbSelectManga.Items.Count) then
       MessageDlg('', RS_DlgFavoritesCheckIsRunning, mtInformation, [mbYes], 0);
   end;
 end;
@@ -3335,37 +3331,27 @@ end;
 
 procedure TMainForm.mnUpdateListClick(Sender: TObject);
 var
-  i: Cardinal;
-  e: Boolean;
-  st: TStringList;
+  m: TModuleContainer;
+  i: Integer;
 begin
+  m := TModuleContainer(cbSelectManga.Items.Objects[cbSelectManga.ItemIndex]);
   if (not isUpdating) then
   begin
     isUpdating := True;
     updateList := TUpdateListManagerThread.Create;
-    updateList.numberOfThreads := 4;
-    updateList.websites.Add(cbSelectManga.Items[cbSelectManga.ItemIndex]);
+    updateList.websites.AddObject(m.Name, m);
     updateList.Start;
   end
   else
   begin
-    e := False;
-    st := TStringList.Create;
-    st.Assign(updateList.websites);
-    if st.Count > 0 then
-    begin
-      for i := 0 to st.Count - 1 do
+    // look if it's already in the update list
+    for i := 0 to updateList.websites.Count-1 do
+      if m = updateList.websites.Objects[i] then
       begin
-        st[i] := Trim(StringReplace(st[i], UTF8Encode(WideString(#$2714)), '', []));
-        if st[i] = cbSelectManga.Items[cbSelectManga.ItemIndex] then
-          e := True;
+        MessageDlg('', RS_DlgFavoritesCheckIsRunning, mtInformation, [mbYes], 0);
+        Exit;
       end;
-    end;
-    st.Free;
-    if not e then
-      updateList.websites.Add(cbSelectManga.Items[cbSelectManga.ItemIndex])
-    else
-      MessageDlg('', RS_DlgFavoritesCheckIsRunning, mtInformation, [mbYes], 0);
+    updateList.websites.AddObject(m.Name, m);
   end;
 end;
 
