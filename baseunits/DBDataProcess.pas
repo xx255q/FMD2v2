@@ -42,7 +42,6 @@ type
     procedure GoToRecNo(const ARecIndex: Integer);
   protected
     procedure CreateTable;
-    procedure ConvertNewTable;
     procedure VacuumTable;
     procedure GetRecordCount;
     procedure AddSQLCond(const sqltext: String; useOR: Boolean = False);
@@ -283,34 +282,6 @@ begin
       DBDataProccesCreateParam + ');');
     FTrans.Commit;
   end;
-end;
-
-procedure TDBDataProcess.ConvertNewTable;
-begin
-  if FQuery.Active = False then Exit;
-  if  (FQuery.Fields[0].FieldName <> 'link') or
-      (FieldTypeNames[FQuery.FieldByName('title').DataType] <> Fieldtypenames[ftMemo]) or
-      (FieldTypeNames[FQuery.FieldByName('link').DataType] <> Fieldtypenames[ftMemo]) or
-      (FieldTypeNames[FQuery.FieldByName('authors').DataType] <> Fieldtypenames[ftMemo]) or
-      (FieldTypeNames[FQuery.FieldByName('artists').DataType] <> Fieldtypenames[ftMemo]) or
-      (FieldTypeNames[FQuery.FieldByName('genres').DataType] <> Fieldtypenames[ftMemo]) or
-      (FieldTypeNames[FQuery.FieldByName('status').DataType] <> Fieldtypenames[ftMemo]) or
-      (FieldTypeNames[FQuery.FieldByName('summary').DataType] <> Fieldtypenames[ftMemo]) then
-    try
-      FQuery.Close;
-      with fconn do begin
-        ExecuteDirect('DROP TABLE IF EXISTS '+QuotedStr('temp'+FTableName));
-        ExecuteDirect('CREATE TABLE '+QuotedStrd('temp'+FTableName)+ ' (' + DBDataProccesCreateParam + ')');
-        ExecuteDirect('INSERT INTO '+QuotedStrd('temp'+FTableName)+' ('+DBDataProcessParam+') SELECT ' + DBDataProcessParam + ' FROM '+QuotedStrd(FTableName));
-        ExecuteDirect('DROP TABLE '+QuotedStrd(FTableName));
-        ExecuteDirect('ALTER TABLE '+QuotedStrd('temp'+FTableName)+' RENAME TO '+QuotedStrd(FTableName));
-      end;
-      FTrans.Commit;
-      VacuumTable;
-      FQuery.Open;
-    except
-      FTrans.Rollback;
-    end;
 end;
 
 procedure TDBDataProcess.VacuumTable;
@@ -685,7 +656,6 @@ begin
     end;
   end;
   Result := FQuery.Active;
-  if Result then ConvertNewTable;
 end;
 
 function TDBDataProcess.TableExist(const ATableName: String): Boolean;
