@@ -681,7 +681,7 @@ type
     procedure ClearChapterListState;
   public
     LastSearchStr: String;
-    LastSearchWeb: String;
+    LastSearchWeb: Pointer;
     LastUserPickedSaveTo: String;
     LastViewMangaInfoSender: TObject;
     
@@ -1023,7 +1023,7 @@ begin
   begin
     vtMangaList.RootNodeCount := dataProcess.RecordCount;
     UpdateVtMangaListFilterStatus;
-    LastSearchWeb := dataProcess.Website;
+    LastSearchWeb := currentWebsite;
     LastSearchStr := UpCase(FSearchStr);
     vtMangaList.Cursor := crDefault;
   end;
@@ -1958,7 +1958,7 @@ begin
   UpdateVtFavorites;
 
   if cbSelectManga.ItemIndex <> -1 then
-    OpenDataDB(currentWebsite);
+    OpenDataDB(TModuleContainer(currentWebsite).ID);
   if OptionAutoCheckLatestVersion then
   begin
     btCheckLatestVersionClick(btCheckLatestVersion);
@@ -2669,10 +2669,10 @@ end;
 procedure TMainForm.cbSelectMangaEditingDone(Sender: TObject);
 begin
   if cbSelectManga.ItemIndex < 0 then Exit;
-  if currentWebsite <> TModuleContainer(cbSelectManga.Items.Objects[cbSelectManga.ItemIndex]).ID then
+  if currentWebsite <> Pointer(cbSelectManga.Items.Objects[cbSelectManga.ItemIndex]) then
   begin
-    settingsfile.WriteInteger('form', 'SelectManga', cbSelectManga.ItemIndex);
-    currentWebsite := TModuleContainer(cbSelectManga.Items.Objects[cbSelectManga.ItemIndex]).ID;
+    currentWebsite := cbSelectManga.Items.Objects[cbSelectManga.ItemIndex];
+    settingsfile.WriteString('form', 'SelectManga', TModuleContainer(currentWebsite).ID);
     vtMangaList.Clear;
     if dataProcess = nil then
       dataProcess := TDBDataProcess.Create
@@ -2680,8 +2680,8 @@ begin
     if dataProcess.Connected then
       dataProcess.Close;
     lbMode.Caption := Format(RS_ModeAll, [0]);
-    if DataFileExist(currentWebsite) then
-      OpenDataDB(currentWebsite)
+    if DataFileExist(TModuleContainer(currentWebsite).ID) then
+      OpenDataDB(TModuleContainer(currentWebsite).ID)
     else
     if cbOptionShowDownloadMangalistDialog.Checked then
       RunGetList;
@@ -5153,7 +5153,7 @@ begin
     isStillHaveCurrentWebsite := False;
     for i := 0 to cbSelectManga.Items.Count - 1 do
     begin
-      if TModuleContainer(cbSelectManga.Items.Objects[i]).ID = currentWebsite then
+      if currentWebsite = Pointer(cbSelectManga.Items.Objects[i]) then
       begin
         cbSelectManga.ItemIndex := i;
         isStillHaveCurrentWebsite := True;
@@ -5175,7 +5175,7 @@ begin
       else
       begin
         cbSelectManga.Clear;
-        currentWebsite := '';
+        currentWebsite := nil;
         vtMangaList.Clear;
         lbMode.Caption := Format(RS_ModeAll, [0]);
       end;
@@ -5406,16 +5406,7 @@ begin
   end;
 
   // load last selected webssite
-  if cbSelectManga.Items.Count > 0 then
-  begin
-    i := settingsfile.ReadInteger('form', 'SelectManga', 0);
-    if i < 0 then
-      i := 0;
-    if i > cbSelectManga.Items.Count - 1 then
-      i := cbSelectManga.Items.Count - 1;
-    cbSelectManga.ItemIndex := i;
-    currentWebsite := TModuleContainer(cbSelectManga.Items.Objects[i]).ID;
-  end;
+  currentWebsite := Modules.LocateModule(settingsfile.ReadString('form', 'SelectManga', ''));
 end;
 
 procedure TMainForm.edMangaListSearchChange(Sender: TObject);
@@ -5676,7 +5667,6 @@ begin
     WriteInteger('form', 'DownloadsSplitter', psDownloads.Position);
     WriteInteger('form', 'MangaInfoSplitter', psInfo.Position);
     WriteInteger('form', 'pcMainPageIndex', pcMain.PageIndex);
-    WriteInteger('form', 'SelectManga', cbSelectManga.ItemIndex);
     WriteBool('form', 'MainFormMaximized', (WindowState = wsMaximized));
     if WindowState = wsMaximized then
     begin

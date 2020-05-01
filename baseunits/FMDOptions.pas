@@ -95,7 +95,7 @@ var
   UPDATE_URL: String = '';
   UPDATE_PACKAGE_NAME: String = '';
 
-  currentWebsite: String;
+  currentWebsite: Pointer;
 
   // general
   DoAfterFMD: TFMDDo;
