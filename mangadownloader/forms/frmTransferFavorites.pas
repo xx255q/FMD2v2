@@ -51,7 +51,7 @@ type
 
   TFavsContainer = record
     Fav: TFavoriteContainer;
-    NewModuleID,
+    NewModule: Pointer;
     NewLink: String;
     State: Integer;
   end;
@@ -118,7 +118,7 @@ var
   db: TDBDataProcess;
   node: PVirtualNode;
   data: PFavContainer;
-
+  module: TModuleContainer;
 begin
   Synchronize(@SyncBegin);
   FOwner.FValidCount := 0;
@@ -127,6 +127,7 @@ begin
   try
     if db.Connect(FWebsite) then
     begin
+      module := Modules.LocateModule(FWebsite);
       db.Table.ReadOnly := True;
       node := FOwner.vtFavs.GetFirst();
       while Assigned(node) do
@@ -145,14 +146,14 @@ begin
             db.Table.Open;
             if db.Table.RecNo > 0 then
             begin
-              data^.NewModuleID := db.Website;
+              data^.NewModule := module;
               data^.NewLink := db.Table.Fields[0].AsString;
               data^.State := 1;
               Inc(FOwner.FValidCount);
             end
             else
             begin
-              data^.NewModuleID := '';
+              data^.NewModule := nil;
               data^.NewLink := '';
               data^.State := 2;
               Inc(FOwner.FInvalidCount);
@@ -226,7 +227,7 @@ begin
   begin
     Data := vtFavs.GetNodeData(Node);
     // add new item and remove the old one
-    if Data^.NewModuleID <> '' then
+    if Assigned(Data^.NewModule) then
     begin
       with Data^.Fav.FavoriteInfo do
       begin
@@ -235,10 +236,10 @@ begin
         else
           dc := DownloadedChapterList;
         FavoriteManager.Add(
+          Data^.NewModule,
           Title,
           CurrentChapter,
           dc,
-          Data^.NewModuleID,
           SaveTo,
           Data^.NewLink);
       end;

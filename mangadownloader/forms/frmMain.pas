@@ -2510,7 +2510,7 @@ begin
     if OptionGenerateMangaFolder then
       s := AppendPathDelim(s) + CustomRename(
           OptionMangaCustomRename,
-          mangaInfo.ModuleID,
+          mangaInfo.Website,
           mangaInfo.Title,
           mangaInfo.Authors,
           mangaInfo.Artists,
@@ -2519,8 +2519,13 @@ begin
           OptionChangeUnicodeCharacter,
           OptionChangeUnicodeCharacterStr);
 
-    FavoriteManager.Add(mangaInfo.Title, IntToStr(mangaInfo.NumChapter), mangaInfo.ChapterLinks.Text,
-      mangaInfo.ModuleID, s, mangaInfo.Link);
+    FavoriteManager.Add(
+      mangaInfo.Module,
+      mangaInfo.Title,
+      IntToStr(mangaInfo.NumChapter),
+      mangaInfo.ChapterLinks.Text,
+      s,
+      mangaInfo.Link);
     UpdateVtFavorites;
     vtFavoritesFilterRefresh;
     btAddToFavorites.Enabled := False;

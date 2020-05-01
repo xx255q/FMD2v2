@@ -90,7 +90,7 @@ begin
   MangaInfo.Status := '';
   MangaInfo.Title := '';
   MangaInfo.URL := '';
-  MangaInfo.ModuleID := '';
+  MangaInfo.Module := nil;
   MangaInfo.ChapterNames.Clear;
   MangaInfo.ChapterLinks.Clear;
 end;
@@ -150,7 +150,7 @@ begin
 
   GetBaseMangaInfo(MangaInfo, bmangaInfo);
 
-  MangaInfo.ModuleID := TModuleContainer(FModule).ID; //todo: use tmodulecontainer
+  MangaInfo.Module := FModule;
   MangaInfo.CoverLink := '';
   MangaInfo.NumChapter := 0;
   MangaInfo.ChapterNames.Clear;

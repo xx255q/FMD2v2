@@ -480,10 +480,11 @@ begin
           OptionChangeUnicodeCharacterStr);
       if Trim(Title) = '' then
         Title := Info.MangaInfo.Title;
-      FavoriteManager.Add(Title,
+      FavoriteManager.Add(
+        Module,
+        Title,
         IntToStr(Info.MangaInfo.NumChapter),
         info.MangaInfo.ChapterLinks.Text,
-        Module.ID,
         s,
         URL);
       UpdateVtFavorites;

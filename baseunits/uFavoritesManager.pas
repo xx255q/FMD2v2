@@ -118,7 +118,7 @@ type
     function LocateMangaByLink(const AModuleID, ALink: String): TFavoriteContainer;
     function IsMangaExistByLink(const AModuleID, ALink: String): Boolean; inline;
     // Add new manga to the list
-    procedure Add(const ATitle, ACurrentChapter, ADownloadedChapterList, AWebsite, ASaveTo, ALink: String);
+    procedure Add(const AModule: Pointer; const ATitle, ACurrentChapter, ADownloadedChapterList, ASaveTo, ALink: String);
     // Merge manga information with a title that already exist in favorites
     procedure AddMerge(const ATitle, ACurrentChapter, ADownloadedChapterList, AWebsite,
       ASaveTo, ALink: String);
@@ -1010,19 +1010,20 @@ begin
   Result := LocateMangaByLink(AModuleID, ALink) <> nil;
 end;
 
-procedure TFavoriteManager.Add(const ATitle, ACurrentChapter, ADownloadedChapterList,
-  AWebsite, ASaveTo, ALink: String);
+procedure TFavoriteManager.Add(const AModule: Pointer; const ATitle,
+  ACurrentChapter, ADownloadedChapterList, ASaveTo, ALink: String);
 var
   newfv: Integer;
 begin
-  if IsMangaExist(ATitle, AWebsite) then Exit;
+  if AModule = nil then Exit;
+  if IsMangaExist(ATitle, TModuleContainer(AModule).ID) then Exit;
   EnterCriticalsection(CS_Favorites);
   try
     newfv := Items.Add(TFavoriteContainer.Create);
     with Items[newfv] do begin
       Manager := Self;
       with FavoriteInfo do begin
-        ModuleID := AWebsite;
+        Module := AModule;
         Title := ATitle;
         CurrentChapter := ACurrentChapter;
         SaveTo := ASaveTo;

@@ -328,7 +328,6 @@ type
     URL,
     Title,
     Link,
-    ModuleID, //todo: replace with tmodulecontainer
     CoverLink,
     Authors,
     Artists,
@@ -338,8 +337,11 @@ type
     NumChapter: Integer;
     ChapterNames,
     ChapterLinks: TStringList;
+    Module: Pointer;
     constructor Create;
     destructor Destroy; override;
+    function ModuleID: String; inline;
+    function Website: String; inline;
   end;
 
   PDownloadInfo = ^TDownloadInfo;
@@ -3708,7 +3710,7 @@ begin
   dest.URL := Source.URL;
   dest.Title := Source.Title;
   dest.Link := Source.Link;
-  dest.ModuleID := Source.ModuleID;
+  dest.Module := Source.Module;
   dest.CoverLink := Source.CoverLink;
   dest.Authors := Source.Authors;
   dest.Artists := Source.Artists;
@@ -3797,7 +3799,9 @@ begin
   if FModule = AValue then Exit;
   FModule := AValue;
   if Assigned(FModule) then
-    FModuleID := TModuleContainer(FModule).ID;
+    FModuleID := TModuleContainer(FModule).ID
+  else
+    FModuleID := '';
 end;
 
 function TFavoriteInfo.Website: String;
@@ -3864,6 +3868,16 @@ begin
   ChapterNames.Free;
   ChapterLinks.Free;
   inherited Destroy;
+end;
+
+function TMangaInfo.ModuleID: String;
+begin
+  Result := TModuleContainer(Module).ID;
+end;
+
+function TMangaInfo.Website: String;
+begin
+  Result := TModuleContainer(Module).Name;
 end;
 
 constructor TDownloadPageThread.Create(CreateSuspended: Boolean);
