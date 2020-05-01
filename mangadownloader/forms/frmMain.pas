@@ -1957,8 +1957,8 @@ begin
   FavoriteManager.Restore;
   UpdateVtFavorites;
 
-  if cbSelectManga.ItemIndex > -1 then
-    OpenDataDB(cbSelectManga.Items[cbSelectManga.ItemIndex]);
+  if cbSelectManga.ItemIndex <> -1 then
+    OpenDataDB(currentWebsite);
   if OptionAutoCheckLatestVersion then
   begin
     btCheckLatestVersionClick(btCheckLatestVersion);
@@ -2668,8 +2668,7 @@ end;
 
 procedure TMainForm.cbSelectMangaEditingDone(Sender: TObject);
 begin
-  if cbSelectManga.ItemIndex < 0 then
-    Exit;
+  if cbSelectManga.ItemIndex < 0 then Exit;
   if currentWebsite <> TModuleContainer(cbSelectManga.Items.Objects[cbSelectManga.ItemIndex]).ID then
   begin
     settingsfile.WriteInteger('form', 'SelectManga', cbSelectManga.ItemIndex);
@@ -5415,6 +5414,7 @@ begin
     if i > cbSelectManga.Items.Count - 1 then
       i := cbSelectManga.Items.Count - 1;
     cbSelectManga.ItemIndex := i;
+    currentWebsite := TModuleContainer(cbSelectManga.Items.Objects[i]).ID;
   end;
 end;
 

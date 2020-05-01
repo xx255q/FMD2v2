@@ -99,7 +99,7 @@ end;
 
 procedure TDBUpdaterThread.SyncReopenUsed;
 begin
-  FormMain.OpenDataDB(FCurrentName);
+  //FormMain.OpenDataDB(FCurrentName); //todo: remote download db
 end;
 
 procedure TDBUpdaterThread.SyncRemoveAttached;

@@ -83,7 +83,7 @@ resourcestring
 implementation
 
 uses
-  FMDVars, FMDOptions, db, frmCustomColor;
+  FMDVars, FMDOptions, WebsiteModules, db, frmCustomColor;
 
 {$R *.lfm}
 
@@ -132,7 +132,7 @@ begin
       while Assigned(node) do
       begin
         data := Owner.vtFavs.GetNodeData(node);
-        if data^.Fav.FavoriteInfo.ModuleID = db.Website then
+        if data^.Fav.FavoriteInfo.ModuleID = TModuleContainer(db.Website).ID then
         begin
           data^.NewLink := '';
           data^.State := 0;

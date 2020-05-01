@@ -55,12 +55,13 @@ type
     procedure AttachAllSites;
     procedure DetachAllSites;
     function ExecuteDirect(SQL: String): Boolean;
+    function CheckModuleAndFilePath(const AWebsite: String; var AFilePath: String): Boolean;
   public
     constructor Create;
     destructor Destroy; override;
 
-    function Connect(AWebsite: String): Boolean;
-    function Open(AWebsite: String = ''): Boolean;
+    function Connect(const AWebsite: String): Boolean;
+    function Open(const AWebsite: String = ''): Boolean;
     function OpenTable(const ATableName: String = '';
       CheckRecordCount: Boolean = False): Boolean;
     function TableExist(const ATableName: String): Boolean;
@@ -548,6 +549,22 @@ begin
     end;
 end;
 
+function TDBDataProcess.CheckModuleAndFilePath(const AWebsite: String;
+  var AFilePath: String): Boolean;
+begin
+  if FWebsite <> AWebsite then FWebsite := AWebsite;
+  if FWebsite <> '' then
+  begin
+    AFilePath := DATA_FOLDER + FWebsite + DBDATA_EXT;
+    Result := FileExistsUTF8(AFilePath);
+  end
+  else
+  begin
+    AFilePath := '';
+    Result := False;
+  end;
+end;
+
 constructor TDBDataProcess.Create;
 begin
   inherited Create;
@@ -602,45 +619,31 @@ begin
   inherited Destroy;
 end;
 
-function TDBDataProcess.Connect(AWebsite: String): Boolean;
+function TDBDataProcess.Connect(const AWebsite: String): Boolean;
 var
   filepath: String;
 begin
-  Result := False;
-  if AWebsite <> '' then
-    FWebsite := AWebsite;
-  if FWebsite = '' then
-    Exit;
-  filepath := DATA_FOLDER + FWebsite + DBDATA_EXT;
-  if not FileExistsUTF8(filepath) then
-    Exit;
-  Result := InternalOpen(filepath);
+  if CheckModuleAndFilePath(AWebsite, filepath) then
+    Result := InternalOpen(filepath)
+  else
+    Result := False;
 end;
 
-function TDBDataProcess.Open(AWebsite: String): Boolean;
-var
-  filepath: String;
+function TDBDataProcess.Open(const AWebsite: String): Boolean;
 begin
+  Close;
   Result := False;
-  Self.Close;
-  if AWebsite <> '' then
-    FWebsite := AWebsite;
-  if FWebsite = '' then
-    Exit;
-  filepath := DATA_FOLDER + FWebsite + DBDATA_EXT;
-  if not FileExistsUTF8(filepath) then
-    Exit;
-  try
-    if InternalOpen(filepath) then
-    begin
+  if Connect(AWebsite) then
+  begin
+    try
       if not TableExist(FTableName) then
         CreateTable;
       OpenTable(FTableName, True);
+      Result := FQuery.Active;
+    except
+      on E: Exception do
+        Logger.SendException(Self.ClassName+'.Open.Error!', E);
     end;
-    Result := FQuery.Active;
-  except
-    on E: Exception do
-      Logger.SendException(Self.ClassName+'['+Website+'].Open.Error!', E);
   end;
 end;
 
