@@ -3267,7 +3267,7 @@ begin
   if MessageDlg('', RS_DlgUpdaterWantToUpdateDB, mtInformation, [mbYes, mbNo], 0) = mrYes then
   begin
     DBUpdaterThread := TDBUpdaterThread.Create;
-    DBUpdaterThread.Items.AddStrings(cbSelectManga.Items);
+    DBUpdaterThread.Items.Assign(cbSelectManga.Items);
     DBUpdaterThread.Start;
   end;
 end;
@@ -4877,14 +4877,17 @@ begin
 end;
 
 procedure TMainForm.RunGetList;
+var
+  m: TModuleContainer;
 begin
+  m := TModuleContainer(cbSelectManga.Items.Objects[cbSelectManga.ItemIndex]);
   if DBUpdaterThread <> nil then
-    DBUpdaterThread.Add(cbSelectManga.Items[cbSelectManga.ItemIndex])
+    DBUpdaterThread.Add(m.ID, m)
   else
   if MessageDlg('', RS_DlgUpdaterWantToUpdateDB, mtInformation, [mbYes, mbNo], 0) = mrYes then
   begin
     DBUpdaterThread := TDBUpdaterThread.Create;
-    DBUpdaterThread.Items.Add(cbSelectManga.Items[cbSelectManga.ItemIndex]);
+    DBUpdaterThread.Add(m.ID, m);
     DBUpdaterThread.Start;
   end;
 end;

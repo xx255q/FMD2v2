@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, httpsendthread, FMDOptions, StatusBarDownload,
-  process, Controls, Dialogs, Buttons;
+  WebsiteModules, process, Controls, Dialogs, Buttons;
 
 type
 
@@ -14,11 +14,12 @@ type
 
   TDBUpdaterThread = class(TStatusBarDownload)
   private
-    FCurrentId: Integer;
-    FCurrentName: String;
+    FIndex: Integer;
+    FModule: TModuleContainer;
+    FItems,
     FFailedList: TStringList;
   protected
-    procedure HTTPRedirected(const AHTTP: THTTPSendThread; const URL: String);
+    procedure HTTPRedirected(const AHTTP: THTTPSendThread; const AURL: String);
   protected
     procedure SyncStart;
     procedure SyncFinal;
@@ -29,12 +30,12 @@ type
     procedure SyncRemoveAttached;
     procedure Execute; override;
   public
-    Items: TStringList;
     constructor Create;
     destructor Destroy; override;
-    procedure Add(const S: String); overload;
+    procedure Add(const AWebsite: String; const AModule: TModuleContainer); overload;
     procedure Add(const S: TStrings); overload;
     procedure UpdateStatus;    // should be called from mainthread
+    property Items: TStringList read FItems;
   end;
 
 resourcestring
@@ -54,19 +55,18 @@ uses FMDVars, LazFileUtils;
 
 function GetDBURL(const AName: String): String;
 begin
-  if Pos('<website>', AnsiLowerCase(DB_URL)) <> -1 then
+  if Pos('<website>', DB_URL) <> -1 then
     Result := StringReplace(DB_URL, '<website>', AName, [rfIgnoreCase, rfReplaceAll])
   else
-    Result := AName;
+    Result := DB_URL + AName;
 end;
 
 { TDBUpdaterThread }
 
 procedure TDBUpdaterThread.HTTPRedirected(const AHTTP: THTTPSendThread;
-  const URL: String);
+  const AURL: String);
 begin
-  UpdateStatusText(Format('[%d/%d] ' + RS_Downloading,
-    [FCurrentId + 1, Items.Count, FCurrentName + DBDATA_EXT + ' ' + URL]));
+  UpdateStatusText(Format('[%d/%d] ' + RS_Downloading, [FIndex + 1, FItems.Count, Format('%s (%s)', [FModule.Name, FModule.ID + DBDATA_EXT]) + ' ' + AURL]));
 end;
 
 procedure TDBUpdaterThread.SyncStart;
@@ -81,7 +81,7 @@ end;
 
 procedure TDBUpdaterThread.SyncUpdateHint;
 begin
-  StatusBar.Hint := Trim(Items.Text);
+  StatusBar.Hint := Trim(FItems.Text);
 end;
 
 procedure TDBUpdaterThread.SyncShowFailed;
@@ -99,7 +99,7 @@ end;
 
 procedure TDBUpdaterThread.SyncReopenUsed;
 begin
-  //FormMain.OpenDataDB(FCurrentName); //todo: remote download db
+  //FormMain.OpenDataDB(FModule.Name); //todo: remote download db
 end;
 
 procedure TDBUpdaterThread.SyncRemoveAttached;
@@ -113,22 +113,21 @@ var
   cont: Boolean;
   used: Boolean;
 begin
-  FCurrentId := 0;
+  FIndex := 0;
   Synchronize(@SyncUpdateHint);
-  while FCurrentId < Items.Count do
+  while FIndex < FItems.Count do
   begin
     if Terminated then
       Break;
     try
-      FCurrentName := Items[FCurrentId];
-      UpdateStatusText(Format('[%d/%d] ' +
-        RS_Downloading, [FCurrentId + 1, Items.Count, FCurrentName + DBDATA_EXT]));
-      if HTTP.GET(GetDBURL(FCurrentName)) and (HTTP.ResultCode < 300) then
+      FModule := TModuleContainer(FItems.Objects[FIndex]);
+      UpdateStatusText(Format('[%d/%d] ' + RS_Downloading, [FIndex + 1, FItems.Count, Format('%s (%s)', [FModule.Name, FModule.ID + DBDATA_EXT])]));
+      if HTTP.GET(GetDBURL(FModule.ID)) and (HTTP.ResultCode < 300) then
       begin
         cont := True;
         // save to data folder
         ForceDirectoriesUTF8(DATA_FOLDER);
-        currentfilename := DATA_FOLDER + FCurrentName + DBDATA_SERVER_EXT;
+        currentfilename := DATA_FOLDER + FModule.ID + DBDATA_SERVER_EXT;
         if FileExists(currentfilename) then
           DeleteFile(currentfilename);
         if not FileExists(currentfilename) then
@@ -136,38 +135,37 @@ begin
           HTTP.Document.SaveToFile(currentfilename);
           if not FileExists(currentfilename) then
           begin
-            FFailedList.Add(Format(RS_FailedToSave, [FCurrentName]));
+            FFailedList.Add(Format(RS_FailedToSave, [FModule.Name]));
             cont := False;
           end;
         end
         else
         begin
-          FFailedList.Add(Format(RS_FailedToSave, [FCurrentName]));
+          FFailedList.Add(Format(RS_FailedToSave, [FModule.Name]));
           cont := False;
         end;
 
         if cont and (not FileExists(CURRENT_ZIP_EXE)) then
         begin
-          FFailedList.Add(Format(RS_MissingZipExe, [FCurrentName, ZIP_EXE]));
+          FFailedList.Add(Format(RS_MissingZipExe, [FModule.Name, ZIP_EXE]));
           cont := False;
         end;
 
         if cont then
         begin
           // close and reopen current used
-          used := FCurrentName =
-            FormMain.cbSelectManga.Items[FormMain.cbSelectManga.ItemIndex];
+          used := FModule = TModuleContainer(currentWebsite);
 
           if used then
             Synchronize(@SyncCloseUsed)
           else
-          if dataProcess.WebsiteLoaded(FCurrentName) then
+          if dataProcess.WebsiteLoaded(FModule.ID) then
             Synchronize(@SyncRemoveAttached);
           with TProcess.Create(nil) do
             try
               UpdateStatusText(Format('[%d/%d] ' + RS_Extracting,
-                [FCurrentId + 1, Items.Count,
-                FCurrentName + DBDATA_EXT]));
+                [FIndex + 1, FItems.Count,
+                FModule.ID + DBDATA_EXT]));
               Executable := CURRENT_ZIP_EXE;
               CurrentDirectory := FMD_DIRECTORY;
               Parameters.Add('x');                                     // extract
@@ -181,7 +179,7 @@ begin
               if cont then
                 DeleteFile(currentfilename)
               else
-                FFailedList.Add(RS_FailedExtract, [FCurrentName, ExitStatus]);
+                FFailedList.Add(RS_FailedExtract, [FModule.Name, ExitStatus]);
             finally
               Free;
             end;
@@ -190,22 +188,22 @@ begin
         end;
       end
       else
-        FFailedList.Add(Format(RS_FailedDownload, [FCurrentName, HTTP.ResultCode,
+        FFailedList.Add(Format(RS_FailedDownload, [FModule.Name, HTTP.ResultCode,
           HTTP.ResultString]));
     except
       on E: Exception do
         FFailedList.Add(E.Message);
     end;
-    Inc(FCurrentId);
+    Inc(FIndex);
   end;
 end;
 
 constructor TDBUpdaterThread.Create;
 begin
   inherited Create(True, FormMain, FormMain.IconList, 24);
+  FItems := TStringList.Create;
   FFailedList := TStringList.Create;
   HTTP.OnRedirected := @HTTPRedirected;
-  Items := TStringList.Create;
   Synchronize(@SyncStart);
 end;
 
@@ -215,40 +213,45 @@ begin
     Synchronize(@SyncShowFailed);
   Synchronize(@SyncFinal);
   FFailedList.Free;
-  FreeAndNil(Items);
+  FItems.Free;
   inherited Destroy;
 end;
 
-procedure TDBUpdaterThread.Add(const S: String);
+procedure TDBUpdaterThread.Add(const AWebsite: String;
+  const AModule: TModuleContainer);
 var
   i: Integer;
 begin
-  if Items = nil then Exit;
+  if FItems = nil then Exit;
   // search on not sorted
-  for i := 0 to Items.Count - 1 do
-    if S = Items[i] then
+  for i := 0 to FItems.Count - 1 do
+    if AWebsite = FItems[i] then
       Exit;
-  Items.Add(S);
+  FItems.AddObject(AWebsite, TModuleContainer(AModule));
   UpdateStatus;
 end;
 
 procedure TDBUpdaterThread.Add(const S: TStrings);
 var
   i, j, jmax: Integer;
+  m: TModuleContainer;
 begin
-  if Items = nil then Exit;
+  if FItems = nil then Exit;
   // search on not sorted
-  jmax := Items.Count;
+  jmax := FItems.Count;
   for i := 0 to S.Count - 1 do
   begin
     j := 0;
     while j < jmax do
-      if S[i] = Items[j] then
+      if S.Objects[i] = FItems.Objects[j] then
         Break
       else
         Inc(j);
     if j = jmax then
-      Items.Add(S[i]);
+    begin
+      m := TModuleContainer(S.Objects[i]);
+      FItems.AddObject(m.ID, m);
+    end;
   end;
   UpdateStatus;
 end;
