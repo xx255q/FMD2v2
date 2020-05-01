@@ -1,21 +1,24 @@
 function Init()
-  if tonumber(FMD.Revision) < 4268 then return end
+  AddWebsiteModule('8e7bd7b38aa041aa9bc1bddeec33b6f4', 'MangaHere', 'https://www.mangahere.cc', 'English')
+  
+  local m = AddWebsiteModule('0d3653a8d9b747a381374f32e0a1641e', 'FanFox', 'https://fanfox.net', 'English')
+  m.OnAfterImageSaved = 'AfterImageSaved'
+  m.AddOptionCheckBox('mf_removewatermark', 'Remove watermark', true)
+  m.AddOptionCheckBox('mf_saveaspng', 'Save as PNG', false)
+  MangaFoxLoadTemplate(FMD.LuaDirectory .. 'extras' .. PathDelim .. 'mangafoxtemplate')
+end
 
-  m = NewWebsiteModule()
-  m.ID                       = '0d3653a8d9b747a381374f32e0a1641e'
-  m.Name                     = 'FanFox'
-  m.Category                 = 'English'
-  m.RootURL                  = 'https://fanfox.net'
+function AddWebsiteModule(id, name, rooturl, cat)
+  local m = NewWebsiteModule()
+  m.ID                       = id
+  m.Name                     = name
+  m.RootURL                  = rooturl
+  m.Category                 = cat
   m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
   m.OnGetNameAndLink         = 'GetNameAndLink'
   m.OnGetInfo                = 'GetInfo'
   m.OnGetPageNumber          = 'GetPageNumber'
-  m.OnAfterImageSaved        = 'AfterImageSaved'
-
-  m.AddOptionCheckBox('mf_removewatermark', 'Remove watermark', true)
-  m.AddOptionCheckBox('mf_saveaspng', 'Save as PNG', false)
-
-  MangaFoxLoadTemplate(FMD.LuaDirectory .. 'extras' .. PathDelim .. 'mangafoxtemplate')
+  return m
 end
 
 function GetDirectoryPageNumber()
