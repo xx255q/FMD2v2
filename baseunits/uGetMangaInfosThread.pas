@@ -71,7 +71,7 @@ var
       FInfo.MangaInfo.Title := FTitle;
       data := MainForm.vtMangaList.GetNodeData(FNode);
       if Assigned(FNode) and (MainForm.cbSelectManga.ItemIndex<>-1) and
-        (m.ID = MainForm.cbSelectManga.Items[MainForm.cbSelectManga.ItemIndex]) then  //todo: use tmodulecontainer
+        (m = TModuleContainer(MainForm.cbSelectManga.Items.Objects[MainForm.cbSelectManga.ItemIndex])) then  //todo: use tmodulecontainer
       begin
         if FInfo.MangaInfo.Title = '' then
           FInfo.MangaInfo.Title := data^.Title;

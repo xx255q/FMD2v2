@@ -34,7 +34,7 @@ type
     isRemoveUnicode: Boolean;
     isRemoveHostFromChapterLinks: Boolean;
 
-    constructor Create(AOwnerThread: TBaseThread = nil; ACreateInfo: Boolean = True);
+    constructor Create(const AOwnerThread: TBaseThread = nil; const ACreateInfo: Boolean = True);
     destructor Destroy; override;
     procedure ClearInfo;
     function GetDirectoryPage(var APage: Integer): Byte;
@@ -56,7 +56,8 @@ uses
 
 { TMangaInformation }
 
-constructor TMangaInformation.Create(AOwnerThread: TBaseThread; ACreateInfo: Boolean);
+constructor TMangaInformation.Create(const AOwnerThread: TBaseThread;
+  const ACreateInfo: Boolean);
 begin
   inherited Create;
   FOwner := AOwnerThread;
