@@ -23,6 +23,7 @@ type
     FTrans: TSQLTransaction;
     FQuery: TSQLQuery;
     FRegxp: TRegExpr;
+    FModule: Pointer;
     FWebsite: String;
     FTableName: String;
     FRecordCount: Integer;
@@ -49,13 +50,13 @@ type
       useNOT: Boolean = False; useOR: Boolean = False; useRegexp: Boolean = False);
     function GetConnected: Boolean;
     function InternalOpen(const FilePath: String = ''): Boolean;
-    function GetWebsiteName(RecIndex: Integer): String;
-    function GetValue(RecIndex, FieldIndex: Integer): String;
-    function GetValueInt(RecIndex, FieldIndex: Integer): Integer;
+    function GetWebsiteName(const RecIndex: Integer): String;
+    function GetValue(const RecIndex, FieldIndex: Integer): String;
+    function GetValueInt(const RecIndex, FieldIndex: Integer): Integer;
     procedure AttachAllSites;
     procedure DetachAllSites;
     function ExecuteDirect(SQL: String): Boolean;
-    function CheckModuleAndFilePath(const AWebsite: String; var AFilePath: String): Boolean;
+    function CheckWebsiteAndFilePath(const AWebsite: String; var AFilePath: String): Boolean;
   public
     constructor Create;
     destructor Destroy; override;
@@ -73,18 +74,18 @@ type
     function Filter(const checkedGenres, uncheckedGenres: TStringList;
       const stTitle, stAuthors, stArtists, stStatus, stSummary: String;
       const minusDay: Integer; const haveAllChecked, searchNewManga: Boolean;
-      useRegExpr: Boolean = False): Boolean;
+      const useRegExpr: Boolean = False): Boolean;
     function WebsiteLoaded(const AWebsite: String): Boolean;
-    function LinkExist(ALink: String): Boolean;
+    function LinkExist(const ALink: String): Boolean;
 
     procedure InitLocateLink;
     procedure DoneLocateLink;
-    procedure CreateDatabase(AWebsite: String = '');
-    procedure GetFieldNames(List: TStringList);
+    procedure CreateDatabase(const AWebsite: String = '');
+    procedure GetFieldNames(const List: TStringList);
     procedure Close;
     procedure CloseTable;
     procedure Save;
-    procedure Backup(AWebsite: String);
+    procedure Backup(const AWebsite: String);
     procedure Refresh(RecheckDataCount: Boolean = False);
     function AddData(Const Title, Link, Authors, Artists, Genres, Status, Summary: String;
       NumChapter, JDN: Integer): Boolean; overload;
@@ -98,6 +99,7 @@ type
     procedure RemoveFilter;
     procedure Sort;
 
+    property Module: Pointer read FModule;
     property Website: String read FWebsite write FWebsite;
     property TableName: String read FTableName write FTableName;
     property Connected: Boolean read GetConnected;
@@ -105,9 +107,9 @@ type
     property Filtered: Boolean read FFiltered;
     property FilterAllSites: Boolean read FFilterAllSites write FFilterAllSites;
     property SitesList: TStringList read FSitesList write FSitesList;
-    property WebsiteName[RecIndex: Integer]: String read GetWebsiteName;
-    property Value[RecIndex, FieldIndex: Integer]: String read GetValue; default;
-    property ValueInt[RecIndex, FieldIndex: Integer]: Integer read GetValueInt;
+    property WebsiteName[const RecIndex: Integer]: String read GetWebsiteName;
+    property Value[const RecIndex, FieldIndex: Integer]: String read GetValue; default;
+    property ValueInt[const RecIndex, FieldIndex: Integer]: Integer read GetValueInt;
     property LinkCount: Integer read GetLinkCount;
     property Connection: TSQLite3Connection read FConn;
     property Transaction: TSQLTransaction read FTrans;
@@ -140,7 +142,7 @@ procedure OverwriteDBDataProcess(const AWebsite, NWebsite: String);
 implementation
 
 uses
-  uBaseUnit;
+  uBaseUnit, WebsiteModules;
 
 function NaturalCompareCallback({%H-}user: pointer; len1: longint;
   data1: pointer; len2: longint; data2: pointer): longint; cdecl;
@@ -426,10 +428,10 @@ begin
   Result := FConn.Connected;
 end;
 
-function TDBDataProcess.GetWebsiteName(RecIndex: Integer): String;
+function TDBDataProcess.GetWebsiteName(const RecIndex: Integer): String;
 begin
-  Result:=FWebsite;
   if FAllSitesAttached then
+  begin
     try
       FQuery.RecNo:=RecIndex+1;
       Result:=FQuery.Fields[DBTempFieldWebsiteIndex].AsString;
@@ -438,9 +440,12 @@ begin
         Logger.SendException(Self.ClassName+'['+Website+'].GetWebsiteName Error!'+
         'RecIndex: '+IntToStr(RecIndex), E);
     end;
+  end
+  else
+    Result := FWebsite;
 end;
 
-function TDBDataProcess.GetValue(RecIndex, FieldIndex: Integer): String;
+function TDBDataProcess.GetValue(const RecIndex, FieldIndex: Integer): String;
 begin
   if FieldIndex in [DATA_PARAM_NUMCHAPTER,DATA_PARAM_JDN] then
     Result:='0'
@@ -454,7 +459,8 @@ begin
   end;
 end;
 
-function TDBDataProcess.GetValueInt(RecIndex, FieldIndex: Integer): Integer;
+function TDBDataProcess.GetValueInt(const RecIndex, FieldIndex: Integer
+  ): Integer;
 begin
   Result:=0;
   if FQuery.Active=False then Exit;
@@ -484,22 +490,24 @@ procedure TDBDataProcess.AttachAllSites;
 
 var
   i: Integer;
+  m: TModuleContainer;
 begin
   RemoveCurrentSite;
   if (not FConn.Connected) or (SitesList.Count = 0) then Exit;
-  if Trim(SitesList.Text) = Trim(FAttachedSites.Text) then Exit;
+  //if Trim(SitesList.Text) = Trim(FAttachedSites.Text) then Exit;
   DetachAllSites;
   FConn.ExecuteDirect('END TRANSACTION');
   try
-    for i:=0 to SitesList.Count-1 do begin
-      //max attached database is 10
-      //if FAttachedSites.Count=10 then Break;
-      if (FAttachedSites.IndexOf(SitesList[i]) = -1) and
-        (FileExistsUTF8(DBDataFilePath(SitesList[i]))) then
+    for i:=0 to SitesList.Count-1 do
+    begin
+      // default max attached database that came with sqlite3.dll was 7
+      // use custom build attached database with max 125
+      // if FAttachedSites.Count=7 then Break;
+      m := TModuleContainer(FSitesList.Objects[i]);
+      if (FAttachedSites.IndexOf(m.ID) = -1) and (FileExistsUTF8(DBDataFilePath(m.ID))) then
       begin
-        FConn.ExecuteDirect('ATTACH ' +
-          QuotedStr(DBDataFilePath(SitesList[i])) + ' AS ' + QuotedStrd(SitesList[i]));
-        FAttachedSites.Add(SitesList[i]);
+        FConn.ExecuteDirect('ATTACH ' + QuotedStr(DBDataFilePath(m.ID)) + ' AS ' + QuotedStrd(m.ID));
+        FAttachedSites.AddObject(m.ID, m);
       end;
     end;
   except
@@ -549,17 +557,19 @@ begin
     end;
 end;
 
-function TDBDataProcess.CheckModuleAndFilePath(const AWebsite: String;
+function TDBDataProcess.CheckWebsiteAndFilePath(const AWebsite: String;
   var AFilePath: String): Boolean;
 begin
   if FWebsite <> AWebsite then FWebsite := AWebsite;
   if FWebsite <> '' then
   begin
+    FModule := Modules.LocateModule(AWebsite);
     AFilePath := DATA_FOLDER + FWebsite + DBDATA_EXT;
     Result := FileExistsUTF8(AFilePath);
   end
   else
   begin
+    FModule := Nil;
     AFilePath := '';
     Result := False;
   end;
@@ -623,7 +633,7 @@ function TDBDataProcess.Connect(const AWebsite: String): Boolean;
 var
   filepath: String;
 begin
-  if CheckModuleAndFilePath(AWebsite, filepath) then
+  if CheckWebsiteAndFilePath(AWebsite, filepath) then
     Result := InternalOpen(filepath)
   else
     Result := False;
@@ -727,7 +737,7 @@ begin
   Commit;
 end;
 
-procedure TDBDataProcess.Backup(AWebsite: String);
+procedure TDBDataProcess.Backup(const AWebsite: String);
 begin
   if AWebsite = '' then
     Exit;
@@ -942,14 +952,14 @@ begin
     Result := True;
 end;
 
-function TDBDataProcess.Filter(const checkedGenres, uncheckedGenres: TStringList;
-  const stTitle, stAuthors, stArtists, stStatus, stSummary: String;
-  const minusDay: Integer; const haveAllChecked, searchNewManga: Boolean;
-  useRegExpr: Boolean): Boolean;
+function TDBDataProcess.Filter(const checkedGenres,
+  uncheckedGenres: TStringList; const stTitle, stAuthors, stArtists, stStatus,
+  stSummary: String; const minusDay: Integer; const haveAllChecked,
+  searchNewManga: Boolean; const useRegExpr: Boolean): Boolean;
 var
   tsql: String;
   i: Integer;
-  filtersingle: Boolean = True;
+  filtersingle: Boolean;
 
   procedure GenerateSQLFilter;
   var
@@ -1011,6 +1021,8 @@ begin
     tsql := SQL.Text;
     SQL.Clear;
     try
+      filtersingle := True;
+
       if FFilterAllSites and (FSitesList.Count > 0) then
       begin
         AttachAllSites;
@@ -1072,15 +1084,12 @@ begin
   end;
 end;
 
-procedure TDBDataProcess.CreateDatabase(AWebsite: String);
+procedure TDBDataProcess.CreateDatabase(const AWebsite: String);
 var
   filepath: String;
 begin
-  if AWebsite <> '' then FWebsite := AWebsite;
-  if FWebsite = '' then Exit;
   Close;
-  filepath := DATA_FOLDER + FWebsite + DBDATA_EXT;
-  if FileExistsUTF8(filepath) then
+  if CheckWebsiteAndFilePath(AWebsite, filepath) then
     DeleteFileUTF8(filepath);
   if ForceDirectoriesUTF8(DATA_FOLDER) then
   begin
@@ -1089,7 +1098,7 @@ begin
   end;
 end;
 
-procedure TDBDataProcess.GetFieldNames(List: TStringList);
+procedure TDBDataProcess.GetFieldNames(const List: TStringList);
 begin
   if (List <> nil) and (FQuery.Active) then
     FQuery.GetFieldNames(List);
@@ -1153,7 +1162,7 @@ begin
       end;
 end;
 
-function TDBDataProcess.LinkExist(ALink: String): Boolean;
+function TDBDataProcess.LinkExist(const ALink: String): Boolean;
 var
   i: Integer;
 begin

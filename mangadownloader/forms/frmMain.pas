@@ -835,7 +835,7 @@ type
   PMangaInfoData = ^TMangaInfoData;
 
   TMangaInfoData = record
-    ModuleID,
+    Module: Pointer;
     Link,
     Title,
     TitleFormat,
@@ -3049,7 +3049,7 @@ begin
     while Assigned(xNode) do
     begin
       data := vtMangaList.GetNodeData(xNode);
-      SilentThreadManager.Add(MD_AddToFavorites, Modules.LocateModule(data^.ModuleID), data^.Title, data^.Link);
+      SilentThreadManager.Add(MD_AddToFavorites, TModuleContainer(data^.Module), data^.Title, data^.Link);
       xNode := vtMangaList.GetNextSelected(xNode);
     end;
   finally
@@ -3500,7 +3500,7 @@ begin
           end;
 		  
       if AllowedToCreate then
-        SilentThreadManager.Add(MD_DownloadAll, Modules.LocateModule(data^.ModuleID), data^.Title, data^.Link);
+        SilentThreadManager.Add(MD_DownloadAll, TModuleContainer(data^.Module), data^.Title, data^.Link);
       xNode := vtMangaList.GetNextSelected(xNode);
     end;
   except
@@ -3514,7 +3514,7 @@ procedure TMainForm.miMangaListViewInfosClick(Sender: TObject);
 begin
   if Assigned(vtMangaList.FocusedNode) then begin
     with PMangaInfoData(vtMangaList.GetNodeData(vtMangaList.FocusedNode))^ do
-      ViewMangaInfo(Modules.LocateModule(ModuleID), Link, Title, '', miMangaListViewInfos, vtMangaList.FocusedNode);
+      ViewMangaInfo(Module, Link, Title, '', miMangaListViewInfos, vtMangaList.FocusedNode);
     if pcInfo.ActivePage <> tsInfoManga then
       pcInfo.ActivePage := tsInfoManga;
   end;
@@ -4448,7 +4448,7 @@ begin
   with data^ do
   begin
     if dataProcess.FilterAllSites then
-      HintText += RS_InfoWebsite + LineEnding + ModuleID + LineEnding2;
+      HintText += RS_InfoWebsite + LineEnding + TModuleContainer(Module).Name + LineEnding2;
     HintText += RS_InfoTitle + LineEnding + Title;
     if Authors <> '' then
       HintText += LineEnding2 + RS_InfoAuthors + LineEnding + Authors;
@@ -5952,17 +5952,21 @@ begin
   begin
     Link := dataProcess.Value[Node^.Index, DATA_PARAM_LINK];
     Title := dataProcess.Value[Node^.Index, DATA_PARAM_TITLE];
+    TitleFormat := Title + ' (' + IntToStr(NumChapter) + ')';
     Authors := dataProcess.Value[Node^.Index, DATA_PARAM_AUTHORS];
     Artists := dataProcess.Value[Node^.Index, DATA_PARAM_ARTISTS];
     Genres := dataProcess.Value[Node^.Index, DATA_PARAM_GENRES];
     Status := dataProcess.Value[Node^.Index, DATA_PARAM_STATUS];
     NumChapter := dataProcess.ValueInt[Node^.Index, DATA_PARAM_NUMCHAPTER];
     JDN := dataProcess.ValueInt[Node^.Index, DATA_PARAM_JDN];
-    ModuleID := dataProcess.WebsiteName[Node^.Index];
     Summary := dataProcess.Value[Node^.Index, DATA_PARAM_SUMMARY];
-    TitleFormat := Title + ' (' + IntToStr(NumChapter) + ')';
     if dataProcess.FilterAllSites then
-      TitleFormat += ' [' + ModuleID + ']';
+    begin
+      Module := Modules.LocateModule(dataProcess.WebsiteName[Node^.Index]);
+      TitleFormat += ' [' + TModuleContainer(Module).Name + ']';
+    end
+    else
+      Module := dataProcess.Module;
   end;
 end;
 
