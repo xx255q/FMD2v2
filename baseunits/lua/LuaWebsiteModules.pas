@@ -551,6 +551,7 @@ begin
           s += Module.ID + ', ';
           c.Modules.Add(TempModules[i]);
           Container := c;
+          Module.RootURL := LowerCase(Module.RootURL);
           if OnBeforeUpdateList <> '' then
             Module.OnBeforeUpdateList := @DoBeforeUpdateList;
           if OnAfterUpdateList <> '' then
@@ -978,7 +979,7 @@ end;
 
 procedure luaWebsiteModuleRegister(L: Plua_State);
 begin
-  lua_register(L, 'NewModule', @_create);
+  lua_register(L, 'NewWebsiteModule', @_create);
 end;
 
 initialization
