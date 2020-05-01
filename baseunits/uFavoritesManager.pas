@@ -909,7 +909,7 @@ begin
                       ChapterLinks.Add(NewMangaInfo.ChapterLinks[NewMangaInfoChaptersPos[j]]);
                       ChapterName.Add(CustomRename(
                         OptionChapterCustomRename,
-                        FavoriteInfo.ModuleID,
+                        FavoriteInfo.Website,
                         FavoriteInfo.Title,
                         NewMangaInfo.Authors,
                         NewMangaInfo.Artists,

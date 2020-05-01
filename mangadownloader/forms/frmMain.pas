@@ -2395,7 +2395,7 @@ begin
       begin
         links.Add(ChapterList[node^.Index].Link);
         s:=CustomRename(OptionChapterCustomRename,
-          mangaInfo.ModuleID,
+          mangaInfo.Website,
           mangaInfo.Title,
           mangaInfo.Authors,
           mangaInfo.Artists,
@@ -2419,7 +2419,7 @@ begin
         then
         s:=AppendPathDelim(s)+CustomRename(
           OptionMangaCustomRename,
-          mangaInfo.ModuleID,
+          mangaInfo.Website,
           mangaInfo.Title,
           mangaInfo.Authors,
           mangaInfo.Artists,

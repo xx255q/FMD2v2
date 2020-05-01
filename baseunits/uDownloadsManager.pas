@@ -874,7 +874,7 @@ begin
 
       // set current working custom filename
       CurrentCustomFileName :=  CustomRename(Container.CustomFileName,
-        Container.DownloadInfo.ModuleID,
+        Container.DownloadInfo.Website,
         Container.DownloadInfo.Title,
         '',
         '',
