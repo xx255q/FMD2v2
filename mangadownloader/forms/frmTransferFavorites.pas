@@ -293,7 +293,7 @@ begin
   Data := Sender.GetNodeData(Node);
   case Column of
     1: CellText := Data^.Fav.FavoriteInfo.Title;
-    2: CellText := Data^.Fav.FavoriteInfo.ModuleID;
+    2: CellText := Data^.Fav.FavoriteInfo.Website;
   end;
 end;
 
