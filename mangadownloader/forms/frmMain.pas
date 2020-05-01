@@ -5373,6 +5373,7 @@ begin
         data^.P := categoriesitem.Objects[j];
       end;
     end;
+    vtOptionMangaSiteSelection.FullExpand();
     vtOptionMangaSiteSelection.EndUpdate;
   finally
     categories.Free;
