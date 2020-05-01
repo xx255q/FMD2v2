@@ -98,6 +98,8 @@ type
     procedure RemoveFilter;
     procedure Sort;
 
+    function GetModule(const RecIndex: Integer): Pointer;
+
     property Module: Pointer read FModule;
     property Website: String read FWebsite write FWebsite;
     property TableName: String read FTableName write FTableName;
@@ -452,7 +454,7 @@ procedure TDBDataProcess.AttachAllSites;
   begin
     if SitesList.Count > 0 then
       for j := 0 to SitesList.Count - 1 do
-        if SitesList[j] = FWebsite then
+        if Pointer(SitesList.Objects[j]) = FModule then
         begin
           SitesList.Delete(j);
           Break;
@@ -465,7 +467,6 @@ var
 begin
   RemoveCurrentSite;
   if (not FConn.Connected) or (SitesList.Count = 0) then Exit;
-  //if Trim(SitesList.Text) = Trim(FAttachedSites.Text) then Exit;
   DetachAllSites;
   FConn.ExecuteDirect('END TRANSACTION');
   try
@@ -1000,15 +1001,13 @@ begin
         begin
           SQL.Add('SELECT * FROM');
           SQL.Add('(');
-          SQL.Add('SELECT *, ' + QuotedStrd(FWebsite) + ' AS "website" FROM ' +
-            QuotedStrd(FTableName));
+          SQL.Add('SELECT *, "-1" AS "website" FROM ' + QuotedStrd(FTableName));
           SQL.Add('WHERE');
           GenerateSQLFilter;
           for i := 0 to FAttachedSites.Count - 1 do
           begin
             SQL.Add('UNION ALL');
-            SQL.Add('SELECT *, ' + QuotedStrd(FAttachedSites[i]) +
-              ' AS "website" FROM ' +
+            SQL.Add('SELECT *, "' + IntToStr(i) + '" AS "website" FROM ' +
               QuotedStrd(FAttachedSites[i]) + '.' + QuotedStrd(FTableName));
             SQL.Add('WHERE');
             GenerateSQLFilter;
@@ -1049,7 +1048,6 @@ begin
         FFilterSQL := '';
       end;
     end;
-    Result := FFiltered;
     Result := FFiltered;
   end;
 end;
@@ -1114,6 +1112,23 @@ begin
     if FQuery.Active <> queryactive then
       FQuery.Active := queryactive;
   end;
+end;
+
+function TDBDataProcess.GetModule(const RecIndex: Integer): Pointer;
+var
+  i: LongInt;
+begin
+  if FAllSitesAttached then
+  begin
+    FQuery.RecNo := RecIndex+1;
+    i := FQuery.Fields[DBTempFieldWebsiteIndex].AsInteger;
+    if i = -1 then
+      Result := FModule
+    else
+      Result := Pointer(FAttachedSites.Objects[i]);
+  end
+  else
+    Result := FModule;
 end;
 
 function TDBDataProcess.WebsiteLoaded(const AWebsite: String): Boolean;

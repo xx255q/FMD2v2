@@ -5965,7 +5965,7 @@ begin
     Summary := dataProcess.Value[Node^.Index, DATA_PARAM_SUMMARY];
     if dataProcess.FilterAllSites then
     begin
-      Module := Modules.LocateModule(dataProcess.WebsiteName[Node^.Index]);
+      Module := dataProcess.GetModule(Node^.Index);
       TitleFormat += ' [' + TModuleContainer(Module).Name + ']';
     end
     else
