@@ -75,14 +75,17 @@ type
   { TluaClassList }
 
   TluaClassList = class
-    FClassList, FAddMetaTableList, FClassLibList: TFPList;
+  private
+    FClassList,
+    FAddMetaTableList,
+    FRegisterLibList: TFPList;
   public
     constructor Create;
     destructor Destroy; override;
-    procedure Add(C: TClass; AddMetaTable: TluaClassAddMetaTable;
-      AddLib: TLuaClassRegisterLib);
-    function FindAddMetaTable(C: TClass): TluaClassAddMetaTable;
-    property Libs: TFPList read FClassLibList;
+    procedure Add(const C: TClass; const AAddMetaTable: TluaClassAddMetaTable; const ARegisterLib: TLuaClassRegisterLib);
+    function IndexOf(const C: TClass): Integer;
+    function FindAddMetaTable(const C: TClass): TluaClassAddMetaTable;
+    property Libs: TFPList read FRegisterLibList;
   end;
 
 var
@@ -564,40 +567,47 @@ constructor TluaClassList.Create;
 begin
   FClassList := TFPList.Create;
   FAddMetaTableList := TFPList.Create;
-  FClassLibList := TFPList.Create;
+  FRegisterLibList := TFPList.Create;
 end;
 
 destructor TluaClassList.Destroy;
 begin
-  FClassList.Free;
+  FRegisterLibList.Free;
   FAddMetaTableList.Free;
-  FClassLibList.Free;
+  FClassList.Free;
   inherited Destroy;
 end;
 
-procedure TluaClassList.Add(C: TClass; AddMetaTable: TluaClassAddMetaTable;
-  AddLib: TLuaClassRegisterLib);
+procedure TluaClassList.Add(const C: TClass;
+  const AAddMetaTable: TluaClassAddMetaTable; const ARegisterLib: TLuaClassRegisterLib
+  );
 begin
   FClassList.Add(C);
-  FAddMetaTableList.Add(AddMetaTable);
-  FClassLibList.Add(AddLib);
+  FAddMetaTableList.Add(AAddMetaTable);
+  FRegisterLibList.Add(ARegisterLib);
 end;
 
-function TluaClassList.FindAddMetaTable(C: TClass): TluaClassAddMetaTable;
+function TluaClassList.IndexOf(const C: TClass): Integer;
 var
-  i, p: Integer;
+  i: Integer;
 begin
-  Result := nil;
-  p := FClassList.IndexOf(C);
-  if p = -1 then
-    for i := 0 to FClassList.Count - 1 do
+  if FClassList.Count = 0 then Exit(-1);
+  Result := FClassList.IndexOf(C);
+  if Result = -1 then
+    for i := 0 to FClassList.Count-1 do
       if C.InheritsFrom(TClass(FClassList[i])) then
-      begin
-        p := i;
-        Break;
-      end;
+        Exit(i);
+end;
+
+function TluaClassList.FindAddMetaTable(const C: TClass): TluaClassAddMetaTable;
+var
+  p: Integer;
+begin
+  p := IndexOf(C);
   if p <> -1 then
-    Result := TluaClassAddMetaTable(FAddMetaTableList[p]);
+    Result := TluaClassAddMetaTable(FAddMetaTableList[p])
+  else
+    Result := nil;
 end;
 
 initialization

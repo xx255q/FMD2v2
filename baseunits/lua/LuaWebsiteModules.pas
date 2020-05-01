@@ -978,13 +978,12 @@ end;
 
 procedure luaWebsiteModuleRegister(L: Plua_State);
 begin
-  lua_register(L, 'NewWebsiteModule', @_create);
+  lua_register(L, 'NewModule', @_create);
 end;
 
 initialization
-  luaClassRegister(TLuaWebsiteModule, @luaWebsiteModuleAddMetaTable,
-    @luaWebsiteModuleRegister);
   LuaWebsiteModulesManager := TLuaWebsiteModulesManager.Create;
+  luaClassRegister(TLuaWebsiteModule, @luaWebsiteModuleAddMetaTable, @luaWebsiteModuleRegister);
 
 finalization
   LuaWebsiteModulesManager.Free;
