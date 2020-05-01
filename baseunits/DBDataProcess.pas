@@ -1007,8 +1007,7 @@ begin
           for i := 0 to FAttachedSites.Count - 1 do
           begin
             SQL.Add('UNION ALL');
-            SQL.Add('SELECT *, "' + IntToStr(i) + '" AS "website" FROM ' +
-              QuotedStrd(FAttachedSites[i]) + '.' + QuotedStrd(FTableName));
+            SQL.Add('SELECT *, "' + IntToStr(i) + '" AS "website" FROM ' + QuotedStrd(FAttachedSites[i]) + '.' + QuotedStrd(FTableName));
             SQL.Add('WHERE');
             GenerateSQLFilter;
           end;
