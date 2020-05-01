@@ -117,7 +117,7 @@ end;
 
 function QuotedStr(const S: TDateTime): String;
 begin
-  Result := AnsiQuotedStr(DateTimeToSQLiteDateTime(S), '"');
+  Result := AnsiQuotedStr(DateTimeToSQLiteDateTime(S), '''');
 end;
 
 function QuotedStrD(const S: String): String;
