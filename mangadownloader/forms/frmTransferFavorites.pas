@@ -34,7 +34,6 @@ type
     procedure vtFavsFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure vtFavsGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: Boolean; var ImageIndex: Integer);
-    procedure vtFavsGetNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
     procedure vtFavsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: String
       );
   private
@@ -52,6 +51,7 @@ type
 
   TFavsContainer = record
     Fav: TFavoriteContainer;
+    NewModuleID,
     NewLink: String;
     State: Integer;
   end;
@@ -62,14 +62,14 @@ type
 
   TFindMatchDBThread = class(TThread)
   private
+    FOwner: TTransferFavoritesForm;
     FWebsite: String;
     procedure SyncBegin;
     procedure SyncEnd;
   protected
     procedure Execute; override;
   public
-    Owner: TTransferFavoritesForm;
-    constructor Create(AWebsite: String);
+    constructor Create(const AWebsite: String; const AOwner: TTransferFavoritesForm);
   end;
 
 var
@@ -91,25 +91,25 @@ uses
 
 procedure TFindMatchDBThread.SyncBegin;
 begin
-  Owner.imgState.Visible := True;
-  Owner.imgsState.GetBitmap(0,Owner.imgState.Picture.Bitmap);
-  Owner.cbWebsites.Enabled := False;
-  Owner.vtFavs.Enabled := False;
+  FOwner.imgState.Visible := True;
+  FOwner.imgsState.GetBitmap(0,FOwner.imgState.Picture.Bitmap);
+  FOwner.cbWebsites.Enabled := False;
+  FOwner.vtFavs.Enabled := False;
 end;
 
 procedure TFindMatchDBThread.SyncEnd;
 begin
-  Owner.imgsState.GetBitmap(1,Owner.imgState.Picture.Bitmap);
-  Owner.cbWebsites.Enabled := True;
-  Owner.vtFavs.Enabled := True;
-  Owner.cbWebsites.SetFocus;
+  FOwner.imgsState.GetBitmap(1,FOwner.imgState.Picture.Bitmap);
+  FOwner.cbWebsites.Enabled := True;
+  FOwner.vtFavs.Enabled := True;
+  FOwner.cbWebsites.SetFocus;
 
-  Owner.UpdateFilterCount;
+  FOwner.UpdateFilterCount;
 
-  if Owner.FLastFilter <> 0 then
+  if FOwner.FLastFilter <> 0 then
   begin
-    Owner.FLastFilter := -1;
-    Owner.rbAllChange(nil);
+    FOwner.FLastFilter := -1;
+    FOwner.rbAllChange(nil);
   end;
 end;
 
@@ -121,18 +121,18 @@ var
 
 begin
   Synchronize(@SyncBegin);
-  Owner.FValidCount := 0;
-  Owner.FInvalidCount := 0;
+  FOwner.FValidCount := 0;
+  FOwner.FInvalidCount := 0;
   db := TDBDataProcess.Create;
   try
     if db.Connect(FWebsite) then
     begin
       db.Table.ReadOnly := True;
-      node := Owner.vtFavs.GetFirst();
+      node := FOwner.vtFavs.GetFirst();
       while Assigned(node) do
       begin
-        data := Owner.vtFavs.GetNodeData(node);
-        if data^.Fav.FavoriteInfo.ModuleID = TModuleContainer(db.Website).ID then
+        data := FOwner.vtFavs.GetNodeData(node);
+        if data^.Fav.FavoriteInfo.ModuleID = db.Website then
         begin
           data^.NewLink := '';
           data^.State := 0;
@@ -145,21 +145,23 @@ begin
             db.Table.Open;
             if db.Table.RecNo > 0 then
             begin
+              data^.NewModuleID := db.Website;
               data^.NewLink := db.Table.Fields[0].AsString;
               data^.State := 1;
-              Inc(Owner.FValidCount);
+              Inc(FOwner.FValidCount);
             end
             else
             begin
+              data^.NewModuleID := '';
               data^.NewLink := '';
               data^.State := 2;
-              Inc(Owner.FInvalidCount);
+              Inc(FOwner.FInvalidCount);
             end;
           except
           end;
           db.Table.Close;
         end;
-        node := Owner.vtFavs.GetNext(node);
+        node := FOwner.vtFavs.GetNext(node);
       end;
     end;
     db.Connection.Connected := False;
@@ -169,11 +171,13 @@ begin
   Synchronize(@SyncEnd);
 end;
 
-constructor TFindMatchDBThread.Create(AWebsite: String);
+constructor TFindMatchDBThread.Create(const AWebsite: String;
+  const AOwner: TTransferFavoritesForm);
 begin
-  inherited Create(True);
+  inherited Create(False);
   FreeOnTerminate := True;
   FWebsite := AWebsite;
+  FOwner := AOwner;
 end;
 
 { TTransferFavoritesForm }
@@ -181,12 +185,13 @@ end;
 procedure TTransferFavoritesForm.FormCreate(Sender: TObject);
 begin
   frmCustomColor.AddVT(vtFavs);
-  cbWebsites.Items.Text := FormMain.cbSelectManga.Items.Text;
+  cbWebsites.Items.Assign(FormMain.cbSelectManga.Items);
   FLastFilter := 0;
   FAllCount := 0;
   FValidCount := 0;
   FInvalidCount := 0;
   FLastWebsiteSelect := -1;
+  vtFavs.NodeDataSize := SizeOf(TFavsContainer);;
 end;
 
 procedure TTransferFavoritesForm.FormDestroy(Sender: TObject);
@@ -221,7 +226,7 @@ begin
   begin
     Data := vtFavs.GetNodeData(Node);
     // add new item and remove the old one
-    if Data^.NewLink <> '' then
+    if Data^.NewModuleID <> '' then
     begin
       with Data^.Fav.FavoriteInfo do
       begin
@@ -233,8 +238,7 @@ begin
           Title,
           CurrentChapter,
           dc,
-          cbWebsites.
-          Text,
+          Data^.NewModuleID,
           SaveTo,
           Data^.NewLink);
       end;
@@ -281,11 +285,6 @@ begin
     ImageIndex := Data^.State;
 end;
 
-procedure TTransferFavoritesForm.vtFavsGetNodeDataSize(Sender: TBaseVirtualTree; var NodeDataSize: Integer);
-begin
-  NodeDataSize := SizeOf(TFavsContainer);
-end;
-
 procedure TTransferFavoritesForm.vtFavsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
   var CellText: String);
 var
@@ -330,16 +329,14 @@ begin
 end;
 
 procedure TTransferFavoritesForm.FindMatchTitle;
+var
+  m: TModuleContainer;
 begin
   if FLastWebsiteSelect = cbWebsites.ItemIndex then Exit;
   FLastWebsiteSelect := cbWebsites.ItemIndex;
-  if not FileExists(DATA_FOLDER + cbWebsites.Text + DBDATA_EXT) then
-    Exit;
-  with TFindMatchDBThread.Create(cbWebsites.Text) do
-  begin
-    Owner := Self;
-    Start;
-  end;
+  m := TModuleContainer(cbWebsites.Items.Objects[FLastWebsiteSelect]);
+  if FileExists(DBDataFilePath(m.ID)) then
+    TFindMatchDBThread.Create(m.ID, Self);
 end;
 
 procedure TTransferFavoritesForm.AddFav(const AFav: TFavoriteContainer);
