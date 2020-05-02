@@ -645,7 +645,7 @@ var
   i: Integer;
   cpu_count: LongWord;
   {$ifdef dump_loaded_modules}
-  s: string;
+  s: TStringList;
   {$endif}
 begin
   FindAllFiles(FFileList, LUA_WEBSITEMODULE_FOLDER, '*.lua;*.luac', False, faAnyFile);
@@ -658,12 +658,15 @@ begin
   while FThreadCount <> 0 do
     Sleep(250);
   {$ifdef dump_loaded_modules}
-  s:=LineEnding;
-  if Modules.Count<>0 then
-    for i:=0 to Modules.Count-1 do
-      s+=Modules[i].ID+' '+Modules[i].Name+LineEnding;
-  //Logger.Send('Loaded modules: '+IntToStr(Modules.Count),s);
-  writeln('Loaded modules: '+IntToStr(Modules.Count)+s);
+  s:=TStringList.Create;
+  try
+    if Modules.Count<>0 then
+      for i:=0 to Modules.Count-1 do
+        s.Add(Modules[i].ID+' '+Modules[i].Name);
+    s.SaveToFile('loaded_modules.txt');
+  finally
+    s.Free;
+  end;
   {$endif}
 end;
 
