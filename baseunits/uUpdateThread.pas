@@ -424,7 +424,6 @@ begin
       begin
         EnterCriticalsection(CS_Threads);
         try
-          if module.ActiveConnectionCount >= conlimit then Exit;
           module.IncActiveConnectionCount;
           t := TUpdateListThread.Create(module);
           Threads.Add(t);
@@ -706,13 +705,16 @@ begin
           // get directory page count
           directoryCount := 0;
           workPtr := 0;
-          Modules.AfterUpdateList(module.Index);
-          Modules.BeforeUpdateList(module.Index);
+          if Assigned(module.OnAfterUpdateList) then
+            module.OnAfterUpdateList(module);
+          if Assigned(module.OnBeforeUpdateList) then
+            module.OnBeforeUpdateList(module);
           GetInfo(module.TotalDirectory, CS_DIRECTORY_COUNT);
 
           if Terminated then
           begin
-              Modules.AfterUpdateList(module.Index);
+            if Assigned(module.OnAfterUpdateList) then
+              module.OnAfterUpdateList(module);
             Break;
           end;
 
@@ -734,7 +736,8 @@ begin
             if Terminated then Break;
           end;
 
-          Modules.BeforeUpdateList(module.Index);
+          if Assigned(module.OnBeforeUpdateList) then
+            module.OnBeforeUpdateList(module);
           if Terminated then
             if not (OptionUpdateListNoMangaInfo and not(module.SortedList)) then
               Break;
