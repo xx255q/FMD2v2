@@ -78,13 +78,13 @@ function GetPageNumber()
 	  local cid = s:match('chapterid%s*=%s*(.-)%s*;') or '0'
 	  TASK.PageNumber = tonumber(s:match('imagecount%s*=%s*(%d-)%s*;') or '0')
       if TASK.PageNumber == nil then TASK.PageNumber = 1 end
-      local page = 1
-      while page <= TASK.PageNumber do
+      local p = 1
+      while p <= TASK.PageNumber do
         HTTP.Reset()
         HTTP.Headers.Values['Pragma'] = 'no-cache'
         HTTP.Headers.Values['Cache-Control'] = 'no-cache'
         HTTP.Headers.Values['Referer'] = lurl
-        if HTTP.XHR(aurl .. string.format('chapterfun.ashx?cid=%s&page=%d&key=%s', cid, page, key)) then
+        if HTTP.XHR(aurl .. string.format('chapterfun.ashx?cid=%s&page=%d&key=%s', cid, p, key)) then
 		  s = HTTP.Document.ToString()
           if s ~= '' then
             s = ExecJS(s .. ';d;')
@@ -100,7 +100,7 @@ function GetPageNumber()
 		  TASK.PageLinks.Delete(TASK.PageLinks.Count-1)
 		end
         if TASK.PageLinks.Count >= TASK.PageNumber then break end
-        page = TASK.PageLinks.Count + 1
+        p = TASK.PageLinks.Count + 1
         Sleep(2000) -- without minimum delay of 2 seconds server will only give 2 images for each xhr request
       end
     end
