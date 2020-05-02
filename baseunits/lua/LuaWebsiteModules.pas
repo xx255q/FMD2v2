@@ -644,9 +644,6 @@ procedure TLuaWebsiteModulesLoader.ScanAndLoadFiles;
 var
   i: Integer;
   cpu_count: LongWord;
-  {$ifdef dump_loaded_modules}
-  s: TStringList;
-  {$endif}
 begin
   FindAllFiles(FFileList, LUA_WEBSITEMODULE_FOLDER, '*.lua;*.luac', False, faAnyFile);
   if FFileList.Count = 0 then Exit;
@@ -657,17 +654,6 @@ begin
     TLuaWebsiteModulesLoaderThread.Create(Self);
   while FThreadCount <> 0 do
     Sleep(250);
-  {$ifdef dump_loaded_modules}
-  s:=TStringList.Create;
-  try
-    if Modules.Count<>0 then
-      for i:=0 to Modules.Count-1 do
-        s.Add(Modules[i].ID+' '+Modules[i].Name);
-    s.SaveToFile('loaded_modules.txt');
-  finally
-    s.Free;
-  end;
-  {$endif}
 end;
 
 constructor TLuaWebsiteModulesLoader.Create;

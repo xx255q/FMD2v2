@@ -1925,6 +1925,11 @@ begin
 end;
 
 procedure TMainForm.tmStartupTimer(Sender: TObject);
+{$ifdef dump_loaded_modules}
+var
+  i: Integer;
+  s: string;
+{$endif}
 begin
   try
     if Sender=tmStartup then
@@ -1946,6 +1951,14 @@ begin
   finally
     isStartup := False;
   end;
+
+  {$ifdef dump_loaded_modules}
+  s:=LineEnding;
+  for i:=0 to Modules.Count-1 do
+    if Modules.Count<>0 then
+      s+=Modules[i].ID+' '+Modules[i].Name+LineEnding;
+  Logger.Send('loaded modules: '+IntToStr(Modules.Count),s);
+  {$endif}
 
   //restore everything after all modules loaded
   DLManager.Restore;
