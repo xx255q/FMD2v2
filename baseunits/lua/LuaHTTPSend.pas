@@ -13,7 +13,7 @@ procedure luaHTTPSendThreadAddMetaTable(L: Plua_State; Obj: Pointer; MetaTable,
 implementation
 
 uses
-  uBaseUnit, httpsendthread, LuaClass, LuaUtils;
+  uBaseUnit, httpsendthread, LuaClass, LuaUtils, LuaStrings, LuaMemoryStream;
 
 type
   TUserData = THTTPSendThread;
@@ -112,11 +112,11 @@ begin
   begin
     luaClassAddFunction(L, MetaTable, UserData, methods);
     luaClassAddProperty(L, MetaTable, UserData, props);
-    luaClassAddObject(L, MetaTable, Headers, 'Headers');
-    luaClassAddObject(L, MetaTable, Cookies, 'Cookies');
+    luaClassAddObject(L, MetaTable, Headers, 'Headers', @luaStringsAddMetaTable);
+    luaClassAddObject(L, MetaTable, Cookies, 'Cookies', @luaStringsAddMetaTable);
+    luaClassAddObject(L, MetaTable, TUserData(Obj).Document, 'Document', @luaMemoryStreamAddMetaTable);
     luaClassAddStringProperty(L, MetaTable, 'MimeType', @TUserData(Obj).MimeType);
     luaClassAddStringProperty(L, MetaTable, 'UserAgent', @TUserData(Obj).UserAgent);
-    luaClassAddObject(L, MetaTable, TUserData(Obj).Document, 'Document');
   end;
 end;
 
