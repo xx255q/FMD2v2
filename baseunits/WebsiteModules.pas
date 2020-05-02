@@ -196,7 +196,8 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    function AddModule: TModuleContainer;
+    procedure AddModule(const AModule: TModuleContainer);
+    function AddNewModule: TModuleContainer;
     function LocateModule(const AModuleID: String): TModuleContainer;
     function LocateModuleByHost(const AHost: String): TModuleContainer;
     function LocateModuleByID(const AModuleID: String): Integer;
@@ -557,7 +558,17 @@ begin
   inherited Destroy;
 end;
 
-function TWebsiteModules.AddModule: TModuleContainer;
+procedure TWebsiteModules.AddModule(const AModule: TModuleContainer);
+begin
+  EnterCriticalsection(FCSModules);
+  try
+    AModule.FIndex := FModuleList.Add(AModule);
+  finally
+    LeaveCriticalsection(FCSModules);
+  end;
+end;
+
+function TWebsiteModules.AddNewModule: TModuleContainer;
 begin
   EnterCriticalsection(FCSModules);
   try
@@ -1146,7 +1157,7 @@ function AddModule: TModuleContainer;
 begin
   if Modules = nil then
     doInitialize;
-  Result := Modules.AddModule;
+  Result := Modules.AddNewModule;
 end;
 
 procedure LockCreateConnection;

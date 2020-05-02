@@ -520,35 +520,43 @@ var
   c: TLuaWebsiteModulesContainer;
   m: TMemoryStream;
   i: Integer;
-  s: String;
+  //s: String;
+  md: TModuleContainer;
 begin
   //Logger.Send('Load lua website module', AFilename);
   m := nil;
   DoInit(AFileName, m);
 
-  // remove modules without id
+  // remove modules without id or name. it's used in ui without validation (EAccessViolation)
   for i := TempModules.Count-1 downto 0 do
-    if TempModules[i].Module.ID = '' then
+  begin
+    md := TempModules[i].Module;
+    if (md.ID = '') or (md.Name = '') then
     begin
+      TempModules[i].Module.Free;
       TempModules[i].Free;
-      TempModules.Delete(I);
-    end;
+      TempModules.Delete(i);
+    end
+  end;
 
   if TempModules.Count <> 0 then
-    with LuaWebsiteModulesManager do
     begin
       c := TLuaWebsiteModulesContainer.Create;
       c.FileName := AFileName;
       c.ByteCode := m;
       m := nil;
-      s := '';
+      //s := '';
       FOwner.FMainGuardian.Enter;
-      Containers.Add(c);
-      FOwner.FMainGuardian.Leave;
+      try
+        LuaWebsiteModulesManager.Containers.Add(c);
+      finally
+        FOwner.FMainGuardian.Leave;
+      end;
       for i := 0 to TempModules.Count - 1 do
         with TempModules[i] do
         begin
-          s += Module.ID + ', ';
+          Modules.AddModule(Module);
+          //s += Module.ID + ', ';
           c.Modules.Add(TempModules[i]);
           Container := c;
           Module.RootURL := LowerCase(Module.RootURL);
@@ -580,9 +588,9 @@ begin
             Module.OnLogin := @DoLogin;
         end;
       TempModules.Clear;
-      SetLength(s, Length(s) - 2);
+      //SetLength(s, Length(s) - 2);
       //Logger.Send('Loaded modules from ' + ExtractFileName(AFilename), s);
-      s := '';
+      //s := '';
     end;
   if m <> nil then
     m.Free;
@@ -599,9 +607,11 @@ begin
       LoadLuaWebsiteModule(f);
       f:=FOwner.GetFileName;
     end;
-  finally
-    TempModules.Free;
+  except
+    on E: Exception do
+      Logger.SendException(ClassName+'.Execute error',E);
   end;
+  TempModules.Free;
 end;
 
 constructor TLuaWebsiteModulesLoaderThread.Create(
@@ -633,13 +643,17 @@ end;
 procedure TLuaWebsiteModulesLoader.ScanAndLoadFiles;
 var
   i: Integer;
+  cpu_count: LongWord;
 begin
   FindAllFiles(FFileList, LUA_WEBSITEMODULE_FOLDER, '*.lua;*.luac', False, faAnyFile);
-  if FFileList.Count=0 then Exit;
-  for i:=1 to GetCPUCount do
+  if FFileList.Count = 0 then Exit;
+  cpu_count := GetCPUCount;
+  if cpu_count > FFileList.Count then
+    cpu_count := FFileList.Count;
+  for i:=1 to cpu_count do
     TLuaWebsiteModulesLoaderThread.Create(Self);
-  while FThreadCount<>0 do
-    Sleep(100);
+  while FThreadCount <> 0 do
+    Sleep(250);
 end;
 
 constructor TLuaWebsiteModulesLoader.Create;
@@ -707,7 +721,7 @@ begin
   Options.OwnsObjects := True;
   Options.Duplicates := dupIgnore;
   Options.Sorted := True;
-  Module := Modules.AddModule;
+  Module := TModuleContainer.Create;
   Module.LuaModule := Self;
 end;
 
