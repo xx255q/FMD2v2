@@ -19,7 +19,7 @@ function LuaGetReturnString(const ReturnCode: Integer): String;
 
 function LuaDumpFileToStream(AFileName: String; AStripDebug: Boolean = False): TMemoryStream; overload;
 function LuaDumpFileToStream(L: Plua_State; AFileName: String;
-  AStripDebug: Boolean = False): TMemoryStream; overload;
+  AStripDebug: Boolean = True): TMemoryStream; overload;
 function LuaLoadFromStream(L: Plua_State; AStream: TMemoryStream; AName: PAnsiChar): Integer; inline;
 
 procedure LuaExecute(L: Plua_State; AStream: TMemoryStream; AFileName: String; NResult: Integer = 0);
