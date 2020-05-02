@@ -743,9 +743,6 @@ type
     // Show manga information
     procedure ShowInformation;
 
-    // get manga list from server
-    procedure RunGetList;
-
     // Load config from config.ini
     procedure LoadOptions;
     procedure SaveOptions(const AShowDialog: Boolean = False);
@@ -2689,7 +2686,7 @@ begin
       OpenDataDB(TModuleContainer(currentWebsite).ID)
     else
     if cbOptionShowDownloadMangalistDialog.Checked then
-      RunGetList;
+      mnUpdateDownFromServerClick(mnUpdateDownFromServer);
   end;
 end;
 
@@ -3261,6 +3258,7 @@ end;
 
 procedure TMainForm.mnDownload1ClickClick(Sender: TObject);
 begin
+  if cbSelectManga.Items.Count = 0 then Exit;
   if DBUpdaterThread <> nil then
     DBUpdaterThread.Add(cbSelectManga.Items)
   else
@@ -3293,6 +3291,7 @@ var
   i, j, c_list_count, in_list_count: Integer;
   in_list: Boolean;
 begin
+  if cbSelectManga.Items.Count = 0 then Exit;
   if (not isUpdating) then
   begin
     isUpdating := True;
@@ -3329,8 +3328,20 @@ begin
 end;
 
 procedure TMainForm.mnUpdateDownFromServerClick(Sender: TObject);
+var
+  m: TModuleContainer;
 begin
-  RunGetList;
+  if cbSelectManga.ItemIndex < 0 then Exit;
+  m := TModuleContainer(cbSelectManga.Items.Objects[cbSelectManga.ItemIndex]);
+  if DBUpdaterThread <> nil then
+    DBUpdaterThread.Add(m.ID, m)
+  else
+  if MessageDlg('', RS_DlgUpdaterWantToUpdateDB, mtInformation, [mbYes, mbNo], 0) = mrYes then
+  begin
+    DBUpdaterThread := TDBUpdaterThread.Create;
+    DBUpdaterThread.Add(m.ID, m);
+    DBUpdaterThread.Start;
+  end;
 end;
 
 procedure TMainForm.mnUpdateListClick(Sender: TObject);
@@ -3338,6 +3349,7 @@ var
   m: TModuleContainer;
   i: Integer;
 begin
+  if cbSelectManga.ItemIndex < 0 then Exit;
   m := TModuleContainer(cbSelectManga.Items.Objects[cbSelectManga.ItemIndex]);
   if (not isUpdating) then
   begin
@@ -4874,22 +4886,6 @@ begin
   btDownload.Enabled := (clbChapterList.RootNodeCount > 0);
   btDownloadSplit.Enabled := btDownload.Enabled;
   btReadOnline.Enabled := (mangaInfo.Link <> '');
-end;
-
-procedure TMainForm.RunGetList;
-var
-  m: TModuleContainer;
-begin
-  m := TModuleContainer(cbSelectManga.Items.Objects[cbSelectManga.ItemIndex]);
-  if DBUpdaterThread <> nil then
-    DBUpdaterThread.Add(m.ID, m)
-  else
-  if MessageDlg('', RS_DlgUpdaterWantToUpdateDB, mtInformation, [mbYes, mbNo], 0) = mrYes then
-  begin
-    DBUpdaterThread := TDBUpdaterThread.Create;
-    DBUpdaterThread.Add(m.ID, m);
-    DBUpdaterThread.Start;
-  end;
 end;
 
 procedure TMainForm.LoadOptions;
