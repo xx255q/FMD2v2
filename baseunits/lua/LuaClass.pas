@@ -68,7 +68,7 @@ procedure luaClassAddUserData(L: Plua_State; MetaTable: Integer; Obj: TObject;
 
 implementation
 
-uses LuaUtils;
+uses LuaUtils, MultiLog;
 
 type
 
@@ -314,6 +314,7 @@ procedure luaClassPushUserData(L: Plua_State; Obj: Pointer; Name: String;
 var
   m, u: Integer;
 begin
+  {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   if Obj = nil then
     Exit;
   luaClassNewUserData(L, m, u, Obj, AutoFree);
@@ -338,6 +339,7 @@ end;
 procedure luaClassAddFunction(L: Plua_State; MetaTable, UserData: Integer;
   Name: PAnsiChar; Func: lua_CFunction);
 begin
+  {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   {$ifdef luaclass_caseinsensitive}
   luaAddCClosureToTable(L, MetaTable, UserData, PAnsiChar(AnsiLowerCase(Name)), Func);
   {$else}
@@ -397,6 +399,7 @@ procedure luaClassAddArrayProperty(L: Plua_State; MetaTable, UserData: Integer;
 var
   t, m: Integer;
 begin
+  {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   {$ifdef luaclass_caseinsensitive}
   lua_pushstring(L, PAnsiChar(AnsiLowerCase(Name)));
   {$else}
@@ -497,6 +500,7 @@ procedure luaClassAddVariable(L: Plua_State; MetaTable: Integer;
 var
   t: Integer;
 begin
+  {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   {$ifdef luaclass_caseinsensitive}
   lua_pushstring(L, PAnsiChar(LowerCase(Name)));
   {$else}
@@ -534,6 +538,7 @@ procedure luaClassAddObject(L: Plua_State; MetaTable: Integer; Obj: TObject;
 var
   m, u: Integer;
 begin
+  {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   if AddMetaTable = nil then
     AddMetaTable := classlist.FindAddMetaTable(Obj.ClassType);
   if AddMetaTable = nil then
@@ -552,6 +557,7 @@ end;
 procedure luaClassAddUserData(L: Plua_State; MetaTable: Integer; Obj: TObject;
   Name: PAnsiChar);
 begin
+  {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   {$ifdef luaclass_caseinsensitive}
   lua_pushstring(L, PAnsiChar(AnsiLowerCase(Name)));
   {$else}

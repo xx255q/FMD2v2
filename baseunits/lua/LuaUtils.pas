@@ -43,6 +43,8 @@ procedure luaL_register(L: Plua_State; n: PAnsiChar; lr: PluaL_Reg); inline;
 
 implementation
 
+uses MultiLog;
+
 function luaNewTable(L: Plua_State): Integer;
 begin
   lua_newtable(L);
@@ -52,6 +54,7 @@ end;
 procedure luaAddCFunctionToTable(L: Plua_State; Table: Integer;
   Name: PAnsiChar; Func: lua_CFunction);
 begin
+  {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   lua_pushstring(L, Name);
   lua_pushcfunction(L, Func);
   lua_rawset(L, Table);
@@ -60,6 +63,7 @@ end;
 procedure luaAddCClosureToTable(L: Plua_State; Table, Value: Integer;
   Name: PAnsiChar; Func: lua_CFunction);
 begin
+  {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   lua_pushstring(L, Name);
   lua_pushvalue(L, Value);
   lua_pushcclosure(L, Func, 1);
@@ -69,6 +73,7 @@ end;
 procedure luaAddCClosureToTable(L: Plua_State; Table: Integer;
   Value: Pointer; Name: PAnsiChar; Func: lua_CFunction);
 begin
+  {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   lua_pushstring(L, Name);
   lua_pushlightuserdata(L, Value);
   lua_pushcclosure(L, Func, 1);
@@ -77,6 +82,7 @@ end;
 
 procedure luaAddStringToTable(L: Plua_State; Table: Integer; Name, Value: PAnsiChar);
 begin
+  {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   lua_pushstring(L, Name);
   lua_pushstring(L, Value);
   lua_rawset(L, Table);
@@ -85,6 +91,7 @@ end;
 procedure luaAddIntegerToTable(L: Plua_State; Table: Integer;
   Name: PAnsiChar; Value: lua_Integer);
 begin
+  {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   lua_pushstring(L, Name);
   lua_pushinteger(L, Value);
   lua_rawset(L, Table);
@@ -93,6 +100,7 @@ end;
 procedure luaAddBooleanToTable(L: Plua_State; Table: Integer;
   Name: PAnsiChar; Value: Boolean);
 begin
+  {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   lua_pushstring(L, Name);
   lua_pushboolean(L, Value);
   lua_rawset(L, Table);
@@ -100,24 +108,28 @@ end;
 
 procedure luaPushFunctionGlobal(L: Plua_State; Name: PAnsiChar; Func: lua_CFunction);
 begin
+  {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   lua_pushcfunction(L, Func);
   lua_setglobal(L, Name);
 end;
 
 procedure luaPushStringGlobal(L: Plua_State; Name: PAnsiChar; S: String);
 begin
+  {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   lua_pushstring(L, S);
   lua_setglobal(L, Name);
 end;
 
 procedure luaPushIntegerGlobal(L: Plua_State; Name: PAnsiChar; I: Integer);
 begin
+  {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   lua_pushinteger(L, I);
   lua_setglobal(L, Name);
 end;
 
 procedure luaPushBooleanGlobal(L: Plua_State; Name: PAnsiChar; B: Boolean);
 begin
+  {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   lua_pushboolean(L, B);
   lua_setglobal(L, Name);
 end;
