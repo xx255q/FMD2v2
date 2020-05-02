@@ -5028,11 +5028,14 @@ begin
   with settingsfile do
     try
       // general
-      s := '';
-      for i := 0 to cbSelectManga.Items.Count-1 do
-        s := s + ',' + TModuleContainer(cbSelectManga.Items.Objects[i]).ID;
-      s := s.TrimLeft([',']);
-      WriteString('general', 'MangaListSelect', s);
+      if cbSelectManga.Items.Count <> 0 then
+      begin
+        s := '';
+        for i := 0 to cbSelectManga.Items.Count-1 do
+          s += TModuleContainer(cbSelectManga.Items.Objects[i]).ID + ',';
+        s := s.TrimRight([',']);
+        WriteString('general', 'MangaListSelect', s);
+      end;
       WriteBool('general', 'LiveSearch', cbOptionLiveSearch.Checked);
       WriteBool('general', 'OneInstanceOnly', cbOptionOneInstanceOnly.Checked);
       if cbLanguages.ItemIndex > -1 then
@@ -5149,7 +5152,6 @@ begin
   try
     // general
     // selected websites
-    cbSelectManga.Clear;
     node := vtOptionMangaSiteSelection.GetFirstChecked();
     while node<>nil do
     begin
@@ -5326,8 +5328,9 @@ var
   nodei: PVirtualNode;
   data: PNamePointerItem;
 begin
-  categories := TStringList.Create;
+  if WebsiteModules.Modules.Count <> 0 then
   try
+    categories := TStringList.Create;
     // sort all
     categories.OwnsObjects := True;
     categories.Duplicates := dupIgnore;
@@ -5393,24 +5396,23 @@ begin
   begin
     module := Modules.LocateModule(s);
     if Assigned(module) then //only add available modules
-      cbSelectManga.Items.AddObject(module.Name, module);
-  end;
-
-  // set checked vt websites selection
-  node := vtOptionMangaSiteSelection.GetFirst();
-  while node <> nil do
-  begin
-    if node^.ChildCount = 0 then
     begin
-      data := vtOptionMangaSiteSelection.GetNodeData(node);
-      for i:=0 to cbSelectManga.Items.Count-1 do
-        if cbSelectManga.Items.Objects[i] = TModuleContainer(data^.P) then
+      // set checked vt websites selection
+      node := vtOptionMangaSiteSelection.GetFirst();
+      while node <> nil do
+      begin
+        if node^.ChildCount = 0 then
         begin
-          node^.CheckState := csCheckedNormal;
-          Break;
+          data := vtOptionMangaSiteSelection.GetNodeData(node);
+          if TModuleContainer(data^.P).ID = s then
+          begin
+            node^.CheckState := csCheckedNormal;
+            Break;
+          end;
         end;
+        node := vtOptionMangaSiteSelection.GetNext(node);
+      end;
     end;
-    node := vtOptionMangaSiteSelection.GetNext(node);
   end;
 
   // load last selected webssite
