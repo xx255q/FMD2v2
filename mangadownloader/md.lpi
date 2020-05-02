@@ -216,7 +216,8 @@
           </Linking>
           <Other>
             <CustomOptions Value="-dDEVBUILD
--dDEBUGLEAKS"/>
+-dDEBUGLEAKS
+-ddump_loaded_modules"/>
             <OtherDefines Count="2">
               <Define0 Value="DEBUGLEAKS"/>
               <Define1 Value="DEVBUILD"/>
