@@ -109,8 +109,8 @@ end;
 procedure TWebsiteSettingsForm.vtWebsiteCompareNodes(Sender: TBaseVirtualTree;
   Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
 begin
-  Result := AnsiCompareStr(PModuleContainer(Sender.GetNodeData(Node1))^.ID,
-    PModuleContainer(Sender.GetNodeData(Node2))^.ID);
+  Result := AnsiCompareStr(PModuleContainer(Sender.GetNodeData(Node1))^.Name,
+    PModuleContainer(Sender.GetNodeData(Node2))^.Name);
 end;
 
 procedure TWebsiteSettingsForm.vtWebsiteFocusChanged(Sender: TBaseVirtualTree;
@@ -122,7 +122,7 @@ end;
 procedure TWebsiteSettingsForm.vtWebsiteGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
 begin
-  CellText := PModuleContainer(Sender.GetNodeData(Node))^.ID;
+  CellText := PModuleContainer(Sender.GetNodeData(Node))^.Name;
 end;
 
 procedure TWebsiteSettingsForm.LoadWebsiteSettings;
