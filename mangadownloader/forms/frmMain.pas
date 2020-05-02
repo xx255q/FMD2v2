@@ -5148,6 +5148,7 @@ begin
   try
     // general
     // selected websites
+    cbSelectManga.Clear;
     node := vtOptionMangaSiteSelection.GetFirstChecked();
     while node<>nil do
     begin
