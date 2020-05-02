@@ -11,7 +11,7 @@ unit uFavoritesManager;
 interface
 
 uses
-  Classes, SysUtils, fgl, Dialogs, ExtCtrls, IniFiles, lazutf8classes,
+  Classes, SysUtils, fgl, Dialogs, ExtCtrls, lazutf8classes,
   LazFileUtils, uBaseUnit, uData, uDownloadsManager, WebsiteModules, FMDOptions,
   httpsendthread, FavoritesDB, BaseThread, SimpleException, VirtualTrees;
 

@@ -11,7 +11,7 @@ uses
   windows,
  {$endif}
   Interfaces, // this includes the LCL widgetset
-  Forms, LazFileUtils, IniFiles, simpleipc, sqlite3dyn, uBaseUnit,
+  Forms, LazFileUtils, jsonini, simpleipc, sqlite3dyn, uBaseUnit,
   FMDVars, webp, CheckUpdate, DBUpdater, SelfUpdater, uDownloadsManager,
   LuaWebsiteModules, LuaBase, SimpleException, Classes, sysutils, frmMain,
   MultiLog, FileChannel, ssl_openssl_lib, blcksock, ssl_openssl;
@@ -73,7 +73,7 @@ begin
   if AppParams.IndexOf('--lua-dofile')<>-1 then
     AlwaysLoadLuaFromFile:=True;
 
-  with TIniFile.Create(SETTINGS_FILE) do
+  with TJSONIniFile.Create(SETTINGS_FILE) do
     try
       CheckInstance := ReadBool('general', 'OneInstanceOnly', True);
       EnableLogging := ReadBool('logger', 'Enabled', False);

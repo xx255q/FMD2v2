@@ -10,7 +10,7 @@ uses
   cmem,
   {$endif}
   Classes, SysUtils, zipper, FileUtil, LazFileUtils, LazUTF8, LazUTF8Classes,
-  Forms, Dialogs, ComCtrls, StdCtrls, ExtCtrls, RegExpr, IniFiles, blcksock,
+  Forms, Dialogs, ComCtrls, StdCtrls, ExtCtrls, RegExpr, blcksock,
   ssl_openssl, ssl_openssl_lib, synacode, httpsendthread, uMisc, BaseThread,
   SimpleTranslator, SimpleException;
 
