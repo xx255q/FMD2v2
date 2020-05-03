@@ -5380,8 +5380,8 @@ begin
       node := vtOptionMangaSiteSelection.AddChild(nil, nil);
       vtOptionMangaSiteSelection.ValidateNode(node, False);
       data := vtOptionMangaSiteSelection.GetNodeData(node);
-      data^.Name := categories[i];
       categoriesitem := TStringList(categories.Objects[i]);
+      data^.Name := categories[i] + ' ('+ IntToStr(categoriesitem.Count) +')';
       for j := 0 to categoriesitem.Count - 1 do
       begin
         s := categoriesitem[j];
@@ -5393,7 +5393,7 @@ begin
         data^.P := categoriesitem.Objects[j];
       end;
     end;
-    vtOptionMangaSiteSelection.FullExpand();
+    //vtOptionMangaSiteSelection.FullExpand();
     vtOptionMangaSiteSelection.EndUpdate;
   finally
     categories.Free;
