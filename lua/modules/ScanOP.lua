@@ -59,17 +59,12 @@ end
 ----------------------------------------------------------------------------------------------------
 
 function Init()
-  AddWebsiteModule('ScanOP', 'https://www.scan-op.com', 'French')
-end
-
-function AddWebsiteModule(name, URL, category)
   local m = NewWebsiteModule()
-  m.ID                       = '51955fb96b684dd1a964b283f6ac9f37'
-  m.Name                     = name
-  m.RootURL                  = URL
-  m.Category                 = category
+  m.ID                       = '9d37501925e94fa8a447c0aa34914db6'
+  m.Name                     = 'ScanOP'
+  m.RootURL                  = 'https://www.scan-op.com'
+  m.Category                 = 'French'
   m.OnGetInfo                = 'GetInfo'
   m.OnGetNameAndLink         = 'GetNameAndLink'
   m.OnGetPageNumber          = 'GetPageNumber'
-  return m
 end

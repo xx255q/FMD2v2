@@ -111,5 +111,4 @@ function Init()
   m.OnGetNameAndLink      = 'GetNameAndLink'
   m.OnGetPageNumber       = 'GetPageNumber'
   m.OnBeforeDownloadImage = 'BeforeDownloadImage'
-  return m
 end

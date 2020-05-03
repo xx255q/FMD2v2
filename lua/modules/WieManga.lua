@@ -81,13 +81,12 @@ function AddWebsiteModule(id, name, url, category)
   m.Name             = name
   m.RootURL          = url
   m.Category         = category
-  m.TotalDirectory   =  ALPHA_LIST_UP:len()
+  m.TotalDirectory   = ALPHA_LIST_UP:len()
   m.LastUpdated      = 'February 19, 2018'
   m.OnGetInfo        = 'GetInfo'
   m.OnGetPageNumber  = 'GetPageNumber'
   m.OnGetNameAndLink = 'GetNameAndLink'
   m.OnGetImageURL    = 'GetImageURL'
-  return m
 end
 
 function Init()

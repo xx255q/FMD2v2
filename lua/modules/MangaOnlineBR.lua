@@ -1,0 +1,63 @@
+function GetNameAndLink()
+	if HTTP.GET(MODULE.RootURL..'/titulos/') then
+	    TXQuery.Create(HTTP.Document).XPathHREFAll('//div[@class="manga"]/p[1]/a', LINKS, NAMES)
+		return no_error
+	else
+		return net_problem
+	end
+end
+
+function GetInfo()
+	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
+	if HTTP.GET(MANGAINFO.URL) then
+		local x = TXQuery.Create(HTTP.Document)
+		
+		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//*[@id="page-mangas"]//*[@class="image"]/img/@src'))
+		MANGAINFO.Title     = x.XPathString('//h1')
+		MANGAINFO.Authors   = x.XPathString('//*[@class="texto-left"]/ul/li[starts-with(.,"História")]/substring-after(.,":")')
+		MANGAINFO.Artists   = x.XPathString('//*[@class="texto-left"]/ul/li[starts-with(.,"Ilustração")]/substring-after(.,":")')
+		MANGAINFO.Genres    = x.XPathString('string-join(//*[@class="generos"]/a,", ")')
+		MANGAINFO.Summary   = x.XPathString('//p[.="Sinopse"]/following-sibling::p')
+		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//*[@class="texto-left"]/ul/li[starts-with(.,"Status")]'), 'Em Publicação', '')
+		
+		local v, w, s
+		for _, v in ipairs(x.XPathI('//*[@id="volumes-capitulos"]//*[@class="texto"]')) do
+			s = x.XPathString('p[1]', v)
+			for _, w in ipairs(x.XPathI('p[2]//a', v)) do
+				MANGAINFO.ChapterLinks.Add(w.GetAttribute('href'))
+				MANGAINFO.ChapterNames.Add(s .. ' Capitulo ' .. w.ToString())
+			end
+		end
+		InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+		return no_error
+	else
+		return net_problem
+	end
+end
+
+function GetPageNumber()
+	local a, c = URL:match('/([^/]+)/capitulo/(%d+)')
+	if a and c then
+		if HTTP.GET(MODULE.RootURL .. '/capitulo.php?act=getImg&anime=' .. EncodeURLElement(a) .. '&capitulo=' .. c .. '&src=1&view=2') then
+			local x = TXQuery.Create(HTTP.Document)
+			local v, i = x.XPath('//*[@id="imgAvancadoVisualizacao"]/img')
+			for i = 1, v.Count do
+				TASK.PageLinks.Add(MaybeFillHost(MODULE.RootURL, v.Get(i).GetAttribute('src')))
+			end
+			return true
+		else
+			return false
+		end
+	end
+end
+
+function Init()
+	local m = NewWebsiteModule()
+	m.ID               = '6964c68b1d6846b2a2facae5fc56474e'
+	m.Name             = 'MangaOnlineBR'
+	m.RootURL          = 'http://mangaonline.com.br'
+	m.Category         = 'Portuguese'
+	m.OnGetNameAndLink = 'GetNameAndLink'
+	m.OnGetInfo        = 'GetInfo'
+	m.OnGetPageNumber  = 'GetPageNumber'
+end

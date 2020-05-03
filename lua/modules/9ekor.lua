@@ -98,7 +98,6 @@ function Init()
   m.RootURL                  = 'https://9ekor.com'
   m.Category                 = 'Indonesian'
   m.OnGetInfo                = 'GetInfo'
-  m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
   m.OnGetNameAndLink         = 'GetNameAndLink'
   m.OnGetPageNumber          = 'GetPageNumber'
 end

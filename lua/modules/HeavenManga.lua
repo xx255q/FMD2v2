@@ -128,5 +128,4 @@ function AddWebsiteModule(id, name, URL, cat)
   m.OnGetNameAndLink            = 'GetNameAndLink'
   m.OnGetPageNumber             = 'GetPageNumber'
   m.OnGetDirectoryPageNumber    = 'GetDirectoryPageNumber'
-  return m
 end

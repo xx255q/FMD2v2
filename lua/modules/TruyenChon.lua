@@ -64,17 +64,16 @@ function getdirectorypagenumber()
 end
 
 function AddWebsiteModule(id, name, url, category)
-  local m=NewWebsiteModule()
-  m.Category=category
-  m.ID = id
-  m.Name=name
-  m.RootURL=url
-  m.SortedList = true
-  m.OnGetInfo='getinfo'
-  m.OnGetPageNumber='getpagenumber'
-  m.OnGetNameAndLink='getnameandlink'
-  m.OnGetDirectoryPageNumber='getdirectorypagenumber'
-  return m
+  local m = NewWebsiteModule()
+  m.ID                       = id
+  m.Name                     = name
+  m.RootURL                  = url
+  m.Category                 = category
+  m.SortedList               = true
+  m.OnGetInfo                = 'getinfo'
+  m.OnGetPageNumber          = 'getpagenumber'
+  m.OnGetNameAndLink         = 'getnameandlink'
+  m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
 end
 
 function Init()

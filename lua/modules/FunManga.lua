@@ -65,7 +65,6 @@ function AddWebsiteModule(id, name, URL)
   m.OnGetPageNumber  = 'getpagenumber'
   m.OnGetNameAndLink = 'getnameandlink'
   m.TotalDirectory   = ALPHA_LIST:len()
-  return m
 end 
 
 function Init()

@@ -230,11 +230,10 @@ function AddWebsiteModule(id, name, url, category)
   m.Name                  = name
   m.RootURL               = url
   m.Category              = category
-  m.OnGetInfo             ='getinfo'
-  m.OnGetPageNumber       ='getpagenumber'
-  m.OnGetNameAndLink      ='getnameandlink'
+  m.OnGetInfo             = 'getinfo'
+  m.OnGetPageNumber       = 'getpagenumber'
+  m.OnGetNameAndLink      = 'getnameandlink'
   m.OnBeforeDownloadImage = 'BeforeDownloadImage'
-  return m
 end
 
 function Init()

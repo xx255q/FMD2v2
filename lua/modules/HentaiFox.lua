@@ -94,7 +94,6 @@ function AddWebsiteModule(id, name, URL)
   m.OnGetNameAndLink         = 'getnameandlink'
   m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
   m.OnGetImageURL            = 'getimageurl'
-  return m
 end
 
 function Init()

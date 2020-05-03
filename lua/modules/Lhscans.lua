@@ -82,7 +82,6 @@ function AddWebsiteModule(id, name, url, cat)
   m.OnGetPageNumber       = 'getpagenumber'
   m.OnGetNameAndLink      = 'getnameandlink'
   m.OnBeforeDownloadImage = 'BeforeDownloadImage'
-  return m
 end
 
 function Init()

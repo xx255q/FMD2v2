@@ -137,7 +137,6 @@ function getdirectorypagenumber()
   if HTTP.GET(AppendURLDelim(MODULE.RootURL) .. getdirurl(MODULE.Name)) then
     x = TXQuery.Create(HTTP.Document)
     PAGENUMBER = tonumber(ReplaceRegExpr('^.*\\/(\\d+)/.*$', x.XPathString('//ul[@class="pgg"]/li[last()]/a/@href'), '$1')) or 1
-    end
     return true
   else
     return false
@@ -178,7 +177,6 @@ function AddWebsiteModule(id, name, url, category)
   m.OnGetImageURL            = 'getimageurl'
   m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
   m.OnGetNameAndLink         = 'getnameandlink'
-  return m
 end
 
 function Init()
