@@ -16,7 +16,7 @@ function getinfo()
       for i = 1, v.Count do
         table.insert(t, tonumber(x.XPathString('Number', v.Get(i))))
       end
-      table.Sort(t)
+      table.sort(t)
       for _, k in ipairs(t) do
         local chid = x.XPathString('jn:members(result)[Number='..k..']/Identification', root)
         local chnum = x.XPathString('jn:members(result)[Number='..k..']/FriendlyChapterNumber', root)

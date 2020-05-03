@@ -1,7 +1,7 @@
 function Init()
-  AddWebsiteModule('8e7bd7b38aa041aa9bc1bddeec33b6f4', 'MangaHere', 'https://www.mangahere.cc', 'English')
-  
-  local m = AddWebsiteModule('0d3653a8d9b747a381374f32e0a1641e', 'FanFox', 'https://fanfox.net', 'English')
+  local cat = 'English'
+  AddWebsiteModule('8e7bd7b38aa041aa9bc1bddeec33b6f4', 'MangaHere', 'https://www.mangahere.cc', cat)  
+  local m = AddWebsiteModule('0d3653a8d9b747a381374f32e0a1641e', 'FanFox', 'https://fanfox.net', cat)
   m.OnAfterImageSaved = 'AfterImageSaved'
   m.AddOptionCheckBox('mf_removewatermark', 'Remove watermark', true)
   m.AddOptionCheckBox('mf_saveaspng', 'Save as PNG', false)

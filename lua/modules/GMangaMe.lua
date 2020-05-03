@@ -47,7 +47,7 @@ function getinfo()
           link = MaybeFillHost(MODULE.RootURL, pageurl .. '/' .. tostring(ch) .. '/' .. urlencode(team))
         }
       end
-      table.Sort(t)
+      table.sort(t)
       for _, k in ipairs(t) do
         MANGAINFO.ChapterLinks.Add(data[k].link)
         MANGAINFO.ChapterNames.Add(data[k].name)
