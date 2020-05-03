@@ -397,29 +397,25 @@ end;
 
 procedure TCustomOptionForm.CreateWebsiteOption;
 var
-  i, j: Integer;
+  m: TModuleContainer;
+  o: TWebsiteOptionItem;
   cap: String;
 begin
-  if Modules = nil then Exit;
   dparent.DestroyComponents;
-  if Modules.Count > 0 then
-    for i := 0 to Modules.Count - 1 do
-      with Modules.Module[i] do
-        if Length(OptionList) > 0 then
-          for j := Low(OptionList) to High(OptionList) do
-            with OptionList[j] do
-            begin
-              if Assigned(Caption) then
-                cap := Caption^
-              else
-                cap := '';
-              case OptionType of
-                woCheckBox: AddCheckbox(BindValue, Name, cap, Name, Name);
-                woEdit: AddEdit(BindValue, Name, cap, Name, Name);
-                woSpinEdit: AddSpinEdit(BindValue, Name, cap, Name, Name);
-                woComboBox: AddComboBox(BindValue, Name, cap, Name, Name, Items^);
-              end;
-            end;
+  for m in Modules.List do
+    for o in m.OptionList do
+    begin
+      if Assigned(o.Caption) then
+        cap := o.Caption^
+      else
+        cap := '';
+      case o.OptionType of
+        woCheckBox: AddCheckbox(o.BindValue, o.Name, cap, m.ID, m.Name);
+        woEdit: AddEdit(o.BindValue, o.Name, cap, m.ID, m.Name);
+        woSpinEdit: AddSpinEdit(o.BindValue, o.Name, cap, m.ID, m.Name);
+        woComboBox: AddComboBox(o.BindValue, o.Name, cap, m.ID, m.Name, o.Items^);
+      end;
+    end;
 end;
 
 end.

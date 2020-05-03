@@ -265,6 +265,7 @@ type
     procedure LockModules;
     procedure UnlockModules;
 
+    property List: TModuleContainers read FModuleList;
     property Module[const AModuleIndex: Integer]: TModuleContainer read GetModule; default;
     property Count: Integer read GetCount;
     property ID[const AModuleIndex: Integer]: String read GetID;
@@ -274,6 +275,7 @@ type
     property MaxConnectionLimit[const AModuleIndex: Integer]: Integer read GetMaxConnectionLimit;
     property ActiveTaskCount[const AModuleIndex: Integer]: Integer read GetActiveTaskCount;
     property ActiveConnectionCount[const AModuleIndex: Integer]: Integer read GetActiveConnectionLimit;
+
     procedure IncActiveTaskCount(AModuleIndex: Integer);
     procedure DecActiveTaskCount(AModuleIndex: Integer);
     function CanCreateTask(AModuleIndex: Integer): Boolean;
