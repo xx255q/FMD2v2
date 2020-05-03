@@ -910,7 +910,7 @@ const
     (name: 'AddOptionCheckBox'; func: @lua_addoptioncheckbox),
     (name: 'AddOptionEdit'; func: @lua_addoptionedit),
     (name: 'AddOptionSpinEdit'; func: @lua_addoptionspinedit),
-    (name: 'AddOptionCombobox'; func: @lua_addoptioncombobox),
+    (name: 'AddOptionComboBox'; func: @lua_addoptioncombobox),
     (name: 'ClearCookies'; func: @lua_clearcookies),
     (name: 'GetOption'; func: @lua_getoption),
     (name: nil; func: nil)
