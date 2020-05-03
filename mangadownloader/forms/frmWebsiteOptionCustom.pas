@@ -347,6 +347,7 @@ begin
       woSpinEdit:
       begin
         Result := TSpinEditBindValue.Create(downer);
+        Result.Width := ScaleFontTo96(60);
         SetControlProp(Result, compsibling, compparent, lcomp, lcompcaption);
         Result.Width := Result.Width + (Result.Width div 4);
         lb := TLabel.Create(downer);
