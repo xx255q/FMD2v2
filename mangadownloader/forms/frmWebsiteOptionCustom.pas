@@ -86,12 +86,12 @@ var
   WebsiteOptionCustomForm: TCustomOptionForm;
   downer: TComponent;
   dparent: TWinControl;
-  tbspace: Cardinal = 6;
-  lrspace: Cardinal = 6;
-  hspace: Cardinal = 4;
-  vspace: Cardinal = 4;
 
 const
+  tbspace = 4;
+  lrspace = 4;
+  hspace  = 4;
+  vspace  = 4;
   TWebsiteOptionItemTypeStr: array[TWebsiteOptionType] of String =
     ('ack', 'ae', 'ase', 'acb');
 
@@ -199,10 +199,10 @@ begin
   dparent := Self;
   with dparent.ChildSizing do
   begin
-    TopBottomSpacing := tbspace;
-    LeftRightSpacing := lrspace;
-    HorizontalSpacing := hspace;
-    VerticalSpacing := vspace;
+    TopBottomSpacing  := ScaleFontTo96(tbspace);
+    LeftRightSpacing  := ScaleFontTo96(lrspace);
+    HorizontalSpacing := ScaleFontTo96(hspace);
+    VerticalSpacing   := ScaleFontTo96(vspace);
   end;
 end;
 
@@ -220,14 +220,17 @@ var
   begin
     with AControl do
     begin
-      if AParent <> nil then
-        Parent := AParent;
       Name := AName;
       Caption := ACaption;
       AutoSize := True;
-      Top := AParent.ChildSizing.TopBottomSpacing;
-      AnchorParallel(akLeft, 0, AParent);
-      if ASibling <> nil then
+      if AParent <> nil then
+      begin
+        Parent := AParent;
+        Top := AParent.ChildSizing.TopBottomSpacing;
+        if AParent <> dparent then
+          AnchorParallel(akLeft, 0, AParent);
+      end;
+      if (ASibling <> nil) and (ASibling.ClassType <> TGroupBox) then
       begin
         Top := ASibling.Top + ASibling.Height;
         AnchorToNeighbour(akTop, 0, ASibling);
@@ -275,7 +278,11 @@ begin
           compparent := TGroupBox(Components[i]);
           with compparent do
             if ControlCount > 0 then
+            begin
               compsibling := TControl(Controls[ControlCount - 1]);
+              if (compsibling is TLabel) and (compsibling.AnchorSide[akLeft].Control is TSpinEdit) then
+                compsibling := compsibling.AnchorSide[akLeft].Control;
+            end;
         end;
       end;
 
@@ -295,15 +302,15 @@ begin
       if lgroup <> '' then
       begin
         compparent := TGroupBox.Create(downer);
-        SetControlProp(compparent, compparentsibling, dparent, lgroup, lgroupcaption);
         with compparent.ChildSizing do
         begin
-          TopBottomSpacing := dparent.ChildSizing.TopBottomSpacing;
-          LeftRightSpacing := dparent.ChildSizing.LeftRightSpacing;
+          TopBottomSpacing  := dparent.ChildSizing.TopBottomSpacing;
+          LeftRightSpacing  := dparent.ChildSizing.LeftRightSpacing;
           HorizontalSpacing := dparent.ChildSizing.HorizontalSpacing;
-          VerticalSpacing := dparent.ChildSizing.VerticalSpacing;
+          VerticalSpacing   := dparent.ChildSizing.VerticalSpacing;
         end;
         compparent.Align := alTop;
+        SetControlProp(compparent, compparentsibling, dparent, lgroup, lgroupcaption);
       end
       else
       begin
@@ -324,10 +331,10 @@ begin
         lb := TLabel.Create(downer);
         SetControlProp(lb, compsibling, compparent, lcomp + 'Lbl', lcompcaption);
         compsibling := lb;
-        case AOptionItemType of
-          woEdit    : Result := TEditBindValue.Create(downer);
-          woComboBox: Result := TComboBoxBindValue.Create(downer);
-        end;
+        if AOptionItemType = woEdit then
+          Result := TEditBindValue.Create(downer)
+        else
+          Result := TComboBoxBindValue.Create(downer);
         SetControlProp(Result, compsibling, compparent, lcomp, '');
         with Result do
         begin
