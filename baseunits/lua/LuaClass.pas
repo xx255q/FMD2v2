@@ -21,50 +21,50 @@ type
     MetaTable, UserData: Integer; AutoFree: Boolean = False);
   TLuaClassRegisterLib = procedure(L: Plua_State);
 
-procedure luaClassNewLib(L: Plua_State; n: PAnsiChar; lr: PluaL_Reg);
+procedure luaClassNewLib(const L: Plua_State; const n: PAnsiChar; const lr: PluaL_Reg);
 
-procedure luaClassRegisterAll(L: Plua_State);
+procedure luaClassRegisterAll(const L: Plua_State);
 
-procedure luaClassRegister(C: TClass; AddMetaTable: TluaClassAddMetaTable;
-  AddLib: TLuaClassRegisterLib = nil);
+procedure luaClassRegister(const C: TClass; const AddMetaTable: TluaClassAddMetaTable;
+  const AddLib: TLuaClassRegisterLib = nil);
 
-procedure luaClassNewUserData(L: Plua_State; var MetaTable, UserData: Integer;
-  Obj: Pointer; AutoFree: Boolean = False);
+procedure luaClassNewUserData(const L: Plua_State; var MetaTable, UserData: Integer;
+  const Obj: Pointer; const AutoFree: Boolean = False);
 
-function luaClassGetClosure(L: Plua_State): Pointer;
-function luaClassGetObject(L: Plua_State): Pointer; inline;
+function luaClassGetClosure(const L: Plua_State): Pointer;
+function luaClassGetObject(const L: Plua_State): Pointer; inline;
 
-procedure luaClassPushUserData(L: Plua_State; Obj: Pointer; Name: String;
-  AutoFree: Boolean; AddMetaTable: TluaClassAddMetaTable);
-procedure luaClassPushObject(L: Plua_State; Obj: TObject; Name: String;
-  AutoFree: Boolean = False; AddMetaTable: TluaClassAddMetaTable = nil);
+procedure luaClassPushUserData(const L: Plua_State; const Obj: Pointer; const Name: String;
+  const AutoFree: Boolean; const AddMetaTable: TluaClassAddMetaTable);
+procedure luaClassPushObject(const L: Plua_State; const Obj: TObject; const Name: String;
+  const AutoFree: Boolean = False; const AddMetaTable: TluaClassAddMetaTable = nil);
 
-procedure luaClassAddFunction(L: Plua_State; MetaTable, UserData: Integer;
-  Name: PAnsiChar; Func: lua_CFunction); overload; inline;
-procedure luaClassAddFunction(L: Plua_State; MetaTable, UserData: Integer;
-  FuncArr: PluaL_Reg); overload;
-procedure luaClassAddProperty(L: Plua_State; MetaTable, UserData: Integer;
-  Name: PAnsiChar; FuncGet, FuncSet: lua_CFunction); overload;
-procedure luaClassAddProperty(L: Plua_State; MetaTable, UserData: Integer;
-  FuncArr: PluaL_Reg_prop); overload;
-procedure luaClassAddArrayProperty(L: Plua_State; MetaTable, UserData: Integer;
-  Name: PAnsiChar; FuncGet, FuncSet: lua_CFunction); overload;
-procedure luaClassAddArrayProperty(L: Plua_State; MetaTable, UserData: Integer;
-  FuncArr: PluaL_Reg_prop); overload;
-procedure luaClassAddDefaultArrayProperty(L: Plua_State; MetaTable, UserData: Integer;
-  FuncGet, FuncSet: lua_CFunction); overload;
-procedure luaClassAddDefaultArrayProperty(L: Plua_State; MetaTable, UserData: Integer;
-  FuncArr: PluaL_Reg_prop); overload; inline;
-procedure luaClassAddStringProperty(L: Plua_State; MetaTable: Integer;
-  Name: PAnsiChar; P: Pointer); overload;
-procedure luaClassAddIntegerProperty(L: Plua_State; MetaTable: Integer;
-  Name: PAnsiChar; P: Pointer); overload;
-procedure luaClassAddBooleanProperty(L: Plua_State; MetaTable: Integer;
-  Name: PAnsiChar; P: Pointer); overload;
-procedure luaClassAddObject(L: Plua_State; MetaTable: Integer; Obj: TObject;
-  Name: PAnsiChar; AddMetaTable: TluaClassAddMetaTable = nil);
-procedure luaClassAddUserData(L: Plua_State; MetaTable: Integer; Obj: TObject;
-  Name: PAnsiChar);
+procedure luaClassAddFunction(const L: Plua_State; const MetaTable, UserData: Integer;
+  const Name: PAnsiChar; const Func: lua_CFunction); overload; inline;
+procedure luaClassAddFunction(const L: Plua_State; const MetaTable, UserData: Integer;
+  const FuncArr: PluaL_Reg); overload;
+procedure luaClassAddProperty(const L: Plua_State; const MetaTable, UserData: Integer;
+  const Name: PAnsiChar; const FuncGet, FuncSet: lua_CFunction); overload;
+procedure luaClassAddProperty(const L: Plua_State; const MetaTable, UserData: Integer;
+  const FuncArr: PluaL_Reg_prop); overload;
+procedure luaClassAddArrayProperty(const L: Plua_State; const MetaTable, UserData: Integer;
+  const Name: PAnsiChar; const FuncGet, FuncSet: lua_CFunction); overload;
+procedure luaClassAddArrayProperty(const L: Plua_State; const MetaTable, UserData: Integer;
+  const FuncArr: PluaL_Reg_prop); overload;
+procedure luaClassAddDefaultArrayProperty(const L: Plua_State; const MetaTable, UserData: Integer;
+  const FuncGet, FuncSet: lua_CFunction); overload;
+procedure luaClassAddDefaultArrayProperty(const L: Plua_State; const MetaTable, UserData: Integer;
+  const FuncArr: PluaL_Reg_prop); overload; inline;
+procedure luaClassAddStringProperty(const L: Plua_State; const MetaTable: Integer;
+  const Name: PAnsiChar; const P: Pointer); overload;
+procedure luaClassAddIntegerProperty(const L: Plua_State; const MetaTable: Integer;
+  const Name: PAnsiChar; const P: Pointer); overload;
+procedure luaClassAddBooleanProperty(const L: Plua_State; const MetaTable: Integer;
+  const Name: PAnsiChar; const P: Pointer); overload;
+procedure luaClassAddObject(const L: Plua_State; const MetaTable: Integer; Obj: TObject;
+  const Name: PAnsiChar; const AddMetaTable: TluaClassAddMetaTable = nil);
+procedure luaClassAddUserData(const L: Plua_State; const MetaTable: Integer; const Obj: TObject;
+  const Name: PAnsiChar);
 
 implementation
 
@@ -242,27 +242,30 @@ begin
     Result[1] := AnsiUpperCase(Result[1])[1];
 end;
 
-procedure luaClassNewLib(L: Plua_State; n: PAnsiChar; lr: PluaL_Reg);
+procedure luaClassNewLib(const L: Plua_State; const n: PAnsiChar;
+  const lr: PluaL_Reg);
 var
   t: Integer;
+  p: PluaL_Reg;
 begin
   lua_newtable(L);
   t := lua_gettop(L);
-  while lr^.name <> nil do
+  p := lr;
+  while p^.name <> nil do
   begin
     {$ifdef luaclass_caseinsensitive}
-    luaAddCFunctionToTable(L, t, PAnsiChar(LowerCase(lr^.name)), lr^.func);
-    luaAddCFunctionToTable(L, t, PAnsiChar(firstUpcase(lr^.name)), lr^.func);
+    luaAddCFunctionToTable(L, t, PAnsiChar(LowerCase(p^.name)), p^.func);
+    luaAddCFunctionToTable(L, t, PAnsiChar(firstUpcase(p^.name)), p^.func);
     {$else}
-    luaAddCFunctionToTable(L, t, lr^.name, lr^.func);
+    luaAddCFunctionToTable(L, t, p^.name, p^.func);
     {$endif}
-    Inc(lr);
+    Inc(p);
   end;
   if n <> '' then
     lua_setglobal(L, n);
 end;
 
-procedure luaClassRegisterAll(L: Plua_State);
+procedure luaClassRegisterAll(const L: Plua_State);
 var
   i: Integer;
 begin
@@ -271,14 +274,15 @@ begin
       TLuaClassRegisterLib(classlist.Libs[i])(L);
 end;
 
-procedure luaClassRegister(C: TClass; AddMetaTable: TluaClassAddMetaTable;
-  AddLib: TLuaClassRegisterLib);
+procedure luaClassRegister(const C: TClass;
+  const AddMetaTable: TluaClassAddMetaTable; const AddLib: TLuaClassRegisterLib
+  );
 begin
   classlist.Add(C, AddMetaTable, AddLib);
 end;
 
-procedure luaClassNewUserData(L: Plua_State; var MetaTable, UserData: Integer;
-  Obj: Pointer; AutoFree: Boolean);
+procedure luaClassNewUserData(const L: Plua_State; var MetaTable,
+  UserData: Integer; const Obj: Pointer; const AutoFree: Boolean);
 begin
   luaPushUserData(L, Obj, UserData);
   lua_newtable(L);
@@ -290,7 +294,7 @@ begin
   luaAddBooleanToTable(L, MetaTable, '__autodestroy', AutoFree);
 end;
 
-function luaClassGetClosure(L: Plua_State): Pointer;
+function luaClassGetClosure(const L: Plua_State): Pointer;
 begin
   Result := nil;
   if lua_isuserdata(L, lua_upvalueindex(1)) then
@@ -304,13 +308,14 @@ begin
     end;
 end;
 
-function luaClassGetObject(L: Plua_State): Pointer;
+function luaClassGetObject(const L: Plua_State): Pointer;
 begin
   Result := PPointer(luaClassGetClosure(L))^;
 end;
 
-procedure luaClassPushUserData(L: Plua_State; Obj: Pointer; Name: String;
-  AutoFree: Boolean; AddMetaTable: TluaClassAddMetaTable);
+procedure luaClassPushUserData(const L: Plua_State; const Obj: Pointer;
+  const Name: String; const AutoFree: Boolean;
+  const AddMetaTable: TluaClassAddMetaTable);
 var
   m, u: Integer;
 begin
@@ -324,20 +329,21 @@ begin
     lua_setglobal(L, PAnsiChar(Name));
 end;
 
-procedure luaClassPushObject(L: Plua_State; Obj: TObject; Name: String;
-  AutoFree: Boolean; AddMetaTable: TluaClassAddMetaTable);
+procedure luaClassPushObject(const L: Plua_State; const Obj: TObject;
+  const Name: String; const AutoFree: Boolean;
+  const AddMetaTable: TluaClassAddMetaTable);
+var
+  a: TluaClassAddMetaTable;
 begin
-  if Obj = nil then
-    Exit;
-  if AddMetaTable = nil then
-    AddMetaTable := classlist.FindAddMetaTable(Obj.ClassType);
-  if AddMetaTable = nil then
-    Exit;
-  luaClassPushUserData(L, Obj, Name, AutoFree, AddMetaTable);
+  if Obj = nil then Exit;
+  if AddMetaTable <> nil then a  := AddMetaTable
+  else a := classlist.FindAddMetaTable(Obj.ClassType);
+  if a = nil then Exit;
+  luaClassPushUserData(L, Obj, Name, AutoFree, a);
 end;
 
-procedure luaClassAddFunction(L: Plua_State; MetaTable, UserData: Integer;
-  Name: PAnsiChar; Func: lua_CFunction);
+procedure luaClassAddFunction(const L: Plua_State; const MetaTable,
+  UserData: Integer; const Name: PAnsiChar; const Func: lua_CFunction);
 begin
   {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   {$ifdef luaclass_caseinsensitive}
@@ -347,8 +353,8 @@ begin
   {$endif}
 end;
 
-procedure luaClassAddFunction(L: Plua_State; MetaTable, UserData: Integer;
-  FuncArr: PluaL_Reg);
+procedure luaClassAddFunction(const L: Plua_State; const MetaTable,
+  UserData: Integer; const FuncArr: PluaL_Reg);
 var
   p: PluaL_Reg;
 begin
@@ -360,8 +366,9 @@ begin
   end;
 end;
 
-procedure luaClassAddProperty(L: Plua_State; MetaTable, UserData: Integer;
-  Name: PAnsiChar; FuncGet, FuncSet: lua_CFunction);
+procedure luaClassAddProperty(const L: Plua_State; const MetaTable,
+  UserData: Integer; const Name: PAnsiChar; const FuncGet,
+  FuncSet: lua_CFunction);
 var
   t: Integer;
 begin
@@ -381,8 +388,8 @@ begin
   lua_rawset(L, MetaTable);
 end;
 
-procedure luaClassAddProperty(L: Plua_State; MetaTable, UserData: Integer;
-  FuncArr: PluaL_Reg_prop);
+procedure luaClassAddProperty(const L: Plua_State; const MetaTable,
+  UserData: Integer; const FuncArr: PluaL_Reg_prop);
 var
   p: PluaL_Reg_prop;
 begin
@@ -394,8 +401,9 @@ begin
   end;
 end;
 
-procedure luaClassAddArrayProperty(L: Plua_State; MetaTable, UserData: Integer;
-  Name: PAnsiChar; FuncGet, FuncSet: lua_CFunction);
+procedure luaClassAddArrayProperty(const L: Plua_State; const MetaTable,
+  UserData: Integer; const Name: PAnsiChar; const FuncGet,
+  FuncSet: lua_CFunction);
 var
   t, m: Integer;
 begin
@@ -430,8 +438,8 @@ begin
   lua_rawset(L, MetaTable);
 end;
 
-procedure luaClassAddArrayProperty(L: Plua_State; MetaTable, UserData: Integer;
-  FuncArr: PluaL_Reg_prop);
+procedure luaClassAddArrayProperty(const L: Plua_State; const MetaTable,
+  UserData: Integer; const FuncArr: PluaL_Reg_prop);
 var
   p: PluaL_Reg_prop;
 begin
@@ -443,8 +451,8 @@ begin
   end;
 end;
 
-procedure luaClassAddDefaultArrayProperty(L: Plua_State; MetaTable, UserData: Integer;
-  FuncGet, FuncSet: lua_CFunction);
+procedure luaClassAddDefaultArrayProperty(const L: Plua_State; const MetaTable,
+  UserData: Integer; const FuncGet, FuncSet: lua_CFunction);
 begin
   if FuncGet <> nil then
     luaAddCClosureToTable(L, MetaTable, UserData, '__defaultget', FuncGet);
@@ -452,8 +460,8 @@ begin
     luaAddCClosureToTable(L, MetaTable, UserData, '__defaultset', FuncSet);
 end;
 
-procedure luaClassAddDefaultArrayProperty(L: Plua_State; MetaTable, UserData: Integer;
-  FuncArr: PluaL_Reg_prop);
+procedure luaClassAddDefaultArrayProperty(const L: Plua_State; const MetaTable,
+  UserData: Integer; const FuncArr: PluaL_Reg_prop);
 begin
   luaClassAddDefaultArrayProperty(L, MetaTable, UserData, FuncArr^.funcget,
     FuncArr^.funcset);
@@ -515,47 +523,48 @@ begin
   lua_rawset(L, MetaTable);
 end;
 
-procedure luaClassAddStringProperty(L: Plua_State; MetaTable: Integer;
-  Name: PAnsiChar; P: Pointer);
+procedure luaClassAddStringProperty(const L: Plua_State;
+  const MetaTable: Integer; const Name: PAnsiChar; const P: Pointer);
 begin
   luaClassAddVariable(L, MetaTable, Name, P, @luaclass_string_get, @luaclass_string_set);
 end;
 
-procedure luaClassAddIntegerProperty(L: Plua_State; MetaTable: Integer;
-  Name: PAnsiChar; P: Pointer);
+procedure luaClassAddIntegerProperty(const L: Plua_State;
+  const MetaTable: Integer; const Name: PAnsiChar; const P: Pointer);
 begin
   luaClassAddVariable(L, MetaTable, Name, P, @luaclass_int_get, @luaclass_int_set);
 end;
 
-procedure luaClassAddBooleanProperty(L: Plua_State; MetaTable: Integer;
-  Name: PAnsiChar; P: Pointer);
+procedure luaClassAddBooleanProperty(const L: Plua_State;
+  const MetaTable: Integer; const Name: PAnsiChar; const P: Pointer);
 begin
   luaClassAddVariable(L, MetaTable, Name, P, @luaclass_bool_get, @luaclass_bool_set);
 end;
 
-procedure luaClassAddObject(L: Plua_State; MetaTable: Integer; Obj: TObject;
-  Name: PAnsiChar; AddMetaTable: TluaClassAddMetaTable);
+procedure luaClassAddObject(const L: Plua_State; const MetaTable: Integer;
+  Obj: TObject; const Name: PAnsiChar; const AddMetaTable: TluaClassAddMetaTable
+  );
 var
   m, u: Integer;
+  a: TluaClassAddMetaTable;
 begin
   {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
-  if AddMetaTable = nil then
-    AddMetaTable := classlist.FindAddMetaTable(Obj.ClassType);
-  if AddMetaTable = nil then
-    Exit;
+  if AddMetaTable <> nil then a := AddMetaTable
+  else a := classlist.FindAddMetaTable(Obj.ClassType);
+  if a = nil then Exit;
   {$ifdef luaclass_caseinsensitive}
   lua_pushstring(L, PAnsiChar(AnsiLowerCase(Name)));
   {$else}
   lua_pushstring(L, Name);
   {$endif}
   luaClassNewUserData(L, m, u, Obj, False);
-  AddMetaTable(L, Obj, m, u);
+  a(L, Obj, m, u);
   lua_setmetatable(L, u);
   lua_rawset(L, MetaTable);
 end;
 
-procedure luaClassAddUserData(L: Plua_State; MetaTable: Integer; Obj: TObject;
-  Name: PAnsiChar);
+procedure luaClassAddUserData(const L: Plua_State; const MetaTable: Integer;
+  const Obj: TObject; const Name: PAnsiChar);
 begin
   {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   {$ifdef luaclass_caseinsensitive}
