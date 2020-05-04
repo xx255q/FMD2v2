@@ -7,22 +7,23 @@ interface
 uses
   Classes, SysUtils, Lua53, LuaClass;
 
-procedure LuaBaseRegister(L: Plua_State);
-procedure LuaBaseRegisterPrint(L: Plua_State); inline;
-procedure luaPushObject(L: Plua_State; Obj: TObject; Name: String;
+procedure LuaBaseRegister(const L: Plua_State);
+procedure LuaBaseRegisterPrint(const L: Plua_State); inline;
+procedure LuaBaseRegisterSleep(const L: Plua_State); inline;
+procedure luaPushObject(const L: Plua_State; const AObj: TObject; const AName: String;
   AddMetaTable: TluaClassAddMetaTable = nil; AutoFree: Boolean = False); inline;
 
-function LuaDoFile(AFilename: String; AFuncName: String = ''): Plua_State;
+function LuaDoFile(const AFileName: String; const AFuncName: String = ''): Plua_State;
 function LuaNewBaseState: Plua_State;
-procedure LuaCallFunction(L: Plua_State; AFuncName: String);
+procedure LuaCallFunction(const L: Plua_State; const AFuncName: String);
 function LuaGetReturnString(const ReturnCode: Integer): String;
 
-function LuaDumpFileToStream(AFileName: String; AStripDebug: Boolean = False): TMemoryStream; overload;
-function LuaDumpFileToStream(L: Plua_State; AFileName: String;
-  AStripDebug: Boolean = True): TMemoryStream; overload;
-function LuaLoadFromStream(L: Plua_State; AStream: TMemoryStream; AName: PAnsiChar): Integer; inline;
+function LuaDumpFileToStream(const AFileName: String; const AStripDebug: Boolean = False): TMemoryStream; overload;
+function LuaDumpFileToStream(const L: Plua_State; const AFileName: String;
+  const AStripDebug: Boolean = True): TMemoryStream; overload;
+function LuaLoadFromStream(const L: Plua_State; const AStream: TMemoryStream; const AName: PAnsiChar): Integer; inline;
 
-procedure LuaExecute(L: Plua_State; AStream: TMemoryStream; AFileName: String; NResult: Integer = 0);
+procedure LuaExecute(const L: Plua_State; const AStream: TMemoryStream; const AFileName: String; const NResult: Integer = 0);
 
 var
   AlwaysLoadLuaFromFile: Boolean = {$ifdef DEVBUILD}True{$else}False{$endif};
@@ -54,7 +55,7 @@ begin
   Sleep(lua_tointeger(L, 1));
 end;
 
-procedure LuaBaseRegister(L: Plua_State);
+procedure LuaBaseRegister(const L: Plua_State);
 begin
   lua_register(L, 'print', @luabase_print);
   lua_register(L, 'Sleep', @luabase_sleep);
@@ -73,27 +74,33 @@ begin
   luaClassRegisterAll(L);
 end;
 
-procedure LuaBaseRegisterPrint(L: Plua_State);
+procedure LuaBaseRegisterPrint(const L: Plua_State);
 begin
   lua_register(L, 'print', @luabase_print);
 end;
 
-procedure luaPushObject(L: Plua_State; Obj: TObject; Name: String;
-  AddMetaTable: TluaClassAddMetaTable; AutoFree: Boolean);
+procedure LuaBaseRegisterSleep(const L: Plua_State);
 begin
-  luaClassPushObject(L, Obj, Name, AutoFree, AddMetaTable);
+  lua_register(L, 'Sleep', @luabase_sleep);
 end;
 
-function LuaDoFile(AFilename: String; AFuncName: String): Plua_State;
+procedure luaPushObject(const L: Plua_State; const AObj: TObject;
+  const AName: String; AddMetaTable: TluaClassAddMetaTable; AutoFree: Boolean);
+begin
+  luaClassPushObject(L, AObj, AName, AutoFree, AddMetaTable);
+end;
+
+function LuaDoFile(const AFileName: String; const AFuncName: String
+  ): Plua_State;
 begin
   Result := nil;
-  if not FileExists(AFilename) then
+  if not FileExists(AFileName) then
     Exit;
   Result := luaL_newstate;
   try
     luaL_openlibs(Result);
     LuaBaseRegister(Result);
-    if luaL_dofile(Result, PChar(AFilename)) <> 0 then
+    if luaL_dofile(Result, PAnsiChar(AFileName)) <> 0 then
       raise Exception.Create('');
     LuaCallFunction(Result, AFuncName);
   except
@@ -113,11 +120,11 @@ begin
   end;
 end;
 
-procedure LuaCallFunction(L: Plua_State; AFuncName: String);
+procedure LuaCallFunction(const L: Plua_State; const AFuncName: String);
 var
   r: Integer;
 begin
-  if lua_getglobal(L, PChar(AFuncName)) = 0 then
+  if lua_getglobal(L, PAnsiChar(AFuncName)) = 0 then
     raise Exception.Create('No function name ' + QuotedStr(AFuncName));
   r := lua_pcall(L, 0, LUA_MULTRET, 0);
   if r <> 0 then
@@ -148,7 +155,7 @@ begin
     Result := 0;
 end;
 
-function LuaDumpFileToStream(AFileName: String; AStripDebug: Boolean
+function LuaDumpFileToStream(const AFileName: String; const AStripDebug: Boolean
   ): TMemoryStream;
 var
   L: Plua_State;
@@ -168,8 +175,8 @@ begin
   end;
 end;
 
-function LuaDumpFileToStream(L: Plua_State; AFileName: String;
-  AStripDebug: Boolean): TMemoryStream;
+function LuaDumpFileToStream(const L: Plua_State; const AFileName: String;
+  const AStripDebug: Boolean): TMemoryStream;
 var
   strip: Integer;
 begin
@@ -206,20 +213,21 @@ begin
   sz^ := m.Size;
 end;
 
-function LuaLoadFromStream(L: Plua_State; AStream: TMemoryStream; AName: PAnsiChar): Integer;
+function LuaLoadFromStream(const L: Plua_State; const AStream: TMemoryStream;
+  const AName: PAnsiChar): Integer;
 begin
   Result := lua_load(L, @_luareader, AStream, AName, 'b');
 end;
 
-procedure LuaExecute(L: Plua_State; AStream: TMemoryStream; AFileName: String;
-  NResult: Integer);
+procedure LuaExecute(const L: Plua_State; const AStream: TMemoryStream;
+  const AFileName: String; const NResult: Integer);
 var
   r: Integer;
 begin
   if AlwaysLoadLuaFromFile then
     r := luaL_loadfilex(L, PAnsiChar(AFileName), nil)
   else
-    r := LuaLoadFromStream(L, AStream, PChar(AFileName));
+    r := LuaLoadFromStream(L, AStream, PAnsiChar(AFileName));
   if r = 0 then
     r := lua_pcall(L, 0, NResult, 0);
   if r <> 0 then
