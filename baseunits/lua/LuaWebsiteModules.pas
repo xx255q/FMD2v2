@@ -489,11 +489,20 @@ begin
     if AStream <> nil then
     begin
       i := lua_pcall(L, 0, 0, 0);
-      if i <> 0 then
+      if i = 0 then
+      begin
+        if lua_getglobal(L, PAnsiChar('Init')) <> 0 then
+        begin
+          luaWebsiteModulesExtrasRegisterInit(L);
+          i := lua_pcall(L, 0, 0, 0);
+          if i = 0 then
+            Result := True
+          else
+            raise Exception.Create(LuaGetReturnString(i));
+        end;
+      end
+      else
         raise Exception.Create(LuaGetReturnString(i));
-      luaWebsiteModulesExtrasRegisterInit(L);
-      LuaCallFunction(L, 'Init');
-      Result := True;
     end;
   except
     on E: Exception do
