@@ -2134,11 +2134,11 @@ begin
         if ThreadState then
           Task.WaitFor;
         if (Sender = miDownloadDeleteTaskData) or (Sender = miDownloadDeleteTaskDataFavorite)
-          and (ChapterName.Count > 0) then
+          and (ChapterNames.Count > 0) then
         begin
           d := CorrectPathSys(DownloadInfo.SaveTo);
-          for i := 0 to ChapterName.Count - 1 do begin
-            f := CorrectPathSys(d + ChapterName[i]);
+          for i := 0 to ChapterNames.Count - 1 do begin
+            f := CorrectPathSys(d + ChapterNames[i]);
             if DirectoryExistsUTF8(f) then
               DeleteDirectory(f, False);
             f := RemovePathDelim(f);
@@ -2201,7 +2201,7 @@ begin
           SameText(ic.DownloadInfo.saveTo,jc.DownloadInfo.saveTo) then
         begin
           ic.ChapterLinks.Text:=jc.ChapterLinks.Text+ic.ChapterLinks.Text;
-          ic.ChapterName.Text:=jc.ChapterName.Text+ic.ChapterName.Text;
+          ic.ChapterNames.Text:=jc.ChapterNames.Text+ic.ChapterNames.Text;
           ic.DownloadInfo.DateAdded:=jc.DownloadInfo.DateAdded;
           DLManager.RemoveTask(j);
           Dec(i);
@@ -2470,7 +2470,7 @@ begin
           for j:=1 to l do
           begin
             ChapterLinks.Add(links[k]);
-            ChapterName.Add(names[k]);
+            ChapterNames.Add(names[k]);
             Inc(k);
           end;
           if cbAddAsStopped.Checked then
@@ -3570,7 +3570,7 @@ procedure TMainForm.miDownloadOpenWithClick(Sender: TObject);
 begin
   if Assigned(vtDownload.FocusedNode) then
     with DLManager.Items[vtDownload.FocusedNode^.Index] do
-      OpenWithExternalProgramChapters(DownloadInfo.SaveTo, ChapterName);
+      OpenWithExternalProgramChapters(DownloadInfo.SaveTo, ChapterNames);
 end;
 
 procedure TMainForm.miTrayExitClick(Sender: TObject);
@@ -4115,18 +4115,18 @@ begin
              if l<5 then
                for i:=0 to l-1 do begin
                  if HintText<>'' then HintText+=LineEnding;
-                 HintText+=ChapterName.Strings[i]
+                 HintText+=ChapterNames.Strings[i]
                end
              else
              begin
                for i:=0 to 1 do begin
                  if HintText<>'' then HintText+=LineEnding;
-                 HintText+=ChapterName.Strings[i]
+                 HintText+=ChapterNames.Strings[i]
                end;
                HintText+=LineEnding+'...';
                for i:=l-2 to l-1 do begin
                  if HintText<>'' then HintText+=LineEnding;
-                 HintText+=ChapterName.Strings[i]
+                 HintText+=ChapterNames.Strings[i]
                end;
              end;
            end;

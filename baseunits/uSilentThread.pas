@@ -349,7 +349,7 @@ begin
                           Format('%.4d', [i + 1]),
                           OptionChangeUnicodeCharacter,
                           OptionChangeUnicodeCharacterStr);
-        d.chapterName.Add(s);
+        d.ChapterNames.Add(s);
         d.chapterLinks.Add(
           Info.MangaInfo.ChapterLinks.Strings[i]);
       end;

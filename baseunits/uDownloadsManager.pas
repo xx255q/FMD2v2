@@ -143,7 +143,7 @@ type
     PageNumber: Integer;
     //Status: TDownloadStatusType;
     ThreadState: Boolean;
-    ChapterName,
+    ChapterNames,
     ChapterLinks,
     ChaptersStatus,
     PageContainerLinks,
@@ -514,7 +514,7 @@ begin
       uPacker.CompressionQuality := OptionPDFQuality;
       uPacker.Path := CurrentWorkingDir;
       uPacker.FileName := RemovePathDelim(CorrectPathSys(CorrectPathSys(Container.DownloadInfo.SaveTo) +
-        Container.ChapterName[Container.CurrentDownloadChapterPtr]));
+        Container.ChapterNames[Container.CurrentDownloadChapterPtr]));
       for i := 0 to Container.PageLinks.Count - 1 do
       begin
         s := FindImageFile(uPacker.Path + GetFileName(i));
@@ -577,7 +577,7 @@ begin
     '  Website     : ' + Container.DownloadInfo.ModuleID + LineEnding +
     '  Title       : ' + Container.DownloadInfo.title + LineEnding +
     '  Chapterlink : ' + Container.ChapterLinks[Container.CurrentDownloadChapterPtr] + LineEnding +
-    '  Chaptername : ' + Container.ChapterName[Container.CurrentDownloadChapterPtr] + LineEnding;
+    '  Chaptername : ' + Container.ChapterNames[Container.CurrentDownloadChapterPtr] + LineEnding;
 end;
 
 function TDownloadThread.DownloadImage: Boolean;
@@ -859,7 +859,7 @@ begin
       //check path
       if OptionGenerateChapterFolder then
         CurrentWorkingDir := CorrectPathSys(Container.DownloadInfo.SaveTo) +
-          Container.ChapterName[Container.CurrentDownloadChapterPtr]
+          Container.ChapterNames[Container.CurrentDownloadChapterPtr]
       else
         CurrentWorkingDir := Container.DownloadInfo.SaveTo;
       if not ForceDirectoriesUTF8(CurrentWorkingDir) then
@@ -878,7 +878,7 @@ begin
         Container.DownloadInfo.Title,
         '',
         '',
-        Container.ChapterName[Container.CurrentDownloadChapterPtr],
+        Container.ChapterNames[Container.CurrentDownloadChapterPtr],
         '',
         OptionChangeUnicodeCharacter,
         OptionChangeUnicodeCharacterStr,
@@ -898,7 +898,7 @@ begin
           [Container.CurrentDownloadChapterPtr + 1,
           Container.ChapterLinks.Count,
           RS_Preparing,
-          Container.ChapterName[Container.CurrentDownloadChapterPtr]]);
+          Container.ChapterNames[Container.CurrentDownloadChapterPtr]]);
         Container.Status := STATUS_PREPARE;
         CheckOut;
         WaitForThreads;
@@ -944,7 +944,7 @@ begin
           [Container.CurrentDownloadChapterPtr + 1,
           Container.ChapterLinks.Count,
           RS_Preparing,
-          Container.ChapterName[Container.CurrentDownloadChapterPtr]]);
+          Container.ChapterNames[Container.CurrentDownloadChapterPtr]]);
         Container.Status := STATUS_PREPARE;
         while Container.WorkCounter < Container.PageNumber do
         begin
@@ -985,7 +985,7 @@ begin
           [Container.CurrentDownloadChapterPtr + 1,
           Container.ChapterLinks.Count,
           RS_Downloading,
-          Container.ChapterName[Container.CurrentDownloadChapterPtr]]);
+          Container.ChapterNames[Container.CurrentDownloadChapterPtr]]);
         while Container.WorkCounter < Container.PageLinks.Count do
         begin
           if Terminated then Exit;
@@ -1009,7 +1009,7 @@ begin
           Logger.SendWarningStrings(Format('%s, download failed. "%s" "%s" "%s"',
             [Self.ClassName,
              Container.DownloadInfo.Title,
-             Container.ChapterName[Container.CurrentDownloadChapterPtr],
+             Container.ChapterNames[Container.CurrentDownloadChapterPtr],
              Container.ChapterLinks[Container.CurrentDownloadChapterPtr]
             ]), Container.PageLinks.Text);
         end;
@@ -1020,7 +1020,7 @@ begin
         Logger.SendWarning(Format('%s, pagelinks is empty. "%s" "%s" "%s"',
           [Self.ClassName,
            Container.DownloadInfo.Title,
-           Container.ChapterName[Container.CurrentDownloadChapterPtr],
+           Container.ChapterNames[Container.CurrentDownloadChapterPtr],
            Container.ChapterLinks[Container.CurrentDownloadChapterPtr]
           ]));
       end;
@@ -1107,7 +1107,7 @@ begin
   InitCriticalSection(CS_Container);
   ThreadState := False;
   ChapterLinks := TStringList.Create;
-  ChapterName := TStringList.Create;
+  ChapterNames := TStringList.Create;
   ChaptersStatus := TStringList.Create;
   PageLinks := TStringList.Create;
   PageContainerLinks := TStringList.Create;
@@ -1127,7 +1127,7 @@ begin
   FileNames.Free;
   PageContainerLinks.Free;
   PageLinks.Free;
-  ChapterName.Free;
+  ChapterNames.Free;
   ChapterLinks.Free;
   ChaptersStatus.Free;
   DoneCriticalsection(CS_Container);
@@ -1169,7 +1169,7 @@ begin
     DownloadInfo.SaveTo,
     DownloadInfo.DateAdded,
     ChapterLinks.Text,
-    ChapterName.Text,
+    ChapterNames.Text,
     PageLinks.Text,
     PageContainerLinks.Text,
     FileNames.Text,
@@ -1358,7 +1358,7 @@ begin
             DownloadInfo.DateAdded          := Fields[f_dateadded].AsDateTime;
             DownloadInfo.DateLastDownloaded   := Fields[f_datelastdownloaded].AsDateTime;
             ChapterLinks.Text               := Fields[f_chapterslinks].AsString;
-            ChapterName.Text                := Fields[f_chaptersnames].AsString;
+            ChapterNames.Text                := Fields[f_chaptersnames].AsString;
             PageLinks.Text                  := Fields[f_pagelinks].AsString;
             PageContainerLinks.Text         := Fields[f_pagecontainerlinks].AsString;
             FileNames.Text                  := Fields[f_filenames].AsString;
@@ -1408,7 +1408,7 @@ begin
             DownloadInfo.SaveTo,
             DownloadInfo.DateLastDownloaded,
             ChapterLinks.Text,
-            ChapterName.Text,
+            ChapterNames.Text,
             PageLinks.Text,
             PageContainerLinks.Text,
             FileNames.Text,

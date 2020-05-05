@@ -907,7 +907,7 @@ begin
                     for j := 0 to NewMangaInfoChaptersPos.Count - 1 do
                     begin
                       ChapterLinks.Add(NewMangaInfo.ChapterLinks[NewMangaInfoChaptersPos[j]]);
-                      ChapterName.Add(CustomRename(
+                      ChapterNames.Add(CustomRename(
                         OptionChapterCustomRename,
                         FavoriteInfo.Website,
                         FavoriteInfo.Title,
