@@ -45,7 +45,7 @@ function GetInfo()
 end
 
 function GetPageNumber()
-	if HTTP.GET(AppendURLDelim(MaybeFillHost(Module.RootURL, AURL))) then
+	if HTTP.GET(AppendURLDelim(MaybeFillHost(Module.RootURL, URL))) then
 		local key = HTTP.Document.ToString():match('.-key:%s*.-["\'](.-)["\']')
 		if (key ~= nil) or (key ~= '') then
 			key = MODULE.RootURL .. '/assets/episodes/' .. key .. '/'
