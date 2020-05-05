@@ -5381,7 +5381,7 @@ begin
       vtOptionMangaSiteSelection.ValidateNode(node, False);
       data := vtOptionMangaSiteSelection.GetNodeData(node);
       categoriesitem := TStringList(categories.Objects[i]);
-      data^.Name := categories[i] + ' ('+ IntToStr(categoriesitem.Count) +')';
+      data^.Name := categories[i];
       for j := 0 to categoriesitem.Count - 1 do
       begin
         s := categoriesitem[j];
@@ -5994,8 +5994,24 @@ end;
 procedure TMainForm.vtOptionMangaSiteSelectionGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
   var CellText: String);
+var
+  vc: Integer;
+  xNode: PVirtualNode;
 begin
-  CellText := PNamePointerItem(vtOptionMangaSiteSelection.GetNodeData(Node))^.Name;
+  if Node^.ChildCount = 0 then
+    CellText := PNamePointerItem(vtOptionMangaSiteSelection.GetNodeData(Node))^.Name
+  else
+  begin
+    vc := 0;
+    xNode := Node^.FirstChild;
+    while Assigned(xNode) do
+    begin
+      if vsVisible in xNode^.States then
+        Inc(vc);
+      xNode := xNode^.NextSibling;
+    end;
+    CellText := PNamePointerItem(vtOptionMangaSiteSelection.GetNodeData(Node))^.Name + ' (' + IntToStr(vc) + ')';
+  end;
 end;
 
 end.
