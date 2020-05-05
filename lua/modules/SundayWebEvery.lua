@@ -46,16 +46,7 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(AppendURLDelim(MaybeFillHost(Module.RootURL, AURL))) then
-		local src = TStrings.Create()
-		src.LoadFromStream(HTTP.Document)
-		local s, i, key
-		local i for i = 0, s.Count-1 do
-			s = src[i]
-			if s:find('key: ') then
-				key = s:match('.-["\'](.-)["\']')
-				break
-			end
-		end
+		local key = HTTP.Document.ToString():match('.-key:%s*.-["\'](.-)["\']')
 		if (key ~= nil) or (key ~= '') then
 			key = MODULE.RootURL .. '/assets/episodes/' .. key .. '/'
 			if HTTP.GET(key .. 'episode.json') then
