@@ -13,7 +13,7 @@ procedure luaMangaInfoAddMetaTable(L: Plua_State; Obj: Pointer;
 implementation
 
 uses
-  uBaseUnit, LuaClass;
+  uBaseUnit, LuaClass, LuaStrings;
 
 procedure luaMangaInfoAddMetaTable(L: Plua_State; Obj: Pointer;
   MetaTable, UserData: Integer; AutoFree: Boolean = False);
@@ -29,8 +29,8 @@ begin
     luaClassAddStringProperty(L, MetaTable, 'Genres', @Genres);
     luaClassAddStringProperty(L, MetaTable, 'Status', @Status);
     luaClassAddStringProperty(L, MetaTable, 'Summary', @Summary);
-    luaClassAddObject(L, MetaTable, ChapterNames, 'ChapterNames');
-    luaClassAddObject(L, MetaTable, ChapterLinks, 'ChapterLinks');
+    luaClassAddObject(L, MetaTable, ChapterNames, 'ChapterNames', @luaStringsAddMetaTable);
+    luaClassAddObject(L, MetaTable, ChapterLinks, 'ChapterLinks', @luaStringsAddMetaTable);
   end;
 end;
 
