@@ -40,7 +40,7 @@ function GetInfo()
 	if HTTP.GET(MANGAINFO.URL) then
 		local x = TXQuery.Create(HTTP.Document)
 		
-		MANGAINFO.CoverLink = MaybeFillHost(MODULE.URL, x.XPathString('//img[@class="book-page-image img-responsive"]/@src'))
+		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//img[@class="book-page-image img-responsive"]/@src'))
 		MANGAINFO.Title     = x.XPathString('//div[@class="book-line"][starts-with(.,"Title")]/div[@class="book-data"]')
 		MANGAINFO.Artists   = x.XPathString('//div[@class="book-line"][starts-with(.,"Artist")]/div[@class="book-data"]')
 		MANGAINFO.Genres    = x.XPathStringAll('//div[@class="book-line"][starts-with(.,"Parody") or starts-with(.,"Characters") or starts-with(.,"Tags")]/div[@class="book-data"]/*')
