@@ -26,10 +26,30 @@ begin
   Result := 1;
 end;
 
+function re_getmatch(L: Plua_State): Integer; cdecl;
+begin
+  if (lua_gettop(L) < 3) or (lua_tointeger(L, 3) < 0) then
+  begin
+    lua_pushstring(L, '');
+  end
+  else
+  begin
+    with TRegExpr.Create(luaGetString(L, 1)) do
+      try
+        if Exec(luaGetString(L, 2)) and (SubExprMatchCount > 0) then
+          lua_pushstring(L, Match[lua_tointeger(L, 3)]);
+      finally
+        Free;
+      end;
+  end;
+  Result := 1;
+end;
+
 procedure luaRegExprRegister(L: Plua_State);
 begin
-  luaPushFunctionGlobal(L, 'ExecRegExpr', @re_exec);
-  luaPushFunctionGlobal(L, 'ReplaceRegExpr', @re_replace);
+  luaPushFunctionGlobal(L, 'RegExprExec', @re_exec);
+  luaPushFunctionGlobal(L, 'RegExprReplace', @re_replace);
+  luaPushFunctionGlobal(L, 'RegExprGetMatch', @re_getmatch);
 end;
 
 end.

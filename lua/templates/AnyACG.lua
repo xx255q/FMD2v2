@@ -114,7 +114,7 @@ function _M.GetLanguageCodeSuffix(s)
   local suffix = ' [EN]'
   
   if s ~= '' then
-    s = RegExprGetMatch('flag_(\\w+)\\b', s, 1)
+    s = s:match('flag_(%w+)')
     if s ~= 'united_kingdom' then suffix = ' [' .. string.upper(s) .. ']' end
   end
   

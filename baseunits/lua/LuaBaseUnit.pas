@@ -78,12 +78,6 @@ begin
   Result := 1;
 end;
 
-function lua_regexprgetmatch(L: Plua_State): Integer; cdecl;
-begin
-  lua_pushstring(L, RegExprGetMatch(luaGetString(L, 1), luaGetString(L, 2), lua_tointeger(L, 3)));
-  Result := 1;
-end;
-
 function lua_htmldecode(L: Plua_State): Integer; cdecl;
 begin
   lua_pushstring(L, HTMLDecode(luaGetString(L, 1)));
@@ -218,7 +212,6 @@ begin
   luaPushFunctionGlobal(L, 'AppendURLDelimleft', @lua_appendurldelimleft);
   luaPushFunctionGlobal(L, 'RemoveURLDelim', @lua_removeurldelim);
   luaPushFunctionGlobal(L, 'RemoveURLDelimLeft', @lua_removeurldelimleft);
-  luaPushFunctionGlobal(L, 'RegExprGetMatch', @lua_regexprgetmatch);
   luaPushFunctionGlobal(L, 'HTMLDecode', @lua_htmldecode);
   luaPushFunctionGlobal(L, 'HTMLEncode', @lua_htmlencode);
   luaPushFunctionGlobal(L, 'URLDecode', @lua_urldecode);

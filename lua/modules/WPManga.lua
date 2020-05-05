@@ -136,7 +136,7 @@ end
 function getdirectorypagenumber()
   if HTTP.GET(AppendURLDelim(MODULE.RootURL) .. getdirurl(MODULE.Name)) then
     x = TXQuery.Create(HTTP.Document)
-    PAGENUMBER = tonumber(ReplaceRegExpr('^.*\\/(\\d+)/.*$', x.XPathString('//ul[@class="pgg"]/li[last()]/a/@href'), '$1')) or 1
+    PAGENUMBER = tonumber(x.XPathString('//ul[@class="pgg"]/li[last()]/a/@href'):match('/(%d+)/')) or 1
     return true
   else
     return false
