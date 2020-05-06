@@ -196,8 +196,8 @@ const
     (name: nil; func: nil)
     );
 
-procedure luaXQueryAddMetaTable(L: Plua_State; Obj: Pointer;
-  MetaTable, UserData: Integer; AutoFree: Boolean = False);
+procedure luaXQueryAddMetaTable(const L: Plua_State; const Obj: Pointer;
+  const MetaTable, UserData: Integer);
 begin
   luaClassAddFunction(L, MetaTable, UserData, methods);
 end;
@@ -208,7 +208,7 @@ begin
   luaClassPushObject(L, Obj, Name, AutoFree, @luaXQueryAddMetaTable);
 end;
 
-procedure luaXQueryRegister(L: Plua_State);
+procedure luaXQueryRegister(const L: Plua_State);
 begin
   luaClassNewLib(L, 'TXQuery', constructs);
 end;

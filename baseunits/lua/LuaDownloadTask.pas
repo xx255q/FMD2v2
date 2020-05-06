@@ -7,16 +7,16 @@ interface
 uses
   Classes, SysUtils, lua53;
 
-procedure luaDownloadTaskMetaTable(L: Plua_State; Obj: Pointer;
-  MetaTable, UserData: Integer; AutoFree: Boolean = False);
+procedure luaDownloadTaskMetaTable(const L: Plua_State; const Obj: Pointer;
+  const MetaTable, UserData: Integer);
 
 implementation
 
 uses
   LuaClass, LuaStrings, uDownloadsManager;
 
-procedure luaDownloadTaskMetaTable(L: Plua_State; Obj: Pointer;
-  MetaTable, UserData: Integer; AutoFree: Boolean = False);
+procedure luaDownloadTaskMetaTable(const L: Plua_State; const Obj: Pointer;
+  const MetaTable, UserData: Integer);
 begin
   with TTaskContainer(Obj) do
   begin

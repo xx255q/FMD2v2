@@ -7,8 +7,8 @@ interface
 uses
   Classes, SysUtils, lua53, ImagePuzzle;
 
-procedure luaImagePuzzlePush(L: Plua_State; Obj: TImagePuzzle; Name: String = '';
-  AutoFree: Boolean = False); inline;
+procedure luaImagePuzzleAddMetaTable(const L: Plua_State; const Obj: Pointer;
+  const MetaTable, UserData: Integer);
 
 implementation
 
@@ -21,7 +21,7 @@ function imagepuzzle_create(L: Plua_State): Integer; cdecl;
 begin
   if lua_gettop(L) = 2 then
     if lua_isinteger(L, 1) and lua_isinteger(L, 2) then
-      luaImagePuzzlePush(L, TImagePuzzle.Create(lua_tointeger(L, 1), lua_tointeger(L, 2)), '', True);
+      luaClassPushObject(L, TImagePuzzle.Create(lua_tointeger(L, 1), lua_tointeger(L, 2)), '', True, @luaImagePuzzleAddMetaTable);
   Result := 1;
 end;
 
@@ -77,8 +77,8 @@ const
     (name: nil; func: nil)
     );
 
-procedure luaImagePuzzleAddMetaTable(L: Plua_State; Obj: Pointer;
-  MetaTable, UserData: Integer; AutoFree: Boolean = False);
+procedure luaImagePuzzleAddMetaTable(const L: Plua_State; const Obj: Pointer;
+  const MetaTable, UserData: Integer);
 begin
   luaClassAddFunction(L, MetaTable, UserData, methods);
   luaClassAddProperty(L, MetaTable, UserData, props);
@@ -86,13 +86,7 @@ begin
   luaClassAddIntegerProperty(L, MetaTable, 'Multiply', @TUserData(Obj).Multiply);
 end;
 
-procedure luaImagePuzzlePush(L: Plua_State; Obj: TImagePuzzle; Name: String;
-  AutoFree: Boolean);
-begin
-  luaClassPushObject(L, Obj, Name, AutoFree, @luaImagePuzzleAddMetaTable);
-end;
-
-procedure luaImagePuzzleRegister(L: Plua_State);
+procedure luaImagePuzzleRegister(const L: Plua_State);
 begin
   luaClassNewLib(L, 'TImagePuzzle', constructs);
 end;

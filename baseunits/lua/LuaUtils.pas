@@ -7,52 +7,50 @@ interface
 uses
   Classes, SysUtils, lua53;
 
-function luaNewTable(L: Plua_State): Integer;
-procedure luaAddCFunctionToTable(L: Plua_State; Table: Integer;
-  Name: PAnsiChar; Func: lua_CFunction);
-procedure luaAddCClosureToTable(L: Plua_State; Table, Value: Integer;
-  Name: PAnsiChar; Func: lua_CFunction); overload;
-procedure luaAddCClosureToTable(L: Plua_State; Table: Integer;
-  Value: Pointer; Name: PAnsiChar; Func: lua_CFunction); overload;
-procedure luaAddStringToTable(L: Plua_State; Table: Integer; Name, Value: PAnsiChar);
-procedure luaAddIntegerToTable(L: Plua_State; Table: Integer;
-  Name: PAnsiChar; Value: lua_Integer);
-procedure luaAddBooleanToTable(L: Plua_State; Table: Integer;
-  Name: PAnsiChar; Value: Boolean);
+function luaNewTable(const L: Plua_State): Integer;
+procedure luaAddCFunctionToTable(const L: Plua_State; const Table: Integer;
+  const Name: String; const Func: lua_CFunction);
+procedure luaAddCClosureToTable(const L: Plua_State; const Table, Value: Integer;
+  const Name: String; const Func: lua_CFunction); overload;
+procedure luaAddCClosureToTable(const L: Plua_State; const Table: Integer; const Value: Pointer;
+  const Name: String; const Func: lua_CFunction); overload;
+procedure luaAddStringToTable(const L: Plua_State; const Table: Integer; const Name, Value: String);
+procedure luaAddIntegerToTable(const L: Plua_State; const Table: Integer; const Name: String; const Value: lua_Integer);
+procedure luaAddBooleanToTable(const L: Plua_State; const Table: Integer; const Name: String; const Value: Boolean);
 
-procedure luaPushFunctionGlobal(L: Plua_State; Name: PAnsiChar; Func: lua_CFunction);
+procedure luaPushFunctionGlobal(const L: Plua_State; const Name: String; const Func: lua_CFunction);
 
-procedure luaPushStringGlobal(L: Plua_State; Name: PAnsiChar; S: String);
-procedure luaPushIntegerGlobal(L: Plua_State; Name: PAnsiChar; I: Integer);
-procedure luaPushBooleanGlobal(L: Plua_State; Name: PAnsiChar; B: Boolean);
+procedure luaPushStringGlobal(const L: Plua_State; const Name, Value: String);
+procedure luaPushIntegerGlobal(const L: Plua_State; const Name: String; const Value: lua_Integer);
+procedure luaPushBooleanGlobal(const L: Plua_State; const Name: String; const Value: Boolean);
 
-procedure luaPushUserData(L: Plua_State; U: Pointer); overload; inline;
-procedure luaPushUserData(L: Plua_State; U: Pointer; var UIndex: Integer); overload; inline;
-function luaGetUserData(L: Plua_State; idx: Integer): Pointer; inline;
-function luaGetString(L: Plua_State; idx: Integer): String; inline;
+procedure luaPushUserData(const L: Plua_State; const Value: Pointer); overload; inline;
+procedure luaPushUserData(const L: Plua_State; const Value: Pointer; var UIndex: Integer); overload; inline;
+function luaGetUserData(const L: Plua_State; const idx: Integer): Pointer; inline;
+function luaGetString(const L: Plua_State; const idx: Integer): String; inline;
 
-function LuaToString(L: Plua_State; Idx: Integer): String;
-function LuaStackToString(L: Plua_State): String;
+function LuaToString(const L: Plua_State; const idx: Integer): String;
+function LuaStackToString(const L: Plua_State): String;
 
-procedure luaL_newlib(L: Plua_State; n: PAnsiChar; lr: PluaL_Reg); overload; inline;
+procedure luaL_newlib(const L: Plua_State; const Name: String; const lr: PluaL_Reg); overload; inline;
 
 // deprecated since 5.2
-procedure luaL_openlib(L: Plua_State; n: PansiChar; lr: PluaL_Reg;
-  {%H-}nup: Integer); inline;
-procedure luaL_register(L: Plua_State; n: PAnsiChar; lr: PluaL_Reg); inline;
+procedure luaL_openlib(const L: Plua_State; const Name: String; const lr: PluaL_Reg;
+  const {%H-}nup: Integer); inline;
+procedure luaL_register(const L: Plua_State; const Name: String; const lr: PluaL_Reg); inline;
 
 implementation
 
 uses MultiLog;
 
-function luaNewTable(L: Plua_State): Integer;
+function luaNewTable(const L: Plua_State): Integer;
 begin
   lua_newtable(L);
   Result := lua_gettop(L);
 end;
 
-procedure luaAddCFunctionToTable(L: Plua_State; Table: Integer;
-  Name: PAnsiChar; Func: lua_CFunction);
+procedure luaAddCFunctionToTable(const L: Plua_State; const Table: Integer;
+  const Name: String; const Func: lua_CFunction);
 begin
   {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   lua_pushstring(L, Name);
@@ -60,8 +58,8 @@ begin
   lua_rawset(L, Table);
 end;
 
-procedure luaAddCClosureToTable(L: Plua_State; Table, Value: Integer;
-  Name: PAnsiChar; Func: lua_CFunction);
+procedure luaAddCClosureToTable(const L: Plua_State; const Table,
+  Value: Integer; const Name: String; const Func: lua_CFunction);
 begin
   {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   lua_pushstring(L, Name);
@@ -70,8 +68,8 @@ begin
   lua_rawset(L, Table);
 end;
 
-procedure luaAddCClosureToTable(L: Plua_State; Table: Integer;
-  Value: Pointer; Name: PAnsiChar; Func: lua_CFunction);
+procedure luaAddCClosureToTable(const L: Plua_State; const Table: Integer;
+  const Value: Pointer; const Name: String; const Func: lua_CFunction);
 begin
   {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   lua_pushstring(L, Name);
@@ -80,7 +78,8 @@ begin
   lua_rawset(L, Table);
 end;
 
-procedure luaAddStringToTable(L: Plua_State; Table: Integer; Name, Value: PAnsiChar);
+procedure luaAddStringToTable(const L: Plua_State; const Table: Integer;
+  const Name, Value: String);
 begin
   {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   lua_pushstring(L, Name);
@@ -88,8 +87,8 @@ begin
   lua_rawset(L, Table);
 end;
 
-procedure luaAddIntegerToTable(L: Plua_State; Table: Integer;
-  Name: PAnsiChar; Value: lua_Integer);
+procedure luaAddIntegerToTable(const L: Plua_State; const Table: Integer;
+  const Name: String; const Value: lua_Integer);
 begin
   {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   lua_pushstring(L, Name);
@@ -97,8 +96,8 @@ begin
   lua_rawset(L, Table);
 end;
 
-procedure luaAddBooleanToTable(L: Plua_State; Table: Integer;
-  Name: PAnsiChar; Value: Boolean);
+procedure luaAddBooleanToTable(const L: Plua_State; const Table: Integer;
+  const Name: String; const Value: Boolean);
 begin
   {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   lua_pushstring(L, Name);
@@ -106,51 +105,55 @@ begin
   lua_rawset(L, Table);
 end;
 
-procedure luaPushFunctionGlobal(L: Plua_State; Name: PAnsiChar; Func: lua_CFunction);
+procedure luaPushFunctionGlobal(const L: Plua_State; const Name: String;
+  const Func: lua_CFunction);
 begin
   {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   lua_pushcfunction(L, Func);
-  lua_setglobal(L, Name);
+  lua_setglobal(L, PAnsiChar(Name));
 end;
 
-procedure luaPushStringGlobal(L: Plua_State; Name: PAnsiChar; S: String);
+procedure luaPushStringGlobal(const L: Plua_State; const Name, Value: String);
 begin
   {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
-  lua_pushstring(L, S);
-  lua_setglobal(L, Name);
+  lua_pushstring(L, Value);
+  lua_setglobal(L, PAnsiChar(Name));
 end;
 
-procedure luaPushIntegerGlobal(L: Plua_State; Name: PAnsiChar; I: Integer);
+procedure luaPushIntegerGlobal(const L: Plua_State; const Name: String;
+  const Value: lua_Integer);
 begin
   {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
-  lua_pushinteger(L, I);
-  lua_setglobal(L, Name);
+  lua_pushinteger(L, Value);
+  lua_setglobal(L, PAnsiChar(Name));
 end;
 
-procedure luaPushBooleanGlobal(L: Plua_State; Name: PAnsiChar; B: Boolean);
+procedure luaPushBooleanGlobal(const L: Plua_State; const Name: String;
+  const Value: Boolean);
 begin
   {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
-  lua_pushboolean(L, B);
-  lua_setglobal(L, Name);
+  lua_pushboolean(L, Value);
+  lua_setglobal(L, PAnsiChar(Name));
 end;
 
-procedure luaPushUserData(L: Plua_State; U: Pointer);
+procedure luaPushUserData(const L: Plua_State; const Value: Pointer);
 begin
-  PPointer(lua_newuserdata(L, SizeOf(PPointer)))^ := U;
+  PPointer(lua_newuserdata(L, SizeOf(PPointer)))^ := Value;
 end;
 
-procedure luaPushUserData(L: Plua_State; U: Pointer; var UIndex: Integer);
+procedure luaPushUserData(const L: Plua_State; const Value: Pointer;
+  var UIndex: Integer);
 begin
-  luaPushUserData(L, U);
+  luaPushUserData(L, Value);
   UIndex := lua_gettop(L);
 end;
 
-function luaGetUserData(L: Plua_State; idx: Integer): Pointer;
+function luaGetUserData(const L: Plua_State; const idx: Integer): Pointer;
 begin
   Result := PPointer(lua_touserdata(L, idx))^;
 end;
 
-function luaGetString(L: Plua_State; idx: Integer): String;
+function luaGetString(const L: Plua_State; const idx: Integer): String;
 var
   slen: size_t;
 begin
@@ -158,42 +161,42 @@ begin
   SetLength(Result, slen);
 end;
 
-function LuaToString(L: Plua_State; Idx: Integer): String;
+function LuaToString(const L: Plua_State; const idx: Integer): String;
 begin
-  if lua_isuserdata(L, Idx) then
-    Result := 'userdata: ' + hexStr(lua_touserdata(L, Idx))
+  if lua_isuserdata(L, idx) then
+    Result := 'userdata: ' + hexStr(lua_touserdata(L, idx))
   else
-  if lua_isstring(L, Idx) then
-    Result := 'string: ' + luaGetString(L, Idx)
+  if lua_isstring(L, idx) then
+    Result := 'string: ' + luaGetString(L, idx)
   else
-  if lua_isinteger(L, Idx) then
-    Result := 'integer: ' + IntToStr(lua_tointeger(L, Idx))
+  if lua_isinteger(L, idx) then
+    Result := 'integer: ' + IntToStr(lua_tointeger(L, idx))
   else
-  if lua_iscfunction(L, Idx) then
-    Result := 'cfunc: ' + hexStr(lua_topointer(L, Idx))
+  if lua_iscfunction(L, idx) then
+    Result := 'cfunc: ' + hexStr(lua_topointer(L, idx))
   else
-  if lua_isfunction(L, Idx) then
-    Result := 'func: ' + hexStr(lua_topointer(L, Idx))
+  if lua_isfunction(L, idx) then
+    Result := 'func: ' + hexStr(lua_topointer(L, idx))
   else
-  if lua_isnoneornil(L, Idx) then
+  if lua_isnoneornil(L, idx) then
     Result := 'nil'
   else
-  if lua_isboolean(L, Idx) then
-    Result := 'boolean: ' + BoolToStr(lua_toboolean(L, Idx), True)
+  if lua_isboolean(L, idx) then
+    Result := 'boolean: ' + BoolToStr(lua_toboolean(L, idx), True)
   else
-  if lua_isnumber(L, Idx) then
-    Result := 'number: ' + FloatToStr(lua_tonumber(L, Idx))
+  if lua_isnumber(L, idx) then
+    Result := 'number: ' + FloatToStr(lua_tonumber(L, idx))
   else
-  if lua_istable(L, Idx) then
-    Result := 'table: ' + hexStr(lua_topointer(L, Idx))
+  if lua_istable(L, idx) then
+    Result := 'table: ' + hexStr(lua_topointer(L, idx))
   else
-  if lua_islightuserdata(L, Idx) then
-    Result := 'ligthuserdata: ' + hexStr(lua_topointer(L, Idx))
+  if lua_islightuserdata(L, idx) then
+    Result := 'ligthuserdata: ' + hexStr(lua_topointer(L, idx))
   else
-    Result := 'unknown: ' + hexStr(lua_topointer(L, Idx));
+    Result := 'unknown: ' + hexStr(lua_topointer(L, idx));
 end;
 
-function LuaStackToString(L: Plua_State): String;
+function LuaStackToString(const L: Plua_State): String;
 var
   i: Integer;
 begin
@@ -206,23 +209,26 @@ begin
   SetLength(Result, Length(Result) - Length(LineEnding));
 end;
 
-procedure luaL_newlib(L: Plua_State; n: PAnsiChar; lr: PluaL_Reg);
+procedure luaL_newlib(const L: Plua_State; const Name: String;
+  const lr: PluaL_Reg);
 begin
   luaL_newlib(L, lr);
-  if n <> '' then
-    lua_setglobal(L, n);
+  if Name <> '' then
+    lua_setglobal(L, PAnsiChar(Name));
 end;
 
-procedure luaL_openlib(L: Plua_State; n: PansiChar; lr: PluaL_Reg; nup: Integer);
+procedure luaL_openlib(const L: Plua_State; const Name: String;
+  const lr: PluaL_Reg; const nup: Integer);
 begin
   luaL_setfuncs(L, lr, 0);
-  if n <> '' then
-    lua_setglobal(L, n);
+  if Name <> '' then
+    lua_setglobal(L, PAnsiChar(Name));
 end;
 
-procedure luaL_register(L: Plua_State; n: PAnsiChar; lr: PluaL_Reg);
+procedure luaL_register(const L: Plua_State; const Name: String;
+  const lr: PluaL_Reg);
 begin
-  luaL_openlib(L, n, lr, 0);
+  luaL_openlib(L, Name, lr, 0);
 end;
 
 end.

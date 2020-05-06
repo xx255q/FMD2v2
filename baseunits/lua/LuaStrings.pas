@@ -7,11 +7,8 @@ interface
 uses
   Classes, SysUtils, lua53;
 
-procedure luaStringsPush(L: Plua_State; Obj: TStrings; Name: String = '';
-  AutoFree: Boolean = False); inline;
-
-procedure luaStringsAddMetaTable(L: Plua_State; Obj: Pointer;
-  MetaTable, UserData: Integer; AutoFree: Boolean = False);
+procedure luaStringsAddMetaTable(const L: Plua_State; const Obj: Pointer;
+  const MetaTable, UserData: Integer);
 
 implementation
 
@@ -22,7 +19,7 @@ type
 
 function strings_create(L: Plua_State): Integer; cdecl;
 begin
-  luaStringsPush(L, TStringList.Create, '', True);
+  luaClassPushObject(L, TStringList.Create, '', True, @luaStringsAddMetaTable);
   Result := 1;
 end;
 
@@ -76,8 +73,7 @@ end;
 
 function strings_get(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, PAnsiChar(
-    TUserData(luaClassGetObject(L)).Strings[lua_tointeger(L, 1)]));
+  lua_pushstring(L, TUserData(luaClassGetObject(L)).Strings[lua_tointeger(L, 1)]);
   Result := 1;
 end;
 
@@ -101,8 +97,7 @@ end;
 
 function strings_getdelimiter(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, PAnsiChar(
-    String(TUserData(luaClassGetObject(L)).Delimiter)));
+  lua_pushstring(L, TUserData(luaClassGetObject(L)).Delimiter);
   Result := 1;
 end;
 
@@ -114,8 +109,7 @@ end;
 
 function strings_namevalueseparatorget(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, PAnsiChar(
-    String(TUserData(luaClassGetObject(L)).NameValueSeparator)));
+  lua_pushstring(L, TUserData(luaClassGetObject(L)).NameValueSeparator);
   Result := 1;
 end;
 
@@ -127,8 +121,7 @@ end;
 
 function strings_valuesget(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, PAnsiChar(
-    TUserData(luaClassGetObject(L)).Values[luaGetString(L, 1)]));
+  lua_pushstring(L, TUserData(luaClassGetObject(L)).Values[luaGetString(L, 1)]);
   Result := 1;
 end;
 
@@ -212,8 +205,8 @@ const
     (name: nil; funcget: nil; funcset: nil)
     );
 
-procedure luaStringsAddMetaTable(L: Plua_State; Obj: Pointer;
-  MetaTable, UserData: Integer; AutoFree: Boolean = False);
+procedure luaStringsAddMetaTable(const L: Plua_State; const Obj: Pointer;
+  const MetaTable, UserData: Integer);
 begin
   luaClassAddFunction(L, MetaTable, UserData, methods);
   luaClassAddProperty(L, MetaTable, UserData, props);
@@ -221,14 +214,9 @@ begin
   luaClassAddDefaultArrayProperty(L, MetaTable, UserData, @strings_get, @strings_set);
 end;
 
-procedure luaStringsPush(L: Plua_State; Obj: TStrings; Name: String; AutoFree: Boolean);
+procedure luaStringsRegister(const L: Plua_State);
 begin
-  luaClassPushObject(L, Obj, Name, AutoFree, @luaStringsAddMetaTable);
-end;
-
-procedure luaStringsRegister(L: Plua_State);
-begin
-  luaClassNewLib(L, PAnsiChar(String(TUserData.ClassName)), constructs);
+  luaClassNewLib(L, TUserData.ClassName, constructs);
 end;
 
 initialization

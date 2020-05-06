@@ -7,8 +7,8 @@ interface
 uses
   Classes, SysUtils, lua53;
 
-procedure luaCriticalSectionAddMetaTable(L: Plua_State; Obj: Pointer; MetaTable,
-  UserData: Integer; AutoFree: Boolean = False);
+procedure luaCriticalSectionAddMetaTable(const L: Plua_State; const Obj: Pointer;
+  const MetaTable, UserData: Integer);
 
 implementation
 
@@ -44,8 +44,8 @@ const
     (name: nil; func: nil)
     );
 
-procedure luaCriticalSectionAddMetaTable(L: Plua_State; Obj: Pointer; MetaTable,
-  UserData: Integer; AutoFree: Boolean = False);
+procedure luaCriticalSectionAddMetaTable(const L: Plua_State;
+  const Obj: Pointer; const MetaTable, UserData: Integer);
 begin
   with TUserData(Obj) do
   begin

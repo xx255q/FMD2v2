@@ -17,11 +17,11 @@ type
   end;
   PluaL_Reg_prop = ^luaL_Reg_prop;
 
-  TluaClassAddMetaTable = procedure(L: Plua_State; Obj: Pointer;
-    MetaTable, UserData: Integer; AutoFree: Boolean = False);
-  TLuaClassRegisterLib = procedure(L: Plua_State);
+  TluaClassAddMetaTable = procedure(const L: Plua_State; const Obj: Pointer;
+    const MetaTable, UserData: Integer);
+  TLuaClassRegisterLib = procedure(const L: Plua_State);
 
-procedure luaClassNewLib(const L: Plua_State; const n: PAnsiChar; const lr: PluaL_Reg);
+procedure luaClassNewLib(const L: Plua_State; const Name: String; const lr: PluaL_Reg);
 
 procedure luaClassRegisterAll(const L: Plua_State);
 
@@ -37,18 +37,18 @@ function luaClassGetObject(const L: Plua_State): Pointer; inline;
 procedure luaClassPushUserData(const L: Plua_State; const Obj: Pointer; const Name: String;
   const AutoFree: Boolean; const AddMetaTable: TluaClassAddMetaTable);
 procedure luaClassPushObject(const L: Plua_State; const Obj: TObject; const Name: String;
-  const AutoFree: Boolean = False; const AddMetaTable: TluaClassAddMetaTable = nil);
+  const AutoFree: Boolean; const AddMetaTable: TluaClassAddMetaTable = nil); inline;
 
 procedure luaClassAddFunction(const L: Plua_State; const MetaTable, UserData: Integer;
-  const Name: PAnsiChar; const Func: lua_CFunction); overload; inline;
+  const Name: String; const Func: lua_CFunction); overload; inline;
 procedure luaClassAddFunction(const L: Plua_State; const MetaTable, UserData: Integer;
   const FuncArr: PluaL_Reg); overload;
 procedure luaClassAddProperty(const L: Plua_State; const MetaTable, UserData: Integer;
-  const Name: PAnsiChar; const FuncGet, FuncSet: lua_CFunction); overload;
+  const Name: String; const FuncGet, FuncSet: lua_CFunction); overload;
 procedure luaClassAddProperty(const L: Plua_State; const MetaTable, UserData: Integer;
   const FuncArr: PluaL_Reg_prop); overload;
 procedure luaClassAddArrayProperty(const L: Plua_State; const MetaTable, UserData: Integer;
-  const Name: PAnsiChar; const FuncGet, FuncSet: lua_CFunction); overload;
+  const Name: String; const FuncGet, FuncSet: lua_CFunction); overload;
 procedure luaClassAddArrayProperty(const L: Plua_State; const MetaTable, UserData: Integer;
   const FuncArr: PluaL_Reg_prop); overload;
 procedure luaClassAddDefaultArrayProperty(const L: Plua_State; const MetaTable, UserData: Integer;
@@ -56,15 +56,15 @@ procedure luaClassAddDefaultArrayProperty(const L: Plua_State; const MetaTable, 
 procedure luaClassAddDefaultArrayProperty(const L: Plua_State; const MetaTable, UserData: Integer;
   const FuncArr: PluaL_Reg_prop); overload; inline;
 procedure luaClassAddStringProperty(const L: Plua_State; const MetaTable: Integer;
-  const Name: PAnsiChar; const P: Pointer); overload;
+  const Name: String; const P: Pointer); overload;
 procedure luaClassAddIntegerProperty(const L: Plua_State; const MetaTable: Integer;
-  const Name: PAnsiChar; const P: Pointer); overload;
+  const Name: String; const P: Pointer); overload;
 procedure luaClassAddBooleanProperty(const L: Plua_State; const MetaTable: Integer;
-  const Name: PAnsiChar; const P: Pointer); overload;
+  const Name: String; const P: Pointer); overload;
 procedure luaClassAddObject(const L: Plua_State; const MetaTable: Integer; Obj: TObject;
-  const Name: PAnsiChar; const AddMetaTable: TluaClassAddMetaTable = nil);
+  const Name: String; const AddMetaTable: TluaClassAddMetaTable = nil);
 procedure luaClassAddUserData(const L: Plua_State; const MetaTable: Integer; const Obj: TObject;
-  const Name: PAnsiChar);
+  const Name: String);
 
 implementation
 
@@ -242,7 +242,7 @@ begin
     Result[1] := AnsiUpperCase(Result[1])[1];
 end;
 
-procedure luaClassNewLib(const L: Plua_State; const n: PAnsiChar;
+procedure luaClassNewLib(const L: Plua_State; const Name: String;
   const lr: PluaL_Reg);
 var
   t: Integer;
@@ -254,15 +254,15 @@ begin
   while p^.name <> nil do
   begin
     {$ifdef luaclass_caseinsensitive}
-    luaAddCFunctionToTable(L, t, PAnsiChar(LowerCase(p^.name)), p^.func);
-    luaAddCFunctionToTable(L, t, PAnsiChar(firstUpcase(p^.name)), p^.func);
+    luaAddCFunctionToTable(L, t, LowerCase(p^.name), p^.func);
+    luaAddCFunctionToTable(L, t, firstUpcase(p^.name), p^.func);
     {$else}
     luaAddCFunctionToTable(L, t, p^.name, p^.func);
     {$endif}
     Inc(p);
   end;
-  if n <> '' then
-    lua_setglobal(L, n);
+  if Name <> '' then
+    lua_setglobal(L, PAnsiChar(Name));
 end;
 
 procedure luaClassRegisterAll(const L: Plua_State);
@@ -314,40 +314,38 @@ begin
 end;
 
 procedure luaClassPushUserData(const L: Plua_State; const Obj: Pointer;
-  const Name: String; const AutoFree: Boolean;
-  const AddMetaTable: TluaClassAddMetaTable);
+  const Name: String; const AutoFree: Boolean; const AddMetaTable: TluaClassAddMetaTable);
 var
-  m, u: Integer;
+  m: Integer = 0;
+  u: Integer = 0;
 begin
   {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
-  if Obj = nil then
-    Exit;
+  if Obj = nil then Exit;
   luaClassNewUserData(L, m, u, Obj, AutoFree);
-  AddMetaTable(L, Obj, m, u);
-  lua_setmetatable(L, u);
+  if Assigned(AddMetaTable) then
+  begin
+    AddMetaTable(L, Obj, m, u);
+    lua_setmetatable(L, u);
+  end;
   if Name <> '' then
     lua_setglobal(L, PAnsiChar(Name));
 end;
 
 procedure luaClassPushObject(const L: Plua_State; const Obj: TObject;
-  const Name: String; const AutoFree: Boolean;
-  const AddMetaTable: TluaClassAddMetaTable);
-var
-  a: TluaClassAddMetaTable;
+  const Name: String; const AutoFree: Boolean; const AddMetaTable: TluaClassAddMetaTable);
 begin
-  if Obj = nil then Exit;
-  if AddMetaTable <> nil then a  := AddMetaTable
-  else a := classlist.FindAddMetaTable(Obj.ClassType);
-  if a = nil then Exit;
-  luaClassPushUserData(L, Obj, Name, AutoFree, a);
+  if AddMetaTable <> nil then
+    luaClassPushUserData(L, Obj, Name, AutoFree, AddMetaTable)
+  else if Obj <> nil then
+    luaClassPushUserData(L, Obj, Name, AutoFree, classlist.FindAddMetaTable(Obj.ClassType));
 end;
 
 procedure luaClassAddFunction(const L: Plua_State; const MetaTable,
-  UserData: Integer; const Name: PAnsiChar; const Func: lua_CFunction);
+  UserData: Integer; const Name: String; const Func: lua_CFunction);
 begin
   {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   {$ifdef luaclass_caseinsensitive}
-  luaAddCClosureToTable(L, MetaTable, UserData, PAnsiChar(AnsiLowerCase(Name)), Func);
+  luaAddCClosureToTable(L, MetaTable, UserData, AnsiLowerCase(Name), Func);
   {$else}
   luaAddCClosureToTable(L, MetaTable, UserData, Name, Func);
   {$endif}
@@ -367,13 +365,12 @@ begin
 end;
 
 procedure luaClassAddProperty(const L: Plua_State; const MetaTable,
-  UserData: Integer; const Name: PAnsiChar; const FuncGet,
-  FuncSet: lua_CFunction);
+  UserData: Integer; const Name: String; const FuncGet, FuncSet: lua_CFunction);
 var
   t: Integer;
 begin
   {$ifdef luaclass_caseinsensitive}
-  lua_pushstring(L, PAnsiChar(AnsiLowerCase(Name)));
+  lua_pushstring(L, AnsiLowerCase(Name));
   {$else}
   lua_pushstring(L, Name);
   {$endif}
@@ -402,14 +399,13 @@ begin
 end;
 
 procedure luaClassAddArrayProperty(const L: Plua_State; const MetaTable,
-  UserData: Integer; const Name: PAnsiChar; const FuncGet,
-  FuncSet: lua_CFunction);
+  UserData: Integer; const Name: String; const FuncGet, FuncSet: lua_CFunction);
 var
   t, m: Integer;
 begin
   {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   {$ifdef luaclass_caseinsensitive}
-  lua_pushstring(L, PAnsiChar(AnsiLowerCase(Name)));
+  lua_pushstring(L, AnsiLowerCase(Name));
   {$else}
   lua_pushstring(L, Name);
   {$endif}
@@ -503,14 +499,14 @@ begin
   Boolean(luaClassGetClosure(L)^) := lua_toboolean(L, -1);
 end;
 
-procedure luaClassAddVariable(L: Plua_State; MetaTable: Integer;
-  Name: PAnsiChar; P: Pointer; FuncGet, FuncSet: lua_CFunction);
+procedure luaClassAddVariable(const L: Plua_State; const MetaTable: Integer;
+  const Name: String; const P: Pointer; const FuncGet, FuncSet: lua_CFunction);
 var
   t: Integer;
 begin
   {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   {$ifdef luaclass_caseinsensitive}
-  lua_pushstring(L, PAnsiChar(LowerCase(Name)));
+  lua_pushstring(L, LowerCase(Name));
   {$else}
   lua_pushstring(L, Name);
   {$endif}
@@ -524,51 +520,41 @@ begin
 end;
 
 procedure luaClassAddStringProperty(const L: Plua_State;
-  const MetaTable: Integer; const Name: PAnsiChar; const P: Pointer);
+  const MetaTable: Integer; const Name: String; const P: Pointer);
 begin
   luaClassAddVariable(L, MetaTable, Name, P, @luaclass_string_get, @luaclass_string_set);
 end;
 
 procedure luaClassAddIntegerProperty(const L: Plua_State;
-  const MetaTable: Integer; const Name: PAnsiChar; const P: Pointer);
+  const MetaTable: Integer; const Name: String; const P: Pointer);
 begin
   luaClassAddVariable(L, MetaTable, Name, P, @luaclass_int_get, @luaclass_int_set);
 end;
 
 procedure luaClassAddBooleanProperty(const L: Plua_State;
-  const MetaTable: Integer; const Name: PAnsiChar; const P: Pointer);
+  const MetaTable: Integer; const Name: String; const P: Pointer);
 begin
   luaClassAddVariable(L, MetaTable, Name, P, @luaclass_bool_get, @luaclass_bool_set);
 end;
 
 procedure luaClassAddObject(const L: Plua_State; const MetaTable: Integer;
-  Obj: TObject; const Name: PAnsiChar; const AddMetaTable: TluaClassAddMetaTable
-  );
-var
-  m, u: Integer;
-  a: TluaClassAddMetaTable;
+  Obj: TObject; const Name: String; const AddMetaTable: TluaClassAddMetaTable);
 begin
-  {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
-  if AddMetaTable <> nil then a := AddMetaTable
-  else a := classlist.FindAddMetaTable(Obj.ClassType);
-  if a = nil then Exit;
   {$ifdef luaclass_caseinsensitive}
-  lua_pushstring(L, PAnsiChar(AnsiLowerCase(Name)));
+  lua_pushstring(L, AnsiLowerCase(Name));
   {$else}
   lua_pushstring(L, Name);
   {$endif}
-  luaClassNewUserData(L, m, u, Obj, False);
-  a(L, Obj, m, u);
-  lua_setmetatable(L, u);
+  luaClassPushObject(L, Obj, '', False, AddMetaTable);
   lua_rawset(L, MetaTable);
 end;
 
 procedure luaClassAddUserData(const L: Plua_State; const MetaTable: Integer;
-  const Obj: TObject; const Name: PAnsiChar);
+  const Obj: TObject; const Name: String);
 begin
   {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   {$ifdef luaclass_caseinsensitive}
-  lua_pushstring(L, PAnsiChar(AnsiLowerCase(Name)));
+  lua_pushstring(L, AnsiLowerCase(Name));
   {$else}
   lua_pushstring(L, Name);
   {$endif}

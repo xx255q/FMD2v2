@@ -7,16 +7,16 @@ interface
 uses
   Classes, SysUtils, lua53;
 
-procedure luaMangaInfoAddMetaTable(L: Plua_State; Obj: Pointer;
-  MetaTable, UserData: Integer; AutoFree: Boolean = False);
+procedure luaMangaInfoAddMetaTable(const L: Plua_State; const Obj: Pointer;
+  const MetaTable, UserData: Integer);
 
 implementation
 
 uses
   uBaseUnit, LuaClass, LuaStrings;
 
-procedure luaMangaInfoAddMetaTable(L: Plua_State; Obj: Pointer;
-  MetaTable, UserData: Integer; AutoFree: Boolean = False);
+procedure luaMangaInfoAddMetaTable(const L: Plua_State; const Obj: Pointer;
+  const MetaTable, UserData: Integer);
 begin
   with TMangaInfo(Obj) do
   begin

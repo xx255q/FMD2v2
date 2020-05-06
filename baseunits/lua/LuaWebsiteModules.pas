@@ -125,8 +125,8 @@ type
 
 procedure ScanLuaWebsiteModulesFile;
 
-procedure luaWebsiteModuleAddMetaTable(L: Plua_State; Obj: Pointer;
-  MetaTable, UserData: Integer; AutoFree: Boolean = False);
+procedure luaWebsiteModuleAddMetaTable(const L: Plua_State; const Obj: Pointer;
+  const MetaTable, UserData: Integer);
 
 var
   LuaWebsiteModulesManager: TLuaWebsiteModulesManager;
@@ -925,8 +925,8 @@ const
     (name: nil; func: nil)
     );
 
-procedure luaWebsiteModuleAccountAddMetaTable(L: Plua_State; Obj: Pointer;
-  MetaTable, UserData: Integer; AutoFree: Boolean = False);
+procedure luaWebsiteModuleAccountAddMetaTable(const L: Plua_State; const Obj: Pointer;
+  const MetaTable, UserData: Integer);
 begin
   with TWebsiteModuleAccount(Obj) do
   begin
@@ -938,8 +938,8 @@ begin
   end;
 end;
 
-procedure luaWebsiteModuleAddMetaTable(L: Plua_State; Obj: Pointer;
-  MetaTable, UserData: Integer; AutoFree: Boolean = False);
+procedure luaWebsiteModuleAddMetaTable(const L: Plua_State; const Obj: Pointer;
+  const MetaTable, UserData: Integer);
 begin
   with TLuaWebsiteModule(Obj) do
   begin
@@ -950,28 +950,22 @@ begin
     luaClassAddStringProperty(L, MetaTable, 'Category', @Module.Category);
     luaClassAddIntegerProperty(L, MetaTable, 'MaxTaskLimit', @Module.MaxTaskLimit);
     luaClassAddIntegerProperty(L, MetaTable, 'MaxThreadPerTaskLimit', @Module.MaxThreadPerTaskLimit);
-    luaClassAddIntegerProperty(L, MetaTable, 'MaxConnectionLimit',
-      @Module.MaxConnectionLimit);
+    luaClassAddIntegerProperty(L, MetaTable, 'MaxConnectionLimit', @Module.MaxConnectionLimit);
     luaClassAddIntegerProperty(L, MetaTable, 'ActiveTaskCount', @Module.ActiveTaskCount);
-    luaClassAddIntegerProperty(L, MetaTable, 'ActiveConnectionCount',
-      @Module.ActiveConnectionCount);
+    luaClassAddIntegerProperty(L, MetaTable, 'ActiveConnectionCount', @Module.ActiveConnectionCount);
     luaClassAddBooleanProperty(L, MetaTable, 'SortedList', @Module.SortedList);
-    luaClassAddBooleanProperty(L, MetaTable, 'InformationAvailable',
-      @Module.InformationAvailable);
-    luaClassAddBooleanProperty(L, MetaTable, 'FavoriteAvailable',
-      @Module.FavoriteAvailable);
+    luaClassAddBooleanProperty(L, MetaTable, 'InformationAvailable', @Module.InformationAvailable);
+    luaClassAddBooleanProperty(L, MetaTable, 'FavoriteAvailable', @Module.FavoriteAvailable);
     luaClassAddBooleanProperty(L, MetaTable, 'DynamicPageLink', @Module.DynamicPageLink);
     luaClassAddStringProperty(L, MetaTable, 'OnBeforeUpdateList', @OnBeforeUpdateList);
     luaClassAddStringProperty(L, MetaTable, 'OnAfterUpdateList', @OnAfterUpdateList);
-    luaClassAddStringProperty(L, MetaTable, 'OnGetDirectoryPageNumber',
-      @OnGetDirectoryPageNumber);
+    luaClassAddStringProperty(L, MetaTable, 'OnGetDirectoryPageNumber', @OnGetDirectoryPageNumber);
     luaClassAddStringProperty(L, MetaTable, 'OnGetNameAndLink', @OnGetNameAndLink);
     luaClassAddStringProperty(L, MetaTable, 'OnGetInfo', @OnGetInfo);
     luaClassAddStringProperty(L, MetaTable, 'OnTaskStart', @OnTaskStart);
     luaClassAddStringProperty(L, MetaTable, 'OnGetPageNumber', @OnGetPageNumber);
     luaClassAddStringProperty(L, MetaTable, 'OnGetImageURL', @OnGetImageURL);
-    luaClassAddStringProperty(L, MetaTable, 'OnBeforeDownloadImage',
-      @OnBeforeDownloadImage);
+    luaClassAddStringProperty(L, MetaTable, 'OnBeforeDownloadImage', @OnBeforeDownloadImage);
     luaClassAddStringProperty(L, MetaTable, 'OnDownloadImage', @OnDownloadImage);
     luaClassAddStringProperty(L, MetaTable, 'OnSaveImage', @OnSaveImage);
     luaClassAddStringProperty(L, MetaTable, 'OnAfterImageSaved', @OnAfterImageSaved);
@@ -1000,7 +994,7 @@ begin
   Result := 1;
 end;
 
-procedure luaWebsiteModuleRegister(L: Plua_State);
+procedure luaWebsiteModuleRegister(const L: Plua_State);
 begin
   lua_register(L, 'NewWebsiteModule', @_create);
 end;

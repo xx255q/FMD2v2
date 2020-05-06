@@ -30,11 +30,11 @@ type
     property Text: String read GetText write SetText;
   end;
 
-procedure luaStringsStoragePush(L: Plua_State; Obj: TStringsStorage;
-  Name: PAnsiChar = nil; AutoFree: Boolean = False); inline;
+procedure luaStringsStoragePush(const L: Plua_State; const Obj: TStringsStorage;
+  const Name: String = ''; const AutoFree: Boolean = False); inline;
 
-procedure luaStringsStorageAddMetaTable(L: Plua_State; Obj: Pointer;
-  MetaTable, UserData: Integer; AutoFree: Boolean = False);
+procedure luaStringsStorageAddMetaTable(const L: Plua_State; const Obj: Pointer;
+  const MetaTable, UserData: Integer);
 
 implementation
 
@@ -108,7 +108,7 @@ type
 
 function strings_create(L: Plua_State): Integer; cdecl;
 begin
-  luaStringsStoragePush(L, TStringsStorage.Create, nil, True);
+  luaStringsStoragePush(L, TStringsStorage.Create, '', True);
   Result := 1;
 end;
 
@@ -163,32 +163,29 @@ const
     (name: nil; func: nil)
     );
 
-procedure luaStringsStorageAddMetaTable(L: Plua_State; Obj: Pointer;
-  MetaTable, UserData: Integer; AutoFree: Boolean = False);
+procedure luaStringsStorageAddMetaTable(const L: Plua_State; const Obj: Pointer;
+  const MetaTable, UserData: Integer);
 begin
   luaClassAddFunction(L, MetaTable, UserData, methods);
-  luaClassAddDefaultArrayProperty(L, MetaTable, UserData, @strings_getvalue,
-    @strings_setvalue);
-  luaClassAddProperty(L, MetaTable, UserData, 'Text', @strings_gettext,
-    @strings_settext);
+  luaClassAddDefaultArrayProperty(L, MetaTable, UserData, @strings_getvalue, @strings_setvalue);
+  luaClassAddProperty(L, MetaTable, UserData, 'Text', @strings_gettext, @strings_settext);
   luaClassAddIntegerProperty(L, MetaTable, 'Tag', @TUserData(Obj).Tag);
   luaClassAddBooleanProperty(L, MetaTable, 'Enable', @TUserData(Obj).Enable);
   luaClassAddStringProperty(L, MetaTable, 'Status', @TUserData(Obj).Status);
 end;
 
-procedure luaStringsStoragePush(L: Plua_State; Obj: TStringsStorage;
-  Name: PAnsiChar; AutoFree: Boolean);
+procedure luaStringsStoragePush(const L: Plua_State;
+  const Obj: TStringsStorage; const Name: String; const AutoFree: Boolean);
 begin
   luaClassPushObject(L, Obj, Name, AutoFree, @luaStringsStorageAddMetaTable);
 end;
 
-procedure luaStringsStorageRegister(L: Plua_State);
+procedure luaStringsStorageRegister(const L: Plua_State);
 begin
-  luaClassNewLib(L, PAnsiChar(String(TUserData.ClassName)), constructs);
+  luaClassNewLib(L, TUserData.ClassName, constructs);
 end;
 
 initialization
-  luaClassRegister(TUserData, @luaStringsStorageAddMetaTable,
-    @luaStringsStorageRegister);
+  luaClassRegister(TUserData, @luaStringsStorageAddMetaTable, @luaStringsStorageRegister);
 
 end.

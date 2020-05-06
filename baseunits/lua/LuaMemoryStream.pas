@@ -7,8 +7,8 @@ interface
 uses
   Classes, SysUtils, lua53;
 
-procedure luaMemoryStreamAddMetaTable(L: Plua_State; Obj: Pointer; MetaTable,
-  UserData: Integer; AutoFree: Boolean = False);
+procedure luaMemoryStreamAddMetaTable(const L: Plua_State; const Obj: Pointer;
+  const MetaTable, UserData: Integer);
 
 implementation
 
@@ -74,8 +74,8 @@ const
     (name: nil; funcget: nil; funcset: nil)
     );
 
-procedure luaMemoryStreamAddMetaTable(L: Plua_State; Obj: Pointer; MetaTable,
-  UserData: Integer; AutoFree: Boolean);
+procedure luaMemoryStreamAddMetaTable(const L: Plua_State; const Obj: Pointer;
+  const MetaTable, UserData: Integer);
 begin
   with TUserData(Obj) do
   begin

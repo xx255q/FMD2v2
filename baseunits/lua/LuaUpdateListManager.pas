@@ -7,8 +7,8 @@ interface
 uses
   Classes, SysUtils, lua53;
 
-procedure luaUpdateListManagerAddMetaTable(L: Plua_State; Obj: Pointer;
-  MetaTable, UserData: Integer; AutoFree: Boolean = False);
+procedure luaUpdateListManagerAddMetaTable(const L: Plua_State; const Obj: Pointer;
+  const MetaTable, UserData: Integer);
 
 implementation
 
@@ -27,8 +27,8 @@ begin
   TUpdateListManagerThread(luaClassGetObject(L)).CurrentDirectoryPageNumber := lua_tointeger(L, 1);
 end;
 
-procedure luaUpdateListManagerAddMetaTable(L: Plua_State; Obj: Pointer;
-  MetaTable, UserData: Integer; AutoFree: Boolean = False);
+procedure luaUpdateListManagerAddMetaTable(const L: Plua_State;
+  const Obj: Pointer; const MetaTable, UserData: Integer);
 begin
   luaClassAddProperty(L, MetaTable, UserData, 'CurrentDirectoryPageNumber', @lua_GetCurrentDirectoryPageNumber, @lua_SetCurrentDirectoryPageNumber);
 end;

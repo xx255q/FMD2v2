@@ -21,7 +21,7 @@ function LuaGetReturnString(const ReturnCode: Integer): String;
 function LuaDumpFileToStream(const AFileName: String; const AStripDebug: Boolean = False): TMemoryStream; overload;
 function LuaDumpFileToStream(const L: Plua_State; const AFileName: String;
   const AStripDebug: Boolean = True): TMemoryStream; overload;
-function LuaLoadFromStream(const L: Plua_State; const AStream: TMemoryStream; const AName: PAnsiChar): Integer; inline;
+function LuaLoadFromStream(const L: Plua_State; const AStream: TMemoryStream; const AName: String): Integer; inline;
 
 procedure LuaExecute(const L: Plua_State; const AStream: TMemoryStream; const AFileName: String; const NResult: Integer = 0);
 
@@ -214,9 +214,9 @@ begin
 end;
 
 function LuaLoadFromStream(const L: Plua_State; const AStream: TMemoryStream;
-  const AName: PAnsiChar): Integer;
+  const AName: String): Integer;
 begin
-  Result := lua_load(L, @_luareader, AStream, AName, 'b');
+  Result := lua_load(L, @_luareader, AStream, PAnsiChar(AName), 'b');
 end;
 
 procedure LuaExecute(const L: Plua_State; const AStream: TMemoryStream;
