@@ -227,7 +227,7 @@ begin
   if AlwaysLoadLuaFromFile then
     r := luaL_loadfilex(L, PAnsiChar(AFileName), nil)
   else
-    r := LuaLoadFromStream(L, AStream, PAnsiChar(AFileName));
+    r := lua_load(L, @_luareader, AStream, PAnsiChar(AFileName), 'b');
   if r = 0 then
     r := lua_pcall(L, 0, NResult, 0);
   if r <> 0 then
