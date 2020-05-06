@@ -5967,7 +5967,6 @@ begin
   begin
     Link := dataProcess.Value[Node^.Index, DATA_PARAM_LINK];
     Title := dataProcess.Value[Node^.Index, DATA_PARAM_TITLE];
-    TitleFormat := Title + ' (' + IntToStr(NumChapter) + ')';
     Authors := dataProcess.Value[Node^.Index, DATA_PARAM_AUTHORS];
     Artists := dataProcess.Value[Node^.Index, DATA_PARAM_ARTISTS];
     Genres := dataProcess.Value[Node^.Index, DATA_PARAM_GENRES];
@@ -5975,6 +5974,7 @@ begin
     NumChapter := dataProcess.ValueInt[Node^.Index, DATA_PARAM_NUMCHAPTER];
     JDN := dataProcess.ValueInt[Node^.Index, DATA_PARAM_JDN];
     Summary := dataProcess.Value[Node^.Index, DATA_PARAM_SUMMARY];
+    TitleFormat := Title + ' (' + IntToStr(NumChapter) + ')';
     if dataProcess.FilterAllSites then
     begin
       Module := dataProcess.GetModule(Node^.Index);
