@@ -215,6 +215,9 @@
             </Debugging>
           </Linking>
           <Other>
+            <Verbosity>
+              <ShowDebugInfo Value="True"/>
+            </Verbosity>
             <CustomOptions Value="-dDEVBUILD
 -dDEBUGLEAKS
 -ddump_loaded_modules"/>
