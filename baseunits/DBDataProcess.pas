@@ -279,8 +279,8 @@ procedure TDBDataProcess.CreateTable;
 begin
   if FConn.Connected then
   begin
-    FConn.ExecuteDirect('DROP TABLE IF EXISTS ' + QuotedStrd(FTableName));
-    FConn.ExecuteDirect('CREATE TABLE ' + QuotedStrd(FTableName) + ' (' +
+    FConn.ExecuteDirect('DROP TABLE IF EXISTS "' + FTableName + '"');
+    FConn.ExecuteDirect('CREATE TABLE "' + FTableName + '" (' +
       DBDataProccesCreateParam + ');');
     FTrans.Commit;
   end;
@@ -366,9 +366,9 @@ begin
   else
     scond := '';
   if useRegexp then
-    AddSQLCond(QuotedStrd(fieldname) + scond + ' REGEXP ' + QuotedStr(svalue), useOR)
+    AddSQLCond('"' + fieldname + '"' + scond + ' REGEXP ' + QuotedStr(svalue), useOR)
   else
-    AddSQLCond(QuotedStrd(fieldname) + scond + ' LIKE ' + QuotedLike(svalue), useOR);
+    AddSQLCond('"' + fieldname + '"' + scond + ' LIKE ' + QuotedLike(svalue), useOR);
 end;
 
 function TDBDataProcess.GetConnected: Boolean;
@@ -386,9 +386,9 @@ begin
   try
     FConn.CharSet := 'UTF8';
     FConn.Connected := True;
-    sqlite3_create_collation(FConn.Handle, PChar('NATCMP'), SQLITE_UTF8, nil,
+    sqlite3_create_collation(FConn.Handle, PAnsiChar('NATCMP'), SQLITE_UTF8, nil,
       @NaturalCompareCallback);
-    sqlite3_create_function(FConn.Handle, PChar('REGEXP'), 2, SQLITE_UTF8, FRegxp,
+    sqlite3_create_function(FConn.Handle, PAnsiChar('REGEXP'), 2, SQLITE_UTF8, FRegxp,
       @RegexCallback, nil, nil);
     FTrans.Active := True;
   except
@@ -478,7 +478,7 @@ begin
       m := TModuleContainer(FSitesList.Objects[i]);
       if (FAttachedSites.IndexOf(m.ID) = -1) and (FileExistsUTF8(DBDataFilePath(m.ID))) then
       begin
-        FConn.ExecuteDirect('ATTACH ' + QuotedStr(DBDataFilePath(m.ID)) + ' AS ' + QuotedStrd(m.ID));
+        FConn.ExecuteDirect('ATTACH ' + QuotedStr(DBDataFilePath(m.ID)) + ' AS "' + m.ID + '"');
         FAttachedSites.AddObject(m.ID, m);
       end;
     end;
@@ -503,7 +503,7 @@ begin
   FConn.ExecuteDirect('END TRANSACTION');
   for i := FAttachedSites.Count - 1 downto 0 do begin
     try
-      FConn.ExecuteDirect('DETACH ' + QuotedStrd(FAttachedSites[i]));
+      FConn.ExecuteDirect('DETACH "' + FAttachedSites[i] + '"');
       FAttachedSites.Delete(i);
     except
       on E: Exception do
@@ -562,7 +562,7 @@ begin
   FSitesList := TStringList.Create;
   FAttachedSites := TStringList.Create;
   FTableName := 'masterlist';
-  FSQLSelect := 'SELECT * FROM ' + QuotedStrd(FTableName);
+  FSQLSelect := 'SELECT * FROM "' + FTableName + '"';
   FRecordCount := 0;
   FFiltered := False;
   FFilterAllSites := False;
@@ -603,7 +603,7 @@ end;
 
 function TDBDataProcess.Connect(const AWebsite: String): Boolean;
 var
-  filepath: String;
+  filepath: String = '';
 begin
   if CheckWebsiteAndFilePath(AWebsite, filepath) then
     Result := InternalOpen(filepath)
@@ -645,7 +645,7 @@ begin
         if FQuery.Active then
           FQuery.Close;
         if FTrans.Active=False then FTrans.Active:=True;
-        FSQLSelect := 'SELECT * FROM ' + QuotedStrd(FTableName);
+        FSQLSelect := 'SELECT * FROM "' + FTableName +'"';
         FQuery.SQL.Text := FSQLSelect;
         if CheckRecordCount then
           GetRecordCount;
@@ -750,7 +750,7 @@ begin
   if FConn.Connected=False then Exit;
   try
     FConn.ExecuteDirect(
-      'INSERT INTO '+QuotedStrd(FTableName)+' ('+DBDataProcessParam+') VALUES ('+
+      'INSERT INTO "'+FTableName+'" ('+DBDataProcessParam+') VALUES ('+
       QuotedStr(Link)+', '+
       QuotedStr(Title)+', '+
       QuotedStr(Authors)+', '+
@@ -783,9 +783,9 @@ begin
   try
     sql:='UPDATE ';
     if (AWebsite<>'') and (AWebsite<>FWebsite) and FAllSitesAttached then
-      sql+=QuotedStrd(AWebsite)+'.'+QuotedStrd(FTableName)
+      sql+='"'+AWebsite+'"."'+FTableName+'"'
     else
-      sql+=QuotedStrd(FTableName);
+      sql+='"'+FTableName+'"';
     sql+=' SET "title"='+QuotedStr(Title)+
          ', "authors"='+QuotedStr(Authors)+
          ', "artists"='+QuotedStr(Artists)+
@@ -797,6 +797,8 @@ begin
     FConn.ExecuteDirect(sql);
     Result:=True;
   except
+    on E: Exception do
+      Logger.SendException(ClassName+'['+Website+'].UpdateData.Error!'+LineEnding+sql,E);
   end;
 end;
 
@@ -938,8 +940,7 @@ var
   begin
     // filter new manga based on date
     if searchNewManga then
-      AddSQLCond('"jdn" > ' +
-        QuotedStrd(IntToStr(DateToJDN(Now)-minusDay)));
+      AddSQLCond('"jdn" > "' + IntToStr(DateToJDN(Now)-minusDay) + '"');
 
     // filter title
     AddSQLSimpleFilter('title', stTitle, False, False, useRegExpr);
@@ -955,7 +956,7 @@ var
 
     // filter status
     if stStatus <> '2' then
-      AddSQLCond('"status"=' + QuotedStrd(stStatus));
+      AddSQLCond('"status"="' + stStatus + '"');
 
     //filter checked genres
     if checkedGenres.Count > 0 then
@@ -1001,13 +1002,13 @@ begin
         begin
           SQL.Add('SELECT * FROM');
           SQL.Add('(');
-          SQL.Add('SELECT *, "-1" AS "website" FROM ' + QuotedStrd(FTableName));
+          SQL.Add('SELECT *, "-1" AS "website" FROM "' + FTableName + '"');
           SQL.Add('WHERE');
           GenerateSQLFilter;
           for i := 0 to FAttachedSites.Count - 1 do
           begin
             SQL.Add('UNION ALL');
-            SQL.Add('SELECT *, "' + IntToStr(i) + '" AS "website" FROM ' + QuotedStrd(FAttachedSites[i]) + '.' + QuotedStrd(FTableName));
+            SQL.Add('SELECT *, "' + IntToStr(i) + '" AS "website" FROM "' + FAttachedSites[i] + '"."' + FTableName + '"');
             SQL.Add('WHERE');
             GenerateSQLFilter;
           end;
@@ -1097,11 +1098,11 @@ begin
     FQuery.Close;
     with FConn do
       try
-        ExecuteDirect('DROP TABLE IF EXISTS ' + QuotedStrd(FTableName + '_ordered'));
-        ExecuteDirect('CREATE TABLE ' + QuotedStrd(FTableName + '_ordered') + ' (' + DBDataProccesCreateParam +')');
-        ExecuteDirect('INSERT INTO '+QuotedStrd(FTableName + '_ordered') + ' (' + DBDataProcessParam + ') SELECT '+ DBDataProcessParam +' FROM ' + QuotedStrd(FTableName) + ' ORDER BY "title" COLLATE NATCMP');
-        ExecuteDirect('DROP TABLE ' + QuotedStrd(FTableName));
-        ExecuteDirect('ALTER TABLE ' + QuotedStrd(FTableName + '_ordered') + ' RENAME TO ' + QuotedStrd(FTableName));
+        ExecuteDirect('DROP TABLE IF EXISTS "' + FTableName + '_ordered"');
+        ExecuteDirect('CREATE TABLE "' + FTableName + '_ordered" (' + DBDataProccesCreateParam +')');
+        ExecuteDirect('INSERT INTO "'+ FTableName + '_ordered" (' + DBDataProcessParam + ') SELECT '+ DBDataProcessParam +' FROM "' + FTableName + '" ORDER BY "title" COLLATE NATCMP');
+        ExecuteDirect('DROP TABLE "' + FTableName);
+        ExecuteDirect('ALTER TABLE "' + FTableName + '_ordered" RENAME TO "' + FTableName);
         FTrans.Commit;
         VacuumTable;
       except
