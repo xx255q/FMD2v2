@@ -23,6 +23,7 @@ begin
     luaClassAddObject(L, MetaTable, ChapterLinks, 'ChapterLinks', @luaStringsAddMetaTable);
     luaClassAddObject(L, MetaTable, ChapterNames, 'ChapterNames', @luaStringsAddMetaTable);
     luaClassAddObject(L, MetaTable, PageContainerLinks, 'PageContainerLinks', @luaStringsAddMetaTable);
+    luaClassAddObject(L, MetaTable, FileNames, 'FileNames', @luaStringsAddMetaTable);
     luaClassAddIntegerProperty(L, MetaTable, 'CurrentDownloadChapterPtr', @CurrentDownloadChapterPtr);
     luaClassAddIntegerProperty(L, MetaTable, 'PageNumber', @PageNumber);
     luaClassAddStringProperty(L, MetaTable, 'Link', @DownloadInfo.Link);
