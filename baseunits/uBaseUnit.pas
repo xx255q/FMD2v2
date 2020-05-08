@@ -654,8 +654,8 @@ function JDNToDate(const JDN: Longint): TDate;
 {function  ConvertInt32ToStr(const aValue: Cardinal)  : String;
 function  ConvertStrToInt32(const aStr  : String): Cardinal;}
 procedure TransferMangaInfo(var dest: TMangaInfo; const Source: TMangaInfo);
-function MangaInfoStatusIfPos(const SearchStr: String; const OngoingStr: String = 'Ongoing';
-    const CompletedStr: String = 'Complete'): String;
+function MangaInfoStatusIfPos(const SearchStr: String; const OngoingStr: String = 'ongoing';
+    const CompletedStr: String = 'complete'): String;
 
 procedure GetBaseMangaInfo(const M: TMangaInfo; var B: TBaseMangaInfo);
 // fill empty manga info
@@ -3732,10 +3732,22 @@ begin
   s := LowerCase(SearchStr);
   o := LowerCase(OngoingStr);
   c := LowerCase(CompletedStr);
-  If Pos(o, s) <> 0 then
-    Result := MangaInfo_StatusOngoing
-  else if Pos(c, s) <> 0 then
-    Result := MangaInfo_StatusCompleted;
+  if o <> '' then
+  begin
+    if Pos(o, s) <> 0 then
+      Result := MangaInfo_StatusOngoing
+    else if c = '' then
+      Result := MangaInfo_StatusCompleted
+    else if Pos(c, s) <> 0 then
+      Result := MangaInfo_StatusCompleted
+  end
+  else if c <> '' then
+  begin
+    if Pos(c, s) <> 0 then
+      Result := MangaInfo_StatusCompleted
+    else if o = '' then
+      Result := MangaInfo_StatusOngoing;
+  end;
 end;
 
 procedure GetBaseMangaInfo(const M: TMangaInfo; var B: TBaseMangaInfo);
