@@ -27,7 +27,7 @@ function GetNameAndLink()
 	if URL ~= '0' then
 		s = s .. '&pageNumber=' .. IncStr(URL)
 	end
-	if HTTP.GET(MODULE.RootURL .. '/ajax', data) then
+	if HTTP.GET(s) then
 		TXQuery.Create(HTTP.Document).XPathHREFAll('//ul[contains(@class,"content-list-wrap")]//li//a[@class="preferred title"]', LINKS, NAMES)
 		return no_error
 	else
