@@ -3726,6 +3726,20 @@ function MangaInfoStatusIfPos(const SearchStr: String; const OngoingStr: String;
   const CompletedStr: String): String;
 var
   s, o, c: String;
+  function searchMany(const t: String): Boolean;
+  var
+    i: String;
+  begin
+    if Pos('|', t) = 0 then
+       Result := Pos(t, s) <> 0
+    else
+    begin
+      for i in t.Split(['|']) do
+        if Pos(i, s) <> 0 then
+          Exit(True);
+      Result := False
+    end;
+  end;
 begin
   Result := '';
   if SearchStr = '' then Exit;
@@ -3734,18 +3748,18 @@ begin
   c := LowerCase(CompletedStr);
   if o <> '' then
   begin
-    if Pos(o, s) <> 0 then
+    if searchMany(o) then
       Result := MangaInfo_StatusOngoing
     else if c = '' then
       Result := MangaInfo_StatusCompleted
-    else if Pos(c, s) <> 0 then
+    else if searchMany(c) then
       Result := MangaInfo_StatusCompleted
   end
   else if c <> '' then
   begin
-    if Pos(c, s) <> 0 then
+    if searchMany(c) then
       Result := MangaInfo_StatusCompleted
-    else if o = '' then
+    else if searchMany(o) then
       Result := MangaInfo_StatusOngoing;
   end;
 end;
