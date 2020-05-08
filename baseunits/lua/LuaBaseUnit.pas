@@ -12,7 +12,7 @@ procedure luaBaseUnitRegister(L: Plua_State);
 implementation
 
 uses
-  LuaUtils, MultiLog, htmlelements, dateutils;
+  LuaUtils, LazFileUtils, MultiLog, htmlelements, dateutils;
 
 function lua_pos(L: Plua_State): Integer; cdecl;
 begin
@@ -23,6 +23,18 @@ end;
 function lua_trim(L: Plua_State): Integer; cdecl;
 begin
   lua_pushstring(L, Trim(luaGetString(L, 1)));
+  Result := 1;
+end;
+
+function lua_extractfilename(L: Plua_State): Integer; cdecl;
+begin
+  lua_pushstring(L, ExtractFileName(luaGetString(L, 1)));
+  Result := 1;
+end;
+
+function lua_extractfilenameonly(L: Plua_State): Integer; cdecl;
+begin
+  lua_pushstring(L, ExtractFileNameOnly(luaGetString(L, 1)));
   Result := 1;
 end;
 
@@ -205,6 +217,8 @@ procedure luaBaseUnitRegister(L: Plua_State);
 begin
   luaPushFunctionGlobal(L, 'Pos', @lua_pos);
   luaPushFunctionGlobal(L, 'Trim', @lua_trim);
+  luaPushFunctionGlobal(L, 'ExtractFileName', @lua_extractfilename);
+  luaPushFunctionGlobal(L, 'ExtractFileNameOnly', @lua_extractfilenameonly);
   luaPushFunctionGlobal(L, 'MaybeFillHost', @lua_maybefillhost);
   luaPushFunctionGlobal(L, 'InvertStrings', @lua_invertstrings);
   luaPushFunctionGlobal(L, 'MangaInfoStatusIfPos', @lua_mangainfostatusifpos);
