@@ -1,10 +1,27 @@
+local lang = {
+  ['en'] = {
+    ['removewatermark'] = 'Remove watermark',
+    ['saveaspng'] = 'Save as PNG'
+  },
+  ['id_ID'] = {
+    ['removewatermark'] = 'Hapus watermark',
+    ['saveaspng'] = 'Simpan sebagai PNG'
+  }
+}
+
+function getlang(k)
+	local l = FMD.SelectedLanguage
+	if lang[l] == nil then l = 'en' end
+	return lang[l][k]
+end
+
 function Init()
   local cat = 'English'
   AddWebsiteModule('8e7bd7b38aa041aa9bc1bddeec33b6f4', 'MangaHere', 'https://www.mangahere.cc', cat)  
   local m = AddWebsiteModule('0d3653a8d9b747a381374f32e0a1641e', 'FanFox', 'https://fanfox.net', cat)
   m.OnAfterImageSaved = 'AfterImageSaved'
-  m.AddOptionCheckBox('mf_removewatermark', 'Remove watermark', true)
-  m.AddOptionCheckBox('mf_saveaspng', 'Save as PNG', false)
+  m.AddOptionCheckBox('mf_removewatermark', getlang('removewatermark'), true)
+  m.AddOptionCheckBox('mf_saveaspng', getlang('saveaspng'), false)
   MangaFoxLoadTemplate(FMD.LuaDirectory .. 'extras' .. PathDelim .. 'mangafoxtemplate')
 end
 
