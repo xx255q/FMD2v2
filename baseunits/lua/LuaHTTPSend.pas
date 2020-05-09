@@ -117,6 +117,7 @@ begin
     luaClassAddObject(L, MetaTable, TUserData(Obj).Document, 'Document', @luaMemoryStreamAddMetaTable);
     luaClassAddStringProperty(L, MetaTable, 'MimeType', @TUserData(Obj).MimeType);
     luaClassAddStringProperty(L, MetaTable, 'UserAgent', @TUserData(Obj).UserAgent);
+    luaClassAddIntegerProperty(L, MetaTable, 'RetryCount', @TUserData(Obj).RetryCount);
   end;
 end;
 
