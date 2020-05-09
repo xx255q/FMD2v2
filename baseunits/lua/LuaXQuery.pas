@@ -7,8 +7,8 @@ interface
 uses
   Classes, SysUtils, lua53, XQueryEngineHTML, xquery;
 
-procedure luaXQueryPush(L: Plua_State; Obj: TXQueryEngineHTML; Name: String = '';
-  AutoFree: Boolean = False); inline;
+procedure luaXQueryAddMetaTable(const L: Plua_State; const Obj: Pointer;
+  const MetaTable, UserData: Integer);
 
 implementation
 
@@ -19,19 +19,26 @@ type
   TUserData = TXQueryEngineHTML;
 
 function xquery_create(L: Plua_State): Integer; cdecl;
+var
+  u: TUserData;
 begin
+  u := nil;
+  Result := 0;
   if lua_gettop(L) = 1 then
   begin
     if lua_isstring(L, 1) then
-      luaXQueryPush(L, TXQueryEngineHTML.Create(luaGetString(L, 1)), '', True)
+      u := TXQueryEngineHTML.Create(luaGetString(L, 1))
     else
     if lua_isuserdata(L, 1) then
-      luaXQueryPush(L, TXQueryEngineHTML.Create(TStream(luaGetUserData(L, 1))),
-        '', True);
+      u := TXQueryEngineHTML.Create(TStream(luaGetUserData(L, 1)));
   end
   else
-    luaXQueryPush(L, TXQueryEngineHTML.Create, '', True);
-  Result := 1;
+    u := TXQueryEngineHTML.Create;
+  if Assigned(u) then
+  begin
+    luaClassPushObject(L, u, '', True, @luaXQueryAddMetaTable);
+    Result := 1;
+  end;
 end;
 
 function xquery_parsehtml(L: Plua_State): Integer; cdecl;
@@ -57,7 +64,7 @@ begin
     x := u.XPath(luaGetString(L, 1), TLuaIXQValue(luaGetUserData(L, 2)).FIXQValue)
   else
     x := u.XPath(luaGetString(L, 1));
-  luaIXQValuePush(L, TLuaIXQValue.Create(x));
+  luaIXQValuePush(L, x);
   Result := 1;
 end;
 
@@ -76,7 +83,7 @@ begin
   t := lua_gettop(L);
   for i := 1 to x.Count do
   begin
-    luaIXQValuePush(L, TLuaIXQValue.Create(x.get(i)));
+    luaIXQValuePush(L, x.get(i));
     lua_rawseti(L, t, i);
   end;
   Result := 1;
@@ -200,12 +207,6 @@ procedure luaXQueryAddMetaTable(const L: Plua_State; const Obj: Pointer;
   const MetaTable, UserData: Integer);
 begin
   luaClassAddFunction(L, MetaTable, UserData, methods);
-end;
-
-procedure luaXQueryPush(L: Plua_State; Obj: TXQueryEngineHTML; Name: String;
-  AutoFree: Boolean);
-begin
-  luaClassPushObject(L, Obj, Name, AutoFree, @luaXQueryAddMetaTable);
 end;
 
 procedure luaXQueryRegister(const L: Plua_State);
