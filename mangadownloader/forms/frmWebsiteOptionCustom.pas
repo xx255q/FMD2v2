@@ -408,22 +408,41 @@ var
   m: TModuleContainer;
   o: TWebsiteOptionItem;
   cap: String;
+  s: TStringList;
+  i: Integer;
 begin
   dparent.DestroyComponents;
-  for m in Modules.List do
-    for o in m.OptionList do
+  // sort the modules by name for the ui
+  s := TStringList.Create;
+  try
+    s.Sorted := False;
+    for m in Modules.List do
+      if Length(m.OptionList) <> 0 then
+        s.AddObject(m.Name, m);
+    if s.Count <> 0 then
     begin
-      if Assigned(o.Caption) then
-        cap := o.Caption^
-      else
-        cap := '';
-      case o.OptionType of
-        woCheckBox: AddCheckbox(o.BindValue, o.Name, cap, m.ID, m.Name);
-        woEdit: AddEdit(o.BindValue, o.Name, cap, m.ID, m.Name);
-        woSpinEdit: AddSpinEdit(o.BindValue, o.Name, cap, m.ID, m.Name);
-        woComboBox: AddComboBox(o.BindValue, o.Name, cap, m.ID, m.Name, o.Items^);
+      s.Sort;
+      for i := s.Count-1 downto 0 do
+      begin
+        m := TModuleContainer(s.Objects[i]);
+        for o in m.OptionList do
+        begin
+          if Assigned(o.Caption) then
+            cap := o.Caption^
+          else
+            cap := '';
+          case o.OptionType of
+            woCheckBox: AddCheckbox(o.BindValue, o.Name, cap, m.ID, m.Name);
+            woEdit: AddEdit(o.BindValue, o.Name, cap, m.ID, m.Name);
+            woSpinEdit: AddSpinEdit(o.BindValue, o.Name, cap, m.ID, m.Name);
+            woComboBox: AddComboBox(o.BindValue, o.Name, cap, m.ID, m.Name, o.Items^);
+          end;
+        end;
       end;
     end;
+  finally
+    s.Free;
+  end;
 end;
 
 end.
