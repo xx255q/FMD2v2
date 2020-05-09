@@ -44,8 +44,8 @@ type
     procedure AddOptionSpinEdit(const AName, ACaption: String; const ADefault: Integer);
     procedure AddOptionComboBox(const AName, ACaption, AItems: String; const ADefault: Integer);
 
-    procedure LuaPushMe(L: Plua_State);
-    procedure LuaDoMe(L: Plua_State); inline;
+    procedure LuaPushMe(const L: Plua_State);
+    procedure LuaDoMe(const L: Plua_State); inline;
   end;
 
   TLuaWebsiteModules = specialize TFPGList<TLuaWebsiteModule>;
@@ -804,7 +804,7 @@ begin
   Module.AddOptionComboBox(@o.Value, Options[i], @o.Caption, @o.Items);
 end;
 
-procedure TLuaWebsiteModule.LuaPushMe(L: Plua_State);
+procedure TLuaWebsiteModule.LuaPushMe(const L: Plua_State);
 begin
   luaPushObject(L, Self, 'MODULE', @luaWebsiteModuleAddMetaTable);
   luaPushIntegerGlobal(L, 'no_error', NO_ERROR);
@@ -818,7 +818,7 @@ begin
   luaPushIntegerGlobal(L, 'asInvalid', Integer(asInvalid));
 end;
 
-procedure TLuaWebsiteModule.LuaDoMe(L: Plua_State);
+procedure TLuaWebsiteModule.LuaDoMe(const L: Plua_State);
 begin
   LuaExecute(L, Container.ByteCode, Container.FileName);
 end;
