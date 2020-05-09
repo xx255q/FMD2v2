@@ -442,11 +442,6 @@ function CorrectFilePath(const APath: String): String;
 function CorrectURL(const URL: String): String;
 procedure CheckPath(const S: String);
 
-function SitesWithSortedList(const website: String): Boolean;
-function SitesWithoutFavorites(const website: String): Boolean;
-// Return true if the website doesn't contain manga information
-function SitesWithoutInformation(const website: String): Boolean;
-
 // url
 function FillURLProtocol(const AProtocol, AURL: String): String;
 
@@ -973,42 +968,6 @@ begin
         CreateDirUTF8(lcS2 + lcS);
       end;
     end;
-  end;
-end;
-
-function SitesWithSortedList(const website: String): Boolean;
-var
-  i: Integer = -1;
-begin
-  Result := False;
-  if Modules.ModuleAvailable(website, i) then
-  begin
-    Result := Modules.Module[i].SortedList;
-    Exit;
-  end;
-end;
-
-function SitesWithoutFavorites(const website: String): Boolean;
-var
-  i: Integer = -1;
-begin
-  Result := False;
-  if Modules.ModuleAvailable(website, i) then
-  begin
-    Result := not Modules.Module[i].FavoriteAvailable;
-    Exit;
-  end;
-end;
-
-function SitesWithoutInformation(const website: String): Boolean;
-var
-  i: Integer = -1;
-begin
-  Result := False;
-  if Modules.ModuleAvailable(website, i) then
-  begin
-    Result := not Modules.Module[i].InformationAvailable;
-    Exit;
   end;
 end;
 

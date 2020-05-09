@@ -3802,7 +3802,7 @@ begin
     pmMangaList.Items[1].Enabled := True;
     pmMangaList.Items[2].Enabled := True;
   end;
-  pmMangaList.Items[2].Enabled := not SitesWithoutFavorites(cbSelectManga.Text);
+  pmMangaList.Items[2].Enabled := Assigned(currentWebsite) and TModuleContainer(currentWebsite).FavoriteAvailable;
 end;
 
 procedure TMainForm.pmSbMainPopup(Sender: TObject);
