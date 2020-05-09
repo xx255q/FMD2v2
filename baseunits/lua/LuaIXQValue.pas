@@ -16,7 +16,7 @@ type
     constructor Create(const AIX: IXQValue);
   end;
 
-procedure luaIXQValuePush(L: Plua_State; Obj: TLuaIXQValue); inline;
+procedure luaIXQValuePush(const L: Plua_State; const Obj: IXQValue); inline;
 
 implementation
 
@@ -48,7 +48,7 @@ end;
 
 function ixqvalue_getproperty(L: Plua_State): Integer; cdecl;
 begin
-  luaIXQValuePush(L, TUserData.Create(TUserData(luaClassGetObject(L)).FIXQValue.getProperty(luaGetString(L, 1))));
+  luaIXQValuePush(L, TUserData(luaClassGetObject(L)).FIXQValue.getProperty(luaGetString(L, 1)));
   Result := 1;
 end;
 
@@ -78,7 +78,7 @@ end;
 
 function ixqvalue_get(L: Plua_State): Integer; cdecl;
 begin
-  luaIXQValuePush(L, TUserData.Create(TUserData(luaClassGetObject(L)).FIXQValue.get(lua_tointeger(L, 1))));
+  luaIXQValuePush(L, TUserData(luaClassGetObject(L)).FIXQValue.get(lua_tointeger(L, 1)));
   Result := 1;
 end;
 
@@ -106,9 +106,9 @@ begin
   luaClassAddProperty(L, MetaTable, UserData, props);
 end;
 
-procedure luaIXQValuePush(L: Plua_State; Obj: TLuaIXQValue);
+procedure luaIXQValuePush(const L: Plua_State; const Obj: IXQValue);
 begin
-  luaClassPushObject(L, Obj, '', True, @luaIXQValueAddMetaTable);
+  luaClassPushObject(L, TLuaIXQValue.Create(Obj), '', True, @luaIXQValueAddMetaTable);
 end;
 
 initialization
