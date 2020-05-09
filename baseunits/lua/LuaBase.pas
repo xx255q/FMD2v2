@@ -25,6 +25,9 @@ function LuaLoadFromStream(const L: Plua_State; const AStream: TMemoryStream; co
 
 procedure LuaExecute(const L: Plua_State; const AStream: TMemoryStream; const AFileName: String; const NResult: Integer = 0);
 
+function _luawriter(L: Plua_State; const p: Pointer; sz: size_t; ud: Pointer): Integer; cdecl;
+function _luareader(L: Plua_State; ud: Pointer; sz: Psize_t): PAnsiChar; cdecl;
+
 var
   AlwaysLoadLuaFromFile: Boolean = {$ifdef DEVBUILD}True{$else}False{$endif};
 
