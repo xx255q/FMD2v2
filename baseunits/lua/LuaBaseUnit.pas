@@ -213,6 +213,13 @@ begin
   end;
 end;
 
+function lua_SerializeAndMaintainNames(L: Plua_State): Integer; cdecl;
+begin
+  if lua_isuserdata(L, 1) then
+    SerializeAndMaintainNames(TStrings(luaGetUserData(L, 1)));
+  Result := 0;
+end;
+
 procedure luaBaseUnitRegister(L: Plua_State);
 begin
   luaPushFunctionGlobal(L, 'Pos', @lua_pos);
@@ -239,6 +246,8 @@ begin
   luaPushFunctionGlobal(L, 'DecryptString', @lua_decryptstring);
   luaPushFunctionGlobal(L, 'Base64Encode', @lua_Base64Encode);
   luaPushFunctionGlobal(L, 'Base64Decode', @lua_Base64Decode);
+
+  luaPushFunctionGlobal(L, 'SerializeAndMaintainNames', @lua_SerializeAndMaintainNames);
 end;
 
 end.
