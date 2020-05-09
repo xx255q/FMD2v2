@@ -12,18 +12,19 @@ procedure luaFMDRegister(L: Plua_State);
 implementation
 
 uses
-  LuaClass, LuaUtils, FMDOptions;
+  LuaClass, LuaUtils, FMDOptions, SimpleTranslator;
 
 procedure luaFMDRegister(L: Plua_State);
 var
   t: Integer;
 begin
   t := luaNewTable(L);
-  luaAddStringToTable(L, t, 'Directory', PAnsiChar(FMD_DIRECTORY));
-  luaAddStringToTable(L, t, 'ExeName', PAnsiChar(FMD_EXENAME));
-  luaAddStringToTable(L, t, 'Version', PAnsiChar(FMD_VERSION_STRING));
-  luaAddStringToTable(L, t, 'Revision', PAnsiChar(REVISION_NUMBER));
-  luaAddStringToTable(L, t, 'LuaDirectory', PAnsiChar(LUA_REPO_FOLDER));
+  luaAddStringToTable(L, t, 'Directory', FMD_DIRECTORY);
+  luaAddStringToTable(L, t, 'ExeName', FMD_EXENAME);
+  luaAddStringToTable(L, t, 'Version', FMD_VERSION_STRING);
+  luaAddStringToTable(L, t, 'Revision', REVISION_NUMBER);
+  luaAddStringToTable(L, t, 'LuaDirectory', LUA_REPO_FOLDER);
+  luaAddStringToTable(L, t, 'SelectedLanguage', SimpleTranslator.LastSelected);
   lua_setglobal(L, 'FMD');
 end;
 
