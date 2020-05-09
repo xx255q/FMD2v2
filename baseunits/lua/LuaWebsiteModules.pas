@@ -663,6 +663,7 @@ begin
     TLuaWebsiteModulesLoaderThread.Create(Self);
   while FThreadCount <> 0 do
     Sleep(250);
+  Modules.Sort;
 end;
 
 constructor TLuaWebsiteModulesLoader.Create;

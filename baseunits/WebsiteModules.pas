@@ -196,6 +196,7 @@ type
     constructor Create;
     destructor Destroy; override;
 
+    procedure Sort;
     procedure AddModule(const AModule: TModuleContainer);
     function AddNewModule: TModuleContainer;
     function LocateModule(const AModuleID: String): TModuleContainer;
@@ -560,6 +561,16 @@ begin
   inherited Destroy;
 end;
 
+function TModuleContainerCompare(const Item1, Item2: TModuleContainer): Integer;
+begin
+  Result := AnsiCompareStr(Item1.ID, Item2.ID);
+end;
+
+procedure TWebsiteModules.Sort;
+begin
+  FModuleList.Sort(@TModuleContainerCompare);
+end;
+
 procedure TWebsiteModules.AddModule(const AModule: TModuleContainer);
 begin
   EnterCriticalsection(FCSModules);
@@ -581,20 +592,34 @@ begin
   end;
 end;
 
-function TWebsiteModules.LocateModule(const AModuleID: String
-  ): TModuleContainer;
+function TWebsiteModules.LocateModule(const AModuleID: String): TModuleContainer;
 var
-  i: Integer;
+  L, R, I: Integer;
+  CompareRes: PtrInt;
 begin
   if Assigned(FLastLocateModule) and (FLastLocateModule.ID = AModuleID) then
     Exit(FLastLocateModule);
-  for i := FModuleList.Count-1 downto 0 do
-    if FModuleList[i].ID = AModuleID then
-    begin
-      InterlockedExchange(Pointer(FLastLocateModule), Pointer(FModuleList[i]));
-      Exit(FLastLocateModule);
-    end;
+  // use binary search, must be sorted
   Result := nil;
+  L := 0;
+  R := FModuleList.Count - 1;
+  while (L<=R) do
+  begin
+    I := L + (R - L) div 2;
+    CompareRes := AnsiCompareStr(AModuleID, FModuleList[I].ID);
+    if (CompareRes>0) then
+      L := I+1
+    else begin
+      R := I-1;
+      if (CompareRes=0) then
+      begin
+        Result := FModuleList[I];
+        L := I;
+      end;
+    end;
+  end;
+  if Assigned(Result) then
+    InterlockedExchange(Pointer(FLastLocateModule), Pointer(Result));
 end;
 
 function TWebsiteModules.LocateModuleByHost(const AHost: String
