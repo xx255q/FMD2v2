@@ -196,9 +196,12 @@ begin
     if lua_dump(L, @_luawriter, Result, strip) <> 0 then
       raise Exception.Create('');
   except
-    Result.Free;
-    Result := nil;
-    Logger.SendError(luaGetString(L, -1));
+    on E: Exception do
+    begin
+      Result.Free;
+      Result := nil;
+      Logger.SendError(luaGetString(L, -1));
+    end;
   end;
 end;
 
