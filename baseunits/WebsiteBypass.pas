@@ -30,51 +30,50 @@ uses
   MultiLog;
 
 var
-  luadump_websitebypass_checkantibot,
-  luadump_websitebypass: TMemoryStream;
+  checkantibot_dump,
+  websitebypass_dump: TMemoryStream;
 
-  luafile_websitebypass_checkantibot,
-  luafile_websitebypass: String;
+  checkantibot_file: String = 'checkantibot.lua';
+  websitebypass_file: String = 'websitebypass.lua';
+
+const
+  luabypass_dir = 'websitebypass';
 
 procedure doInitialization;
 begin
-  luafile_websitebypass_checkantibot := LUA_REPO_FOLDER + 'websitebypass' + PathDelim + 'checkantibot.lua';
-  luafile_websitebypass := LUA_REPO_FOLDER + 'websitebypass' + PathDelim + 'websitebypadd.lua';
+  checkantibot_file := LUA_REPO_FOLDER + luabypass_dir + PathDelim + checkantibot_file;
+  websitebypass_file := LUA_REPO_FOLDER + 'websitebypass' + PathDelim + websitebypass_file;
 
-  if FileExists(luafile_websitebypass_checkantibot) then
-    luadump_websitebypass_checkantibot := LuaDumpFileToStream(luafile_websitebypass_checkantibot);
-  if FileExists(luafile_websitebypass) then
-    luadump_websitebypass := LuaDumpFileToStream(luafile_websitebypass);
+  if FileExists(checkantibot_file) then
+    checkantibot_dump := LuaDumpFileToStream(checkantibot_file);
+  if FileExists(websitebypass_file) then
+    websitebypass_dump := LuaDumpFileToStream(websitebypass_file);
 end;
 
 procedure doFinalization;
 begin
-  if Assigned(luadump_websitebypass_checkantibot) then
-    luadump_websitebypass_checkantibot.Free;
-  if Assigned(luadump_websitebypass) then
-    luadump_websitebypass.Free;
+  if Assigned(checkantibot_dump) then
+    checkantibot_dump.Free;
+  if Assigned(websitebypass_dump) then
+    websitebypass_dump.Free;
 end;
 
 function CheckAntiBotActive(const AHTTP: THTTPSendThread; var S: String): Boolean;
 var
   L: Plua_State;
-  r: Integer = 0;
 begin
   Result := False;
-  if not Assigned(luadump_websitebypass_checkantibot) then Exit;
+  if not Assigned(checkantibot_dump) then Exit;
   L := luaL_newstate;
   try
     // this method will be called very often(for each of http request), keep it minimal
-    r := lua_load(L, @_luareader, luadump_websitebypass_checkantibot, nil, 'b');
-    if r <> 0 then
-      raise Exception.Create(LuaGetReturnString(r));
     luaopen_base(L);
     luaopen_string(L);
     //luaL_openlibs(L);
     //LuaBaseRegisterPrint(L);
     luaPushObject(L, AHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
     lua_pop(L, lua_gettop(L));
-    LuaExecute(L, luadump_websitebypass_checkantibot, luafile_websitebypass_checkantibot, LUA_MULTRET);
+    LuaExecute(L, checkantibot_dump, checkantibot_file, LUA_MULTRET);
     Result := lua_toboolean(L, 1);
     if Result and (lua_gettop(L) > 1) then
       S := lua_tostring(L, 2);
@@ -90,7 +89,7 @@ var
   L: Plua_State;
 begin
   Result := False;
-  if not Assigned(luadump_websitebypass) then Exit;
+  if not Assigned(websitebypass_dump) then Exit;
   L := LuaNewBaseState;
   try
     luaPushStringGlobal(L, 'URL', AURL);
@@ -98,7 +97,7 @@ begin
     luaPushObject(L, AHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
     luaPushObject(L, TModuleContainer(AWebsiteBypass.WebsiteModule), 'MODULE', @luaWebsiteModuleAddMetaTable);
     lua_pop(L, lua_gettop(L));
-    LuaExecute(L, luadump_websitebypass, luafile_websitebypass, LUA_MULTRET);
+    LuaExecute(L, websitebypass_dump, websitebypass_file, LUA_MULTRET);
     Result := lua_toboolean(L, 1);
   except
     on E: Exception do
