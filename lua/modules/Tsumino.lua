@@ -39,12 +39,12 @@ function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
 		local x = TXQuery.Create(HTTP.Document)
-		
+
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//img[@class="book-page-image img-responsive"]/@src'))
 		MANGAINFO.Title     = x.XPathString('//div[@class="book-line"][starts-with(.,"Title")]/div[@class="book-data"]')
 		MANGAINFO.Artists   = x.XPathString('//div[@class="book-line"][starts-with(.,"Artist")]/div[@class="book-data"]')
 		MANGAINFO.Genres    = x.XPathStringAll('//div[@class="book-line"][starts-with(.,"Parody") or starts-with(.,"Characters") or starts-with(.,"Tags")]/div[@class="book-data"]/*')
-		
+
 		if MANGAINFO.Title ~= '' then
 		  MANGAINFO.ChapterLinks.Add(MANGAINFO.URL)
 		  MANGAINFO.ChapterNames.Add(MANGAINFO.Title)
@@ -59,7 +59,7 @@ function GetPageNumber()
 	local bookid = URL:match('/info/(%d+)')
 	if bookid == nil then return false end
 	HTTP.Headers.Values['Referer'] = ' ' .. MODULE.RootURL .. 'Read/View' .. bookid
-	if HTTP.POST(MODULE.RootURL .. '/Read/Load', 'q=' .. bookid) then		
+	if HTTP.POST(MODULE.RootURL .. '/Read/Load', 'q=' .. bookid) then
 		local v for _, v in ipairs(TXQuery.Create(HTTP.Document).XPathI('json(*).reader_page_urls()')) do
 			TASK.PageLinks.Add(MODULE.RootURL .. '/Image/Object?name=' .. EncodeURLElement(v.ToString()))
 		end

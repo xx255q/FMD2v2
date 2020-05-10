@@ -21,7 +21,7 @@ end
 function GetPageNumber()
   TASK.PageLinks.Clear()
   TASK.PageNumber=0
-  if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then  
+  if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
     local x=TXQuery.Create(HTTP.Document)
     local v = x.XPath('//div[@class="view"]/img')
     for i=1,v.Count do
@@ -55,4 +55,4 @@ function Init()
   m.OnGetInfo='GetInfo'
   m.OnGetPageNumber='GetPageNumber'
   m.OnGetNameAndLink='GetNameAndLink'
-end 
+end

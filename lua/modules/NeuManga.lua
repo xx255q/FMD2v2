@@ -22,7 +22,7 @@ function GetInfo()
         MANGAINFO.ChapterLinks.Add(v1.GetAttribute('href'))
         MANGAINFO.ChapterNames.Add(x.XPathString('h3', v1))
     end
-    InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)    
+    InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
     return no_error
   else
     return net_problem
@@ -62,4 +62,4 @@ function Init()
   m.OnGetInfo='GetInfo'
   m.OnGetPageNumber='GetPageNumber'
   m.OnGetNameAndLink='GetNameAndLink'
-end 
+end

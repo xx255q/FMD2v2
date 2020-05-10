@@ -95,8 +95,7 @@ function getnameandlinkforchallenge()
     local dirurl = key..'/challenge/list?genreTab=ALL&sortOrder=UPDATE'
     if HTTP.GET(MODULE.RootURL..dirurl) then
       local x=TXQuery.Create(HTTP.Document)
-      
-      
+
       local pages = 1
       local p = 1
       while p <= pages do
@@ -119,8 +118,7 @@ function getnameandlinkforchallenge()
 	      end
         p = p + 1
       end
-      
-      
+
 	    return no_error
     else
       return net_problem
@@ -173,9 +171,9 @@ function Init()
   m.OnGetPageNumber       ='getpagenumber'
   m.OnGetNameAndLink      ='getnameandlink'
   m.OnBeforeDownloadImage = 'BeforeDownloadImage'
-  
+
   m.AddOptionCheckBox('luaincludechallengetitles', 'Include manga titles from WebToons Challenge (takes very very long to create manga list!):', false)
-  
+
   local items = 'All'
   local t = getlanglist()
   for k, v in ipairs(t) do items = items .. '\r\n' .. v; end

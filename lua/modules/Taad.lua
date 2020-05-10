@@ -28,14 +28,14 @@ function GetInfo()
 	if not(s:find('waring=1')) then s = s .. '?waring=1' end
 	if HTTP.GET(s) then
 		local x = TXQuery.Create(HTTP.Document)
-		
+
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//table//td/a/img/@src'))
 		MANGAINFO.Title     = x.XPathString('//title/substring-before(.," - Read ")')
 		MANGAINFO.Authors   = x.XPathString('//table//table//td[starts-with(.,"Author:")]/string-join(./a,", ")')
 		MANGAINFO.Genres    = x.XPathString('//table//table//td[starts-with(.,"Categories:")]/string-join(./a,", ")')
 		MANGAINFO.Summary   = x.XPathString('//table//table//td[contains(.," Manga Summary ")]/substring-after(.,"Manga Summary ")')
 		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//table//table//td[starts-with(.,"Status:")]/a'), 'Updated', 'Completed')
-		
+
 		x.XPathHREFAll('//*[@class="chapter_list"]/table//tr/td[1]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		return no_error

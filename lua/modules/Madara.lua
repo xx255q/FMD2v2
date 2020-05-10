@@ -2,24 +2,24 @@ Modules = {}
 
 function Modules.Madara()
   local Madara = {}
-  
+
   function Madara:new()
     local obj = {}
     setmetatable(obj, self)
     self.__index = self
     return obj
   end
-  
+
   function Madara:getinfo()
     MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
     if HTTP.GET(MANGAINFO.URL) then
       local x=TXQuery.Create(HTTP.Document)
-      
+
       if MODULE.Name == 'NinjaScans' then
         local fixedHtml = StreamToString(HTTP.Document):gsub('a href=(.-/)>', 'a href="%1">')
         x.ParseHTML(fixedHtml)
       end
-      
+
       MANGAINFO.Title=x.XPathStringAll('//div[@class="post-title"]/*[self::h1 or self::h2 or self::h3]/text()', '')
       if string.match(MANGAINFO.Title:upper(), ' RAW$') ~= nil then
         MANGAINFO.Title = MANGAINFO.Title:sub(1, -5)
@@ -52,7 +52,7 @@ function Modules.Madara()
       else
         MANGAINFO.Summary=x.XPathString('//div[contains(@class,"description-summary")]//p')
       end
-      
+
       if MODULE.Name == 'DoujinYosh' or MODULE.Name == 'MangaYosh' or MODULE.Name == 'KIDzScan' then
         local v = x.XPath('//li[contains(@class, "wp-manga-chapter")]/a')
         for i = 1, v.Count do
@@ -78,7 +78,7 @@ function Modules.Madara()
     end
     return net_problem
   end
-  
+
   function Madara:getpagenumber()
     TASK.PageLinks.Clear()
     local aurl = MaybeFillHost(MODULE.RootURL, URL)
@@ -114,7 +114,7 @@ function Modules.Madara()
     end
     return false
   end
-  
+
   function Madara:getnameandlink()
     local perpage = 100
     local q = 'action=madara_load_more&page='.. URL ..'&template=madara-core%2Fcontent%2Fcontent-archive&vars%5Bpost_type%5D=wp-manga&vars%5Berror%5D=&vars%5Bm%5D=&vars%5Bp%5D=0&vars%5Bpost_parent%5D=&vars%5Bsubpost%5D=&vars%5Bsubpost_id%5D=&vars%5Battachment%5D=&vars%5Battachment_id%5D=0&vars%5Bname%5D=&vars%5Bstatic%5D=&vars%5Bpagename%5D=&vars%5Bpage_id%5D=0&vars%5Bsecond%5D=&vars%5Bminute%5D=&vars%5Bhour%5D=&vars%5Bday%5D=0&vars%5Bmonthnum%5D=0&vars%5Byear%5D=0&vars%5Bw%5D=0&vars%5Bcategory_name%5D=&vars%5Btag%5D=&vars%5Bcat%5D=&vars%5Btag_id%5D=&vars%5Bauthor%5D=&vars%5Bauthor_name%5D=&vars%5Bfeed%5D=&vars%5Btb%5D=&vars%5Bpaged%5D=1&vars%5Bmeta_key%5D=&vars%5Bmeta_value%5D=&vars%5Bpreview%5D=&vars%5Bs%5D=&vars%5Bsentence%5D=&vars%5Btitle%5D=&vars%5Bfields%5D=&vars%5Bmenu_order%5D=&vars%5Bembed%5D=&vars%5Bignore_sticky_posts%5D=false&vars%5Bsuppress_filters%5D=false&vars%5Bcache_results%5D=true&vars%5Bupdate_post_term_cache%5D=true&vars%5Blazy_load_term_meta%5D=true&vars%5Bupdate_post_meta_cache%5D=true&vars%5Bposts_per_page%5D='.. tostring(perpage) ..'&vars%5Bnopaging%5D=false&vars%5Bcomments_per_page%5D=50&vars%5Bno_found_rows%5D=false&vars%5Border%5D=ASC&vars%5Borderby%5D=post_title&vars%5Btemplate%5D=archive&vars%5Bsidebar%5D=full&vars%5Bpost_status%5D=publish'
@@ -129,14 +129,14 @@ function Modules.Madara()
       return net_problem
     end
   end
-  
+
   return Madara
 end
 
 function Modules.ChibiManga()
   local ChibiManga = {}
   setmetatable(ChibiManga, { __index = Modules.Madara() })
-  
+
   function ChibiManga:getpagenumber()
     TASK.PageLinks.Clear()
     if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
@@ -149,14 +149,14 @@ function Modules.ChibiManga()
     end
     return false
   end
-  
+
   return ChibiManga
 end
 
 function Modules.HentaiRead()
   local HentaiRead = {}
   setmetatable(HentaiRead, { __index = Modules.Madara() })
-  
+
   function HentaiRead:getpagenumber()
     TASK.PageLinks.Clear()
     if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
@@ -169,14 +169,14 @@ function Modules.HentaiRead()
     end
     return false
   end
-  
+
   return HentaiRead
 end
 
 function Modules.OnManga()
   local OnManga = {}
   setmetatable(OnManga, { __index = Modules.Madara() })
-  
+
   function OnManga:getpagenumber()
     TASK.PageLinks.Clear()
     if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
@@ -189,7 +189,7 @@ function Modules.OnManga()
     end
     return false
   end
-  
+
   return OnManga
 end
 -------------------------------------------------------------------------------
@@ -203,7 +203,7 @@ function createInstance()
   end
 end
 
-------------------------------------------------------------------------------- 
+-------------------------------------------------------------------------------
 
 function getinfo()
   return createInstance():getinfo()
@@ -239,7 +239,7 @@ end
 function Init()
   local cat = 'Raw'
   AddWebsiteModule('29e070b824344c8697ceb9554a6d1d4b', 'MangazukiClub', 'https://mangazuki.club', cat)
-  
+
   cat = 'English'
   AddWebsiteModule('4bce5afe51b646c6b0d30329a069ee83', 'IsekaiScan', 'https://isekaiscan.com', cat)
   AddWebsiteModule('e9f7ec544bb146bd966ef2dd10bda097', 'MangaKomi', 'https://mangakomi.com', cat)
@@ -263,7 +263,7 @@ function Init()
   AddWebsiteModule('9bec8a0a18e94de1b99c2bc2598438b4', 'MangaDods', 'https://www.mangadods.com', cat)
   AddWebsiteModule('a24656d5e72544469f656e490ffc2591', 'DisasterScans', 'https://disasterscans.com', cat)
   AddWebsiteModule('a1b569bcec9147f4945383655c052676', 'RaiderScans', 'https://raiderscans.com', cat)
-  
+
   cat = 'French'
   AddWebsiteModule('41867fa36f2f49959df9fef8aa53ffb5', 'WakaScan', 'https://wakascan.com', cat)
   AddWebsiteModule('d41da6d28179493ab074698a3a60cbcd', 'ATMSubs', 'https://atm-subs.fr', cat)

@@ -2,20 +2,20 @@ Modules = {}
 
 function Modules.myReaderMangaCMS()
   local myReaderMangaCMS = {}
-  
+
   function myReaderMangaCMS:new()
     local obj = {}
     setmetatable(obj, self)
     self.__index = self
     return obj
   end
-  
+
   function myReaderMangaCMS:getinfo()
     MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
     if HTTP.GET(MANGAINFO.URL) then
       local x = TXQuery.Create(HTTP.Document)
       MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//div[@class="boxed"]/img/@src'))
-      if MANGAINFO.Title == '' then 
+      if MANGAINFO.Title == '' then
         MANGAINFO.Title = x.XPathString('//*[(self::h2 or self::h1) and contains(@class,"widget-title")]')
         if MANGAINFO.Title == '' then
           MANGAINFO.Title = MANGAINFO.URL:match('/([^/]+)$')
@@ -37,7 +37,7 @@ function Modules.myReaderMangaCMS()
     end
     return net_problem
   end
-  
+
   function myReaderMangaCMS:getpagenumber()
     local u = MaybeFillHost(MODULE.RootURL, URL)
     if HTTP.GET(u) then
@@ -51,7 +51,7 @@ function Modules.myReaderMangaCMS()
     end
     return false
   end
-  
+
   function myReaderMangaCMS:getnameandlink()
     if HTTP.GET(MODULE.RootURL .. self.getdirurl()) then
       local x = TXQuery.Create(HTTP.Document)
@@ -60,17 +60,17 @@ function Modules.myReaderMangaCMS()
     end
     return net_problem
   end
-  
+
   function myReaderMangaCMS:getdirurl()
     return '/changeMangaList?type=text'
   end
-  
+
   function myReaderMangaCMS:beforedownloadimage()
     HTTP.Reset()
     HTTP.Headers.Values['Referer'] = TASK.PageContainerLinks.Text
     return true
   end
-  
+
   return myReaderMangaCMS
 end
 

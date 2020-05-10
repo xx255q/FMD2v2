@@ -43,7 +43,7 @@ function GetPageNumber()
 	if u:match('(%d+)$')=='1' then u=u:gsub('/1$','') end
 	u=u..'/0/full'
 	if HTTP.GET(u) then
-		TXQuery.Create(HTTP.Document).XPathStringAll('//*[@id="showchaptercontainer"]//img/resolve-uri(@src)', TASK.PageLinks)		
+		TXQuery.Create(HTTP.Document).XPathStringAll('//*[@id="showchaptercontainer"]//img/resolve-uri(@src)', TASK.PageLinks)
 		return true
 	else
 		return false

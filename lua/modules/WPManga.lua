@@ -1,7 +1,7 @@
 function getinfo()
   local s = ''
   MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
-  if HTTP.GET(MANGAINFO.URL) then  
+  if HTTP.GET(MANGAINFO.URL) then
     x = TXQuery.Create(HTTP.Document)
     MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//img[starts-with(@class,"cvr")]/@src'))
     MANGAINFO.Title = x.XPathString('//*[@itemprop="itemreviewed"]')
@@ -18,7 +18,7 @@ function getinfo()
       MANGAINFO.Summary = x.XPathString('//div[contains(@class,"mng_det")]/p[1]')
       x.XPathHREFAll('//ul[@class="chp_lst"]/li/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
     else
-      while true do      
+      while true do
         v = x.XPath('//a[@class="lst"]')
         for i = 1, v.Count do
           v2 = v.Get(i)
@@ -53,7 +53,7 @@ function getpagenumber()
   local s = ''
   local allnum = false
   HTTP.Cookies.Values['viewer'] = '1'
-  if HTTP.GET(AppendURLDelim(MaybeFillHost(MODULE.RootURL, URL)) .. '1') then      
+  if HTTP.GET(AppendURLDelim(MaybeFillHost(MODULE.RootURL, URL)) .. '1') then
     -- multi page
     x = TXQuery.Create(HTTP.Document)
     s = x.XPathString('//script[contains(.,"imglist")]/substring-after(substring-before(.,"]"),"[")')
@@ -70,7 +70,7 @@ function getpagenumber()
     if TASK.PageLinks.Count == 0 then
       x.XPathStringAll('json(*)()', TASK.PageLinks)
     end
-    
+
     -- single page
     if TASK.PageLinks.Count == 0 then
       x.ParseHTML(HTTP.Document)
@@ -94,18 +94,18 @@ function getpagenumber()
             break
           end
         end
-      end      
+      end
     end
     return true
   else
     return false
-  end   
+  end
 end
 
 function getimageurl()
   local s = ''
   if HTTP.GET(AppendURLDelim(MaybeFillHost(MODULE.RootURL, URL)) .. IncStr(WORKID) .. '/') then
-    x = TXQuery.Create(HTTP.Document)        
+    x = TXQuery.Create(HTTP.Document)
     if MODULE.Name == 'ReadHentaiManga' then
       s = HTMLDecode(x.XPathString('//img[@id="main_img"]/@src'))
     else

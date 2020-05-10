@@ -1,7 +1,7 @@
 ﻿function getinfo()
   MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
   if HTTP.GET(MANGAINFO.URL) then
-    x=TXQuery.Create(HTTP.Document)	
+    x=TXQuery.Create(HTTP.Document)
     MANGAINFO.Title=x.XPathString('//div[contains(@class, "mhjsbody")]/div/ul/li[contains(., "名称")]/substring-after(., "名称：")')
     MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL,x.XPathString('//div[@class="comic-cover"]/img/@src'))
     MANGAINFO.Authors=x.XPathString('//div[contains(@class, "mhjsbody")]/div/ul/li[contains(., "作者")]/substring-after(., "作者：")')
@@ -32,10 +32,10 @@ function getpagenumber()
     'http://mhpic.jumanhua.com',
     'http://mhpic.yyhao.com',
   }
-  
+
   math.randomseed(os.time())
   math.random(); math.random(); math.random();
-  
+
   if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
     x=TXQuery.Create(HTTP.Document)
     local s = x.XPathString('//script[contains(., "mh_info")]')
@@ -97,4 +97,4 @@ function Init()
   m.OnGetDirectoryPageNumber='getdirectorypagenumber'
   m.OnGetNameAndLink='getnameandlink'
   m.OnBeforeDownloadImage = 'BeforeDownloadImage'
-end 
+end

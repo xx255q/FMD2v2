@@ -24,7 +24,7 @@ function GetInfo()
         MANGAINFO.ChapterNames.Add(string.format('%s (%s)', w1.ToString(), src))
       end
     end
-    InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)    
+    InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
     return no_error
   else
     return net_problem

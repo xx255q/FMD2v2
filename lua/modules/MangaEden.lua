@@ -85,7 +85,7 @@ function AddWebsiteModule(id, website, rooturl, category)
   m.OnGetInfo='GetInfo'
   m.OnGetPageNumber='GetPageNumber'
   m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
-  m.OnGetNameAndLink='GetNameAndLink' 
+  m.OnGetNameAndLink='GetNameAndLink'
 end
 
 function Init()

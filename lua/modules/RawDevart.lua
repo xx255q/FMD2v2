@@ -3,9 +3,8 @@
 function getinfo()
 	local x = nil
   	local u = MaybeFillHost(MODULE.RootURL, URL)
-  
-  	--debug URL manga info 
-  	LuaDebug.WriteLogWithHeader('getinfo', 'URL ->  ' .. u)
+
+  	--debug URL manga info
   	if not HTTP.GET(u) then return net_problem end
 
   	x = TXQuery.Create(HTTP.Document)
@@ -39,27 +38,22 @@ function getinfo()
     end
     InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
 
-  	LuaDebug.PrintMangaInfo()
-  	LuaDebug.WriteStatistics('chapters', MANGAINFO.ChapterLinks.Count .. '  (' .. MANGAINFO.Title .. ')')
-  	return no_error	
+  	return no_error
 end
 
 function getpagenumber()
   local x = nil
   local u = MaybeFillHost(MODULE.RootURL, URL)
-  LuaDebug.WriteLogWithHeader('getpagenumber', 'URL ->  ' .. u)
   if not HTTP.GET(u) then return net_problem end
   x = TXQuery.Create(HTTP.Document)
   x.XPathStringAll('//*[contains(@class, "mb-3")]/img/@data-src', TASK.PageLinks)
   if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[contains(@class, "img-fluid not-lazy")]/@data-src', TASK.PageLinks) end
-  LuaDebug.PrintMangaDirectoryEntries(IncStr(URL))
   return no_error
 end
 
 function getnameandlink()
   local x = nil
   local u = MODULE.RootURL .. '/comic/'
-  LuaDebug.WriteLogWithHeader('getnameandlink', 'URL ->  ' .. u)
   if not HTTP.GET(u) then return net_problem end
   x = TXQuery.Create(HTTP.Document)
   local pages = 1
@@ -84,7 +78,6 @@ function getnameandlink()
       end
       p = p + 1
     end
-  LuaDebug.PrintMangaDirectoryEntries(IncStr(URL))
 end
 
 function Init()

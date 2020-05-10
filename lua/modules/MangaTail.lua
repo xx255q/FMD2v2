@@ -8,11 +8,11 @@
     end
     MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//*[contains(@class,"field-status")]'))
     x.XPathHREFAll('//table[contains(@class,"chlist")]//tr/td[1]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-    InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)    
-    
+    InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
+
     local s = x.XPathString('//script[contains(., "jQuery.extend(Drupal")]')
     s = GetBetween('settings,', ');', s)
-    x.ParseHTML(s)    
+    x.ParseHTML(s)
     local v = x.XPath('json(*)/authcacheP13nAjaxAssemblies')
     local summaryQuery = x.XPathString('./span.authcache-p13n-asm-field-node-body', v)
     local artistQuery = x.XPathString('./span.authcache-p13n-asm-field-node-field-artist', v)
@@ -20,7 +20,7 @@
     local genresQuery = x.XPathString('./span.authcache-p13n-asm-field-node-field-genres', v)
     local coverQuery = x.XPathString('./span.authcache-p13n-asm-field-node-field-image2', v)
     local statusQuery = x.XPathString('./span.authcache-p13n-asm-field-node-field-status', v)
-    
+
     function getField(aurl, query)
       if aurl ~= '' then
         HTTP.Reset()
@@ -33,7 +33,7 @@
       end
       return ''
     end
-    
+
     MANGAINFO.Summary = getField(summaryQuery, '*')
     MANGAINFO.Authors = getField(authorQuery, '//div[contains(@class, "field-item")]')
     MANGAINFO.Artists = getField(artistQuery, '//div[contains(@class, "field-item")]')
@@ -101,4 +101,4 @@ end
 function Init()
   AddWebsiteModule('f999ff1dc0b648fb8861d11cc350975b', 'MangaTail', 'https://www.mangatail.me')
   AddWebsiteModule('1ddf6e055c034f5b8d4b4577eebc080b', 'MangaSail', 'https://www.mangasail.co')
-end 
+end

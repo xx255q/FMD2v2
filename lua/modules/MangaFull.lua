@@ -30,7 +30,7 @@ function getpagenumber()
 	return false
 end
 
-function getnameandlink()  
+function getnameandlink()
   if HTTP.GET(MODULE.RootURL..'/popular-manga?page='.. IncStr(URL)) then
     local x=TXQuery.Create(HTTP.Document)
 	  local v = x.XPath('//*[@class="cate-manga"]//*[@class="media-body"]/a')
@@ -40,7 +40,7 @@ function getnameandlink()
       		  title = string.gsub(title, 'Manga', '')
 	    NAMES.Add(title);
       	LINKS.Add(v1.GetAttribute('href'));
-    end	
+    end
     --p = tonumber(500)
     p = tonumber(x.XPathString('//div[@class="pagination"]/ul/li[last()]/substring-after(@href, "?page=")'))
     if p ~= nil then
@@ -51,7 +51,6 @@ function getnameandlink()
     return net_problem
   end
 end
-
 
 function Init()
   local m = NewWebsiteModule()

@@ -46,16 +46,16 @@ function subdomain_from_url(URL, base)
         if (base) then
                 retval = base
         end
-        
+
         local number_of_frontends = 3
         local b = 16
-        
+
         local r = '^.*/[0-9a-f]/([0-9a-f]{2})/.*$'
         local m = re.replace(r,URL,'$1')
         if not(m) then
                 return retval
         end
-        
+
         local g = tonumber(m, b) or nil
         if g then
                 if (g < 0x30) then
@@ -66,14 +66,13 @@ function subdomain_from_url(URL, base)
                 end
                 retval = subdomain_from_galleryid(g, number_of_frontends) .. retval
         end
-        
+
         return retval
 end
 
 function url_from_url(URL, base)
 		return re.replace('//..?\\.hitomi\\.la/', URL, '//'..subdomain_from_url(URL, base)..'.hitomi.la/')
 end
-
 
 function full_path_from_hash(hash)
         if (hash:len() < 3) then
@@ -82,15 +81,14 @@ function full_path_from_hash(hash)
         return re.replace('^.*(..)(.)$', hash, '$2/$1/'..hash)
 end
 
-
 function url_from_hash(galleryid, image, dir, ext)
 		ext = ext or dir or image.name:match('%.(.+)')
         dir = dir or 'images'
-        
+
         return 'https://a.hitomi.la/'..dir..'/'..full_path_from_hash(image.hash)..'.'..ext
 end
 
-function url_from_url_from_hash(galleryid, image, dir, ext, base) 
+function url_from_url_from_hash(galleryid, image, dir, ext, base)
         return url_from_url(url_from_hash(galleryid, image, dir, ext), base)
 end
 
@@ -99,7 +97,7 @@ function image_url_from_image(galleryid, image, no_webp)
         if (image['hash'] and image['haswebp'] and not(no_webp)) then
                 webp = 'webp'
         end
-        
+
         return url_from_url_from_hash(galleryid, image, webp)
 end
 
@@ -141,7 +139,7 @@ end
 function getnameandlink()
 	if not HTTP.GET('https://ltn.'..domain..'/index-all.nozomi') then return net_problem end
 	local s = StreamToString(HTTP.Document)
-	-- number in uint32 little-endian	
+	-- number in uint32 little-endian
 	local n
 	for i=1,s:len(),4 do
 		n = s:byte(i+3) + (s:byte(i+2) << 8) + (s:byte(i+1) << 16) + (s:byte(i) << 24)

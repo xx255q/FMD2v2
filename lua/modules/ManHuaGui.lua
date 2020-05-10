@@ -5,8 +5,8 @@ function getinfo()
   MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
   HTTP.Cookies.Values['isAdult']=' 1'
   if HTTP.GET(MANGAINFO.URL) then
-    x=TXQuery.Create(HTTP.Document)	
-	
+    x=TXQuery.Create(HTTP.Document)
+
 	MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL,x.XPathString('//p[@class="hcover"]/img/@src'))
 	MANGAINFO.Title     = x.XPathString('//div[@class="book-title"]/h1')
 	MANGAINFO.Authors   = SeparateRight(x.XPathString('//ul[@class="detail-list cf"]/li[2]/span[2]'), '：')
@@ -34,10 +34,10 @@ function getpagenumber()
     'http://eu.hamreus.com',
     'http://lt.hamreus.com',
   }
-  
+
   math.randomseed(os.time())
   math.random(); math.random(); math.random();
-  
+
   if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
     x=TXQuery.Create(HTTP.Document)
     local s = x.XPathString('//script[contains(., "p,a,c,k")]')
@@ -101,4 +101,4 @@ function Init()
   m.OnGetDirectoryPageNumber='getdirectorypagenumber'
   m.OnGetNameAndLink='getnameandlink'
   m.OnBeforeDownloadImage = 'BeforeDownloadImage'
-end 
+end

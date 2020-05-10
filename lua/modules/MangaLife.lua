@@ -1,18 +1,8 @@
 ----------------------------------------------------------------------------------------------------
--- Scripting Parameters
-----------------------------------------------------------------------------------------------------
-
--- local LuaDebug   = require 'LuaDebugging'
--- LuaDebugging  = true   --> Override the global LuaDebugging variable by uncommenting this line.
--- LuaStatistics = true   --> Override the global LuaStatistics variable by uncommenting this line.
-
-
-----------------------------------------------------------------------------------------------------
 -- Local Constants
 ----------------------------------------------------------------------------------------------------
 
 local DirectoryPagination = '/directory/'
-
 
 ----------------------------------------------------------------------------------------------------
 -- Event Functions
@@ -22,10 +12,9 @@ local DirectoryPagination = '/directory/'
 function GetInfo()
   local v, x = nil
   local u = MaybeFillHost(MODULE.RootURL, URL)
-  
-  --[[Debug]] LuaDebug.WriteLogWithHeader('GetInfo', 'URL ->  ' .. u)
+
   if not HTTP.GET(u) then return net_problem end
-  
+
   x = TXQuery.Create(HTTP.Document)
   MANGAINFO.Title     = x.XPathString('//meta[@property="og:title"]/@content'):gsub(' | MangaLife', '')
   MANGAINFO.CoverLink = x.XPathString('//meta[@property="og:image"]/@content')
@@ -41,51 +30,42 @@ function GetInfo()
 	MANGAINFO.ChapterNames.Add('Chapter ' .. tostring(i) .. ' ' .. c.ToString())
 	MANGAINFO.ChapterLinks.Add(chapter_uri .. '-chapter-' .. tostring(i) .. '.html')
   end
-  
-  --[[Debug]] LuaDebug.PrintMangaInfo()
-  --[[Debug]] LuaDebug.WriteStatistics('Chapters', MANGAINFO.ChapterLinks.Count .. '  (' .. MANGAINFO.Title .. ')')
-  
+
   return no_error
 end
-
 
 -- Get LINKS and NAMES from the manga list of the current website.
 function GetNameAndLink()
   local x, v = nil
   local u = MODULE.RootURL .. DirectoryPagination
-  
-  --[[Debug]] LuaDebug.WriteLogWithHeader('GetNameAndLink', 'URL ->  ' .. u)
+
   if not HTTP.GET(u) then return net_problem end
-  
+
   x = TXQuery.Create(HTTP.Document)
-  
+
   json = GetBetween('vm.FullDirectory = ', '}]};', x.XPathString('//script[contains(., "vm.FullDirectory = ")]')) .. '}]}'
   json = json:gsub('\\"', ''):gsub('\\u2019', '\''):gsub('&#', '')
   x.ParseHTML(json)
   print(x.XPathString('json(*).Directory()'))
   v = x.XPath('json(*).Directory()')
-  
+
   for i = 1, v.Count do
 	NAMES.Add(x.XPathString('s', v.Get(i)))
     LINKS.Add(MODULE.RootURL .. '/manga/' .. x.XPathString('i', v.Get(i)))
   end
-  
+
   x.XPathHREFAll('//ul[contains(@class, "manga-list")]/li/a', LINKS, NAMES)
-  
-  --[[Debug]] LuaDebug.PrintMangaDirectoryEntries(u)
-  
+
   return no_error
 end
-
 
 -- Get the page count for the current chapter.
 function GetPageNumber()
   local chpnum, partnum, dir, host, name, pages, s, x = nil
   local u = MaybeFillHost(MODULE.RootURL, URL)
-  
-  --[[Debug]] LuaDebug.WriteLogWithHeader('GetPageNumber', 'URL ->  ' .. u)
+
   if not HTTP.GET(u) then return net_problem end
-  
+
   x = TXQuery.Create(HTTP.Document)
   name = GetBetween('vm.IndexName = ', ';', x.XPathString('//script[contains(., "vm.IndexName = ")]')):gsub('"', '')
   host = GetBetween('vm.CurPathName = ', ';', x.XPathString('//script[contains(., "vm.CurPathName = ")]')):gsub('"', '')
@@ -93,20 +73,16 @@ function GetPageNumber()
   pages = tonumber(x.XPathString('json(*).Page'))
   chpnum, partnum = x.XPathString('json(*).Chapter'):match('%d(%d%d%d%d)(%d)')
   dir = x.XPathString('json(*).Directory')
-  
+
   if partnum ~= '0' then chpnum = chpnum .. '.' .. partnum end
   if dir ~= '' then chpnum = dir .. '/' .. chpnum end
-  
+
   for i = 1, pages do
     TASK.PageLinks.Add(host .. '/manga/' .. name .. '/' .. chpnum .. '-' .. string.format('%03d', i) .. '.png')
   end
-  
-  --[[Debug]] LuaDebug.PrintChapterPageLinks()
-  --[[Debug]] LuaDebug.WriteStatistics('ChapterPages', TASK.PageLinks.Count .. '  (' .. u .. ')')
-  
+
   return no_error
 end
-
 
 ----------------------------------------------------------------------------------------------------
 -- Module Initialization

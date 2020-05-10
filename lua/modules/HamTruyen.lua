@@ -39,8 +39,8 @@ function getnameandlink()
     for i = 1, v.Count do
       local p = tonumber(string.match(v.Get(i).ToString(), '/P(%d+)/'))
       if (p ~= nil) and (p > maxp) then maxp = p; end
-    end    
-    if maxp > 0 then UPDATELIST.CurrentDirectoryPageNumber = maxp; end    
+    end
+    if maxp > 0 then UPDATELIST.CurrentDirectoryPageNumber = maxp; end
     return no_error
   else
     return net_problem

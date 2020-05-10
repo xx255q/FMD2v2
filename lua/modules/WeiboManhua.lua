@@ -21,24 +21,24 @@ function GetInfo()
 		end
 		MANGAINFO.Authors = x.XPathString('json(*)/data/comic/sina_nickname')
 		MANGAINFO.Summary = x.XPathString('json(*)/data/comic/description')
-		
+
 		-- Populate genres list
 		local genres = ''
 		local category = x.XPath('json(*).data.comic_cate()')
-		
+
 		if category.Count > 0 then genres = x.XPathString('cate_name', category.Get(1)) end
 		for i = 2, category.Count do
 			local c = x.XPathString('cate_name', category.Get(i))
 			genres = genres .. ', ' .. c
 		end
 		MANGAINFO.Genres = genres
-		
+
 		local chapter = x.XPath('json(*).data.chapter_list()')
 		for i = 1, chapter.Count do
 			MANGAINFO.ChapterLinks.Add(string.format(chapterURL,x.XPathString('chapter_id',chapter.Get(i))))
 			MANGAINFO.ChapterNames.Add(x.XPathString('chapter_name',chapter.Get(i)))
 		end
-		
+
 		return no_error
 	else
 		return net_problem

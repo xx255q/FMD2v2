@@ -90,7 +90,7 @@ function Init()
   AddWebsiteModule('4c089029492f43c98d9f27a23403247b', 'HanaScan', 'https://hanascan.com', cat)
   AddWebsiteModule('010777f53bf2414fad039b9567c8a9ce', 'MangaHato', 'https://mangahato.com', cat)
   AddWebsiteModule('794187d0e92e4933bf63812438d69017', 'Manhwa18', 'https://manhwa18.com', cat)
-  
+
   cat = 'English'
   AddWebsiteModule('80427d9a7b354f04a8f432b345f0f640', 'MangaWeek', 'https://mangaweek.com', cat)
   AddWebsiteModule('570e716a029e45cabccc2b660ed81425', 'ManhwaScan', 'https://manhwascan.com', cat)

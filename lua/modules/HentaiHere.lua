@@ -69,4 +69,4 @@ function Init()
   m.OnGetPageNumber          = 'GetPageNumber'
   m.OnGetNameAndLink         = 'GetNameAndLink'
   m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
-end 
+end

@@ -58,7 +58,7 @@ function GetInfo()
 			for i = 1, a.Count do
 				MANGAINFO.ChapterLinks.Add(a.Get(i).ToString())
 				MANGAINFO.ChapterNames.Add(v.Get(i).ToString() .. ' ' .. t.Get(i).ToString())
-			end		
+			end
 		end
 		InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		return no_error

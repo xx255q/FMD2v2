@@ -1,7 +1,7 @@
 function getinfo()
   MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
   if HTTP.GET(MANGAINFO.URL) then
-    x=TXQuery.Create(HTTP.Document)	
+    x=TXQuery.Create(HTTP.Document)
     MANGAINFO.Title=x.XPathString('//div[@id="LayerContenido"]/div[@id][1]')
     MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL,x.XPathString('//div[@id="LayerContenido"]/div[@id][2]//tr[1]/td[2]//img/@src'))
     MANGAINFO.Genres=x.XPathString('string-join(//div[@id="LayerContenido"]/div[@id][2]//tr[5]//a,", ")')

@@ -2,7 +2,7 @@ function getinfo()
   MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
   if HTTP.GET(MANGAINFO.URL) then
     x=TXQuery.Create(HTTP.Document)
-	
+
     MANGAINFO.Title=x.XPathString('//title/text()')
 	  :gsub('Baca', ''):gsub('Online Komik', ''):gsub('Komik -', ''):gsub('Komik', ''):gsub('KOMIK', '')
 	  :gsub('komik', ''):gsub('Manga -', ''):gsub('Manga', ''):gsub('Online -', ''):gsub('Terbaru', '')
@@ -66,4 +66,4 @@ function Init()
   m.OnGetInfo='getinfo'
   m.OnGetPageNumber='getpagenumber'
   m.OnGetNameAndLink='getnameandlink'
-end 
+end

@@ -40,7 +40,7 @@ function getnameandlink()
 	      local v1 = v.Get(i)
 		    NAMES.Add(Trim(x.XPathString('.//*[contains(@class, "title")]', v1)));
 	      	LINKS.Add(x.XPathString('.//*[contains(@class, "trans-bg-black")]/a/@href', v1));
-	    end	
+	    end
 	    p = tonumber(100) --limit 100 FMD freze if up to 500
 	    if p ~= nil then
 	      UPDATELIST.CurrentDirectoryPageNumber = p

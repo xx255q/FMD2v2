@@ -11,7 +11,7 @@ function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
 		local x = TXQuery.Create(HTTP.Document)
-		
+
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//*[@id="page-mangas"]//*[@class="image"]/img/@src'))
 		MANGAINFO.Title     = x.XPathString('//h1')
 		MANGAINFO.Authors   = x.XPathString('//*[@class="texto-left"]/ul/li[starts-with(.,"História")]/substring-after(.,":")')
@@ -19,7 +19,7 @@ function GetInfo()
 		MANGAINFO.Genres    = x.XPathString('string-join(//*[@class="generos"]/a,", ")')
 		MANGAINFO.Summary   = x.XPathString('//p[.="Sinopse"]/following-sibling::p')
 		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//*[@class="texto-left"]/ul/li[starts-with(.,"Status")]'), 'Em Publicação', '')
-		
+
 		local v, w, s
 		for _, v in ipairs(x.XPathI('//*[@id="volumes-capitulos"]//*[@class="texto"]')) do
 			s = x.XPathString('p[1]', v)

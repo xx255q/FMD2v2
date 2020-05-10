@@ -48,7 +48,7 @@ function buildimageurl(json)
     result = 'img2.'..result
   end
   result = 'https://' .. result .. json.XPathString('json(*).imgUrl')
-  
+
   return result
 end
 

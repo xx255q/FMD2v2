@@ -73,7 +73,7 @@ function getpagenumber()
   end
   return true
 end
-    
+
 function getnameandlink()
   if MODULE.Name == '11Toon' then
 	  if HTTP.GET(MODULE.RootURL .. '/bbs/board.php?bo_table=toon_c&is=&sord=&type=upd&page=' .. IncStr(URL)) then

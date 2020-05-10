@@ -4,7 +4,7 @@ function GetInfo()
 		x=TXQuery.Create(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//title/substring-before(.," | ")')
 		MANGAINFO.CoverLink=x.XPathString('//meta[@property="og:image"]/@content')
-		
+
 		MANGAINFO.ChapterLinks.Add(URL)
 		MANGAINFO.ChapterNames.Add(MANGAINFO.Title)
 		return no_error

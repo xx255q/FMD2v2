@@ -4,7 +4,7 @@ function GetInfo()
     x=TXQuery.Create(HTTP.Document)
     MANGAINFO.Title=x.XPathString('//h1')
     x.XPathHREFAll('//table//td/a',MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
-    InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)    
+    InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
     return no_error
   else
     return net_problem

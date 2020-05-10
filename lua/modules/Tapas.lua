@@ -39,7 +39,7 @@ function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
 		local x = TXQuery.Create(HTTP.Document)
-		
+
 		MANGAINFO.CoverLink = x.XPathString('//a[@id="series-thumb"]/img/@src')
 		if MANGAINFO.CoverLink == '' then
 			MANGAINFO.CoverLink = x.XPathString('//script[contains(.,"has-thumb")]/substring-before(substring-after(.,"src="""),"""")')
@@ -48,7 +48,7 @@ function GetInfo()
 		MANGAINFO.Authors   = x.XPathStringAll('//a[@class="name"]/span/text()')
 		MANGAINFO.Genres    = x.XPathString('//div[@class="tags"]/string-join(./*,", ")')
 		MANGAINFO.Summary   = x.XPathString('//span[@id="series-desc-body"]'):gsub('  ', ' ')
-		
+
 		local locked = ''
 		local v for _,v in ipairs(x.XPathI('json(//script[contains(.,"var _data")]/concat(substring-before(substring-after(.,"episodeList :"),"]"),"]"))()')) do
 			MANGAINFO.ChapterLinks.Add(MODULE.RootURL .. '/episode/' .. x.XPathString('./id', v))

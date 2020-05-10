@@ -23,11 +23,11 @@ function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
 		local x = TXQuery.Create(HTTP.Document)
-		
+
 		MANGAINFO.CoverLink = x.XPathString('//meta[@itemprop="photo"]/@content')
 		MANGAINFO.Title     = x.XPathString('//div[@class="container"]/div[@class="row"]/div/h2')
 		MANGAINFO.Summary   = x.XPathString('//h5[text()="Summary"]/following-sibling::*')
-		
+
 		x.XPathHREFAll('//ul[@class="chapters"]/li/h3/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		return no_error

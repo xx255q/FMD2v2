@@ -53,8 +53,8 @@ function GetInfo()
 		for i=1,chapters.Count do
 			MANGAINFO.ChapterLinks.Add(x.XPathString('a/@href',chapters.Get(i)))
 			MANGAINFO.ChapterNames.Add(x.XPathString('.',chapters.Get(i)))
-		end		
-		InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)    
+		end
+		InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
 		return no_error
 	else
 		return net_problem

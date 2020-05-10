@@ -30,13 +30,13 @@ end
 
 function getimageurl()
   if HTTP.GET(AppendURLDelim(MaybeFillHost(MODULE.RootURL, URL)) .. '?pid=' .. TASK.PageContainerLinks[WORKID]) then
-    local x = TXQuery.Create(HTTP.Document)        
+    local x = TXQuery.Create(HTTP.Document)
     TASK.PageLinks[WORKID] = x.XPathString('//div[@class="pic"]/a/img/@src')
     return true
   else
     return false
   end
-end 
+end
 
 function getnameandlink()
   if HTTP.GET(MODULE.RootURL .. '/%D9%82%D8%A7%D8%A6%D9%85%D8%A9-%D8%A7%D9%84%D9%85%D8%A7%D9%86%D8%AC%D8%A7/') then

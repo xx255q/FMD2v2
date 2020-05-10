@@ -20,7 +20,7 @@ end
 function getpagenumber()
   TASK.PageLinks.Clear()
   TASK.PageNumber=0
-  if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then  
+  if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
     local x=TXQuery.Create(HTTP.Document)
     TASK.PageNumber = x.XPath('//select[@name="page"]/option').Count
     return true
@@ -71,4 +71,4 @@ end
 function Init()
   AddWebsiteModule('1642d82b6c0e4bb88bfaa62589dccb98', 'MangaOku', 'http://www.mangaoku.net')
   AddWebsiteModule('bdbd8eff725747d3a756b998c9f6dc9b', 'Turkcraft', 'http://turkcraft.com')
-end 
+end

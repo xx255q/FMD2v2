@@ -1,7 +1,7 @@
 function getinfo()
   MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
   if HTTP.GET(MANGAINFO.URL) then
-    x=TXQuery.Create(HTTP.Document)	
+    x=TXQuery.Create(HTTP.Document)
     MANGAINFO.Title=x.XPathString('//h1/text()')
     MANGAINFO.CoverLink=x.XPathString('//main//img/@src')
     MANGAINFO.Artists=x.XPathStringAll('//main//table//tr[td="Artist:"]/td/a')

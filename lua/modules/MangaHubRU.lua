@@ -11,7 +11,7 @@ end
 
 function GetNameAndLink()
 	if HTTP.GET(MODULE.RootURL .. dirurl .. '&page=' .. IncStr(URL)) then
-		TXQuery.Create(HTTP.Document).XPathHREFAll('//a[contains(@class,"comic-grid-name")]', LINKS, NAMES)	    
+		TXQuery.Create(HTTP.Document).XPathHREFAll('//a[contains(@class,"comic-grid-name")]', LINKS, NAMES)
 	else
 		return net_problem
 	end
@@ -21,7 +21,7 @@ function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
 		local x = TXQuery.Create(HTTP.Document)
-		
+
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//img[@class="cover-detail-img"]/@src'))
 		MANGAINFO.Title     = x.XPathString('//h1')
 		MANGAINFO.Authors   = x.XPathString('//a[@itemprop="author"]')

@@ -10,9 +10,9 @@ function getinfo()
       str = string.gsub(str, " ", "_")
       str = string.gsub(str, '%.', '')
     end
-    return str    
+    return str
   end
-  
+
   MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
   if HTTP.GET(MANGAINFO.URL) then
     local x=TXQuery.Create(HTTP.Document)
@@ -40,7 +40,7 @@ function getinfo()
         local ch = tonumber(x.XPathString('chapter', v1))
         local team = x.XPathString('team_name', v1)
         local key = string.format('%08.2f %s', ch, team)
-		
+
         table.insert(t, key)
         data[key] = {
           name = string.format('%s - %s [%s]', tostring(ch), x.XPathString('title', v1), team),

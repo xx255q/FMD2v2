@@ -62,7 +62,7 @@ function getimageurl()
   HTTP.Headers.Values['Referer'] = MODULE.RootURL:gsub('http://', 'https://')
   if HTTP.GET(s) then
     TASK.PageLinks[WORKID] = TXQuery.Create(HTTP.Document).XPathString('//img[@class="viewer-image"]/@src')
-    
+
     return true
   end
   return false

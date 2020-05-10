@@ -107,7 +107,7 @@ end
 
 function getimageurl()
   local s = MaybeFillHost(MODULE.RootURL, TASK.PageContainerLinks[WORKID])
-  if HTTP.GET(s) then      
+  if HTTP.GET(s) then
     TASK.PageLinks[WORKID] = TXQuery.Create(HTTP.Document).XPathString('//img[contains(@class,"manga_pic")]/@src')
     return true
   else

@@ -1,18 +1,8 @@
 ----------------------------------------------------------------------------------------------------
--- Scripting Parameters
-----------------------------------------------------------------------------------------------------
-
--- local LuaDebug   = require 'LuaDebugging'
--- LuaDebugging  = true   --> Override the global LuaDebugging variable by uncommenting this line.
--- LuaStatistics = true   --> Override the global LuaStatistics variable by uncommenting this line.
-
-
-----------------------------------------------------------------------------------------------------
 -- Local Constants
 ----------------------------------------------------------------------------------------------------
 
 local DirectoryPagination = '/'   --> Override template variable by uncommenting this line.
-
 
 ----------------------------------------------------------------------------------------------------
 -- Event Functions
@@ -21,10 +11,9 @@ local DirectoryPagination = '/'   --> Override template variable by uncommenting
 -- Get info and chapter list for current manga.
 function GetInfo()
   local u = MaybeFillHost(MODULE.RootURL, URL)
-  
-  -- [Debug] LuaDebug.WriteLogWithHeader('GetInfo', 'URL ->  ' .. u)
+
   if not HTTP.GET(u) then return net_problem end
-  
+
   x = TXQuery.Create(HTTP.Document)
   MANGAINFO.Title     = x.XPathString('//div[@id="breadcrumbs"]/substring-before(substring-after(., "Start"), "|")'):gsub('^%s*(.-)%s*$', '%1')
   MANGAINFO.Summary   = x.XPathString('//table[@class="infobox"]//tr[6]//td[2]')
@@ -40,29 +29,22 @@ function GetInfo()
     end
   end
 
-  -- [Debug] LuaDebug.PrintMangaInfo()
-  -- [Debug] LuaDebug.WriteStatistics('Chapters', MANGAINFO.ChapterLinks.Count .. '  (' .. MANGAINFO.Title .. ')')
-  
   return no_error
 end
-
 
 -- Get the page count of the manga list of the current website.
 function GetDirectoryPageNumber()
   return no_error
 end
 
-
 -- Get LINKS and NAMES from the manga list of the current website.
 -- DirectoryPagination = RootURL + Manga List
 function GetNameAndLink()
   local v, x = nil
   local u = MODULE.RootURL .. DirectoryPagination
-  
-  -- [Debug] LuaDebug.WriteLogWithHeader('GetNameAndLink', 'URL ->  ' .. u)
 
   if not HTTP.GET(u) then return net_problem end
-  
+
   x = TXQuery.Create(HTTP.Document)
   v = x.XPath('//div[@id="mangalist"]//a[not(@id="SpinOffOpen")]')
 
@@ -71,11 +53,8 @@ function GetNameAndLink()
     NAMES.Add(x.XPathString('text()', v.Get(i)))
   end
 
-  -- [Debug] LuaDebug.PrintMangaDirectoryEntries(u)
-  
   return no_error
 end
-
 
 -- Get the page count for the current chapter.
 function GetPageNumber()

@@ -1,7 +1,7 @@
 -- Get manga info and chapter list:
 function getinfo()
   local j, v, x = nil
-  
+
   MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
   HTTP.Cookies.Values['contents_cid'] = string.gsub(URL, '/contents/', ''):gsub('/', '')
   HTTP.Cookies.Values['contents_detail_pg'] = '1000'
@@ -17,7 +17,7 @@ function getinfo()
       MANGAINFO.ChapterNames.Add(x.XPathString('div[@class="ListCard-content"]/h3', v1) .. ' (' .. x.XPathString('div[@class="ListCard-info-nodot"]', v1) .. ')')
     end
     InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-    
+
     return no_error
   end
   return net_problem
@@ -38,7 +38,7 @@ function getpagenumber()
     else
       return false
     end
-    
+
     return true
   end
   return false
@@ -47,7 +47,7 @@ end
 -- Go through all directory pages and get NAMES and LINKS for manga entries:
 function getnameandlink()
   local v, x = nil
-  
+
   HTTP.Cookies.Values['contents_list_pg'] = '1000'
   if HTTP.GET(MODULE.RootURL .. '/contents/all') then
     x = TXQuery.Create(HTTP.Document)
@@ -57,7 +57,7 @@ function getnameandlink()
       LINKS.Add(v1.GetAttribute('href'))
       NAMES.Add(x.XPathString('div/h3[@class="OblongCard-title"]', v1))
     end
-    
+
     return no_error
   end
   return net_problem

@@ -7,7 +7,7 @@ function getinfo()
   if HTTP.GET(MaybeFillHost(MODULE.RootURL, '/api/manga/' .. id)) then
     local resp = HTMLEncode(StreamToString(HTTP.Document))
     local x = TXQuery.Create(resp)
-    
+
     local info = x.XPath('json(*)')
     if MANGAINFO.Title == '' then
       MANGAINFO.Title = x.XPathString('manga/title', info)
@@ -17,7 +17,7 @@ function getinfo()
     MANGAINFO.Artists = x.XPathString('manga/artist', info)
     MANGAINFO.Summary = x.XPathString('manga/description', info)
     MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('manga/status', info), '1', '2')
-    
+
     local genres = ''
     local v = x.XPath('jn:members(manga/genres)', info)
     if v.Count > 0 then genres = getgenre(v.Get(1).ToString()); end
@@ -30,38 +30,38 @@ function getinfo()
       genres = genres .. 'Hentai'
     end
     MANGAINFO.Genres = genres
-    
+
     local selLang = MODULE.GetOption('lualang')
     local selLangId = findlang(selLang)
     local chapters = x.XPath('let $c := json(*).chapter return for $k in jn:keys($c) ' ..
       'return jn:object(object(("chapter_id", $k)), $c($k))')
     for i = 1, chapters.Count do
       local v1 = chapters.Get(i)
-      
+
       if not IgnoreChaptersByGroupId(x.XPathString('group_id', v1)) then
-        
+
         local lang = x.XPathString('lang_code', v1)
         local ts = tonumber(x.XPathString('timestamp', v1))
         if (selLang == 0 or lang == selLangId) and (ts <= os.time()) then
           MANGAINFO.ChapterLinks.Add('/chapter/' .. x.XPathString('chapter_id', v1))
-          
+
           local s = ''
           local vol = x.XPathString('volume', v1)
           local ch = x.XPathString('chapter', v1)
           if vol ~= '' then s = s .. string.format('Vol. %s', vol); end
           if s ~= '' then s = s .. ' '; end
           if ch ~= '' then s = s .. string.format('Ch. %s', ch); end
-          
+
           local title = x.XPathString('title', v1)
           if title ~= '' then
             if s ~= '' then s = s .. ' - '; end
             s = s .. title
           end
-          
+
           if selLang == 0 then
             s = string.format('%s [%s]', s, getlang(lang))
           end
-          
+
           if MODULE.GetOption('luashowscangroup') then
             local group = x.XPathString('group_name', v1)
             local group2 = x.XPathString('group_name_2', v1)
@@ -74,7 +74,7 @@ function getinfo()
             end
             s = string.format('%s [%s]', s, group)
           end
-          
+
           MANGAINFO.ChapterNames.Add(s)
         end
       end
@@ -90,7 +90,7 @@ function IgnoreChaptersByGroupId(id)
   local groups = {
     ["9097"] = "MangaPlus"
   }
-  
+
   if groups[id] ~= nil then
     return true
   else
@@ -314,10 +314,10 @@ end
 function delay()
   local interval = tonumber(MODULE.GetOption('luainterval'))
   local delay = tonumber(MODULE.GetOption('luadelay')) -- * MODULE.ActiveConnectionCount
-  
+
   if (interval == nil) or (interval < 0) then interval = 1000; end
   if (delay == nil) or (delay < 0) then delay = 1000; end
-  
+
   local lastDelay = MODULE.Storage['lastDelay']
   if lastDelay ~= '' then
     lastDelay = tonumber(lastDelay)
@@ -326,7 +326,7 @@ function delay()
       Sleep(delay)
     end
   end
-  
+
   MODULE.Storage['lastDelay'] = tostring(GetCurrentTime())
 end
 
@@ -360,12 +360,12 @@ function Login()
 	end
 	login_post_url=MODULE.RootURL..login_post_url:gsub('&nojs=1','')
 	HTTP.Reset()
-	
+
 	HTTP.Headers.Values['Origin']= ' '..MODULE.RootURL
 	HTTP.Headers.Values['Referer']= ' '..login_url
 	HTTP.Headers.Values['Accept']=' */*'
 	HTTP.Headers.Values['X-Requested-With']=' XMLHttpRequest'
-	
+
 	local post_data
 	HTTP.MimeType,post_data=getFormData({
 		login_username=MODULE.Account.Username,
@@ -395,7 +395,7 @@ function Init()
   m.OnGetInfo                = 'getinfo'
   m.OnGetPageNumber          = 'getpagenumber'
   m.OnGetNameAndLink         = 'getnameandlink'
-  m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'  
+  m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
   m.MaxTaskLimit             = 1
   m.MaxConnectionLimit       = 2
   m.AccountSupport           = true
@@ -404,7 +404,7 @@ function Init()
   m.AddOptionSpinEdit('luainterval', 'Min. interval between requests (ms)', 1000)
   m.AddOptionSpinEdit('luadelay', 'Delay (ms)', 1000)
   m.AddOptionCheckBox('luashowscangroup', 'Show scanlation group', false)
-  
+
   local items = 'All'
   local t = getlanglist()
   for k, v in ipairs(t) do items = items .. '\r\n' .. v; end

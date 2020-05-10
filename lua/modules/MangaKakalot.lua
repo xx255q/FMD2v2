@@ -134,7 +134,7 @@ function AddWebsiteModule(id, name, url)
   m.OnGetPageNumber='getpagenumber'
   m.OnGetNameAndLink='getnameandlink'
   m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
-end 
+end
 
 function Init()
   AddWebsiteModule('74674292e13c496699b8c5e4efd4b583', 'MangaKakalot', 'https://mangakakalot.com')

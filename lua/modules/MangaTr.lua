@@ -5,7 +5,7 @@ function getinfo()
   if HTTP.GET(MANGAINFO.URL) then
     local x=TXQuery.Create(HTTP.Document)
 	  local imgurl = x.XPathString('//img[@class="thumbnail"]/@src')
-	
+
 	  MANGAINFO.CoverLink = MODULE.RootURL..'/'..imgurl
 	  MANGAINFO.Title = x.XPathString('//title')
 	  if MANGAINFO.Title > '' then
@@ -16,11 +16,11 @@ function getinfo()
 			  MANGAINFO.Title = Trim(x.XPathString('//title/substring-after(substring-before(., " Mangasını Oku "), "Read")'))
 		  end
 	  end
-	
-	  if MANGAINFO.Title == '' then 
+
+	  if MANGAINFO.Title == '' then
 	    MANGAINFO.Title = x.XPathString('//h1')
 	  end
-    
+
 	  if (Pos('Yazar', x.XPathString('//table[1]/tbody/tr[1]/td[1]')) > 0) then
       MANGAINFO.Authors = x.XPathString('//table[1]/tbody/tr[2]/td[1]')
 		  MANGAINFO.Genres = Trim(x.XPathString('//table[1]/tbody/tr[2]/td[3]'))
@@ -28,7 +28,7 @@ function getinfo()
 		  MANGAINFO.Authors = x.XPathString('//table[2]/tbody/tr[2]/td[1]')
 		  MANGAINFO.Genres = Trim(x.XPathString('//table[2]/tbody/tr[2]/td[3]'))
 	  end
-	    
+
 	  MANGAINFO.Summary = x.XPathString('//*[@class="well"]/p')
 
     local info = x.XPathString('//*[@slug]/@slug')
@@ -71,11 +71,11 @@ function getnameandlink()
   if MODULE.Name == 'Manga-Tr' then
     URL = URL..mangatrdirurl
   end
-  
+
   if MODULE.Name == 'Puzzmos' then
     URL = URL..puzzmosdirurl
   end
-  
+
   if HTTP.GET(URL) then
 	  local x=TXQuery.Create(HTTP.Document)
 	  local v=x.XPath('//tr/td[1]/a')
@@ -96,7 +96,7 @@ function getnameandlink()
 end
 
 function getpagenumber()
-  TASK.PageLinks.Clear()  
+  TASK.PageLinks.Clear()
   if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
     local x=TXQuery.Create(HTTP.Document)
     TASK.PageNumber = x.XPathCount('//div[@class="chapter-content"]/select[2]/option/@value')

@@ -8,8 +8,8 @@ function getinfo()
     MANGAINFO.Genres=x.XPathStringAll('//dt[contains(., "Genre")]/following-sibling::dd/a')
     MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//dt[contains(., "Status")]/following-sibling::dd'))
     MANGAINFO.Summary=x.XPathString('//div[@id="film-content"]')
-	
-    local spages = x.XPathString('//div[@class="general-nav"]/a[last()]/@href')		  
+
+    local spages = x.XPathString('//div[@class="general-nav"]/a[last()]/@href')
 		  spages = string.sub(spages, string.len(spages) - 1, string.len(spages))
 		  spages = spages:gsub('/', '')
 		  if spages == '' or spages == 'N/A' then
@@ -44,7 +44,7 @@ function getinfo()
       end
       p = p + 1
     end
-	
+
 	InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
     return no_error
   else

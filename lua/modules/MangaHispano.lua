@@ -3,7 +3,7 @@
   if HTTP.GET(MANGAINFO.URL) then
     x = TXQuery.Create(HTTP.Document)
     MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//div[@class="boxed"]/img/@src'))
-    if MANGAINFO.Title == '' then 
+    if MANGAINFO.Title == '' then
       MANGAINFO.Title = x.XPathString('//h1[contains(@class,"widget-title")]')
     end
     MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//span[contains(., "Estado")]/span'), 'progres', 'final')

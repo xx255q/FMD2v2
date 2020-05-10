@@ -34,7 +34,7 @@ function GetInfo()
 		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('dl[dt="الحالة"]/dd', v),
 			'مستمرة',
 			'مكتملة')
-		
+
 		x.XPathHREFAll('div[@class="Chapters"]/ul/li/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames, v)
 		InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		return no_error

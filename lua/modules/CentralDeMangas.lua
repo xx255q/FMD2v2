@@ -20,7 +20,7 @@ end
 function GetPageNumber()
   TASK.PageLinks.Clear()
   TASK.PageNumber=0
-  if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then  
+  if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
     local x=TXQuery.Create(HTTP.Document)
     local s = x.XPathString('//script[contains(., "urlSulfix")]')
     local suffix = GetBetween("var urlSulfix = '", "';", s)
@@ -73,4 +73,4 @@ function Init()
   m.OnGetNameAndLink         = 'GetNameAndLink'
   m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
   m.OnBeforeDownloadImage    = 'BeforeDownloadImage'
-end 
+end

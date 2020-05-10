@@ -59,7 +59,7 @@ function Init()
 	m.ID = 'bf1790519ae0467792a13d58271e0116'
     m.Category = 'English-Scanlation'
     m.Name = 'EGScans'
-    m.RootURL = 'http://read.egscans.com'    
+    m.RootURL = 'http://read.egscans.com'
     m.LastUpdated = 'february, 10 2018'
     m.OnGetInfo = 'getinfo'
     m.OnTaskStart = 'taskstart'

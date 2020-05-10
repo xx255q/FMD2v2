@@ -35,7 +35,7 @@ function urlencode(str)
        function (c) return string.format ("%%%02X", string.byte(c)) end)
     str = string.gsub (str, " ", "+")
   end
-  return str    
+  return str
 end
 
 local js = require 'utils.jsunpack'
@@ -60,10 +60,10 @@ function getpagenumber()
     local dm5viewsigndt = GetBetween('DM5_VIEWSIGN_DT="', '";', s)
     local dm5key = x.XPathString('//*[@id="dm5_key"]/@value')
     local dm5page, cnt = 1, 0
-    
+
     local total = tonumber(x.XPathString('(//div[@id="chapterpager"])[1]/a[last()]'))
     if total == nil then total = 0 end
-    
+
     while (cnt < total) and (dm5page <= total) do
       local xhrurl = string.format('%s/chapterfun.ashx?cid=%s&page=%d&key=%s&language=1&gtk=6&_cid=%s&_mid=%s&_dt=%s&_sign=%s',
         RemoveURLDelim(u), dm5cid, dm5page, dm5key, dm5cid, dm5mid, urlencode(dm5viewsigndt), dm5viewsign)

@@ -4,9 +4,9 @@ function getinfo()
     local x=TXQuery.Create(HTTP.Document)
     MANGAINFO.Title=x.XPathString('css("div.titlesinfo_top > h2")')
     MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('css("img.titlesinfo_coverimage")/@src'))
-    MANGAINFO.Status=MangaInfoStatusIfPos(x.XPathString('//div[contains(span, "Status")]/span[@class="titleinfo_infovalue"]')) 
+    MANGAINFO.Status=MangaInfoStatusIfPos(x.XPathString('//div[contains(span, "Status")]/span[@class="titleinfo_infovalue"]'))
     MANGAINFO.Summary=x.XPathStringAll('//div[contains(span, "Description")]/*[@class="titlesinfo_description"]/text()', '')
-    
+
 	  local chapters=x.XPath('//table[@class="titlesinfo_chaptertable"]//tr')
     for i = 1, chapters.Count do
       local v1 = chapters.Get(i)
@@ -21,13 +21,13 @@ function getinfo()
         if s ~= '' then s = s .. ' - '; end
         s = s .. title
       end
-      
+
       if s ~= '' then
         MANGAINFO.ChapterLinks.Add(x.XPathString('td[3]/a/@href', v1))
         MANGAINFO.ChapterNames.Add(s)
       end
     end
-    
+
     InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
     return no_error
   else

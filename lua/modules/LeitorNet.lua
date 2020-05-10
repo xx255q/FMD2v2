@@ -1,7 +1,7 @@
 function getinfo()
   MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
   if HTTP.GET(MANGAINFO.URL) then
-    x=TXQuery.Create(HTTP.Document) 
+    x=TXQuery.Create(HTTP.Document)
     MANGAINFO.Title=x.XPathString('//*[@id="series-data"]//*[@class="series-title"]/h1')
     MANGAINFO.CoverLink=x.XPathString('//*[@id="series-data"]//img[@class="cover"]/@src')
     MANGAINFO.Authors=x.XPathString('//*[@id="series-data"]//*[@class="series-author"]/normalize-space(text())')
@@ -12,7 +12,7 @@ function getinfo()
       MANGAINFO.Status = '0'
     end
     MANGAINFO.Summary=x.XPathString('//*[@id="series-data"]//*[@class="series-desc"]')
-    
+
     local id = x.XPathString('//ul[@data-id-serie]/@data-id-serie')
     local page = 1
     while true do
@@ -91,4 +91,4 @@ function Init()
   m.OnGetInfo        = 'getinfo'
   m.OnGetPageNumber  = 'getpagenumber'
   m.OnGetNameAndLink = 'getnameandlink'
-end 
+end

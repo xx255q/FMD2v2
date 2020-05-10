@@ -13,7 +13,7 @@ function GetInfo()
     MANGAINFO.Genres = x.XPathString('//li[@class="info_block" and contains(span, "Genere")]/span[@class="info_content"]')
     MANGAINFO.Summary = x.XPathString('//div[@class="plot"]')
     x.XPathHREFAll('css("div.chapter_list > ul > li > .ch_top > a")', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-    InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)    
+    InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
     return no_error
   else
     return net_problem

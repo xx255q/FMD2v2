@@ -65,7 +65,7 @@ function AddWebsiteModule(id, name, URL)
   m.OnGetPageNumber  = 'getpagenumber'
   m.OnGetNameAndLink = 'getnameandlink'
   m.TotalDirectory   = ALPHA_LIST:len()
-end 
+end
 
 function Init()
   AddWebsiteModule('aec40749e25a4fe9963d12bd1ad75b3d', 'FunManga', 'http://www.funmanga.com')

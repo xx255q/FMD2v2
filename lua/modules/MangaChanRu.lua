@@ -81,7 +81,7 @@ end
 
 function Init()
   AddWebsiteModule('adb5ad9b022e4b5c82586d10404c253e', 'MangaChanRU', 'http://manga-chan.me', 'Russian')
-  
+
   local cat = 'H-Sites'
   AddWebsiteModule('82f401398ab94d04b03c0221e9fe2aa3', 'HentaiChanRU', 'http://h-chan.me', cat)
   AddWebsiteModule('bbc4794f4ffe4468a28b21a7e009366e', 'YaoiChanRU', 'http://yaoi-chan.me', cat)

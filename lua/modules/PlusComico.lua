@@ -66,7 +66,7 @@ function getpagenumber_manga()
 end
 
 function getpagenumber_store()
-  if HTTP.LastURL:match('param=') == nil then return false; end  
+  if HTTP.LastURL:match('param=') == nil then return false; end
   local base = SeparateLeft(HTTP.LastURL, 'index.php')
   local param = GetBetween('param=', '&', HTTP.LastURL)
   local ts = os.time() * 1000

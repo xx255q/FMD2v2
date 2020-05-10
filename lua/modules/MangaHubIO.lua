@@ -97,7 +97,7 @@ function AddWebsiteModule(id, name, url)
   m.OnGetPageNumber='getpagenumber'
   m.OnGetNameAndLink='getnameandlink'
   m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
-end 
+end
 
 function Init()
   AddWebsiteModule('a4f873c854b248769284896607dfb4dd', 'MangaHubIO', 'https://mangahub.io')
