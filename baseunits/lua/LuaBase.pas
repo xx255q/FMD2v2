@@ -209,13 +209,16 @@ var
   m: TMemoryStream;
 begin
   m := TMemoryStream(ud);
-  if m.Size = 0 then
+  if m.Size <> 0 then
+  begin
+    Result := PAnsiChar(m.Memory);
+    sz^ := m.Size;
+  end
+  else
   begin
     Result := nil;
-    Exit;
+    sz^ := 0;
   end;
-  Result := PAnsiChar(m.Memory);
-  sz^ := m.Size;
 end;
 
 function LuaLoadFromStream(const L: Plua_State; const AStream: TMemoryStream;
