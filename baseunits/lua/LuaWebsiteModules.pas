@@ -483,11 +483,13 @@ var
   i: Integer;
 begin
   Result := False;
-  L := LuaNewBaseState;
+  L := luaL_newstate;
   try
     AStream := LuaDumpFileToStream(L, AFileName);
     if AStream <> nil then
     begin
+      luaL_openlibs(L);
+      LuaBaseRegister(L);
       i := lua_pcall(L, 0, 0, 0);
       if i = 0 then
       begin
