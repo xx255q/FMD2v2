@@ -13,13 +13,13 @@ type
 
   TWebsiteBypass = class
   public
-    WebsiteModule: TObject;
+    Module: Pointer;
     Guardian: TRTLCriticalSection;
-    constructor Create(AWebsiteModule: TObject);
+    constructor Create(const AWebsiteModule: Pointer);
     destructor Destroy; override;
   end;
 
-function WebsiteBypassRequest(const AHTTP: THTTPSendThread; const Method, AURL: String; const Response: TObject; const AWebsiteBypass: TWebsiteBypass): Boolean;
+function WebsiteBypassRequest(const AHTTP: THTTPSendThread; const AMethod, AURL: String; const Response: TObject; const AWebsiteBypass: TWebsiteBypass): Boolean;
 
 procedure doInitialization;
 
@@ -84,7 +84,7 @@ begin
   lua_close(L);
 end;
 
-function WebsiteBypassGetAnswer(const AHTTP: THTTPSendThread; const AURL, S: String; const AWebsiteBypass: TWebsiteBypass): Boolean;
+function WebsiteBypassGetAnswer(const AHTTP: THTTPSendThread; const AMethod, AURL, S: String; const AWebsiteBypass: TWebsiteBypass): Boolean;
 var
   L: Plua_State;
 begin
@@ -92,10 +92,11 @@ begin
   if not Assigned(websitebypass_dump) then Exit;
   L := LuaNewBaseState;
   try
+    luaPushStringGlobal(L, 'METHOD', AMethod);
     luaPushStringGlobal(L, 'URL', AURL);
     luaPushStringGlobal(L, 'S', S);
     luaPushObject(L, AHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
-    luaPushObject(L, TModuleContainer(AWebsiteBypass.WebsiteModule), 'MODULE', @luaWebsiteModuleAddMetaTable);
+    luaPushObject(L, TLuaWebsiteModule(TModuleContainer(AWebsiteBypass.Module).LuaModule), 'MODULE', @luaWebsiteModuleAddMetaTable);
     lua_pop(L, lua_gettop(L));
     LuaExecute(L, websitebypass_dump, websitebypass_file, LUA_MULTRET);
     Result := lua_toboolean(L, 1);
@@ -106,24 +107,24 @@ begin
   lua_close(L);
 end;
 
-function WebsiteBypassRequest(const AHTTP: THTTPSendThread; const Method, AURL: String; const Response: TObject; const AWebsiteBypass: TWebsiteBypass): Boolean;
+function WebsiteBypassRequest(const AHTTP: THTTPSendThread; const AMethod, AURL: String; const Response: TObject; const AWebsiteBypass: TWebsiteBypass): Boolean;
 var
   S: String = '';
 begin
   Result := False;
   if AHTTP = nil then Exit;
   AHTTP.AllowServerErrorResponse := True;
-  Result := AHTTP.HTTPRequest(Method, AURL);
+  Result := AHTTP.HTTPRequest(AMethod, AURL);
   if CheckAntiBotActive(AHTTP, S) then begin
     if TryEnterCriticalsection(AWebsiteBypass.Guardian) > 0 then
       try
-        Result := WebsiteBypassGetAnswer(AHTTP, AURL, S, AWebsiteBypass);
+        Result := WebsiteBypassGetAnswer(AHTTP, AMethod, AURL, S, AWebsiteBypass);
       finally
         LeaveCriticalsection(AWebsiteBypass.Guardian);
       end
     else begin
       if not AHTTP.ThreadTerminated then
-        Result := AHTTP.HTTPRequest(Method, AURL);
+        Result := AHTTP.HTTPRequest(AMethod, AURL);
     end;
   end;
   if Assigned(Response) then
@@ -136,9 +137,9 @@ end;
 
 { TWebsiteBypass }
 
-constructor TWebsiteBypass.Create(AWebsiteModule: TObject);
+constructor TWebsiteBypass.Create(const AWebsiteModule: Pointer);
 begin
-  WebsiteModule:=AWebsiteModule;
+  Module:=AWebsiteModule;
   InitCriticalSection(Guardian);
 end;
 
