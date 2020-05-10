@@ -60,10 +60,9 @@ end;
 
 procedure LuaBaseRegister(const L: Plua_State);
 begin
-  lua_register(L, 'print', @luabase_print);
-  lua_register(L, 'Sleep', @luabase_sleep);
-
   luaPushStringGlobal(L, 'PathDelim', PathDelim);
+  LuaBaseRegisterPrint(L);
+  LuaBaseRegisterSleep(L);
 
   luaBaseUnitRegister(L);
   luaRegExprRegister(L);
@@ -113,7 +112,6 @@ end;
 
 function LuaNewBaseState: Plua_State;
 begin
-  Result := nil;
   Result := luaL_newstate;
   try
     luaL_openlibs(Result);
