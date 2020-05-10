@@ -18,9 +18,9 @@ function LuaNewBaseState: Plua_State;
 procedure LuaCallFunction(const L: Plua_State; const AFuncName: String);
 function LuaGetReturnString(const ReturnCode: Integer): String;
 
-function LuaDumpFileToStream(const AFileName: String; const AStripDebug: Boolean = False): TMemoryStream; overload;
+function LuaDumpFileToStream(const AFileName: String; const AStripDebug: Integer = 1): TMemoryStream; overload;
 function LuaDumpFileToStream(const L: Plua_State; const AFileName: String;
-  const AStripDebug: Boolean = True): TMemoryStream; overload;
+  const AStripDebug: Integer = 1): TMemoryStream; overload;
 function LuaLoadFromStream(const L: Plua_State; const AStream: TMemoryStream; const AName: String): Integer; inline;
 
 procedure LuaExecute(const L: Plua_State; const AStream: TMemoryStream; const AFileName: String; const NResult: Integer = 0);
@@ -163,7 +163,7 @@ begin
     Result := 0;
 end;
 
-function LuaDumpFileToStream(const AFileName: String; const AStripDebug: Boolean
+function LuaDumpFileToStream(const AFileName: String; const AStripDebug: Integer
   ): TMemoryStream;
 var
   L: Plua_State;
@@ -184,9 +184,7 @@ begin
 end;
 
 function LuaDumpFileToStream(const L: Plua_State; const AFileName: String;
-  const AStripDebug: Boolean): TMemoryStream;
-var
-  strip: Integer;
+  const AStripDebug: Integer): TMemoryStream;
 begin
   if not FileExists(AFileName) then
     Exit;
@@ -194,11 +192,7 @@ begin
   try
     if luaL_loadfilex(L, PAnsiChar(AFileName), nil) <> 0 then
       raise Exception.Create('');
-    if AStripDebug then
-      strip := 0
-    else
-      strip := 1;
-    if lua_dump(L, @_luawriter, Result, strip) <> 0 then
+    if lua_dump(L, @_luawriter, Result, AStripDebug) <> 0 then
       raise Exception.Create('');
   except
     on E: Exception do
