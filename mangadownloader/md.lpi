@@ -219,8 +219,7 @@
               <ShowDebugInfo Value="True"/>
             </Verbosity>
             <CustomOptions Value="-dDEVBUILD
--dDEBUGLEAKS
--ddump_loaded_modules"/>
+-dDEBUGLEAKS"/>
             <OtherDefines Count="2">
               <Define0 Value="DEBUGLEAKS"/>
               <Define1 Value="DEVBUILD"/>

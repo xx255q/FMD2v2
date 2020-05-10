@@ -304,9 +304,13 @@ begin
 end;
 
 procedure doInitialization;
+var
+  i: Integer;
 begin
   AppParams:=TStringList.Create;
-  AppParams.NameValueSeparator:='=';
+  AppParams.Sorted:=False;
+  for i:=1 to ParamCount do
+    AppParams.Add(ParamStr(i));
   GetProgramVersion(FMD_VERSION_NUMBER);
   FMD_VERSION_STRING := ProgramversionToStr(FMD_VERSION_NUMBER);
   SetFMDdirectory(ExtractFilePath(Application.ExeName));

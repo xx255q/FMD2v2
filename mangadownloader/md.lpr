@@ -25,7 +25,6 @@ var
   {$IFDEF DEBUGLEAKS}
   trcfile: String;
   {$ENDIF DEBUGLEAKS}
-  i: Integer;
 
 {$ifdef windows}
   doRestartHandle: THandle;
@@ -46,9 +45,12 @@ const
 {$R *.res}
 
 begin
-  // read and save all params
-  for i:=1 to ParamCount do
-    AppParams.Add(ParamStr(i));
+  {
+    app params
+    --lua_dofile: always load lua modules from file
+    --dump_loaded_modules: dump loaded modules ("ID Name") to log
+    --dorestart-handle=xxx: windows only, handle used to restart app
+  }
 
   {$ifdef windows}
   //wait for prev process from dorestart
