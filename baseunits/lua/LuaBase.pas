@@ -11,7 +11,7 @@ procedure LuaBaseRegister(const L: Plua_State);
 procedure LuaBaseRegisterPrint(const L: Plua_State); inline;
 procedure LuaBaseRegisterSleep(const L: Plua_State); inline;
 procedure luaPushObject(const L: Plua_State; const AObj: TObject; const AName: String;
-  AddMetaTable: TluaClassAddMetaTable = nil; AutoFree: Boolean = False); inline;
+  const AddMetaTable: TluaClassAddMetaTable = nil; const AutoFree: Boolean = False); inline;
 
 function LuaDoFile(const AFileName: String; const AFuncName: String = ''): Plua_State;
 function LuaNewBaseState: Plua_State;
@@ -87,26 +87,33 @@ begin
 end;
 
 procedure luaPushObject(const L: Plua_State; const AObj: TObject;
-  const AName: String; AddMetaTable: TluaClassAddMetaTable; AutoFree: Boolean);
+  const AName: String; const AddMetaTable: TluaClassAddMetaTable;
+  const AutoFree: Boolean);
 begin
   luaClassPushObject(L, AObj, AName, AutoFree, AddMetaTable);
 end;
 
 function LuaDoFile(const AFileName: String; const AFuncName: String
   ): Plua_State;
+var
+  r: Integer;
 begin
   Result := nil;
-  if not FileExists(AFileName) then
-    Exit;
+  if not FileExists(AFileName) then Exit;
   Result := luaL_newstate;
   try
     luaL_openlibs(Result);
     LuaBaseRegister(Result);
-    if luaL_dofile(Result, PAnsiChar(AFileName)) <> 0 then
-      raise Exception.Create('');
-    LuaCallFunction(Result, AFuncName);
+    r := luaL_loadfilex(Result, PAnsiChar(AFileName), nil);
+    if r = 0 then
+      r := lua_pcall(Result, 0, LUA_MULTRET, 0);
+    if r <> 0 then
+      raise Exception.Create(LuaGetReturnString(r));
+    if AFuncName <> '' then
+      LuaCallFunction(Result, AFuncName);
   except
-    Logger.SendError('LuaDoFile.Error ' + lua_tostring(Result, -1));
+    on E: Exception do
+      Logger.SendException('LuaDoFile.Error ' + E.Message + ' ' + lua_tostring(Result, -1), E);
   end;
 end;
 
