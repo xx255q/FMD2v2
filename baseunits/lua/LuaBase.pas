@@ -26,7 +26,6 @@ function LuaLoadFromStream(const L: Plua_State; const AStream: TMemoryStream; co
 procedure LuaExecute(const L: Plua_State; const AStream: TMemoryStream; const AFileName: String; const NResult: Integer = 0);
 
 function _luawriter(L: Plua_State; const p: Pointer; sz: size_t; ud: Pointer): Integer; cdecl;
-function _luareader(L: Plua_State; ud: Pointer; sz: Psize_t): PAnsiChar; cdecl;
 
 var
   AlwaysLoadLuaFromFile: Boolean = {$ifdef DEVBUILD}True{$else}False{$endif};
@@ -204,27 +203,10 @@ begin
   end;
 end;
 
-function _luareader(L: Plua_State; ud: Pointer; sz: Psize_t): PAnsiChar; cdecl;
-var
-  m: TMemoryStream;
-begin
-  m := TMemoryStream(ud);
-  if m.Size <> 0 then
-  begin
-    Result := PAnsiChar(m.Memory);
-    sz^ := m.Size;
-  end
-  else
-  begin
-    Result := nil;
-    sz^ := 0;
-  end;
-end;
-
 function LuaLoadFromStream(const L: Plua_State; const AStream: TMemoryStream;
   const AName: String): Integer;
 begin
-  Result := lua_load(L, @_luareader, AStream, PAnsiChar(AName), 'b');
+  Result := luaL_loadbufferx(L, AStream.Memory, AStream.Size, PAnsiChar(AName), 'b');
 end;
 
 procedure LuaExecute(const L: Plua_State; const AStream: TMemoryStream;
@@ -235,7 +217,7 @@ begin
   if AlwaysLoadLuaFromFile then
     r := luaL_loadfilex(L, PAnsiChar(AFileName), nil)
   else
-    r := lua_load(L, @_luareader, AStream, PAnsiChar(AFileName), 'b');
+    r := luaL_loadbufferx(L, AStream.Memory, AStream.Size, PAnsiChar(AFileName), 'b');
   if r = 0 then
     r := lua_pcall(L, 0, NResult, 0);
   if r <> 0 then
