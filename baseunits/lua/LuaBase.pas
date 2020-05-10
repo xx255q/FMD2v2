@@ -142,14 +142,14 @@ end;
 function LuaGetReturnString(const ReturnCode: Integer): String;
 begin
   case ReturnCode of
-    LUA_OK: Result := 'LUA_OK';
-    LUA_YIELD_: Result := 'LUA_YIELD_';
-    LUA_ERRRUN: Result := 'LUA_ERRRUN';
+    LUA_OK:        Result := 'LUA_OK';
+    LUA_YIELD_:    Result := 'LUA_YIELD';
+    LUA_ERRRUN:    Result := 'LUA_ERRRUN';
     LUA_ERRSYNTAX: Result := 'LUA_ERRSYNTAX';
-    LUA_ERRMEM: Result := 'LUA_ERRMEM';
-    LUA_ERRGCMM: Result := 'LUA_ERRGCMM';
-    LUA_ERRERR: Result := 'LUA_ERRERR';
-    LUA_ERRFILE: Result := 'LUA_ERRFILE';
+    LUA_ERRMEM:    Result := 'LUA_ERRMEM';
+    LUA_ERRGCMM:   Result := 'LUA_ERRGCMM';
+    LUA_ERRERR:    Result := 'LUA_ERRERR';
+    LUA_ERRFILE:   Result := 'LUA_ERRFILE';
     else
       Result := IntToStr(ReturnCode);
   end;
