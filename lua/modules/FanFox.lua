@@ -56,7 +56,6 @@ function GetNameAndLink()
 end
 
 function GetInfo()
-print('lang:' .. tostring(lang))
   MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
   HTTP.Cookies.Values['isAdult'] = '1'
   if HTTP.GET(MANGAINFO.URL) then
