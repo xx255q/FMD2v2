@@ -137,7 +137,7 @@ uses
   FMDOptions, FileUtil, MultiLog, LuaClass, LuaBase, LuaMangaInfo, LuaHTTPSend,
   LuaXQuery, LuaUtils, LuaDownloadTask, LuaUpdateListManager, LuaStrings,
   LuaCriticalSection, LuaWebsiteModulesExtras, uData, uDownloadsManager, xquery,
-  httpsendthread, FMDVars;
+  httpsendthread, FMDVars, WebsiteBypass;
 
 threadvar
   TempModules:TLuaWebsiteModules;
@@ -656,6 +656,7 @@ var
   i: Integer;
   cpu_count: LongWord;
 begin
+  WebsiteBypass.doInitialization;
   FindAllFiles(FFileList, LUA_WEBSITEMODULE_FOLDER, '*.lua;*.luac', False, faAnyFile);
   if FFileList.Count = 0 then Exit;
   cpu_count := GetCPUCount;
