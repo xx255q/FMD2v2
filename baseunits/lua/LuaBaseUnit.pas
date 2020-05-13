@@ -47,6 +47,24 @@ begin
   Result := 1;
 end;
 
+function lua_fillhost(L: Plua_State): Integer; cdecl;
+begin
+  lua_pushstring(L, FillHost(luaGetString(L, 1), luaGetString(L, 2)));
+  Result := 1;
+end;
+
+function lua_gethosturl(L: Plua_State): Integer; cdecl;
+begin
+  lua_pushstring(L, GetHostURL(luaGetString(L, 1)));
+  Result := 1;
+end;
+
+function lua_removehostfromurl(L: Plua_State): Integer; cdecl;
+begin
+  lua_pushstring(L, RemoveHostFromURL(luaGetString(L, 1)));
+  Result := 1;
+end;
+
 function lua_invertstrings(L: Plua_State): Integer; cdecl;
 var
   i: Integer;
@@ -250,6 +268,10 @@ begin
   luaPushFunctionGlobal(L, 'ExtractFileName', @lua_extractfilename);
   luaPushFunctionGlobal(L, 'ExtractFileNameOnly', @lua_extractfilenameonly);
   luaPushFunctionGlobal(L, 'MaybeFillHost', @lua_maybefillhost);
+  luaPushFunctionGlobal(L, 'FillHost', @lua_fillhost);
+  luaPushFunctionGlobal(L, 'GetHostURL', @lua_gethosturl);
+  luaPushFunctionGlobal(L, 'RemoveHostFromURL', @lua_removehostfromurl);
+  luaPushFunctionGlobal(L, 'SplitURL', @lua_spliturl);
   luaPushFunctionGlobal(L, 'InvertStrings', @lua_invertstrings);
   luaPushFunctionGlobal(L, 'MangaInfoStatusIfPos', @lua_mangainfostatusifpos);
   luaPushFunctionGlobal(L, 'AppendURLDelim', @lua_appendurldelim);
@@ -259,7 +281,6 @@ begin
   luaPushFunctionGlobal(L, 'HTMLDecode', @lua_htmldecode);
   luaPushFunctionGlobal(L, 'HTMLEncode', @lua_htmlencode);
   luaPushFunctionGlobal(L, 'URLDecode', @lua_urldecode);
-  luaPushFunctionGlobal(L, 'SplitURL', @lua_spliturl);
   luaPushFunctionGlobal(L, 'IncStr', @lua_incstr);
   luaPushFunctionGlobal(L, 'StreamToString', @lua_streamtostring);
   luaPushFunctionGlobal(L, 'StringToStream', @lua_stringtostream);
