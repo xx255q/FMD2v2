@@ -7,10 +7,10 @@ function getcf(url)
 
 	local r, jschl_vc, pass, jschl_answer = "", "", "", ""
 
-	local x = TXQuery.Create(source)
-	method   = x.XPathString("//form[@id="challenge-form"]/@method"):upper
-	surl     = x.XPathString("//form[@id="challenge-form"]/@action")
-	r        = x.XPathSting("//input[@name="r"]/@value")
+	local x = TXQuery.Create(body)
+	method   = x.XPathString('//form[@id="challenge-form"]/@method'):upper()
+	surl     = x.XPathString('//form[@id="challenge-form"]/@action')
+	r        = x.XPathString('//input[@name="r"]/@value')
 	jschl_vc = x.XPathString('//input[@name="jschl_vc"]/@value')
 	pass     = x.XPathString('//input[@name="pass"]/@value')
 
@@ -22,8 +22,7 @@ function getcf(url)
 	-- challenge
 	local challenge, _, sleeptime = body:match('setTimeout%(function%(%)%{%s*(var ' ..
 									's,t,o,p,b,r,e,a,k,i,n,g.-\r?\n.-a%.value%s*=.-)\r?\n' ..
-									'([^%{<>]*%},%s*(%d))?'
-								)
+									'([^%{<>]*%},%s*(%d))?')
 	if challenge == nil then challenge = "" end
 	if sleeptime == nil then sleeptime = 5000 else sleeptime = tonumber(sleeptime) or 5000 end
 
@@ -75,7 +74,7 @@ function _M.bypass()
 				HTTP.MimeType = "application/x-www-form-urlencoded"
 			end
 			HTTP.Headers.Values["Referer"] = " " + URL
-			if sleeptime < 5000 then sleeptime = 5000
+			if sleeptime < 5000 then sleeptime = 5000 end
 			sleepcount = 0
 			while sleepcount < sleeptime do
 				if HTTP.Terminated then break end
@@ -85,7 +84,7 @@ function _M.bypass()
 			HTTP.FollowRedirection = False
 			HTTP.Request(method, FillHost(host, url))
 			result = HTTP.Cookies.Values["cf_clearance"] ~= ""
-			if HTTP.ResultCode = 403 then
+			if HTTP.ResultCode == 403 then
 				LOGGER.SendError("cloudflare bypass failed, probably asking for captcha? " .. URL)
 			end
 			HTTP.FollowRedirection = true
