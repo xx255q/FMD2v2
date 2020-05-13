@@ -18,6 +18,12 @@ uses
 type
   TUserData = THTTPSendThread;
 
+function http_request(L: Plua_State): Integer; cdecl;
+begin
+  lua_pushboolean(L, TUserData(luaClassGetObject(L)).HTTPRequest(luaGetString(L, 1), luaGetString(L, 2)));
+  Result := 1;
+end;
+
 function http_get(L: Plua_State): Integer; cdecl;
 begin
   lua_pushboolean(L, TUserData(luaClassGetObject(L)).GET(luaGetString(L, 1)));
@@ -87,7 +93,8 @@ begin
 end;
 
 const
-  methods: packed array [0..7] of luaL_Reg = (
+  methods: packed array [0..8] of luaL_Reg = (
+    (name: 'Request'; func: @http_request),
     (name: 'GET'; func: @http_get),
     (name: 'POST'; func: @http_post),
     (name: 'HEAD'; func: @http_head),
