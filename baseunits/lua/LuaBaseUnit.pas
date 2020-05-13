@@ -12,7 +12,7 @@ procedure luaBaseUnitRegister(L: Plua_State);
 implementation
 
 uses
-  LuaUtils, LazFileUtils, MultiLog, htmlelements, dateutils;
+  LuaUtils, httpsendthread, LazFileUtils, MultiLog, htmlelements, dateutils;
 
 function lua_pos(L: Plua_State): Integer; cdecl;
 begin
@@ -22,7 +22,10 @@ end;
 
 function lua_trim(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, Trim(luaGetString(L, 1)));
+  if lua_gettop(L) > 1 then
+    lua_pushstring(L, luaGetString(L, 1).Trim(luaGetString(L, 2).ToCharArray))
+  else
+    lua_pushstring(L, Trim(luaGetString(L, 1)));
   Result := 1;
 end;
 
@@ -106,6 +109,26 @@ function lua_urldecode(L: Plua_State): Integer; cdecl;
 begin
   lua_pushstring(L, URLDecode(luaGetString(L, 1)));
   Result := 1;
+end;
+
+function lua_spliturl(L: Plua_State): Integer; cdecl;
+var
+  t: Integer;
+  host: string = '';
+  path: string = '';
+  includeprotocol: Boolean = true;
+  includeport: Boolean = true;
+begin
+  t:=lua_gettop(L);
+  if t>2 then
+    includeprotocol := lua_toboolean(L,3);
+  if t>1 then
+    includeport := lua_toboolean(L,2);
+  SplitURL(luaGetString(L, 1), @host, @path, includeprotocol, includeport);
+
+  lua_pushstring(L, host);
+  lua_pushstring(L, path);
+  Result := 2;
 end;
 
 function lua_incstr(L: Plua_State): Integer; cdecl;
@@ -236,6 +259,7 @@ begin
   luaPushFunctionGlobal(L, 'HTMLDecode', @lua_htmldecode);
   luaPushFunctionGlobal(L, 'HTMLEncode', @lua_htmlencode);
   luaPushFunctionGlobal(L, 'URLDecode', @lua_urldecode);
+  luaPushFunctionGlobal(L, 'SplitURL', @lua_spliturl);
   luaPushFunctionGlobal(L, 'IncStr', @lua_incstr);
   luaPushFunctionGlobal(L, 'StreamToString', @lua_streamtostring);
   luaPushFunctionGlobal(L, 'StringToStream', @lua_stringtostream);
