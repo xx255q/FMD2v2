@@ -42,7 +42,7 @@ const
 procedure doInitialization;
 begin
   checkantibot_file := LUA_REPO_FOLDER + luabypass_dir + PathDelim + checkantibot_file;
-  websitebypass_file := LUA_REPO_FOLDER + 'websitebypass' + PathDelim + websitebypass_file;
+  websitebypass_file := LUA_REPO_FOLDER + luabypass_dir + PathDelim + websitebypass_file;
 
   if FileExists(checkantibot_file) then
     checkantibot_dump := LuaDumpFileToStream(checkantibot_file);
