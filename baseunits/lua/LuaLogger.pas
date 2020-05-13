@@ -42,7 +42,7 @@ const
 
 procedure luaLoggerRegister(L: Plua_State);
 begin
-  luaClassNewLib(L, 'logger', methods);
+  luaClassNewLib(L, 'LOGGER', methods);
 end;
 
 end.
