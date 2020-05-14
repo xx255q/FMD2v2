@@ -34,7 +34,11 @@ To compile and build the source code of FMD select `Run -> Build`. If everything
   
 If `InternetTools` fails to compile because of a missing or incompatible PPU, make sure to compile `Synapse` first.  
 By default `InternetTools` uses [FLRE](https://github.com/BeRo1985/flre) and [PUCU](https://github.com/BeRo1985/PUCU) for its regex engine. Just copy the `FLRE.pas` and `PUCU.pas` to `InternetTools\data` folder. You can use Sorokin's RegExpr engine that comes with lazarus by adjusting the defines. But it's not recommended since the author of `InternetTools` prefer FLRE and doesn't always check the Sorokin's RegExpr compatibility when making an update.
-  
+
+If `Multilog` yield an error about `outputchannel` doesn't exist, just remove it from package inspector and recompile.
+
+Try to `Clean up and build` within lazarus if it still fail to compile.
+
 Some other external 3rd party tools and libraries are used as well:  
 [![7-Zip](https://img.shields.io/badge/7--Zip%20(Standalone)-19.00-Blue.svg)](https://www.7-zip.org)  
 [![Duktape](https://img.shields.io/badge/Duktape-2.5.0-Blue.svg)](https://github.com/grijjy/DelphiDuktape)  
