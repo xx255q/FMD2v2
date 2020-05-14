@@ -323,10 +323,8 @@ begin
   if Obj = nil then Exit;
   luaClassNewUserData(L, m, u, Obj, AutoFree);
   if Assigned(AddMetaTable) then
-  begin
     AddMetaTable(L, Obj, m, u);
-    lua_setmetatable(L, u);
-  end;
+  lua_setmetatable(L, u);
   if Name <> '' then
     lua_setglobal(L, PAnsiChar(Name));
 end;
