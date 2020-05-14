@@ -26,13 +26,14 @@ The following packages and components are used for building FMD:
 ![LCL Extensions 0.6.1](https://img.shields.io/badge/LCL%20Extensions-OPM%20(0.6.1)-Blue.svg) <sup>(Compile before "Virtual TreeView")</sup>  
 ![Virtual TreeView 5.5.3.1](https://img.shields.io/badge/Virtual%20TreeView-OPM%20(5.5.3.1)-Blue.svg)  
 [![MultiLog (02.12.2019)](https://img.shields.io/badge/MultiLog-git%20master%20commit%20fd700fa5343c1b0e08063f88a1e6761036b10efc%20(02.12.2019)-Blue.svg)](https://github.com/blikblum/multilog)  
-[![InternetTools (19.01.2020)](https://img.shields.io/badge/InternetTools-git%20master%20commit%20b834f9a3699e7d01bbd0cfafa8c4f7f75cff274d%20(19.01.2020)-Blue.svg)](https://github.com/benibela/internettools)  
+[![InternetTools](https://img.shields.io/badge/InternetTools-Blue.svg)](https://github.com/benibela/internettools)  
   
 After everything is installed, open the file `md.lpi` by using Lazarus IDE.  
 Make sure to add `ssl_openssl` to the uses list of `Synapse` and compile the package again.  
 To compile and build the source code of FMD select `Run -> Build`. If everything is ok, the binary file should be in `FMD_source_code_folder/bin`.  
   
 If `InternetTools` fails to compile because of a missing or incompatible PPU, make sure to compile `Synapse` first.  
+By default `InternetTools` uses [FLRE](https://github.com/BeRo1985/flre) and [PUCU](https://github.com/BeRo1985/PUCU) for its regex engine. Just copy the `FLRE.pas` and `PUCU.pas` to `InternetTools\data` folder. You can use Sorokin's RegExpr engine that comes with lazarus by adjusting the defines. But it's not recommended since the author of `InternetTools` prefer FLRE and doesn't always check the Sorokin's RegExpr compatibility when making an update.
   
 Some other external 3rd party tools and libraries are used as well:  
 [![7-Zip](https://img.shields.io/badge/7--Zip%20(Standalone)-19.00-Blue.svg)](https://www.7-zip.org)  
