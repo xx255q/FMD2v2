@@ -26,7 +26,7 @@ begin
   duk_push_string(ctx, PAnsiChar(text));
   r := duk_peval(ctx);
   s := duk_safe_to_string(ctx, -1);
-  if r <> 0 then Logger.SendError('Error: ' + s)
+  if r <> 0 then Logger.SendError('Duktape error: ' + s)
   else Result := s;
   duk_destroy_heap(ctx);
 end;
