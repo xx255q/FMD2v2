@@ -31,7 +31,7 @@ procedure luaPushUserData(const L: Plua_State; const Value: Pointer; var UIndex:
 function luaGetUserData(const L: Plua_State; const idx: Integer): Pointer; inline;
 function luaGetString(const L: Plua_State; const idx: Integer): String; inline;
 
-function LuaToString(const L: Plua_State; const idx: Integer): String;
+function LuaToTypeString(const L: Plua_State; const idx: Integer): String;
 function LuaStackToString(const L: Plua_State): String;
 
 procedure luaL_newlib(const L: Plua_State; const Name: String; const lr: PluaL_Reg); overload; inline;
@@ -170,39 +170,31 @@ begin
   SetLength(Result, slen);
 end;
 
-function LuaToString(const L: Plua_State; const idx: Integer): String;
+function LuaToTypeString(const L: Plua_State; const idx: Integer): String;
+var
+  t:Integer;
 begin
-  if lua_isuserdata(L, idx) then
-    Result := 'userdata: ' + hexStr(lua_touserdata(L, idx))
-  else
-  if lua_isstring(L, idx) then
-    Result := 'string: ' + luaGetString(L, idx)
-  else
-  if lua_isinteger(L, idx) then
-    Result := 'integer: ' + IntToStr(lua_tointeger(L, idx))
-  else
   if lua_iscfunction(L, idx) then
-    Result := 'cfunc: ' + hexStr(lua_topointer(L, idx))
+    Result:='cfunction'#32#9 + HexStr(lua_topointer(L,idx))
   else
-  if lua_isfunction(L, idx) then
-    Result := 'func: ' + hexStr(lua_topointer(L, idx))
-  else
-  if lua_isnoneornil(L, idx) then
-    Result := 'nil'
-  else
-  if lua_isboolean(L, idx) then
-    Result := 'boolean: ' + BoolToStr(lua_toboolean(L, idx), True)
-  else
-  if lua_isnumber(L, idx) then
-    Result := 'number: ' + FloatToStr(lua_tonumber(L, idx))
-  else
-  if lua_istable(L, idx) then
-    Result := 'table: ' + hexStr(lua_topointer(L, idx))
-  else
-  if lua_islightuserdata(L, idx) then
-    Result := 'ligthuserdata: ' + hexStr(lua_topointer(L, idx))
-  else
-    Result := 'unknown: ' + hexStr(lua_topointer(L, idx));
+  begin
+    t:=lua_type(L, idx);
+    case t of
+      LUA_TNONE          : Result := 'none';
+      LUA_TNIL           : Result := 'nil';
+      LUA_TBOOLEAN       : Result := 'boolean'#32#9 + BoolToStr(lua_toboolean(L, idx), True);
+      LUA_TLIGHTUSERDATA : Result := 'lingsuserdata'#32#9 + HexStr(lua_topointer(L, idx));
+      LUA_TNUMBER        : Result := 'number'#32#9 + FloatToStr(lua_tonumber(L, idx));
+      LUA_TSTRING        : Result := 'string'#32#9 + AnsiQuotedStr(lua_tostring(L, idx),'"');
+      LUA_TTABLE         : Result := 'table'#32#9 + HexStr(lua_topointer(L, idx));
+      LUA_TFUNCTION      : Result := 'function'#32#9 + HexStr(lua_topointer(L, idx));
+      LUA_TUSERDATA      : Result := 'userdata'#32#9 + HexStr(lua_topointer(L, idx));
+      LUA_TTHREAD        : Result := 'thread'#32#9 + HexStr(lua_topointer(L, idx));
+      LUA_NUMTAGS        : Result := 'numtags'#32#9 + HexStr(lua_topointer(L, idx));
+      else
+                           Result := 'else'#32#9 + IntToStr(t) + ' = ' + HexStr(lua_topointer(L, idx));
+    end;
+  end;
 end;
 
 function LuaStackToString(const L: Plua_State): String;
@@ -214,8 +206,8 @@ begin
   if i = 0 then
     Exit;
   for i := 1 to i do
-    Result := Result + IntToStr(i) + '=' + LuaToString(L, i) + LineEnding;
-  SetLength(Result, Length(Result) - Length(LineEnding));
+    Result += Format('%.3d: %s'#13#10,[i, LuaToTypeString(L,i)]);
+  SetLength(Result, Length(Result) - 2);
 end;
 
 procedure luaL_newlib(const L: Plua_State; const Name: String;
