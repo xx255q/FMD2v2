@@ -5,7 +5,7 @@ unit LuaUtils;
 interface
 
 uses
-  Classes, SysUtils, lua53;
+  Classes, SysUtils, lua53, LuaClass;
 
 function luaNewTable(const L: Plua_State): Integer;
 procedure luaAddCFunctionToTable(const L: Plua_State; const Table: Integer;
@@ -23,6 +23,8 @@ procedure luaPushFunctionGlobal(const L: Plua_State; const Name: String; const F
 procedure luaPushStringGlobal(const L: Plua_State; const Name, Value: String);
 procedure luaPushIntegerGlobal(const L: Plua_State; const Name: String; const Value: lua_Integer);
 procedure luaPushBooleanGlobal(const L: Plua_State; const Name: String; const Value: Boolean);
+procedure luaPushObjectGlobal(const L: Plua_State; const AObj: TObject; const AName: String;
+  const AddMetaTable: TluaClassAddMetaTable = nil; const AutoFree: Boolean = False); inline;
 
 procedure luaPushUserData(const L: Plua_State; const Value: Pointer); overload; inline;
 procedure luaPushUserData(const L: Plua_State; const Value: Pointer; var UIndex: Integer); overload; inline;
@@ -134,6 +136,13 @@ begin
   {$ifdef dump_lua_api}Logger.Send(Name);{$endif}
   lua_pushboolean(L, Value);
   lua_setglobal(L, PAnsiChar(Name));
+end;
+
+procedure luaPushObjectGlobal(const L: Plua_State; const AObj: TObject;
+  const AName: String; const AddMetaTable: TluaClassAddMetaTable;
+  const AutoFree: Boolean);
+begin
+  luaClassPushObject(L, AObj, AName, AutoFree, AddMetaTable);
 end;
 
 procedure luaPushUserData(const L: Plua_State; const Value: Pointer);

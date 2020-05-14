@@ -71,7 +71,7 @@ begin
     luaopen_string(L);
     //luaL_openlibs(L);
     //LuaBaseRegisterPrint(L);
-    luaPushObject(L, AHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
+    luaPushObjectGlobal(L, AHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
     lua_pop(L, lua_gettop(L));
     LuaExecute(L, checkantibot_dump, checkantibot_file, LUA_MULTRET);
     Result := lua_toboolean(L, 1);
@@ -95,8 +95,8 @@ begin
     luaPushStringGlobal(L, 'METHOD', AMethod);
     luaPushStringGlobal(L, 'URL', AURL);
     luaPushStringGlobal(L, 'S', S);
-    luaPushObject(L, AHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
-    luaPushObject(L, TLuaWebsiteModule(TModuleContainer(AWebsiteBypass.Module).LuaModule), 'MODULE', @luaWebsiteModuleAddMetaTable);
+    luaPushObjectGlobal(L, AHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
+    luaPushObjectGlobal(L, TLuaWebsiteModule(TModuleContainer(AWebsiteBypass.Module).LuaModule), 'MODULE', @luaWebsiteModuleAddMetaTable);
     lua_pop(L, lua_gettop(L));
     LuaExecute(L, websitebypass_dump, websitebypass_file, LUA_MULTRET);
     Result := lua_toboolean(L, 1);

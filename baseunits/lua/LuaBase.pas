@@ -10,8 +10,6 @@ uses
 procedure LuaBaseRegister(const L: Plua_State);
 procedure LuaBaseRegisterPrint(const L: Plua_State); inline;
 procedure LuaBaseRegisterSleep(const L: Plua_State); inline;
-procedure luaPushObject(const L: Plua_State; const AObj: TObject; const AName: String;
-  const AddMetaTable: TluaClassAddMetaTable = nil; const AutoFree: Boolean = False); inline;
 
 function LuaDoFile(const AFileName: String; const AFuncName: String = ''): Plua_State;
 function LuaNewBaseState: Plua_State;
@@ -83,13 +81,6 @@ end;
 procedure LuaBaseRegisterSleep(const L: Plua_State);
 begin
   lua_register(L, 'Sleep', @luabase_sleep);
-end;
-
-procedure luaPushObject(const L: Plua_State; const AObj: TObject;
-  const AName: String; const AddMetaTable: TluaClassAddMetaTable;
-  const AutoFree: Boolean);
-begin
-  luaClassPushObject(L, AObj, AName, AutoFree, AddMetaTable);
 end;
 
 function LuaDoFile(const AFileName: String; const AFuncName: String
