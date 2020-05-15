@@ -24,6 +24,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="2"/>
+      <RevisionNr Value="1"/>
       <Attributes pvaPrivateBuild="True"/>
       <StringTable Comments="https://github.com/fmd-project-team/FMD" FileDescription="Free Manga Downloader" LegalCopyright="©2015-2020" OriginalFilename="fmd.exe" ProductName="Free Manga Downloader" ProductVersion="$BuildMode()" PrivateBuild="FMD Project Team"/>
     </VersionInfo>
@@ -65,6 +66,7 @@
             </Options>
           </Linking>
           <Other>
+            <CustomOptions Value="-dluajit"/>
             <OtherDefines Count="2">
               <Define0 Value="DEBUGLEAKS"/>
               <Define1 Value="DEVBUILD"/>
@@ -119,6 +121,7 @@
             <CompilerMessages>
               <IgnoredMessages idx4079="True"/>
             </CompilerMessages>
+            <CustomOptions Value="-dluajit"/>
             <OtherDefines Count="2">
               <Define0 Value="DEBUGLEAKS"/>
               <Define1 Value="DEVBUILD"/>
@@ -170,6 +173,7 @@
             </Options>
           </Linking>
           <Other>
+            <CustomOptions Value="-dluajit"/>
             <ExecuteBefore>
               <Command Value="..\git2revision.bat ..\baseunits\revision.inc"/>
               <CompileReasons Run="False"/>
@@ -275,7 +279,8 @@
           </Linking>
           <Other>
             <CustomOptions Value="-dDEVBUILD
--dDEBUGLEAKS"/>
+-dDEBUGLEAKS
+-dluajit"/>
             <OtherDefines Count="2">
               <Define0 Value="DEBUGLEAKS"/>
               <Define1 Value="DEVBUILD"/>
@@ -528,6 +533,7 @@
       <CompilerMessages>
         <IgnoredMessages idx5028="True"/>
       </CompilerMessages>
+      <CustomOptions Value="-dluajit"/>
       <OtherDefines Count="2">
         <Define0 Value="DEBUGLEAKS"/>
         <Define1 Value="DEVBUILD"/>
