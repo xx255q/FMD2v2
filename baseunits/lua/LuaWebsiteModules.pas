@@ -136,8 +136,8 @@ implementation
 uses
   FMDOptions, FileUtil, MultiLog, LuaClass, LuaBase, LuaMangaInfo, LuaHTTPSend,
   LuaXQuery, LuaUtils, LuaDownloadTask, LuaUpdateListManager, LuaStrings,
-  LuaCriticalSection, LuaWebsiteModulesExtras, uData, uDownloadsManager, xquery,
-  httpsendthread, FMDVars, WebsiteBypass;
+  LuaCriticalSection, LuaWebsiteModulesExtras, LuaPackage, uData,
+  uDownloadsManager, xquery, httpsendthread, FMDVars, WebsiteBypass;
 
 threadvar
   TempModules:TLuaWebsiteModules;
@@ -483,13 +483,11 @@ var
   i: Integer;
 begin
   Result := False;
-  L := luaL_newstate;
+  L := LuaNewBaseState;
   try
     AStream := LuaDumpFileToStream(L, AFileName);
     if AStream <> nil then
     begin
-      luaL_openlibs(L);
-      LuaBaseRegister(L);
       i := lua_pcall(L, 0, 0, 0);
       if i = 0 then
       begin
@@ -657,6 +655,8 @@ var
   cpu_count: LongWord;
 begin
   WebsiteBypass.doInitialization;
+  LuaPackage.LoadPackages(LUA_PACKAGES_FOLDER);
+
   FindAllFiles(FFileList, LUA_WEBSITEMODULE_FOLDER, '*.lua;*.luac', False, faAnyFile);
   if FFileList.Count = 0 then Exit;
   cpu_count := GetCPUCount;
@@ -666,6 +666,7 @@ begin
     TLuaWebsiteModulesLoaderThread.Create(Self);
   while FThreadCount <> 0 do
     Sleep(250);
+
   Modules.Sort;
 end;
 

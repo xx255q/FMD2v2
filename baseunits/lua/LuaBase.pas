@@ -5,7 +5,7 @@ unit LuaBase;
 interface
 
 uses
-  Classes, SysUtils, Lua53, LuaClass;
+  Classes, SysUtils, Lua53;
 
 procedure LuaBaseRegister(const L: Plua_State);
 procedure LuaBaseRegisterPrint(const L: Plua_State); inline;
@@ -20,6 +20,7 @@ function LuaDumpFileToStream(const AFileName: String; const AStripDebug: Integer
 function LuaDumpFileToStream(const L: Plua_State; const AFileName: String;
   const AStripDebug: Integer = 1): TMemoryStream; overload;
 function LuaLoadFromStream(const L: Plua_State; const AStream: TMemoryStream; const AName: String): Integer; inline;
+function LuaLoadFromStreamOrFile(const L: Plua_State; const AStream: TMemoryStream; const AFileName: String): Integer; inline;
 
 procedure LuaExecute(const L: Plua_State; const AStream: TMemoryStream; const AFileName: String; const NResult: Integer = 0);
 
@@ -31,7 +32,7 @@ var
 implementation
 
 uses
-  LuaStrings, LuaBaseUnit, LuaRegExpr, LuaPCRE2, LuaSynaUtil, LuaSynaCode,
+  LuaPackage, LuaClass, LuaStrings, LuaBaseUnit, LuaRegExpr, LuaPCRE2, LuaSynaUtil, LuaSynaCode,
   MultiLog, LuaCrypto, LuaImagePuzzle, LuaDuktape, LuaCriticalSection,
   LuaLogger, LuaUtils, LuaMemoryStream, LuaFMD;
 
@@ -113,6 +114,7 @@ begin
   try
     luaL_openlibs(Result);
     LuaBaseRegister(Result);
+    LuaPackage.RegisterLoader(Result);
   except
     Logger.SendError(lua_tostring(Result, -1));
   end;
@@ -200,15 +202,21 @@ begin
   Result := luaL_loadbufferx(L, AStream.Memory, AStream.Size, PAnsiChar(AName), 'b');
 end;
 
+function LuaLoadFromStreamOrFile(const L: Plua_State;
+  const AStream: TMemoryStream; const AFileName: String): Integer;
+begin
+  if AlwaysLoadLuaFromFile then
+    Result := luaL_loadfilex(L, PAnsiChar(AFileName), nil)
+  else
+    Result := luaL_loadbufferx(L, AStream.Memory, AStream.Size, PAnsiChar(AFileName), 'b');
+end;
+
 procedure LuaExecute(const L: Plua_State; const AStream: TMemoryStream;
   const AFileName: String; const NResult: Integer);
 var
   r: Integer;
 begin
-  if AlwaysLoadLuaFromFile then
-    r := luaL_loadfilex(L, PAnsiChar(AFileName), nil)
-  else
-    r := luaL_loadbufferx(L, AStream.Memory, AStream.Size, PAnsiChar(AFileName), 'b');
+  r := LuaLoadFromStreamOrFile(L, AStream, AFileName);
   if r = 0 then
     r := lua_pcall(L, 0, NResult, 0);
   if r <> 0 then

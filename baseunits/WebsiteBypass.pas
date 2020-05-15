@@ -36,13 +36,10 @@ var
   checkantibot_file: String = 'checkantibot.lua';
   websitebypass_file: String = 'websitebypass.lua';
 
-const
-  luabypass_dir = 'websitebypass';
-
 procedure doInitialization;
 begin
-  checkantibot_file := LUA_REPO_FOLDER + luabypass_dir + PathDelim + checkantibot_file;
-  websitebypass_file := LUA_REPO_FOLDER + luabypass_dir + PathDelim + websitebypass_file;
+  checkantibot_file := LUA_WEBSITEBYPASS_FOLDER + checkantibot_file;
+  websitebypass_file := LUA_WEBSITEBYPASS_FOLDER + websitebypass_file;
 
   if FileExists(checkantibot_file) then
     checkantibot_dump := LuaDumpFileToStream(checkantibot_file);
