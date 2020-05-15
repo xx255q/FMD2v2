@@ -5,7 +5,7 @@ unit LuaDuktape;
 interface
 
 uses
-  Classes, SysUtils, lua53, uBaseUnit;
+  Classes, SysUtils, {$ifdef luajit}lua{$else}Lua53{$endif}, uBaseUnit;
 
 procedure luaDuktapeRegister(L: Plua_State);
 

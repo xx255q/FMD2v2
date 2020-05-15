@@ -5,7 +5,7 @@ unit LuaWebsiteModulesExtras;
 interface
 
 uses
-  Classes, SysUtils, lua53;
+  Classes, SysUtils, {$ifdef luajit}lua{$else}Lua53{$endif};
 
 procedure luaWebsiteModulesExtrasRegisterInit(L: Plua_State);
 procedure luaWebsiteModulesExtrasRegisterAfterImageSaved(L: Plua_State);

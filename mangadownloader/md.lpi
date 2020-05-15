@@ -219,7 +219,8 @@
               <ShowDebugInfo Value="True"/>
             </Verbosity>
             <CustomOptions Value="-dDEVBUILD
--dDEBUGLEAKS"/>
+-dDEBUGLEAKS
+-dluajit"/>
             <OtherDefines Count="2">
               <Define0 Value="DEBUGLEAKS"/>
               <Define1 Value="DEVBUILD"/>

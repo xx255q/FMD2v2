@@ -5,7 +5,7 @@ unit LuaUpdateListManager;
 interface
 
 uses
-  Classes, SysUtils, lua53;
+  Classes, SysUtils, {$ifdef luajit}lua{$else}Lua53{$endif};
 
 procedure luaUpdateListManagerAddMetaTable(const L: Plua_State; const Obj: Pointer;
   const MetaTable, UserData: Integer);

@@ -5,7 +5,7 @@ unit LuaFMD;
 interface
 
 uses
-  Classes, SysUtils, lua53;
+  Classes, SysUtils, {$ifdef luajit}lua{$else}Lua53{$endif};
 
 procedure luaFMDRegister(L: Plua_State);
 

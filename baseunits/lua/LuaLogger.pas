@@ -5,7 +5,7 @@ unit LuaLogger;
 interface
 
 uses
-  Classes, SysUtils, lua53;
+  Classes, SysUtils, {$ifdef luajit}lua{$else}Lua53{$endif};
 
 procedure luaLoggerRegister(L: Plua_State);
 

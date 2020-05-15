@@ -5,7 +5,7 @@ unit LuaRegExpr;
 interface
 
 uses
-  Classes, SysUtils, lua53, RegExpr;
+  Classes, SysUtils, {$ifdef luajit}lua{$else}Lua53{$endif}, RegExpr;
 
 procedure luaRegExprRegister(L: Plua_State);
 

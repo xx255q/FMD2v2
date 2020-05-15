@@ -5,7 +5,7 @@ unit LuaStringsStorage;
 interface
 
 uses
-  Classes, SysUtils, lua53;
+  Classes, SysUtils, {$ifdef luajit}lua{$else}Lua53{$endif};
 
 type
 

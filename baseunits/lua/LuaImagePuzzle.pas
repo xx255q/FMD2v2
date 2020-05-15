@@ -5,7 +5,7 @@ unit LuaImagePuzzle;
 interface
 
 uses
-  Classes, SysUtils, lua53, ImagePuzzle;
+  Classes, SysUtils, {$ifdef luajit}lua{$else}Lua53{$endif}, ImagePuzzle;
 
 procedure luaImagePuzzleAddMetaTable(const L: Plua_State; const Obj: Pointer;
   const MetaTable, UserData: Integer);
@@ -20,8 +20,7 @@ type
 function imagepuzzle_create(L: Plua_State): Integer; cdecl;
 begin
   if lua_gettop(L) = 2 then
-    if lua_isinteger(L, 1) and lua_isinteger(L, 2) then
-      luaClassPushObject(L, TImagePuzzle.Create(lua_tointeger(L, 1), lua_tointeger(L, 2)), '', True, @luaImagePuzzleAddMetaTable);
+    luaClassPushObject(L, TImagePuzzle.Create(lua_tointeger(L, 1), lua_tointeger(L, 2)), '', True, @luaImagePuzzleAddMetaTable);
   Result := 1;
 end;
 

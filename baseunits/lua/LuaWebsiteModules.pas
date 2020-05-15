@@ -5,7 +5,7 @@ unit LuaWebsiteModules;
 interface
 
 uses
-  Classes, SysUtils, fgl, lua53, LuaStringsStorage, WebsiteModules, syncobjs;
+  Classes, SysUtils, fgl, {$ifdef luajit}lua{$else}Lua53{$endif}, LuaStringsStorage, WebsiteModules, syncobjs;
 
 type
   TLuaWebsiteModulesContainer = class;
@@ -208,7 +208,8 @@ begin
       LuaDoMe(L);
       LuaCallFunction(L, OnGetDirectoryPageNumber);
       Result := lua_tointeger(L, -1);
-      if lua_getglobal(L, 'PAGENUMBER') <> 0 then
+      lua_getglobal(L, 'PAGENUMBER');
+      if not lua_isnoneornil(L, -1) then
         Page := lua_tointeger(L, -1);
     except
       on E: Exception do
@@ -491,7 +492,8 @@ begin
       i := lua_pcall(L, 0, 0, 0);
       if i = 0 then
       begin
-        if lua_getglobal(L, PAnsiChar('Init')) <> 0 then
+        lua_getglobal(L, PAnsiChar('Init'));
+        if lua_isfunction(L, -1) then
         begin
           luaWebsiteModulesExtrasRegisterInit(L);
           i := lua_pcall(L, 0, 0, 0);

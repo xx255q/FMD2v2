@@ -26,7 +26,7 @@ procedure doInitialization;
 implementation
 
 uses
-  FMDOptions, WebsiteModules, LuaWebsiteModules, lua53, LuaBase, LuaHTTPSend, LuaUtils,
+  FMDOptions, WebsiteModules, LuaWebsiteModules, {$ifdef luajit}lua{$else}Lua53{$endif}, LuaBase, LuaHTTPSend, LuaUtils,
   MultiLog;
 
 var

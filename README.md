@@ -43,7 +43,8 @@ Some other external 3rd party tools and libraries are used as well:
 [![7-Zip](https://img.shields.io/badge/7--Zip%20(Standalone)-19.00-Blue.svg)](https://www.7-zip.org)  
 [![Duktape](https://img.shields.io/badge/Duktape-2.5.0-Blue.svg)](https://github.com/grijjy/DelphiDuktape)  
 [![WebP (libwebp)](https://img.shields.io/badge/WebP%20(libwebp)-1.1.0-Blue.svg)](https://github.com/webmproject/libwebp/)  
-[![Lua](https://img.shields.io/badge/Lua-5.3.3-Blue.svg)](http://luabinaries.sourceforge.net/)  
+[![Lua](https://img.shields.io/badge/Lua-5.3.5-Blue.svg)](http://www.lua.org/download)  
+[![LuaJIT](https://img.shields.io/badge/LuaJIT-2.1.0-Blue.svg)](http://luajit.org/download)  
 [![OpenSSL](https://img.shields.io/badge/OpenSSL-1.1.1d-Blue.svg)](https://www.openssl.org/)  
 [![SQLite](https://img.shields.io/badge/SQLite-3.30.1-Blue.svg)](https://www.sqlite.org/)  
   
