@@ -151,28 +151,15 @@ end;
 
 function lua_incstr(L: Plua_State): Integer; cdecl;
 var
-  {$ifdef luajit}
-  n: lua_Number;
-  {$else}
   n: Integer;
-  {$endif}
 begin
   n := 1;
-  {$ifdef luajit}
   if (lua_gettop(L) = 2) and lua_isnumber(L, 2) then
-    n := lua_tonumber(L, 2);
-  if lua_isnumber(L, 1) then
-    lua_pushstring(L, IncStr(Round(lua_tonumber(L, 1)), Round(n)))
-  else
-    lua_pushstring(L, IncStr(luaGetString(L, 1), Round(n)));
-  {$else}
-  if (lua_gettop(L) = 2) and lua_isinteger(L, 2) then
     n := lua_tointeger(L, 2);
-  if lua_isinteger(L, 1) then
+  if lua_isnumber(L, 1) then
     lua_pushstring(L, IncStr(lua_tointeger(L, 1), n))
   else
     lua_pushstring(L, IncStr(luaGetString(L, 1), n));
-  {$endif}
   Result := 1;
 end;
 
