@@ -66,7 +66,6 @@
             </Options>
           </Linking>
           <Other>
-            <CustomOptions Value="-dluajit"/>
             <OtherDefines Count="2">
               <Define0 Value="DEBUGLEAKS"/>
               <Define1 Value="DEVBUILD"/>
@@ -121,7 +120,6 @@
             <CompilerMessages>
               <IgnoredMessages idx4079="True"/>
             </CompilerMessages>
-            <CustomOptions Value="-dluajit"/>
             <OtherDefines Count="2">
               <Define0 Value="DEBUGLEAKS"/>
               <Define1 Value="DEVBUILD"/>
@@ -173,7 +171,6 @@
             </Options>
           </Linking>
           <Other>
-            <CustomOptions Value="-dluajit"/>
             <ExecuteBefore>
               <Command Value="..\git2revision.bat ..\baseunits\revision.inc"/>
               <CompileReasons Run="False"/>
@@ -222,9 +219,6 @@
             <Verbosity>
               <ShowDebugInfo Value="True"/>
             </Verbosity>
-            <CustomOptions Value="-dDEVBUILD
--dDEBUGLEAKS
--dluajit"/>
             <OtherDefines Count="2">
               <Define0 Value="DEBUGLEAKS"/>
               <Define1 Value="DEVBUILD"/>
@@ -278,9 +272,6 @@
             </Debugging>
           </Linking>
           <Other>
-            <CustomOptions Value="-dDEVBUILD
--dDEBUGLEAKS
--dluajit"/>
             <OtherDefines Count="2">
               <Define0 Value="DEBUGLEAKS"/>
               <Define1 Value="DEVBUILD"/>
@@ -533,7 +524,6 @@
       <CompilerMessages>
         <IgnoredMessages idx5028="True"/>
       </CompilerMessages>
-      <CustomOptions Value="-dluajit"/>
       <OtherDefines Count="2">
         <Define0 Value="DEBUGLEAKS"/>
         <Define1 Value="DEVBUILD"/>
