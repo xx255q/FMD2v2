@@ -1,6 +1,6 @@
-local _M = {}
+local _cf = {}
 
-function getcf(url)
+function _cf.getcf(self, url)
 	local result, method, surl, postdata, sleeptime = false, "", "", "", 5000
 	local body = HTTP.Document.ToString()
 	if (body == "") or (url == "") then return result, method, surl, postdata, sleeptime end
@@ -28,6 +28,7 @@ function getcf(url)
 
 	local innerHTML, k = "", ""
 	local i; for i in javascript:gmatch("([^;]+)") do
+		print('get inner k=' .. tostring(i))
 		if Trim(SeparateLeft(i, "=")) == "k" then
 			k = Trim(SeparateRight(i, "="), " '")
 			innerHTML = body:match('<div.-id="'..k..'".->(.-)</div>')
@@ -46,7 +47,7 @@ function getcf(url)
 
         %s; a.value
 ]], domain, innerHTML, challenge)
-
+print('challenge:\n' .. challenge)
 	jschl_answer = ExecJS(challenge)
 
 	if jschl_answer ~= "" then
@@ -57,7 +58,8 @@ function getcf(url)
 	return result, method, surl, postdata, sleeptime
 end
 
-function _M.bypass()
+function _cf.bypass(self)
+	print('call cf:bypass')
 	local counter = 0
 	local maxretry = HTTP.RetryCount; HTTP.RetryCount = 0
 	local method, url, postdata, host = "POST", "", "", AppendURLDelim(GetHostURL(URL):gsub("http://", "https"))
@@ -66,7 +68,7 @@ function _M.bypass()
 
 	while true do
 		counter = counter + 1
-		result_getcf, method, url, postdata, sleeptime = getcf(host)
+		result_getcf, method, url, postdata, sleeptime = self:getcf(host)
 		if resultgetjs and (method ~= "") and (url ~= "") then
 			HTTP.Reset()
 			if method == "POST" then
@@ -100,4 +102,4 @@ function _M.bypass()
 	return result
 end
 
-return _M
+return _cf
