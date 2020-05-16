@@ -4,7 +4,7 @@
 
 ## Download
 
-[![Latest release](https://img.shields.io/github/release/fmd-project-team/FMD.svg)](https://github.com/fmd-project-team/FMD/releases/latest)
+[![Latest release](https://img.shields.io/github/release/dazedcat19/FMD2.svg)](https://github.com/dazedcat19/FMD2/releases/latest)
 
 ## About FMD
 
@@ -16,7 +16,7 @@ This is an active fork of the Free Manga Downloader which is a free open source 
 ## Build instructions
 
 In order to build FMD from the source code, you must install the latest version of Lazarus and Free Pascal Compiler:  
-[![Lazarus IDE 2.0.6](https://img.shields.io/badge/Lazarus%20IDE-2.0.6-Blue.svg)](http://www.lazarus-ide.org/)  
+[![Lazarus IDE 2.0.8](https://img.shields.io/badge/Lazarus%20IDE-2.0.8-Blue.svg)](http://www.lazarus-ide.org/)  
 
 To compile FMD some packages and components are needed. You can download and install most of them by the built-in Online Package Manager (OPM).  
 The following packages and components are used for building FMD:  
