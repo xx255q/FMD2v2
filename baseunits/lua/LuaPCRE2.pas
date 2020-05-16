@@ -38,7 +38,7 @@ const
 
 procedure luaPCRE2Register(L: Plua_State);
 begin
-  luaClassNewLib(L,'re',methods);
+  luaClassNewLib(L,'RE',methods);
 end;
 
 end.
