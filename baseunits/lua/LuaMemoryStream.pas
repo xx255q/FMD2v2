@@ -5,7 +5,7 @@ unit LuaMemoryStream;
 interface
 
 uses
-  Classes, SysUtils, {$ifdef luajit}lua{$else}Lua53{$endif};
+  Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif};
 
 procedure luaMemoryStreamAddMetaTable(const L: Plua_State; const Obj: Pointer;
   const MetaTable, UserData: Integer);

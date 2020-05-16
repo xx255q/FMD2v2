@@ -5,7 +5,7 @@ unit LuaSynaCode;
 interface
 
 uses
-  Classes, SysUtils, {$ifdef luajit}lua{$else}Lua53{$endif}, synacode;
+  Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif}, synacode;
 
 procedure luaSynaCodeRegister(L: Plua_State);
 

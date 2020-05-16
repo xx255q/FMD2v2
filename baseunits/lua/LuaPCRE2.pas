@@ -5,7 +5,7 @@ unit LuaPCRE2;
 interface
 
 uses
-  Classes, SysUtils, {$ifdef luajit}lua{$else}Lua53{$endif};
+  Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif};
 
 procedure luaPCRE2Register(L: Plua_State);
 

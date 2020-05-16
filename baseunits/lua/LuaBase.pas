@@ -5,7 +5,7 @@ unit LuaBase;
 interface
 
 uses
-  Classes, SysUtils, {$ifdef luajit}lua{$else}Lua53{$endif};
+  Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif};
 
 procedure LuaBaseRegister(const L: Plua_State);
 procedure LuaBaseRegisterPrint(const L: Plua_State); inline;

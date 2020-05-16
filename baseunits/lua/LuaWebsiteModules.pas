@@ -5,7 +5,7 @@ unit LuaWebsiteModules;
 interface
 
 uses
-  Classes, SysUtils, fgl, {$ifdef luajit}lua{$else}Lua53{$endif}, LuaStringsStorage, WebsiteModules, syncobjs;
+  Classes, SysUtils, fgl, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif}, LuaStringsStorage, WebsiteModules, syncobjs;
 
 type
   TLuaWebsiteModulesContainer = class;

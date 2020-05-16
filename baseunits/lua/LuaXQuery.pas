@@ -5,7 +5,7 @@ unit LuaXQuery;
 interface
 
 uses
-  Classes, SysUtils, {$ifdef luajit}lua{$else}Lua53{$endif}, XQueryEngineHTML, xquery;
+  Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif}, XQueryEngineHTML, xquery;
 
 procedure luaXQueryAddMetaTable(const L: Plua_State; const Obj: Pointer;
   const MetaTable, UserData: Integer);
