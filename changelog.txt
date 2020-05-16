@@ -4,6 +4,9 @@ https://github.com/fmd-project-team/FMD
 Changelog:
 ([!] Important, [+] Addition, [-] Removal, [*] Fix/Change, [?] Feedback needed)
 
+2.0.3.0 (..2020)
+[*] Various changes and bug fixes
+
 2.0.2.0 (..2020)
 [+] Added converter tool to convert fmd 1.x to fmd 2.
     Extract the tool in existing fmd 1.x installation then run it.
