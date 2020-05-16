@@ -293,11 +293,11 @@ begin
   try
     qactive := FQuery.Active;
     if FQuery.Active then FQuery.Close;
-    FConn.ExecuteDirect('END TRANSACTION');
     try
+      FConn.ExecuteDirect('END TRANSACTION');
       FConn.ExecuteDirect('VACUUM');
-    finally
       FConn.ExecuteDirect('BEGIN TRANSACTION');
+    finally
       if FQuery.Active <> qactive then
         FQuery.Active := qactive;
     end;
