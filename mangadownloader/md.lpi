@@ -295,7 +295,9 @@
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
-      <DestinationDirectory Value="D:\Entwicklung\FMD\Publish"/>
+      <DestinationDirectory Value="$(ProjPath)\published\"/>
+      <UseFileFilters Value="True"/>
+      <FileFilter Value="*.(pas|pp|inc|lpr|lfm|lrs|lpi|lpk|xml|sh|po|pot|bat|md|txt|rtf)"/>
     </PublishOptions>
     <RunParams>
       <FormatVersion Value="2"/>
