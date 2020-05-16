@@ -19,8 +19,8 @@
 
 (*
 ** $Id: lua.h $
-** $Id: lauxlib.h,v 1.128 2014/10/29 16:11:17 roberto Exp $
-** $Id: lualib.h,v 1.44 2014/02/06 17:32:33 roberto Exp $
+** $Id: lauxlib.h $
+** $Id: lualib.h $
 ** Lua - A Scripting Language
 ** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
 ** See Copyright Notice at the end of this file
@@ -143,7 +143,6 @@ const
    LUA_ERRSYNTAX = 3;
    LUA_ERRMEM    = 4;
    LUA_ERRERR    = 5;
-   LUA_ERRFILE   = LUA_ERRERR + 1;   // extra error code for `luaL_load'
 
 type
    // Type of Numbers in Lua
@@ -457,12 +456,24 @@ function lua_gethookmask(L: Plua_State): Integer; cdecl;
 function lua_gethookcount(L: Plua_State): Integer; cdecl;
 function lua_setcstacklimit(L: Plua_State; limit: Cardinal): Integer; cdecl;
 
-// pre-defined references
 const
-   LUA_NOREF  = -2;
-   LUA_REFNIL = -1;
+   // global table
+   LUA_GNAME	= '_G';
+
+   // extra error code for 'luaL_loadfilex'
+   LUA_ERRFILE = LUA_ERRERR + 1;
+
+   // key, in the registry, for table of loaded modules
+   LUA_LOADED_TABLE = '_LOADED';
+
+   // key, in the registry, for table of preloaded loaders
+   LUA_PRELOAD_TABLE = '_PRELOAD';
 
    LUAL_NUMSIZES = sizeof(lua_Integer)*16 + sizeof(lua_Number);
+
+   // pre-defined references
+   LUA_NOREF  = -2;
+   LUA_REFNIL = -1;
 
 type
    luaL_Reg = packed record
@@ -477,6 +488,7 @@ function luaL_getmetafield(L: Plua_State; obj: Integer; const e: PAnsiChar): Int
 function luaL_callmeta(L: Plua_State; obj: Integer; const e: PAnsiChar): Integer; cdecl;
 function luaL_tolstring(L: Plua_State; idx: Integer; len: Psize_t): PAnsiChar; cdecl;
 function luaL_argerror(L: Plua_State; arg: Integer; const extramsg: PAnsiChar): Integer; cdecl;
+function luaL_typeerror(L: Plua_State; arg: Integer; const tname: PAnsiChar): Integer; cdecl;
 function luaL_checklstring(L: Plua_State; arg: Integer; l_: Psize_t): PAnsiChar; cdecl;
 function luaL_optlstring(L: Plua_State; arg: Integer; const def: PAnsiChar; l_: Psize_t): PAnsiChar; cdecl;
 function luaL_checknumber(L: Plua_State; arg: Integer): lua_Number; cdecl;
@@ -516,6 +528,7 @@ procedure luaL_newlibtable(L: Plua_State; lr: PluaL_Reg); inline; overload;
 procedure luaL_newlib(L: Plua_State; lr: array of luaL_Reg); inline; overload;
 procedure luaL_newlib(L: Plua_State; lr: PluaL_Reg); inline; overload;
 procedure luaL_argcheck(L: Plua_State; cond: Boolean; arg: Integer; extramsg: PAnsiChar); inline;
+procedure luaL_argexpected(L: Plua_State; cond: Boolean; arg: Integer; tname: PAnsiChar); inline;
 function luaL_checkstring(L: Plua_State; n: Integer): PAnsiChar; inline;
 function luaL_optstring(L: Plua_State; n: Integer; d: PAnsiChar): PAnsiChar; inline;
 function luaL_typename(L: Plua_State; i: Integer): PAnsiChar; inline;
@@ -524,6 +537,9 @@ function luaL_dostring(L: Plua_State; const str: PAnsiChar): Integer; inline;
 procedure luaL_getmetatable(L: Plua_State; tname: PAnsiChar); inline;
 function luaL_loadbuffer(L: Plua_State; const buff: PAnsiChar; size: size_t; const name: PAnsiChar): Integer; inline;
 
+// push the value used to represent failure/error
+procedure luaL_pushfail(L: Plua_State); inline;
+
 const
    LUA_COLIBNAME   = 'coroutine';
    LUA_TABLIBNAME  = 'table';
@@ -531,7 +547,6 @@ const
    LUA_OSLIBNAME   = 'os';
    LUA_STRLIBNAME  = 'string';
    LUA_UTF8LIBNAME = 'utf8';
-   LUA_BITLIBNAME  = 'bit32';
    LUA_MATHLIBNAME = 'math';
    LUA_DBLIBNAME   = 'debug';
    LUA_LOADLIBNAME = 'package';
@@ -543,7 +558,6 @@ function luaopen_io(L: Plua_State): Integer; cdecl;
 function luaopen_os(L: Plua_State): Integer; cdecl;
 function luaopen_string(L: Plua_State): Integer; cdecl;
 function luaopen_utf8(L: Plua_State): Integer; cdecl;
-function luaopen_bit32(L: Plua_State): Integer; cdecl;
 function luaopen_math(L: Plua_State): Integer; cdecl;
 function luaopen_debug(L: Plua_State): Integer; cdecl;
 function luaopen_package(L: Plua_State): Integer; cdecl;
@@ -818,6 +832,7 @@ end;
 
 procedure luaL_traceback(L, L1: Plua_State; msg: PAnsiChar; level: Integer); cdecl; external LUA_LIB_NAME;
 function luaL_argerror(L: Plua_State; arg: Integer; const extramsg: PAnsiChar): Integer; cdecl; external LUA_LIB_NAME;
+function luaL_typeerror(L: Plua_State; arg: Integer; const tname: PAnsiChar): Integer; cdecl; external LUA_LIB_NAME;
 procedure luaL_where(L: Plua_State; lvl: Integer); cdecl; external LUA_LIB_NAME;
 function luaL_newmetatable(L: Plua_State; const tname: PAnsiChar): Integer; cdecl; external LUA_LIB_NAME;
 procedure luaL_setmetatable(L: Plua_State; const tname: PAnsiChar); cdecl; external LUA_LIB_NAME;
@@ -839,6 +854,12 @@ procedure luaL_argcheck(L: Plua_State; cond: Boolean; arg: Integer; extramsg: PA
 begin
    if not cond then
       luaL_argerror(L, arg, extramsg);
+end;
+
+procedure luaL_argexpected(L: Plua_State; cond: Boolean; arg: Integer; tname: PAnsiChar); inline;
+begin
+   if not cond then
+      luaL_typeerror(L, arg, tname);
 end;
 
 function luaL_checkstring(L: Plua_State; n: Integer): PAnsiChar;
@@ -890,6 +911,11 @@ end;
 function luaL_loadbuffer(L: Plua_State; const buff: PAnsiChar; size: size_t; const name: PAnsiChar): Integer;
 begin
    Result := luaL_loadbufferx(L, buff, size, name, nil);
+end;
+
+procedure luaL_pushfail(L: Plua_State);
+begin
+  lua_pushnil(L);
 end;
 
 function luaL_loadstring(L: Plua_State; const s: PAnsiChar): Integer; cdecl; external LUA_LIB_NAME;
@@ -947,7 +973,6 @@ function luaopen_io(L: Plua_State): Integer; cdecl; external LUA_LIB_NAME;
 function luaopen_os(L: Plua_State): Integer; cdecl; external LUA_LIB_NAME;
 function luaopen_string(L: Plua_State): Integer; cdecl; external LUA_LIB_NAME;
 function luaopen_utf8(L: Plua_State): Integer; cdecl; external LUA_LIB_NAME;
-function luaopen_bit32(L: Plua_State): Integer; cdecl; external LUA_LIB_NAME;
 function luaopen_math(L: Plua_State): Integer; cdecl; external LUA_LIB_NAME;
 function luaopen_debug(L: Plua_State): Integer; cdecl; external LUA_LIB_NAME;
 function luaopen_package(L: Plua_State): Integer; cdecl; external LUA_LIB_NAME;
