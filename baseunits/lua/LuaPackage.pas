@@ -79,7 +79,7 @@ begin
     Inc(i);
     lua_rawgeti(L, loaders, i);
   until lua_type(L, -1) <= LUA_TNIL;
-  lua_settop(L,lua_gettop(L)-1); // it pop everything if lua_pop(L,-1) on nil
+  lua_pop(L, 1);
   for i:=i downto 2 do // shift items down to make a room
     lua_rawseti(L, loaders, i);
   lua_pushcfunction(L, @_findpackage);
