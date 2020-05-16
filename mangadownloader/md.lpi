@@ -24,7 +24,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="2"/>
-      <RevisionNr Value="1"/>
+      <RevisionNr Value="2"/>
       <Attributes pvaPrivateBuild="True"/>
       <StringTable Comments="https://github.com/fmd-project-team/FMD" FileDescription="Free Manga Downloader" LegalCopyright="©2015-2020" OriginalFilename="fmd.exe" ProductName="Free Manga Downloader" ProductVersion="$BuildMode()" PrivateBuild="FMD Project Team"/>
     </VersionInfo>
@@ -289,8 +289,8 @@
       </Item6>
       <SharedMatrixOptions Count="3">
         <Item1 ID="102754335437" Targets="#project" Value="-dluajit"/>
-        <Item2 ID="952607008458" Targets="#project" Value="-dDEVBUILD -dDEBUGLEAKS"/>
-        <Item3 ID="676605726087" Targets="#project" Modes="Win32 Debug Leaks" Value="-dlua54"/>
+        <Item2 ID="952607008458" Targets="#project" Modes="Win64 Debug Leaks,Win32 Debug Leaks" Value="-dDEVBUILD -dDEBUGLEAKS"/>
+        <Item3 ID="676605726087" Targets="#project" Modes="Win32 Debug Leaks,Win64 Debug,Win32 Debug,Win64 Debug Leaks,Win64,Win32" Value="-dlua54"/>
       </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>
