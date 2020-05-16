@@ -7,6 +7,7 @@ CD /D "%cdir%"
 SET update_file=latest_version.json
 SET repodl=https://github.com/dazedcat19/FMD2/releases/download/
 SET changelog_url=https://raw.githubusercontent.com/dazedcat19/FMD2/master/changelog.txt
+SET luaver=lua54
 
 ECHO ^{>%update_file%
 ECHO   "_comment": "automatically build with make_release_win.bat",>>%update_file%
@@ -37,9 +38,19 @@ call :copycdir images
 call :copycdir licenses
 XCOPY /C /F /Y "%cdir%\languages\*.po" "%odir%\languages\"
 XCOPY /E /C /F /Y "%cdir%\dist\%~1" "%odir%\"
-REM luajit
+IF "luaver" == "lua54" (
+  DEL /F "%odir%\lua53.dll"
+  DEL /F "%odir%\lua51.dll"
+)
+IF "luaver" == "lua53" (
+  DEL /F "%odir%\lua54.dll"
+  DEL /F "%odir%\lua51.dll"
+)
+IF "luaver" == "luajit" (
+  DEL /F "%odir%\lua54.dll"
+  DEL /F "%odir%\lua53.dll"
+)
 REM DEL /F "%odir%\lua53.dll"
-DEL /F "%odir%\lua51.dll"
 XCOPY /F /Y "%cdir%\dist\config.json" "%odir%\"
 XCOPY /F /Y "%cdir%\changelog.txt" "%odir%\"
 XCOPY /F /Y "%cdir%\readme.rtf" "%odir%\"
