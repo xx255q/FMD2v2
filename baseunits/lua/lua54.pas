@@ -142,8 +142,7 @@ const
    LUA_ERRRUN    = 2;
    LUA_ERRSYNTAX = 3;
    LUA_ERRMEM    = 4;
-   LUA_ERRGCMM   = 5;
-   LUA_ERRERR    = 6;
+   LUA_ERRERR    = 5;
    LUA_ERRFILE   = LUA_ERRERR + 1;   // extra error code for `luaL_load'
 
 type
@@ -187,6 +186,9 @@ type
    // prototype for memory-allocation functions
    lua_Alloc = function(ud, ptr: Pointer; osize, nsize: size_t): Pointer; cdecl;
 
+   // Type for warning functions
+   lua_WarnFunction = procedure(ud: Pointer; const msg: PAnsiChar; tocont: Integer); cdecl;
+
 const
    // basic types
    LUA_TNONE          = -1;
@@ -224,6 +226,7 @@ procedure lua_setuservalue(L: Plua_State; idx: Integer); inline;
 function lua_newstate(f: lua_Alloc; ud: Pointer): Plua_state; cdecl;
 procedure lua_close(L: Plua_State); cdecl;
 function lua_newthread(L: Plua_State): Plua_State; cdecl;
+function lua_resetthread(L: Plua_State): Integer; cdecl;
 function lua_atpanic(L: Plua_State; panicf: lua_CFunction): lua_CFunction; cdecl;
 function lua_version(L: Plua_State): Plua_Number; cdecl;
 
@@ -253,7 +256,7 @@ function lua_tonumberx(L: Plua_State; idx: Integer; isnum: PLongBool): lua_Numbe
 function lua_tointegerx(L: Plua_State; idx: Integer; isnum: PLongBool): lua_Integer; cdecl;
 function lua_toboolean(L: Plua_State; idx: Integer): LongBool; cdecl;
 function lua_tolstring(L: Plua_State; idx: Integer; len: Psize_t): PAnsiChar; cdecl;
-function lua_rawlen(L: Plua_State; idx: Integer): size_t; cdecl;
+function lua_rawlen(L: Plua_State; idx: Integer): lua_Unsigned; cdecl;
 function lua_tocfunction(L: Plua_State; idx: Integer): lua_CFunction; cdecl;
 function lua_touserdata(L: Plua_State; idx: Integer): Pointer; cdecl;
 function lua_tothread(L: Plua_State; idx: Integer): Plua_State; cdecl;
@@ -324,7 +327,7 @@ procedure lua_rawset(L: Plua_State; idx: Integer); cdecl;
 procedure lua_rawseti(L: Plua_State; idx: Integer; n: lua_Integer); cdecl;
 procedure lua_rawsetp(L: Plua_State; idx: Integer; p: Pointer); cdecl;
 function lua_setmetatable(L: Plua_State; objindex: Integer): Integer; cdecl;
-procedure lua_setiuservalue(L: Plua_State; idx, n: Integer); cdecl;
+function lua_setiuservalue(L: Plua_State; idx, n: Integer): Integer; cdecl;
 
 // 'load' and 'call' functions (load and run Lua code)
 procedure lua_callk(L: Plua_State; nargs, nresults: Integer; ctx: lua_KContext; k: lua_KFunction); cdecl;
@@ -338,9 +341,13 @@ function lua_dump(L: Plua_State; writer: lua_Writer; data: Pointer): Integer; in
 // coroutine functions
 function lua_yieldk(L: Plua_State; nresults: Integer; ctx: lua_KContext; k: lua_KFunction): Integer; cdecl;
 function lua_yield(L: Plua_State; nresults: Integer): Integer; inline;
-function lua_resume(L, from: Plua_State; narg: Integer): Integer; cdecl;
+function lua_resume(L, from: Plua_State; narg: Integer; nres: PLongBool): Integer; cdecl;
 function lua_status(L: Plua_State): Integer; cdecl;
 function lua_isyieldable(L: Plua_State): LongBool; cdecl;
+
+// Warning-related functions
+procedure lua_setwarnf(L: Plua_State; f: lua_WarnFunction; ud: Pointer); cdecl;
+procedure lua_warning(L: Plua_State; const msg: PAnsiChar; tocont: Integer); cdecl;
 
 //  garbage-collection function and options
 const
@@ -353,6 +360,9 @@ const
    LUA_GCSETPAUSE    = 6;
    LUA_GCSETSTEPMUL  = 7;
    LUA_GCISRUNNING   = 9;
+   LUA_GCGEN         = 10;
+   LUA_GCINC         = 11;
+
 
 function lua_gc(L: Plua_State; what, data: Integer): Integer; cdecl;
 
@@ -368,6 +378,7 @@ function lua_stringtonumber(L: Plua_State; const s: PAnsiChar): size_t; cdecl;
 
 function lua_getallocf(L: Plua_State; ud: PPointer): lua_Alloc; cdecl;
 procedure lua_setallocf(L: Plua_State; f: lua_Alloc; ud: Pointer); cdecl;
+procedure lua_toclose(L: Plua_State; idx: Integer); cdecl;
 
 // some useful macros
 function lua_getextraspace(L: Plua_State): Pointer; inline;
@@ -413,6 +424,7 @@ type
       namewhat: PAnsiChar;       (* (n) `global', `local', `field', `method' *)
       what: PAnsiChar;           (* (S) `Lua', `C', `main', `tail'*)
       source: PAnsiChar;         (* (S) *)
+      srclen: size_t;            (* (S) *)
       currentline: Integer;      (* (l) *)
       linedefined: Integer;      (* (S) *)
       lastlinedefined: Integer;  (* (S) *)
@@ -420,6 +432,8 @@ type
       nparams: Byte;             (* (u) number of parameters *)
       isvararg: ByteBool;        (* (u) *)
       istailcall: ByteBool;      (* (t) *)
+      ftransfer: Word;           (* (r) index of first value transferred *)
+      ntransfer: Word;           (* (r) number of transferred values *)
       short_src: packed array[0..LUA_IDSIZE - 1] of AnsiChar; (* (S) *)
       (* private part *)
       i_ci: Pointer;             (* active function *)  // ptr to struct CallInfo
@@ -441,6 +455,7 @@ procedure lua_sethook(L: Plua_State; func: lua_Hook; mask: Integer; count: Integ
 function lua_gethook(L: Plua_State): lua_Hook; cdecl;
 function lua_gethookmask(L: Plua_State): Integer; cdecl;
 function lua_gethookcount(L: Plua_State): Integer; cdecl;
+function lua_setcstacklimit(L: Plua_State; limit: Cardinal): Integer; cdecl;
 
 // pre-defined references
 const
@@ -561,6 +576,7 @@ end;
 function lua_newstate(f: lua_Alloc; ud: Pointer): Plua_State; cdecl; external LUA_LIB_NAME;
 procedure lua_close(L: Plua_State); cdecl; external LUA_LIB_NAME;
 function lua_newthread(L: Plua_State): Plua_State; cdecl; external LUA_LIB_NAME;
+function lua_resetthread(L: Plua_State): Integer; cdecl; external LUA_LIB_NAME;
 function lua_atpanic(L: Plua_State; panicf: lua_CFunction): lua_CFunction; cdecl; external LUA_LIB_NAME;
 function lua_version(L: Plua_State): Plua_Number; cdecl; external LUA_LIB_NAME;
 function lua_absindex(L: Plua_State; idx: Integer): Integer; cdecl; external LUA_LIB_NAME;
@@ -603,7 +619,7 @@ function lua_rawequal(L: Plua_State; idx1, idx2: Integer): LongBool; cdecl; exte
 function lua_compare(L: Plua_State; idx1, idx2, op: Integer): LongBool; cdecl; external LUA_LIB_NAME;
 function lua_toboolean(L: Plua_State; idx: Integer): LongBool; cdecl; external LUA_LIB_NAME;
 function lua_tolstring(L: Plua_State; idx: Integer; len: Psize_t): PAnsiChar; cdecl; external LUA_LIB_NAME;
-function lua_rawlen(L: Plua_State; idx: Integer): size_t; cdecl; external LUA_LIB_NAME;
+function lua_rawlen(L: Plua_State; idx: Integer): lua_Unsigned; cdecl; external LUA_LIB_NAME;
 function lua_tocfunction(L: Plua_State; idx: Integer): lua_CFunction; cdecl; external LUA_LIB_NAME;
 function lua_touserdata(L: Plua_State; idx: Integer): Pointer; cdecl; external LUA_LIB_NAME;
 function lua_tothread(L: Plua_State; idx: Integer): Plua_State; cdecl; external LUA_LIB_NAME;
@@ -644,7 +660,7 @@ procedure lua_rawset(L: Plua_State; idx: Integer); cdecl; external LUA_LIB_NAME;
 procedure lua_rawseti(L: Plua_State; idx: Integer; n: lua_Integer); cdecl; external LUA_LIB_NAME;
 procedure lua_rawsetp(L: Plua_State; idx: Integer; p: Pointer); cdecl; external LUA_LIB_NAME;
 function lua_setmetatable(L: Plua_State; objindex: Integer): Integer; cdecl; external LUA_LIB_NAME;
-procedure lua_setiuservalue(L: Plua_State; idx, n: Integer); cdecl; external LUA_LIB_NAME;
+function lua_setiuservalue(L: Plua_State; idx, n: Integer): Integer; cdecl; external LUA_LIB_NAME;
 procedure lua_callk(L: Plua_State; nargs, nresults: Integer; ctx: lua_KContext; k: lua_KFunction); cdecl; external LUA_LIB_NAME;
 function lua_pcallk(L: Plua_State; nargs, nresults, errfunc: Integer; ctx: lua_KContext; k: lua_KFunction): Integer; cdecl; external LUA_LIB_NAME;
 function lua_load(L: Plua_State; reader: lua_Reader; dt: Pointer; const chunkname, mode: PAnsiChar): Integer; cdecl; external LUA_LIB_NAME;
@@ -671,9 +687,11 @@ begin
    Result := lua_yieldk(L, nresults, nil, nil);
 end;
 
-function lua_resume(L, from: Plua_State; narg: Integer): Integer; cdecl; external LUA_LIB_NAME;
+function lua_resume(L, from: Plua_State; narg: Integer; nres: PLongBool): Integer; cdecl; external LUA_LIB_NAME;
 function lua_status(L: Plua_State): Integer; cdecl; external LUA_LIB_NAME;
 function lua_isyieldable(L: Plua_State): LongBool; cdecl; external LUA_LIB_NAME;
+procedure lua_setwarnf(L: Plua_State; f: lua_WarnFunction; ud: Pointer); cdecl; external LUA_LIB_NAME;
+procedure lua_warning(L: Plua_State; const msg: PAnsiChar; tocont: Integer); cdecl; external LUA_LIB_NAME;
 function lua_gc(L: Plua_State; what, data: Integer): Integer; cdecl; external LUA_LIB_NAME;
 function lua_error(L: Plua_State): Integer; cdecl; external LUA_LIB_NAME;
 function lua_next(L: Plua_State; idx: Integer): Integer; cdecl; external LUA_LIB_NAME;
@@ -682,6 +700,7 @@ procedure lua_len(L: Plua_State; idx: Integer); cdecl; external LUA_LIB_NAME;
 function lua_stringtonumber(L: Plua_State; const s: PAnsiChar): size_t; cdecl; external LUA_LIB_NAME;
 function lua_getallocf(L: Plua_State; ud: PPointer): lua_Alloc; cdecl; external LUA_LIB_NAME;
 procedure lua_setallocf(L: Plua_State; f: lua_Alloc; ud: Pointer); cdecl; external LUA_LIB_NAME;
+procedure lua_toclose(L: Plua_State; idx: Integer); cdecl; external LUA_LIB_NAME;
 
 function lua_getextraspace(L: Plua_State): Pointer;
 const
@@ -788,6 +807,7 @@ procedure lua_sethook(L: Plua_State; func: lua_Hook; mask: Integer; count: Integ
 function lua_gethook(L: Plua_State): lua_Hook; cdecl; external LUA_LIB_NAME;
 function lua_gethookmask(L: Plua_State): Integer; cdecl; external LUA_LIB_NAME;
 function lua_gethookcount(L: Plua_State): Integer; cdecl; external LUA_LIB_NAME;
+function lua_setcstacklimit(L: Plua_State; limit: Cardinal): Integer; cdecl; external LUA_LIB_NAME;
 
 procedure luaL_checkversion_(L: Plua_State; ver: lua_Number; sz: size_t); cdecl; external LUA_LIB_NAME;
 
@@ -939,7 +959,7 @@ initialization
 {$ENDIF}
 
 (******************************************************************************
-* Copyright (C) 1994-2015 Lua.org, PUC-Rio.
+* Copyright (C) 1994-2020 Lua.org, PUC-Rio.
 *
 * Permission is hereby granted, free of charge, to any person obtaining
 * a copy of this software and associated documentation files (the
