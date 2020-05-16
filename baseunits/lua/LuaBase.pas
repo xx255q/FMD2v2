@@ -144,7 +144,7 @@ begin
     LUA_ERRMEM:    Result := 'LUA_ERRMEM';
     LUA_ERRERR:    Result := 'LUA_ERRERR';
     {$ifndef luajit}
-    LUA_ERRGCMM:   Result := 'LUA_ERRGCMM';
+    //LUA_ERRGCMM:   Result := 'LUA_ERRGCMM';
     LUA_ERRFILE:   Result := 'LUA_ERRFILE';
     {$endif}
     else
