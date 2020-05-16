@@ -38,19 +38,18 @@ call :copycdir images
 call :copycdir licenses
 XCOPY /C /F /Y "%cdir%\languages\*.po" "%odir%\languages\"
 XCOPY /E /C /F /Y "%cdir%\dist\%~1" "%odir%\"
-IF "luaver" == "lua54" (
+IF "%luaver%" == "lua54" (
   DEL /F "%odir%\lua53.dll"
   DEL /F "%odir%\lua51.dll"
 )
-IF "luaver" == "lua53" (
+IF "%luaver%" == "lua53" (
   DEL /F "%odir%\lua54.dll"
   DEL /F "%odir%\lua51.dll"
 )
-IF "luaver" == "luajit" (
+IF "%luaver%" == "luajit" (
   DEL /F "%odir%\lua54.dll"
   DEL /F "%odir%\lua53.dll"
 )
-REM DEL /F "%odir%\lua53.dll"
 XCOPY /F /Y "%cdir%\dist\config.json" "%odir%\"
 XCOPY /F /Y "%cdir%\changelog.txt" "%odir%\"
 XCOPY /F /Y "%cdir%\readme.rtf" "%odir%\"
