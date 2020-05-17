@@ -96,13 +96,14 @@ type
     property AllowServerErrorResponse: Boolean read FAllowServerErrorResponse write FAllowServerErrorResponse;
     property Thread: TBaseThread read FOwner;
     property MaxRedirect: Integer read FMaxRedirect write FMaxRedirect;
+    property LastURL: String read FURL;
   public
     BeforeHTTPMethod: THTTPMethodEvent;
     AfterHTTPMethod: THTTPMethodEvent;
     OnHTTPRequest: THTTPRequestEvent;
     OnRedirected: THTTPMethodRedirectEvent;
     CookieManager: THTTPCookieManager;
-    property LastURL: String read FURL;
+    LuaHandler: Pointer;
   end;
 
   TKeyValuePair = array[0..1] of String;
@@ -408,6 +409,7 @@ end;
 constructor THTTPSendThread.Create(AOwner: TBaseThread);
 begin
   inherited Create;
+  LuaHandler := nil;
   KeepAlive := True;
   if Trim(DefaultUserAgent) <> '' then
     UserAgent := DefaultUserAgent;

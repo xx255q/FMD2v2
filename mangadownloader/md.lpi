@@ -66,6 +66,9 @@
             </Options>
           </Linking>
           <Other>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True" idx3123="True"/>
+            </CompilerMessages>
             <OtherDefines Count="2">
               <Define0 Value="DEBUGLEAKS"/>
               <Define1 Value="DEVBUILD"/>
@@ -118,7 +121,7 @@
           </Linking>
           <Other>
             <CompilerMessages>
-              <IgnoredMessages idx4079="True"/>
+              <IgnoredMessages idx6058="True" idx4079="True" idx3123="True"/>
             </CompilerMessages>
             <OtherDefines Count="2">
               <Define0 Value="DEBUGLEAKS"/>
@@ -171,6 +174,9 @@
             </Options>
           </Linking>
           <Other>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True" idx3123="True"/>
+            </CompilerMessages>
             <ExecuteBefore>
               <Command Value="..\git2revision.bat ..\baseunits\revision.inc"/>
               <CompileReasons Run="False"/>
@@ -219,6 +225,9 @@
             <Verbosity>
               <ShowDebugInfo Value="True"/>
             </Verbosity>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True" idx3123="True"/>
+            </CompilerMessages>
             <OtherDefines Count="2">
               <Define0 Value="DEBUGLEAKS"/>
               <Define1 Value="DEVBUILD"/>
@@ -272,6 +281,9 @@
             </Debugging>
           </Linking>
           <Other>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True" idx3123="True"/>
+            </CompilerMessages>
             <OtherDefines Count="2">
               <Define0 Value="DEBUGLEAKS"/>
               <Define1 Value="DEVBUILD"/>
@@ -529,7 +541,7 @@
     </Linking>
     <Other>
       <CompilerMessages>
-        <IgnoredMessages idx5028="True"/>
+        <IgnoredMessages idx6058="True" idx5028="True" idx3123="True"/>
       </CompilerMessages>
       <OtherDefines Count="2">
         <Define0 Value="DEBUGLEAKS"/>

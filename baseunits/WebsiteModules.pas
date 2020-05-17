@@ -11,7 +11,7 @@ interface
 
 uses
   Classes, SysUtils, fgl, uData, uDownloadsManager, FMDOptions, httpsendthread,
-  WebsiteModulesSettings, WebsiteBypass, RegExpr, fpjson, jsonparser,
+  WebsiteModulesSettings, LuaWebsiteBypass, RegExpr, fpjson, jsonparser,
   jsonscanner, fpjsonrtti, uBaseUnit, httpcookiemanager, syncobjs;
 
 const
@@ -46,10 +46,11 @@ type
   TOnDownloadImage = function(const DownloadThread: TDownloadThread;
     const AURL: String; const Module: TModuleContainer): Boolean;
 
-  TOnSaveImage = function(const AHTTP: THTTPSendThread;
+  TOnSaveImage = function(const DownloadThread: TDownloadThread;
     const APath, AName: String; const Module: TModuleContainer): String;
 
-  TOnAfterImageSaved = function(const AFilename: String; const Module: TModuleContainer): Boolean;
+  TOnAfterImageSaved = function(const DownloadThread: TDownloadThread;
+    const AFilename: String; const Module: TModuleContainer): Boolean;
 
   TOnLogin = function(const AHTTP: THTTPSendThread; const Module: TModuleContainer): Boolean;
 

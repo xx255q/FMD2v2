@@ -126,7 +126,7 @@ begin
   lua_getglobal(L, PAnsiChar(AFuncName));
   if lua_isnoneornil(L, -1) then
   begin
-    lua_settop(L, lua_gettop(L)-1); // lua will pop all if last stack is nil
+    lua_settop(L, 1);
     raise Exception.Create('No function name ' + QuotedStr(AFuncName));
   end;
   r := lua_pcall(L, 0, LUA_MULTRET, 0);

@@ -2118,8 +2118,8 @@ begin
       with DLManager.Items[xNode^.Index] do
         if ThreadState then
         begin
-          Task.IsForDelete := True;
-          Task.Terminate;
+          TaskThread.IsForDelete := True;
+          TaskThread.Terminate;
         end;
       xNode := vtDownload.GetPreviousSelected(xNode);
     end;
@@ -2131,7 +2131,7 @@ begin
       with DLManager.Items[xNode^.Index] do
       begin
         if ThreadState then
-          Task.WaitFor;
+          TaskThread.WaitFor;
         if (Sender = miDownloadDeleteTaskData) or (Sender = miDownloadDeleteTaskDataFavorite)
           and (ChapterNames.Count > 0) then
         begin

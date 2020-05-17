@@ -27,7 +27,7 @@ begin
     luaClassAddObject(L, MetaTable, FileNames, 'FileNames', @luaStringsAddMetaTable);
     luaClassAddIntegerProperty(L, MetaTable, 'CurrentDownloadChapterPtr', @CurrentDownloadChapterPtr);
     luaClassAddIntegerProperty(L, MetaTable, 'PageNumber', @PageNumber);
-    luaClassAddIntegerProperty(L, MetaTable, 'CurrentMaxFileNameLength', @Task.CurrentMaxFileNameLength);
+    luaClassAddIntegerProperty(L, MetaTable, 'CurrentMaxFileNameLength', @TaskThread.CurrentMaxFileNameLength);
     luaClassAddStringProperty(L, MetaTable, 'Link', @DownloadInfo.Link);
   end;
 end;

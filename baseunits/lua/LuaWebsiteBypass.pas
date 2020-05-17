@@ -1,4 +1,4 @@
-unit WebsiteBypass;
+unit LuaWebsiteBypass;
 
 {$mode objfpc}{$H+}
 
@@ -26,8 +26,9 @@ procedure doInitialization;
 implementation
 
 uses
-  FMDOptions, WebsiteModules, LuaWebsiteModules, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif}, LuaBase, LuaHTTPSend, LuaUtils,
-  MultiLog;
+  {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif},
+  LuaWebsiteModules, LuaHandler, LuaBase, LuaUtils, LuaHTTPSend,
+  WebsiteModules, FMDOptions, MultiLog;
 
 var
   checkantibot_dump,
@@ -55,67 +56,75 @@ begin
     websitebypass_dump.Free;
 end;
 
-function CheckAntiBotActive(const AHTTP: THTTPSendThread; var S: String): Boolean;
+function CheckAntiBotActive(const L: TLuaHandler): Boolean;
 var
-  L: Plua_State;
+  r: Integer;
 begin
   Result := False;
-  if not Assigned(checkantibot_dump) then Exit;
-  L := luaL_newstate;
+  if L.LoadChunkExecute(checkantibot_file, checkantibot_dump) = 0 then
   try
-    // this method will be called very often(for each of http request), keep it minimal
-    luaopen_base(L);
-    luaopen_string(L);
-    //luaL_openlibs(L);
-    //LuaBaseRegisterPrint(L);
-    luaPushObjectGlobal(L, AHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
-    lua_pop(L, lua_gettop(L));
-    LuaExecute(L, checkantibot_dump, checkantibot_file, LUA_MULTRET);
-    Result := lua_toboolean(L, 1);
-    if Result and (lua_gettop(L) > 1) then
-      S := lua_tostring(L, 2);
+    L.ClearStack;
+    lua_getglobal(L.Handle, '____CheckAntiBot');
+    if lua_isnoneornil(L.Handle, -1) then Exit;
+    r := lua_pcall(L.Handle, 0, LUA_MULTRET, 0);
+    if r <> 0 then
+      raise Exception.Create(LuaGetReturnString(r)+': '+luaGetString(L.Handle, -1));
+    if lua_gettop(L.Handle) > 0 then
+    begin
+      Result := lua_toboolean(L.Handle, 1);
+      lua_remove(L.Handle, 1); // remove first return(boolean)
+    end;
   except
     on E: Exception do
-      Logger.SendError(E.Message + ': ' + luaGetString(L, -1));
+      Logger.SendException(E.Message, E);
   end;
-  lua_close(L);
 end;
 
-function WebsiteBypassGetAnswer(const AHTTP: THTTPSendThread; const AMethod, AURL, S: String; const AWebsiteBypass: TWebsiteBypass): Boolean;
+function WebsiteBypassGetAnswer(const L: TLuaHandler; const AMethod, AURL: String): Boolean;
 var
-  L: Plua_State;
+  r: Integer;
 begin
   Result := False;
-  if not Assigned(websitebypass_dump) then Exit;
-  L := LuaNewBaseState;
+  if L.LoadChunkExecute(websitebypass_file, websitebypass_dump) = 0 then
   try
-    luaPushStringGlobal(L, 'METHOD', AMethod);
-    luaPushStringGlobal(L, 'URL', AURL);
-    luaPushStringGlobal(L, 'S', S);
-    luaPushObjectGlobal(L, AHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
-    luaPushObjectGlobal(L, TLuaWebsiteModule(TModuleContainer(AWebsiteBypass.Module).LuaModule), 'MODULE', @luaWebsiteModuleAddMetaTable);
-    lua_pop(L, lua_gettop(L));
-    LuaExecute(L, websitebypass_dump, websitebypass_file, LUA_MULTRET);
-    Result := lua_toboolean(L, 1);
+    lua_getglobal(L.Handle, '____WebsiteBypass');
+    if lua_isnoneornil(L.Handle, -1) then Exit;
+
+    lua_pushstring(L.Handle, AMethod);
+    lua_pushstring(L.Handle, AURL);
+    lua_insert(L.Handle, 1); // move the param 2 to top
+    lua_insert(L.Handle, 1); // move the param 1 to top
+    lua_insert(L.Handle, 1); // move the function to top
+    r := lua_pcall(L.Handle, lua_gettop(L.Handle)-1, LUA_MULTRET, 0); // call with all params
+    if r <> 0 then
+      raise Exception.Create(LuaGetReturnString(r)+': '+luaGetString(L.Handle, -1));
+    Result := lua_toboolean(L.Handle, 1);
   except
     on E: Exception do
-      Logger.SendError(E.Message + ': ' + luaGetString(L, -1));
+      Logger.SendException(E.Message, E);
   end;
-  lua_close(L);
+  L.ClearStack;
 end;
 
 function WebsiteBypassRequest(const AHTTP: THTTPSendThread; const AMethod, AURL: String; const Response: TObject; const AWebsiteBypass: TWebsiteBypass): Boolean;
 var
-  S: String = '';
+  L: TLuaHandler;
 begin
   Result := False;
-  if AHTTP = nil then Exit;
+  if (checkantibot_dump = nil) or (websitebypass_dump = nil) then Exit;
   AHTTP.AllowServerErrorResponse := True;
   Result := AHTTP.HTTPRequest(AMethod, AURL);
-  if CheckAntiBotActive(AHTTP, S) then begin
+
+  if AHTTP.LuaHandler <> nil then
+    L := TLuaHandler(AHTTP.LuaHandler)
+  else
+    L := TLuaHandler.Create;
+  L.LoadObject('HTTP', AHTTP, @luaHTTPSendThreadAddMetaTable);
+  if CheckAntiBotActive(L) then
+  begin
     if TryEnterCriticalsection(AWebsiteBypass.Guardian) > 0 then
       try
-        Result := WebsiteBypassGetAnswer(AHTTP, AMethod, AURL, S, AWebsiteBypass);
+        Result := WebsiteBypassGetAnswer(L, AMethod, AURL);
       finally
         LeaveCriticalsection(AWebsiteBypass.Guardian);
       end
@@ -124,6 +133,9 @@ begin
         Result := AHTTP.HTTPRequest(AMethod, AURL);
     end;
   end;
+  if AHTTP.LuaHandler = nil then
+    L.Free;
+
   if Assigned(Response) then
     if Response is TStringList then
       TStringList(Response).LoadFromStream(AHTTP.Document)

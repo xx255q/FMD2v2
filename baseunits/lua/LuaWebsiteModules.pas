@@ -137,7 +137,8 @@ uses
   FMDOptions, FileUtil, MultiLog, LuaClass, LuaBase, LuaMangaInfo, LuaHTTPSend,
   LuaXQuery, LuaUtils, LuaDownloadTask, LuaUpdateListManager, LuaStrings,
   LuaCriticalSection, LuaWebsiteModulesExtras, LuaPackage, uData,
-  uDownloadsManager, xquery, httpsendthread, FMDVars, WebsiteBypass;
+  uDownloadsManager, xquery, httpsendthread, FMDVars, LuaWebsiteBypass,
+  LuaWebsiteModuleHandler;
 
 threadvar
   TempModules:TLuaWebsiteModules;
@@ -277,181 +278,167 @@ end;
 
 function DoTaskStart(const Task: TTaskContainer; const Module: TModuleContainer): Boolean;
 var
-  L: Plua_State;
+  L: TLuaWebsiteModuleHandler;
 begin
   Result := False;
   with TLuaWebsiteModule(Module.LuaModule) do
   begin
-    L := LuaNewBaseState;
+    L := Task.TaskThread.LuaHandler.LoadModule(Module);
     try
-      LuaPushMe(L);
-      luaPushObjectGlobal(L, Task, 'TASK', @luaDownloadTaskMetaTable);
+      L.LoadObject('TASK', Task, @luaDownloadTaskMetaTable);
 
-      LuaDoMe(L);
-      LuaCallFunction(L, OnTaskStart);
-      Result := lua_toboolean(L, -1);
+      L.CallFunction(OnTaskStart);
+      Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError(E.Message + ': ' + luaGetString(L, -1));
+        Logger.SendError(E.Message + ': ' + luaGetString(L.Handle, -1));
     end;
-    lua_close(L);
+    L.ClearStack;
   end;
 end;
 
 function DoGetPageNumber(const DownloadThread: TDownloadThread;
   const AURL: String; const Module: TModuleContainer): Boolean;
 var
-  L: Plua_State;
+  L: TLuaWebsiteModuleHandler;
 begin
   Result := False;
   with TLuaWebsiteModule(Module.LuaModule) do
   begin
-    L := LuaNewBaseState;
+    L := DownloadThread.LuaHandler.LoadModule(Module);
     try
-      LuaPushMe(L);
-      luaPushObjectGlobal(L, DownloadThread.Task.Container, 'TASK', @luaDownloadTaskMetaTable);
-      luaPushObjectGlobal(L, DownloadThread.FHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
-      luaPushStringGlobal(L, 'URL', AURL);
+      L.LoadObject('TASK', DownloadThread.Task.Container, @luaDownloadTaskMetaTable);
+      L.LoadObject('HTTP', DownloadThread.HTTP, @luaHTTPSendThreadAddMetaTable);
+      luaPushStringGlobal(L.Handle, 'URL', AURL);
 
-      LuaDoMe(L);
-      LuaCallFunction(L, OnGetPageNumber);
+      L.CallFunction(OnGetPageNumber);
       Result := lua_toboolean(L, -1);
     except
       on E: Exception do
         Logger.SendError(E.Message + ': ' + luaGetString(L, -1));
     end;
-    lua_close(L);
+    L.ClearStack;
   end;
 end;
 
 function DoGetImageURL(const DownloadThread: TDownloadThread; const AURL: String;
   const Module: TModuleContainer): Boolean;
 var
-  L: Plua_State;
+  L: TLuaWebsiteModuleHandler;
 begin
   Result := False;
   with TLuaWebsiteModule(Module.LuaModule) do
   begin
-    L := LuaNewBaseState;
+    L := DownloadThread.LuaHandler.LoadModule(Module);
     try
-      LuaPushMe(L);
-      luaPushObjectGlobal(L, DownloadThread.Task.Container, 'TASK', @luaDownloadTaskMetaTable);
-      luaPushObjectGlobal(L, DownloadThread.FHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
-      luaPushIntegerGlobal(L, 'WORKID', DownloadThread.WorkId);
-      luaPushStringGlobal(L, 'URL', AURL);
+      L.LoadObject('TASK', DownloadThread.Task.Container, @luaDownloadTaskMetaTable);
+      L.LoadObject('HTTP', DownloadThread.HTTP, @luaHTTPSendThreadAddMetaTable);
+      luaPushIntegerGlobal(L.Handle, 'WORKID', DownloadThread.WorkId);
+      luaPushStringGlobal(L.Handle, 'URL', AURL);
 
-      LuaDoMe(L);
-      LuaCallFunction(L, OnGetImageURL);
+      L.CallFunction(OnGetImageURL);
       Result := lua_toboolean(L, -1);
     except
       on E: Exception do
         Logger.SendError(E.Message + ': ' + luaGetString(L, -1));
     end;
-    lua_close(L);
+    L.ClearStack;
   end;
 end;
 
 function DoBeforeDownloadImage(const DownloadThread: TDownloadThread;
   var AURL: String; const Module: TModuleContainer): Boolean;
 var
-  L: Plua_State;
+  L: TLuaWebsiteModuleHandler;
 begin
   Result := False;
   with TLuaWebsiteModule(Module.LuaModule) do
   begin
-    L := LuaNewBaseState;
+    L := DownloadThread.LuaHandler.LoadModule(Module);
     try
-      LuaPushMe(L);
-      luaPushObjectGlobal(L, DownloadThread.Task.Container, 'TASK', @luaDownloadTaskMetaTable);
-      luaPushObjectGlobal(L, DownloadThread.FHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
-      luaPushIntegerGlobal(L, 'WORKID', DownloadThread.WorkId);
-      luaPushStringGlobal(L, 'URL', AURL);
+      L.LoadObject('TASK', DownloadThread.Task.Container, @luaDownloadTaskMetaTable);
+      L.LoadObject('HTTP', DownloadThread.HTTP, @luaHTTPSendThreadAddMetaTable);
+      luaPushIntegerGlobal(L.Handle, 'WORKID', DownloadThread.WorkId);
+      luaPushStringGlobal(L.Handle, 'URL', AURL);
 
-      LuaDoMe(L);
-      LuaCallFunction(L, OnBeforeDownloadImage);
+      L.CallFunction(OnBeforeDownloadImage);
       Result := lua_toboolean(L, -1);
     except
       on E: Exception do
         Logger.SendError(E.Message + ': ' + luaGetString(L, -1));
     end;
-    lua_close(L);
+    L.ClearStack;
   end;
 end;
 
 function DoDownloadImage(const DownloadThread: TDownloadThread;
   const AURL: String; const Module: TModuleContainer): Boolean;
 var
-  L: Plua_State;
+  L: TLuaWebsiteModuleHandler;
 begin
   Result := False;
   with TLuaWebsiteModule(Module.LuaModule) do
   begin
-    L := LuaNewBaseState;
+    L := DownloadThread.LuaHandler.LoadModule(Module);
     try
-      LuaPushMe(L);
-      luaPushObjectGlobal(L, DownloadThread.Task.Container, 'TASK', @luaDownloadTaskMetaTable);
-      luaPushObjectGlobal(L, DownloadThread.FHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
-      luaPushIntegerGlobal(L, 'WORKID', DownloadThread.WorkId);
-      luaPushStringGlobal(L, 'URL', AURL);
+      L.LoadObject('TASK', DownloadThread.Task.Container, @luaDownloadTaskMetaTable);
+      L.LoadObject('HTTP', DownloadThread.HTTP, @luaHTTPSendThreadAddMetaTable);
+      luaPushIntegerGlobal(L.Handle, 'WORKID', DownloadThread.WorkId);
+      luaPushStringGlobal(L.Handle, 'URL', AURL);
 
-      LuaDoMe(L);
-      LuaCallFunction(L, OnDownloadImage);
+      L.CallFunction(OnDownloadImage);
       Result := lua_toboolean(L, -1);
     except
       on E: Exception do
         Logger.SendError(E.Message + ': ' + luaGetString(L, -1));
     end;
-    lua_close(L);
+    L.ClearStack;
   end;
 end;
 
-function DoSaveImage(const AHTTP: THTTPSendThread; const APath, AName: String;
+function DoSaveImage(const DownloadThread: TDownloadThread; const APath, AName: String;
   const Module: TModuleContainer): String;
 var
-  L: Plua_State;
+  L: TLuaWebsiteModuleHandler;
 begin
   Result := '';
   with TLuaWebsiteModule(Module.LuaModule) do
   begin
-    L := LuaNewBaseState;
+    L := DownloadThread.LuaHandler.LoadModule(Module);
     try
-      LuaPushMe(L);
-      luaPushObjectGlobal(L, AHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
-      luaPushStringGlobal(L, 'PATH', APath);
-      luaPushStringGlobal(L, 'FILENAME', AName);
+      L.LoadObject('HTTP', DownloadThread.HTTP, @luaHTTPSendThreadAddMetaTable);
+      luaPushStringGlobal(L.Handle, 'PATH', APath);
+      luaPushStringGlobal(L.Handle, 'FILENAME', AName);
 
-      LuaDoMe(L);
-      LuaCallFunction(L, OnSaveImage);
+      L.CallFunction(OnSaveImage);
       Result := luaGetString(L, -1);
     except
       on E: Exception do
         Logger.SendError(E.Message + ': ' + luaGetString(L, -1));
     end;
-    lua_close(L);
+    L.ClearStack;
   end;
 end;
 
-function DoAfterImageSaved(const AFilename: String; const Module: TModuleContainer): Boolean;
+function DoAfterImageSaved(const DownloadThread: TDownloadThread; const AFilename: String; const Module: TModuleContainer): Boolean;
 var
-  L: Plua_State;
+  L: TLuaWebsiteModuleHandler;
 begin
   Result := False;
   with TLuaWebsiteModule(Module.LuaModule) do
   begin
-    L := LuaNewBaseState;
+    L := DownloadThread.LuaHandler.LoadModule(Module);
     try
-      LuaPushMe(L);
-      luaPushStringGlobal(L, 'FILENAME', AFilename);
+      luaPushStringGlobal(L.Handle, 'FILENAME', AFilename);
       luaWebsiteModulesExtrasRegisterAfterImageSaved(L);
 
-      LuaDoMe(L);
-      LuaCallFunction(L, OnAfterImageSaved);
+      L.CallFunction(OnAfterImageSaved);
       Result := lua_toboolean(L, -1);
     except
       on E: Exception do
         Logger.SendError(E.Message + ': ' + luaGetString(L, -1));
     end;
-    lua_close(L);
+    L.ClearStack;
   end;
 end;
 
@@ -656,7 +643,7 @@ var
   i: Integer;
   cpu_count: LongWord;
 begin
-  WebsiteBypass.doInitialization;
+  LuaWebsiteBypass.doInitialization;
   LuaPackage.LoadPackages(LUA_PACKAGES_FOLDER);
 
   FindAllFiles(FFileList, LUA_WEBSITEMODULE_FOLDER, '*.lua;*.luac', False, faAnyFile);

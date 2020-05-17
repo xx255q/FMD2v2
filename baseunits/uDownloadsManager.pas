@@ -17,7 +17,7 @@ interface
 uses
   LazFileUtils, Classes, SysUtils, ExtCtrls, typinfo, fgl,
   blcksock, MultiLog, uBaseUnit, uPacker, uMisc, DownloadedChaptersDB, FMDOptions,
-  httpsendthread, DownloadsDB, BaseThread, dateutils, strutils;
+  httpsendthread, DownloadsDB, BaseThread, LuaWebsiteModuleHandler, dateutils, strutils;
 
 type
   TDownloadStatusType = (
@@ -58,7 +58,8 @@ type
 
     procedure Execute; override;
   public
-    FHTTP: THTTPSendThread;
+    LuaHandler: TLuaWebsiteModuleHandler;
+    HTTP: THTTPSendThread;
     WorkId: Integer;
     constructor Create;
     destructor Destroy; override;
@@ -95,8 +96,7 @@ type
     // general exception info
     function GetExceptionInfo: String;
   public
-    //additional parameter
-    httpCookies: String;
+    LuaHandler: TLuaWebsiteModuleHandler;
     Flag: TFlagType;
     // container (for storing information)
     Container: TTaskContainer;
@@ -130,7 +130,7 @@ type
     // read count for transfer rate
     ReadCount: Integer;
     // task thread of this container
-    Task: TTaskThread;
+    TaskThread: TTaskThread;
     // download manager
     Manager: TDownloadManager;
     DownloadInfo: TDownloadInfo;
@@ -282,7 +282,7 @@ procedure TDownloadThread.SetTask(AValue: TTaskThread);
 begin
   if FTask = AValue then Exit;
   FTask := AValue;
-  TModuleContainer(FTask.Container.DownloadInfo.Module).PrepareHTTP(FHTTP);
+  TModuleContainer(FTask.Container.DownloadInfo.Module).PrepareHTTP(HTTP);
 end;
 
 procedure TDownloadThread.SockOnStatus(Sender: TObject;
@@ -295,9 +295,11 @@ end;
 constructor TDownloadThread.Create;
 begin
   inherited Create(True);
-  FHTTP := THTTPSendThread.Create(Self);
-  FHTTP.Headers.NameValueSeparator := ':';
-  FHTTP.Sock.OnStatus := @SockOnStatus;
+  LuaHandler := TLuaWebsiteModuleHandler.Create;
+  HTTP := THTTPSendThread.Create(Self);
+  HTTP.Headers.NameValueSeparator := ':';
+  HTTP.Sock.OnStatus := @SockOnStatus;
+  HTTP.LuaHandler := LuaHandler;
 end;
 
 destructor TDownloadThread.Destroy;
@@ -309,16 +311,17 @@ begin
   finally
     LeaveCriticalsection(Task.FCS_THREADS);
   end;
-  FHTTP.Free;
+  HTTP.Free;
+  LuaHandler.Free;
   inherited Destroy;
 end;
 
 function TDownloadThread.GetPage(var output: TObject; URL: String;
   const Reconnect: Integer): Boolean;
 begin
-  if FHTTP.Sock.Tag <> 100 then
-    FHTTP.Clear;
-  Result := uBaseUnit.GetPage(FHTTP, output, URL, Reconnect);
+  if HTTP.Sock.Tag <> 100 then
+    HTTP.Clear;
+  Result := uBaseUnit.GetPage(HTTP, output, URL, Reconnect);
 end;
 
 procedure TDownloadThread.Execute;
@@ -401,11 +404,11 @@ end;
 constructor TTaskThread.Create;
 begin
   inherited Create(True);
+  LuaHandler := TLuaWebsiteModuleHandler.Create;
   InitCriticalSection(FCS_THREADS);
   Threads := TDownloadThreads.Create;
   FCheckAndActiveTaskFlag := True;
   FIsForDelete := False;
-  httpCookies := '';
   FCurrentWorkingDir := '';
   FCurrentCustomFileName := '';
   {$IFDEF WINDOWS}
@@ -434,7 +437,7 @@ begin
   begin
     ThreadState := False;
     Manager.RemoveItemsActiveTask(Container);
-    Task := nil;
+    TaskThread := nil;
     if not (IsForDelete or Manager.isReadyForExit) then
     begin
       Container.ReadCount := 0;
@@ -465,6 +468,7 @@ begin
   end;
   Threads.Free;
   DoneCriticalsection(FCS_THREADS);
+  LuaHandler.Free;
   inherited Destroy;
 end;
 
@@ -603,7 +607,7 @@ begin
      (workURL = 'D') then
     Exit;
 
-  FHTTP.Clear;
+  HTTP.Clear;
 
   // prepare filename
   workFilename := Task.GetFileName(WorkId);
@@ -626,7 +630,7 @@ begin
     if Assigned(TModuleContainer(Task.Container.DownloadInfo.Module).OnDownloadImage) then
       Result := TModuleContainer(Task.Container.DownloadInfo.Module).OnDownloadImage(Self, workURL, TModuleContainer(Task.Container.DownloadInfo.Module))
     else
-      Result := FHTTP.GET(workURL);
+      Result := HTTP.GET(workURL);
   end;
 
   if Result then
@@ -636,9 +640,9 @@ begin
     if not Result then
     begin
       if Assigned(TModuleContainer(Task.Container.DownloadInfo.Module).OnSaveImage) then
-        savedFilename := TModuleContainer(Task.Container.DownloadInfo.Module).OnSaveImage(FHTTP, Task.CurrentWorkingDir, workFilename, TModuleContainer(Task.Container.DownloadInfo.Module))
+        savedFilename := TModuleContainer(Task.Container.DownloadInfo.Module).OnSaveImage(Self, Task.CurrentWorkingDir, workFilename, TModuleContainer(Task.Container.DownloadInfo.Module))
       else
-        savedFilename := SaveImageStreamToFile(FHTTP, Task.CurrentWorkingDir, workFilename);
+        savedFilename := SaveImageStreamToFile(HTTP, Task.CurrentWorkingDir, workFilename);
       Result := savedFilename <> '';
     end;
   end;
@@ -652,7 +656,7 @@ begin
     Task.Container.PageLinks[WorkId] := 'D';
     // OnAfterImageSaved
     if Assigned(TModuleContainer(Task.Container.DownloadInfo.Module).OnAfterImageSaved) then
-      Result := TModuleContainer(Task.Container.DownloadInfo.Module).OnAfterImageSaved(savedFilename, TModuleContainer(Task.Container.DownloadInfo.Module));
+      Result := TModuleContainer(Task.Container.DownloadInfo.Module).OnAfterImageSaved(Self, savedFilename, TModuleContainer(Task.Container.DownloadInfo.Module));
   end;
 end;
 
@@ -1576,10 +1580,10 @@ begin
   with Items[taskID] do
   begin
     TModuleContainer(DownloadInfo.Module).IncActiveTaskCount;
-    Task := TTaskThread.Create;
-    Task.Container := Items[taskID];
-    AddItemsActiveTask(Task.Container);
-    Task.Start;
+    TaskThread := TTaskThread.Create;
+    TaskThread.Container := Items[taskID];
+    AddItemsActiveTask(TaskThread.Container);
+    TaskThread.Start;
   end;
 end;
 
@@ -1595,9 +1599,9 @@ begin
     end
     else if ThreadState then
     begin
-      Task.Terminate;
+      TaskThread.Terminate;
       if isWaitFor then
-        Task.WaitFor;
+        TaskThread.WaitFor;
     end;
     if isCheckForActive then
       CheckAndActiveTask();
@@ -1641,11 +1645,11 @@ begin
       for i := 0 to Items.Count - 1 do
         with Items[i] do
           if ThreadState then
-            Task.Terminate;
+            TaskThread.Terminate;
       for i := 0 to Items.Count - 1 do
         with Items[i] do
           if ThreadState then
-            Task.WaitFor;
+            TaskThread.WaitFor;
     finally
       isReadyForExit := False;
     end;
@@ -1665,8 +1669,8 @@ begin
   try
     with Items[TaskID] do
       if ThreadState then begin
-        Task.Terminate;
-        Task.WaitFor;
+        TaskThread.Terminate;
+        TaskThread.WaitFor;
       end;
     FreeAndDelete(TaskID);
   finally
