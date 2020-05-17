@@ -986,7 +986,7 @@ var
   P: String;
 begin
   SplitURL(URL,nil,@P);
-  Result:=RemoveURLDelim(Host)+P;
+  Result:={%H-}RemoveURLDelim(Host)+P;
 end;
 
 procedure FillHost(const Host: String; const URLs: TStrings);
@@ -1003,7 +1003,7 @@ var
   H,P: String;
 begin
   SplitURL(URL,@H,@P);
-  if (H='') and (P<>'') then Result:=RemoveURLDelim(Host)+P
+  if (H='') and (P<>'') then Result:={%H-}RemoveURLDelim(Host)+P
   else Result:=URL;
 end;
 
@@ -3354,7 +3354,7 @@ begin
         DeleteFileUTF8(AFinalName);
       if not FileExistsUTF8(AFinalName) then
       begin
-        h := GetImageFileWriterClass(AImgName1);
+        h := {%H-}GetImageFileWriterClass(AImgName1);
         if h = nil then Exit;
         try
           w := h.Create;
