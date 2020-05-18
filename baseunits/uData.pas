@@ -14,7 +14,8 @@ interface
 
 uses
   Classes, SysUtils, uBaseUnit, DBDataProcess, FMDOptions, httpsendthread,
-  BaseThread, LazFileUtils, strutils, RegExpr, httpsend, MultiLog;
+  BaseThread, LuaWebsiteModuleHandler, LazFileUtils, strutils, RegExpr,
+  httpsend, MultiLog;
 
 type
 
@@ -26,6 +27,7 @@ type
     FModule: Pointer;
     procedure SetModule(const AValue: Pointer);
   public
+    LuaHandler: TLuaWebsiteModuleHandler;
     HTTP: THTTPSendThread;
     MangaInfo: TMangaInfo;
     Parse: TStringList;
@@ -60,6 +62,7 @@ constructor TMangaInformation.Create(const AOwnerThread: TBaseThread;
   const ACreateInfo: Boolean);
 begin
   inherited Create;
+  LuaHandler := TLuaWebsiteModuleHandler.Create;
   FOwner := AOwnerThread;
   HTTP := THTTPSendThread.Create(AOwnerThread);
   HTTP.Headers.NameValueSeparator := ':';
@@ -77,6 +80,7 @@ begin
   if Assigned(Parse) then
     Parse.Free;
   HTTP.Free;
+  LuaHandler.Free;
   inherited Destroy;
 end;
 
