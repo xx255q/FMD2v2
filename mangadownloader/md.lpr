@@ -27,8 +27,8 @@ var
   {$ENDIF DEBUGLEAKS}
 
 {$ifdef windows}
-  doRestartHandle: THandle;
-  doRestartHandleWaitCounter:Integer=0;
+  prevPID: Integer = -1;
+  prevHandle: THandle;
   evpathlen: Integer;
   evpath: String;
 
@@ -49,24 +49,24 @@ begin
     app params
     --lua_dofile: always load lua modules from file
     --dump_loaded_modules: dump loaded modules ("ID Name") to log
-    --dorestart-handle=xxx: windows only, handle used to restart app
+    --dorestart-pid=9999: windows only, handle used to restart app
   }
 
   {$ifdef windows}
   //wait for prev process from dorestart
-  doRestartHandle:=THandle(-1);
-  doRestartHandle:=THandle(StrToIntDef(AppParams.Values['--dorestart-handle'],-1));
-  if Integer(doRestartHandle)<>-1 then
+  prevPID:=StrToIntDef(AppParams.Values['--dorestart-pid'],-1);
+  if prevPID<>-1 then
   begin
     // remove previous --dorestart-handle from params
-    AppParams.Delete(AppParams.IndexOfName('--dorestart-handle'));
-    while IsWindow(doRestartHandle) do
+    AppParams.Delete(AppParams.IndexOfName('--dorestart-pid'));
+    prevHandle:=OpenProcess(SYNCHRONIZE, False, prevPID);
+    if prevHandle<>-1 then
     begin
-      Sleep(250);
-      inc(doRestartHandleWaitCounter,250);
-      // if previous handle takes longer than 10s, we give up
-      // todo: do something if app takes longer to close
-      if doRestartHandleWaitCounter>10000 then Exit;
+      // if previous handle takes longer than 5s, we give up
+      WaitForSingleObject(prevHandle, 5000);
+      if IsWindow(prevHandle) then
+        TerminateProcess(prevHandle, 0);
+      CloseHandle(prevHandle);
     end;
   end;
   {$endif}

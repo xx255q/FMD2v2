@@ -299,7 +299,7 @@ begin
     p.InheritHandles := False;
     p.Parameters.AddStrings(AppParams);
     {$ifdef windows}
-    p.Parameters.Add('--dorestart-handle=' + IntToStr(Integer(Application.Handle)));
+    p.Parameters.Add('--dorestart-pid=' + IntToStr(GetProcessID));
     {$ifend}
     p.Execute;
   finally
