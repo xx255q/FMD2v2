@@ -5304,7 +5304,7 @@ begin
       end
       else
         Logger.SendError('Log file error ' + MainExceptionHandler.LogFileStatus + '"' + edLogFileName.Text + '"');
-      Logger.Send(QuotedStrd(Application.Title)+' started with [PID:'+IntToStr(GetProcessID)+'] [HANDLE:'+IntToStr(GetCurrentProcess)+']');
+      Logger.Send(QuotedStrd(Application.Title)+' started [PID:'+IntToStr(GetProcessID)+']');
       Logger.SendStrings('Application info', SimpleException.GetApplicationInfo);
     end
     else

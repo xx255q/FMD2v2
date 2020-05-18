@@ -129,7 +129,7 @@ begin
     begin
       FileLogger := TFileChannel.Create(LogFileName, [fcoShowHeader, fcoShowPrefix, fcoShowTime]);
       Logger.Channels.Add(FileLogger);
-      Logger.Send(QuotedStrd(Application.Title)+' started with [PID:'+IntToStr(GetProcessID)+'] [HANDLE:'+IntToStr(GetCurrentProcess)+']');
+      Logger.Send(QuotedStrd(Application.Title)+' started [PID:'+IntToStr(GetProcessID)+']');
     end;
     s := TStringList.Create;
     try
