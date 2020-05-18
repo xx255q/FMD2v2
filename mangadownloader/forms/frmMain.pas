@@ -1411,9 +1411,9 @@ begin
   FreeAndNil(mangaCover);
 
   if isNormalExit then
-    Logger.Send(QuotedStrd(Application.Title)+' exit normally [PID:'+IntToStr(GetProcessID)+']'{$ifdef windows}+'[HANDLE:'+IntToStr(Integer(Application.Handle))+']'){$ifend}
+    Logger.Send(QuotedStrd(Application.Title)+' exit normally [PID:'+IntToStr(GetProcessID)+']')
   else
-    Logger.SendWarning(QuotedStrd(Application.Title)+' doesn''t exit normally [PID:'+IntToStr(GetProcessID)+']'{$ifdef windows}+' [HANDLE:'+IntToStr(Integer(Application.Handle))+']'{$ifend});
+    Logger.SendWarning(QuotedStrd(Application.Title)+' doesn''t exit normally [PID:'+IntToStr(GetProcessID)+']');
 
   if OptionRestartFMD then
     DoRestartFMD;
