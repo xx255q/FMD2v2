@@ -60,7 +60,7 @@ begin
     // remove previous --dorestart-handle from params
     AppParams.Delete(AppParams.IndexOfName('--dorestart-pid'));
     prevHandle:=OpenProcess(SYNCHRONIZE, False, prevPID);
-    if prevHandle<>-1 then
+    if prevHandle<>0 then
     begin
       // if previous handle takes longer than 5s, we give up
       WaitForSingleObject(prevHandle, 5000);
