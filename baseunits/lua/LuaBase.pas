@@ -222,7 +222,12 @@ var
 begin
   r := LuaLoadFromStreamOrFile(L, AStream, AFileName);
   if r = 0 then
-    r := lua_pcall(L, 0, NResult, 0);
+    try
+      r := lua_pcall(L, 0, NResult, 0);
+    except
+      on E: Exception do
+        Logger.SendException('LuaExecute.pcall.Error: '+E.Message,E);
+    end;
   if r <> 0 then
     raise Exception.Create(LuaGetReturnString(r));
 end;
