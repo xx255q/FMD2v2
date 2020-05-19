@@ -7,7 +7,7 @@ interface
 uses
   frmMain, uDownloadsManager, uFavoritesManager, uUpdateThread, DBDataProcess,
   uSilentThread, uBaseUnit, uGetMangaInfosThread, CheckUpdate,
-  DBUpdater, SelfUpdater, Classes, FileChannel, simpleipc;
+  DBUpdater, SelfUpdater, FileChannel, simpleipc;
 
 var
   FormMain: TMainForm;

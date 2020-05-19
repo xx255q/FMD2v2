@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif},
-  LuaHandler, LuaBase, LuaClass;
+  LuaHandler, LuaBase;
 
 type
 
@@ -17,7 +17,10 @@ type
     FLoadedModule: Pointer;
   public
     function LoadModule(const AModule: Pointer): TLuaWebsiteModuleHandler;
+    property Module: Pointer read FLoadedModule;
   end;
+
+function GetLuaWebsiteModuleHandler(const AModule: Pointer): TLuaWebsiteModuleHandler;
 
 implementation
 
@@ -51,5 +54,39 @@ begin
     Result := Self;
   end;
 end;
+
+var
+  TM: TThreadManager;
+  //OldEndThread: TEndThreadHandler;
+
+threadvar
+  _LuaHandler: TLuaWebsiteModuleHandler;
+
+function GetLuaWebsiteModuleHandler(const AModule: Pointer): TLuaWebsiteModuleHandler;
+begin
+  if _LuaHandler=nil then
+    _LuaHandler:=TLuaWebsiteModuleHandler.Create;
+  Result:=_LuaHandler.LoadModule(AModule);
+end;
+
+// lua_close won't run __gc if it's called from different thread
+// so, ReleaseThreadVars can't be used
+procedure LuaEndThread(ExitCode : DWord);
+begin
+  if _LuaHandler<>nil then
+  begin
+    _LuaHandler.Free;
+    _LuaHandler:=nil;
+  end;
+  // run in loop ?
+  //if OldEndThread<>nil then
+  //  OldEndThread(ExitCode);
+end;
+
+initialization
+  GetThreadManager(TM);
+  //OldEndThread := TM.EndThread;
+  TM.EndThread := @LuaEndThread;
+  SetThreadManager(TM);
 
 end.

@@ -14,8 +14,7 @@ interface
 
 uses
   Classes, SysUtils, uBaseUnit, DBDataProcess, FMDOptions, httpsendthread,
-  BaseThread, LuaWebsiteModuleHandler, LazFileUtils, strutils, RegExpr,
-  httpsend, MultiLog;
+  BaseThread, LazFileUtils, strutils, httpsend;
 
 type
 
@@ -27,7 +26,6 @@ type
     FModule: Pointer;
     procedure SetModule(const AValue: Pointer);
   public
-    LuaHandler: TLuaWebsiteModuleHandler;
     HTTP: THTTPSendThread;
     MangaInfo: TMangaInfo;
     Parse: TStringList;
@@ -36,7 +34,7 @@ type
     isRemoveUnicode: Boolean;
     isRemoveHostFromChapterLinks: Boolean;
 
-    constructor Create(const AOwnerThread: TBaseThread = nil; const ACreateInfo: Boolean = True; const ACreateLuaHandler: Boolean = True);
+    constructor Create(const AOwnerThread: TBaseThread = nil; const ACreateInfo: Boolean = True);
     destructor Destroy; override;
     procedure ClearInfo;
     function GetDirectoryPage(var APage: Integer): Byte;
@@ -54,16 +52,14 @@ var
 implementation
 
 uses
-  Dialogs, frmMain, WebsiteModules, uUpdateThread;
+  Dialogs, WebsiteModules, uUpdateThread;
 
 { TMangaInformation }
 
 constructor TMangaInformation.Create(const AOwnerThread: TBaseThread;
-  const ACreateInfo: Boolean; const ACreateLuaHandler: Boolean);
+  const ACreateInfo: Boolean);
 begin
   inherited Create;
-  if ACreateLuaHandler then
-    LuaHandler := TLuaWebsiteModuleHandler.Create;
   FOwner := AOwnerThread;
   HTTP := THTTPSendThread.Create(AOwnerThread);
   HTTP.Headers.NameValueSeparator := ':';
@@ -81,8 +77,6 @@ begin
   if Assigned(Parse) then
     Parse.Free;
   HTTP.Free;
-  if Assigned(LuaHandler) then
-    LuaHandler.Free;
   inherited Destroy;
 end;
 

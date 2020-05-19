@@ -150,7 +150,7 @@ begin
   Result := False;
   with TLuaWebsiteModule(Module.LuaModule) do
   begin
-    L := updateList.LuaHandler.LoadModule(Module);
+    L := GetLuaWebsiteModuleHandler(Module);
     try
       L.LoadObject('UPDATELIST', updateList, @luaUpdateListManagerAddMetaTable);
 
@@ -170,7 +170,7 @@ begin
   Result := False;
   with TLuaWebsiteModule(Module.LuaModule) do
   begin
-    L := updateList.LuaHandler.LoadModule(Module);
+    L := GetLuaWebsiteModuleHandler(Module);
     try
       L.LoadObject('UPDATELIST', updateList, @luaUpdateListManagerAddMetaTable);
 
@@ -191,7 +191,7 @@ begin
   Result := INFORMATION_NOT_FOUND;
   with TLuaWebsiteModule(Module.LuaModule) do
   begin
-    L := MangaInfo.LuaHandler.LoadModule(Module);
+    L := GetLuaWebsiteModuleHandler(Module);
     try
       L.LoadObject('HTTP', MangaInfo.HTTP, @luaHTTPSendThreadAddMetaTable);
       L.LoadObject('UPDATELIST', updateList, @luaUpdateListManagerAddMetaTable);
@@ -219,7 +219,7 @@ begin
   Result := INFORMATION_NOT_FOUND;
   with TLuaWebsiteModule(Module.LuaModule) do
   begin
-    L := MangaInfo.LuaHandler.LoadModule(Module);
+    L := GetLuaWebsiteModuleHandler(Module);
     try
       L.LoadObject('HTTP', MangaInfo.HTTP, @luaHTTPSendThreadAddMetaTable);
       L.LoadObject('NAMES', ANames, @luaStringsAddMetaTable);
@@ -244,7 +244,7 @@ begin
   Result := INFORMATION_NOT_FOUND;
   with TLuaWebsiteModule(Module.LuaModule) do
   begin
-    L := MangaInfo.LuaHandler.LoadModule(Module);
+    L := GetLuaWebsiteModuleHandler(Module);
     try
       L.LoadObject('MANGAINFO', MangaInfo.MangaInfo, @luaMangaInfoAddMetaTable);
       L.LoadObject('HTTP', MangaInfo.HTTP, @luaHTTPSendThreadAddMetaTable);
@@ -266,7 +266,7 @@ begin
   Result := False;
   with TLuaWebsiteModule(Module.LuaModule) do
   begin
-    L := Task.TaskThread.LuaHandler.LoadModule(Module);
+    L := GetLuaWebsiteModuleHandler(Module);
     try
       L.LoadObject('TASK', Task, @luaDownloadTaskMetaTable);
 
@@ -287,7 +287,7 @@ begin
   Result := False;
   with TLuaWebsiteModule(Module.LuaModule) do
   begin
-    L := DownloadThread.LuaHandler.LoadModule(Module);
+    L := GetLuaWebsiteModuleHandler(Module);
     try
       L.LoadObject('TASK', DownloadThread.Task.Container, @luaDownloadTaskMetaTable);
       L.LoadObject('HTTP', DownloadThread.HTTP, @luaHTTPSendThreadAddMetaTable);
@@ -310,7 +310,7 @@ begin
   Result := False;
   with TLuaWebsiteModule(Module.LuaModule) do
   begin
-    L := DownloadThread.LuaHandler.LoadModule(Module);
+    L := GetLuaWebsiteModuleHandler(Module);
     try
       L.LoadObject('TASK', DownloadThread.Task.Container, @luaDownloadTaskMetaTable);
       L.LoadObject('HTTP', DownloadThread.HTTP, @luaHTTPSendThreadAddMetaTable);
@@ -334,7 +334,7 @@ begin
   Result := False;
   with TLuaWebsiteModule(Module.LuaModule) do
   begin
-    L := DownloadThread.LuaHandler.LoadModule(Module);
+    L := GetLuaWebsiteModuleHandler(Module);
     try
       L.LoadObject('TASK', DownloadThread.Task.Container, @luaDownloadTaskMetaTable);
       L.LoadObject('HTTP', DownloadThread.HTTP, @luaHTTPSendThreadAddMetaTable);
@@ -358,7 +358,7 @@ begin
   Result := False;
   with TLuaWebsiteModule(Module.LuaModule) do
   begin
-    L := DownloadThread.LuaHandler.LoadModule(Module);
+    L := GetLuaWebsiteModuleHandler(Module);
     try
       L.LoadObject('TASK', DownloadThread.Task.Container, @luaDownloadTaskMetaTable);
       L.LoadObject('HTTP', DownloadThread.HTTP, @luaHTTPSendThreadAddMetaTable);
@@ -382,7 +382,7 @@ begin
   Result := '';
   with TLuaWebsiteModule(Module.LuaModule) do
   begin
-    L := DownloadThread.LuaHandler.LoadModule(Module);
+    L := GetLuaWebsiteModuleHandler(Module);
     try
       L.LoadObject('HTTP', DownloadThread.HTTP, @luaHTTPSendThreadAddMetaTable);
       luaPushStringGlobal(L.Handle, 'PATH', APath);
@@ -404,7 +404,7 @@ begin
   Result := False;
   with TLuaWebsiteModule(Module.LuaModule) do
   begin
-    L := DownloadThread.LuaHandler.LoadModule(Module);
+    L := GetLuaWebsiteModuleHandler(Module);
     try
       luaPushStringGlobal(L.Handle, 'FILENAME', AFilename);
       luaWebsiteModulesExtrasRegisterAfterImageSaved(L.Handle);
@@ -420,24 +420,21 @@ end;
 
 function DoLogin(const AHTTP: THTTPSendThread; const Module: TModuleContainer): Boolean;
 var
-  L: Plua_State;
+  L: TLuaWebsiteModuleHandler;
 begin
   Result := False;
   with TLuaWebsiteModule(Module.LuaModule) do
   begin
-    L := LuaNewBaseState;
+    L := GetLuaWebsiteModuleHandler(Module);
     try
-      LuaPushMe(L);
-      luaPushObjectGlobal(L, AHTTP, 'HTTP', @luaHTTPSendThreadAddMetaTable);
+      L.LoadObject('HTTP', AHTTP, @luaHTTPSendThreadAddMetaTable);
 
-      LuaDoMe(L);
-      LuaCallFunction(L, OnLogin);
-      Result := lua_toboolean(L, -1);
+      L.CallFunction(OnLogin);
+      Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError(E.Message + ': ' + luaGetString(L, -1));
+        Logger.SendError(E.Message + ': ' + luaGetString(L.Handle, -1));
     end;
-    lua_close(L);
   end;
 end;
 

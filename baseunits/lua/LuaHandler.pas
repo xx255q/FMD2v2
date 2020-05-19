@@ -32,7 +32,7 @@ type
 
 implementation
 
-uses httpsendthread, MultiLog;
+uses httpsendthread;
 
 { TLuaHandler }
 

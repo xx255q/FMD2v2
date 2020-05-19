@@ -17,7 +17,7 @@ interface
 uses
   LazFileUtils, Classes, SysUtils, ExtCtrls, typinfo, fgl,
   blcksock, MultiLog, uBaseUnit, uPacker, uMisc, DownloadedChaptersDB, FMDOptions,
-  httpsendthread, DownloadsDB, BaseThread, LuaWebsiteModuleHandler, dateutils, strutils;
+  httpsendthread, DownloadsDB, BaseThread, dateutils, strutils;
 
 type
   TDownloadStatusType = (
@@ -58,7 +58,6 @@ type
 
     procedure Execute; override;
   public
-    LuaHandler: TLuaWebsiteModuleHandler;
     HTTP: THTTPSendThread;
     WorkId: Integer;
     constructor Create;
@@ -96,7 +95,6 @@ type
     // general exception info
     function GetExceptionInfo: String;
   public
-    LuaHandler: TLuaWebsiteModuleHandler;
     Flag: TFlagType;
     // container (for storing information)
     Container: TTaskContainer;
@@ -295,7 +293,6 @@ end;
 constructor TDownloadThread.Create;
 begin
   inherited Create(True);
-  LuaHandler := TLuaWebsiteModuleHandler.Create;
   HTTP := THTTPSendThread.Create(Self);
   HTTP.Headers.NameValueSeparator := ':';
   HTTP.Sock.OnStatus := @SockOnStatus;
@@ -311,7 +308,6 @@ begin
     LeaveCriticalsection(Task.FCS_THREADS);
   end;
   HTTP.Free;
-  LuaHandler.Free;
   inherited Destroy;
 end;
 
@@ -403,7 +399,6 @@ end;
 constructor TTaskThread.Create;
 begin
   inherited Create(True);
-  LuaHandler := TLuaWebsiteModuleHandler.Create;
   InitCriticalSection(FCS_THREADS);
   Threads := TDownloadThreads.Create;
   FCheckAndActiveTaskFlag := True;
@@ -467,7 +462,6 @@ begin
   end;
   Threads.Free;
   DoneCriticalsection(FCS_THREADS);
-  LuaHandler.Free;
   inherited Destroy;
 end;
 

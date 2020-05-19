@@ -12,9 +12,8 @@ interface
 
 uses
   Classes, SysUtils, typinfo, uData, LazFileUtils, uBaseUnit, uMisc,
-  WebsiteModules, DBDataProcess, SimpleTranslator, FMDOptions, httpsendthread,
-  BaseThread, LuaWebsiteModuleHandler, MultiLog, ExtCtrls, Forms, Controls,
-  Buttons, Graphics;
+  WebsiteModules, DBDataProcess, FMDOptions, httpsendthread,
+  BaseThread, MultiLog, ExtCtrls, Forms, Controls, Buttons, Graphics;
 
 type
   TUpdateListManagerThread = class;
@@ -82,7 +81,6 @@ type
     procedure DoTerminate; override;
     procedure Execute; override;
   public
-    LuaHandler: TLuaWebsiteModuleHandler;
     CS_Threads,
     CS_AddInfoToData,
     CS_AddNamesAndLinks: TRTLCriticalSection;
@@ -290,7 +288,6 @@ constructor TUpdateListManagerThread.Create;
 begin
   inherited Create(True);
   FreeOnTerminate := True;
-  LuaHandler:=TLuaWebsiteModuleHandler.Create;
 
   InitCriticalSection(CS_Threads);
   InitCriticalSection(CS_AddInfoToData);
@@ -327,7 +324,6 @@ begin
   DoneCriticalsection(CS_AddInfoToData);
   DoneCriticalsection(CS_AddNamesAndLinks);
   DoneCriticalsection(CS_Threads);
-  LuaHandler.Free;
   inherited Destroy;
 end;
 
