@@ -32,6 +32,8 @@ type
 
 implementation
 
+uses httpsendthread, MultiLog;
+
 { TLuaHandler }
 
 constructor TLuaHandler.Create;
@@ -93,6 +95,8 @@ begin
   end;
   luaClassPushObject(FHandle, AObject, AName, False, AddMetaTable);
   FLoadedObjects.AddObject(AName, AObject);
+  if (AObject is THTTPSendThread) and (TLuaHandler(THTTPSendThread(AObject).LuaHandler) <> self) then
+      THTTPSendThread(AObject).LuaHandler := Self;
 end;
 
 procedure TLuaHandler.CallFunction(const AFunctionName: String);

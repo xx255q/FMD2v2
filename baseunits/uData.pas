@@ -36,7 +36,7 @@ type
     isRemoveUnicode: Boolean;
     isRemoveHostFromChapterLinks: Boolean;
 
-    constructor Create(const AOwnerThread: TBaseThread = nil; const ACreateInfo: Boolean = True);
+    constructor Create(const AOwnerThread: TBaseThread = nil; const ACreateInfo: Boolean = True; const ACreateLuaHandler: Boolean = True);
     destructor Destroy; override;
     procedure ClearInfo;
     function GetDirectoryPage(var APage: Integer): Byte;
@@ -59,10 +59,11 @@ uses
 { TMangaInformation }
 
 constructor TMangaInformation.Create(const AOwnerThread: TBaseThread;
-  const ACreateInfo: Boolean);
+  const ACreateInfo: Boolean; const ACreateLuaHandler: Boolean);
 begin
   inherited Create;
-  LuaHandler := TLuaWebsiteModuleHandler.Create;
+  if ACreateLuaHandler then
+    LuaHandler := TLuaWebsiteModuleHandler.Create;
   FOwner := AOwnerThread;
   HTTP := THTTPSendThread.Create(AOwnerThread);
   HTTP.Headers.NameValueSeparator := ':';
@@ -80,7 +81,8 @@ begin
   if Assigned(Parse) then
     Parse.Free;
   HTTP.Free;
-  LuaHandler.Free;
+  if Assigned(LuaHandler) then
+    LuaHandler.Free;
   inherited Destroy;
 end;
 

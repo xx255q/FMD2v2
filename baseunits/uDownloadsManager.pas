@@ -299,7 +299,6 @@ begin
   HTTP := THTTPSendThread.Create(Self);
   HTTP.Headers.NameValueSeparator := ':';
   HTTP.Sock.OnStatus := @SockOnStatus;
-  HTTP.LuaHandler := LuaHandler;
 end;
 
 destructor TDownloadThread.Destroy;
