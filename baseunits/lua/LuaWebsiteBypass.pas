@@ -76,7 +76,7 @@ begin
     end;
   except
     on E: Exception do
-      Logger.SendException(E.Message, E);
+      Logger.SendException('CheckAntiBot.Error', E);
   end;
 end;
 
@@ -101,7 +101,7 @@ begin
     Result := lua_toboolean(L.Handle, 1);
   except
     on E: Exception do
-      Logger.SendException(E.Message, E);
+      Logger.SendException('WebsiteBypass.Error', E);
   end;
   L.ClearStack;
 end;

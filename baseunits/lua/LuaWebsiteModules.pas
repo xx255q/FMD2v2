@@ -580,7 +580,7 @@ begin
     end;
   except
     on E: Exception do
-      Logger.SendException(ClassName+'.Execute error',E);
+      Logger.SendException(ClassName+'.Execute.Error',E);
   end;
   TempModules.Free;
 end;

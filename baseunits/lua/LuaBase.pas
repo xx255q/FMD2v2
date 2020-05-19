@@ -98,12 +98,12 @@ begin
     if r = 0 then
       r := lua_pcall(Result, 0, LUA_MULTRET, 0);
     if r <> 0 then
-      raise Exception.Create(LuaGetReturnString(r));
+      raise Exception.Create(LuaGetReturnString(r)+': '+lua_tostring(Result, -1));
     if AFuncName <> '' then
       LuaCallFunction(Result, AFuncName);
   except
     on E: Exception do
-      Logger.SendException('LuaDoFile.Error ' + E.Message + ' ' + lua_tostring(Result, -1), E);
+      Logger.SendException('LuaDoFile.Error', E);
   end;
 end;
 
@@ -226,7 +226,7 @@ begin
       r := lua_pcall(L, 0, NResult, 0);
     except
       on E: Exception do
-        Logger.SendException('LuaExecute.pcall.Error: '+E.Message,E);
+        Logger.SendException('LuaExecute.pcall.Error',E);
     end;
   if r <> 0 then
     raise Exception.Create(LuaGetReturnString(r));
