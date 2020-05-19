@@ -53,22 +53,8 @@ begin
 end;
 
 destructor TLuaHandler.Destroy;
-var
-  i: Integer;
-  o: TObject;
 begin
   FLoadedChunks.Free;
-  // try to unhook the httpsendthread
-  for i:=0 to FLoadedObjects.Count-1 do
-  begin
-    o := FLoadedObjects.Objects[i];
-    if o is THTTPSendThread then
-    try
-      if THTTPSendThread(o).LuaHandler = Pointer(Self) then
-        THTTPSendThread(o).LuaHandler := nil
-    except
-    end;
-  end;
   FLoadedObjects.Free;
   lua_close(FHandle);
   inherited Destroy;
