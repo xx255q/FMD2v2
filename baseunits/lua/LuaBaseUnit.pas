@@ -139,9 +139,9 @@ var
 begin
   t:=lua_gettop(L);
   if t>2 then
-    includeprotocol := lua_toboolean(L,3);
+    includeport := lua_toboolean(L,3);
   if t>1 then
-    includeport := lua_toboolean(L,2);
+    includeprotocol := lua_toboolean(L,2);
   SplitURL(luaGetString(L, 1), @host, @path, includeprotocol, includeport);
 
   lua_pushstring(L, host);
