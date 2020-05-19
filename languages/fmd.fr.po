@@ -1706,6 +1706,10 @@ msgstr ""
 msgid "Connection timeout (seconds)"
 msgstr "Délai d'expiration de la connexion, en secondes"
 
+#: tmainform.lboptiondefaultuseragent.caption
+msgid "Default user-agent"
+msgstr ""
+
 #: tmainform.lboptionexternal.caption
 msgid "Open manga by using external program:"
 msgstr "Ouvrir le manga avec un programme externe :"

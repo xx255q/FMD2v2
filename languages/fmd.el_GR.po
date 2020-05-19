@@ -1672,6 +1672,10 @@ msgstr ""
 msgid "Connection timeout (seconds)"
 msgstr "Χρονικό όριο σύνδεσης (δευτ/λεπτα)"
 
+#: tmainform.lboptiondefaultuseragent.caption
+msgid "Default user-agent"
+msgstr ""
+
 #: tmainform.lboptionexternal.caption
 msgid "Open manga by using external program:"
 msgstr "Άνοιγμα manga με χρήση εξωτερικού προγράμματος:"

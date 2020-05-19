@@ -2755,7 +2755,7 @@ begin
       loop:
         HTTPSender := THTTPSend.Create;
       //Who knows, this might help:
-      HTTPSender.UserAgent := UA_CURL;
+      HTTPSender.UserAgent := UserAgentCURL;
       while not FoundCorrectURL do
       begin
         HTTPSender.HTTPMethod('GET', URL);
@@ -2909,8 +2909,8 @@ begin
   HTTPHeader.Values['Accept-Language'] := ' en-US,en;q=0.8';
   HTTP.Protocol := '1.1';
   HTTP.KeepAlive := False;
-  if (HTTP.UserAgent = '') or (HTTP.UserAgent = UA_SYNAPSE) then
-    HTTP.UserAgent := DEFAULT_UA;
+  if (HTTP.UserAgent = '') or (HTTP.UserAgent = UserAgentSynapse) then
+    HTTP.UserAgent := DefaultUserAgent;
   if OptionHTTPUseGzip then
     HTTPHeader.Values['Accept-Encoding'] := ' gzip, deflate';
 

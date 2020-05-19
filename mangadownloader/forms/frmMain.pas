@@ -17,13 +17,13 @@ uses
   {$else}
   FakeActiveX,
   {$endif}
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, LCLType, ExtCtrls, ComCtrls,
-  Buttons, Spin, Menus, VirtualTrees, RichMemo, simpleipc, lclproc, types, LCLIntf,
-  EditBtn, PairSplitter, MultiLog, FileChannel, FileUtil, LazUTF8Classes,
-  TAGraph, TASources, TASeries, TATools, AnimatedGif, uBaseUnit, uDownloadsManager,
-  uFavoritesManager, uUpdateThread, uSilentThread, uMisc,
-  uGetMangaInfosThread, frmDropTarget, frmAccountManager, frmWebsiteOptionCustom,
-  frmCustomColor, frmLogger, frmTransferFavorites,
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, LCLType,
+  ExtCtrls, ComCtrls, Buttons, Spin, Menus, VirtualTrees, RichMemo, simpleipc,
+  lclproc, types, LCLIntf, EditBtn, PairSplitter, MultiLog,
+  FileChannel, FileUtil, LazUTF8Classes, TAGraph, TASources, TASeries, TATools,
+  AnimatedGif, uBaseUnit, uDownloadsManager, uFavoritesManager, uUpdateThread,
+  uSilentThread, uMisc, uGetMangaInfosThread, frmDropTarget, frmAccountManager,
+  frmWebsiteOptionCustom, frmCustomColor, frmLogger, frmTransferFavorites,
   frmLuaModulesUpdater, uBaseForms, CheckUpdate, DBDataProcess,
   SimpleTranslator, httpsendthread, SimpleException;
 
@@ -82,6 +82,7 @@ type
     edDownloadsSearch: TEditButton;
     edFavoritesSearch: TEditButton;
     edFilterMangaInfoChapters: TEditButton;
+    edOptionDefaultUserAgent: TEdit;
     edLogFileName: TEditButton;
     edOptionChangeUnicodeCharacterStr: TEdit;
     edOptionDefaultPath: TEditButton;
@@ -93,6 +94,7 @@ type
     edWebsitesSearch: TEditButton;
     gbImageConversion: TGroupBox;
     IconDLLeft: TImageList;
+    lbOptionDefaultUserAgent: TLabel;
     lbPNGCompressionLevel: TLabel;
     lbJPEGQuality: TLabel;
     lbWebPSaveAs: TLabel;
@@ -4956,6 +4958,8 @@ begin
     seOptionConnectionTimeout.Value := ReadInteger('connections', 'ConnectionTimeout', OptionConnectionTimeout);
     seOptionRetryFailedTask.Value := ReadInteger('connections', 'NumberOfAutoRetryFailedTask', OptionRetryFailedTask);
     ckOptionsAlwaysStartTaskFromFailedChapters.Checked := ReadBool('connections', 'AlwaysStartFromFailedChapters', OptionAlwaysStartTaskFromFailedChapters);
+    edOptionDefaultUserAgent.Text := ReadString('connections', 'DefaultUserAgent', DefaultUserAgent);
+
     // proxy
     cbOptionUseProxy.Checked := ReadBool('connections', 'UseProxy', False);
     cbOptionProxyType.Text := ReadString('connections', 'ProxyType', 'HTTP');
@@ -5078,7 +5082,8 @@ begin
       WriteInteger('connections', 'ConnectionTimeout', seOptionConnectionTimeout.Value);
       WriteInteger('connections', 'NumberOfAutoRetryFailedTask', seOptionRetryFailedTask.Value);
       WriteBool('connections', 'AlwaysRetruFailedChaptersOnStart', ckOptionsAlwaysStartTaskFromFailedChapters.Checked);
-	  
+	    WriteString('connections', 'DefaultUserAgent', DefaultUserAgent);
+
       // proxy
       WriteBool('connections', 'UseProxy', cbOptionUseProxy.Checked);
       WriteString('connections', 'ProxyType', cbOptionProxyType.Text);
@@ -5244,6 +5249,9 @@ begin
     SetDefaultTimeoutAndApply(OptionConnectionTimeout * 1000);
     OptionRetryFailedTask := seOptionRetryFailedTask.Value;
     OptionAlwaysStartTaskFromFailedChapters := ckOptionsAlwaysStartTaskFromFailedChapters.Checked;
+    if Trim(edOptionDefaultUserAgent.Text) = '' then
+      edOptionDefaultUserAgent.Text:=UserAgentFirefox;
+    DefaultUserAgent := Trim(edOptionDefaultUserAgent.Text);
 
     // proxy
     if cbOptionUseProxy.Checked then
