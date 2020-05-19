@@ -48,7 +48,7 @@ end
 
 function GetNameAndLink()
   if HTTP.GET(MODULE.RootURL .. '/directory/' .. IncStr(URL) .. '.html?az') then
-    TXQuery.Create(HTTP.Document).XPathHREFAll('//ul[contains(@class, "manga-list")]/li/a', Links, Names)
+    TXQuery.Create(HTTP.Document).XPathHREFAll('//ul[contains(@class, "manga-list")]/li/a', LINKS, NAMES)
     return no_error
   else
     return net_problem
