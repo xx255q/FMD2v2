@@ -87,8 +87,8 @@ function _cf.solveIUAMChallenge(self, body, url)
 	HTTP.FollowRedirection = true
 
 	-- cloudflare requires a delay
-	local delay = tonumber(body:match('submit%(%);\r?\n%s*},%s*(%d%d%d%d+)')) or 6000
-	if delay < 6000 then delay = 6000 end
+	local delay = tonumber(body:match('submit%(%);\r?\n%s*},%s*(%d%d%d%d+)')) or 5000
+	-- if delay < 6000 then delay = 6000 end
 	self:sleepOrBreak(delay)
 
 	HTTP.Request('POST', domain .. challengeUUID)
@@ -124,12 +124,15 @@ function _cf.solveChallenge(self, url)
 end
 
 function _cf.bypass(self, METHOD, URL)
+	local result = false
 	local counter = 0
-	local maxretry = HTTP.RetryCount; HTTP.RetryCount = 0
+	local maxretry = HTTP.RetryCount;
+	HTTP.RetryCount = 0
 
 	while true do
 		counter = counter + 1
-		if self:solveChallenge(URL) then break end
+		result = self:solveChallenge(URL)
+		if result then break end
 		if HTTP.Terminated then break end
 		-- delay before retry
 		self:sleepOrBreak(2000)
