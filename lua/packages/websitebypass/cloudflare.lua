@@ -1,101 +1,141 @@
 local _cf = {}
 
-function _cf.getcf(self, url)
-	local result, method, surl, postdata, sleeptime = false, "", "", "", 5000
-	local body = HTTP.Document.ToString()
-	if (body == "") or (url == "") then return result, method, surl, postdata, sleeptime end
+function _cf.IUAMChallengeAnswer(self, body, url)
+	local js = body:match('setTimeout%(function%(%){%s+(.-a%.value%s*=%s*%S+)')
 
-	local r, jschl_vc, pass, jschl_answer = "", "", "", ""
-
-	local x = TXQuery.Create(body)
-	method   = x.XPathString('//form[@id="challenge-form"]/@method'):upper()
-	surl     = x.XPathString('//form[@id="challenge-form"]/@action')
-	r        = x.XPathString('//input[@name="r"]/@value')
-	jschl_vc = x.XPathString('//input[@name="jschl_vc"]/@value')
-	pass     = x.XPathString('//input[@name="pass"]/@value')
-
-	if (method == "") or (surl == "") or (r == "") or (jschl_vc == "") or (pass == "") then return result, method, surl, postdata, sleeptime end
-
-	-- main script
-	local javascript = body:match('<script type="text/javascript">\r?\n(.-)</script>') or ""
-
-	-- challenge
-	local challenge, _, sleeptime = body:match('setTimeout%(function%(%)%{%s*(var ' ..
-									's,t,o,p,b,r,e,a,k,i,n,g.-\r?\n.-a%.value%s*=.-)\r?\n' ..
-									'([^%{<>]*%},%s*(%d))?')
-	if challenge == nil then challenge = "" end
-	if sleeptime == nil then sleeptime = 5000 else sleeptime = tonumber(sleeptime) or 5000 end
-
-	local innerHTML, k = "", ""
-	local i; for i in javascript:gmatch("([^;]+)") do
-		print('get inner k=' .. tostring(i))
-		if Trim(SeparateLeft(i, "=")) == "k" then
-			k = Trim(SeparateRight(i, "="), " '")
-			innerHTML = body:match('<div.-id="'..k..'".->(.-)</div>')
-		end
+	if js == nil then
+		LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to parse the javascript\r\n' .. body)
+		return nil
 	end
-	local domain = SplitURL(URL, false, false)
-	challenge = string.format([[
+
+	local subVars = ''
+	local k = body:match('k%s*=%s*[\'"](.-)[\'"];')
+	if k ~= nil then
+		k = k:gsub('-', '%%-')
+		local i, jsi = '', ''
+		for i, jsi in body:gmatch('<div id="' .. k .. '(%d+)">%s*([^<>]*)</div>') do
+			subVars = subVars .. string.format('\n\t\t%s%s: %s,\n', k, i, jsi)
+		end
+		subVars = subVars:gsub(',\n$', '')
+	end
+
+	return ExecJS(string.format([[String.prototype.italics=function(str) {return "<i>" + this + "</i>";};
+        var subVars= {%s};
         var document = {
             createElement: function () {
-              return { firstChild: { href: "http://%s/" } }
+                return { firstChild: { href: "%s/" } }
             },
-            getElementById: function () {
-              return {"innerHTML": "%s"};
+            getElementById: function (str) {
+                return {"innerHTML": subVars[str]};
             }
-          };
-
-        %s; a.value
-]], domain, innerHTML, challenge)
-print('challenge:\n' .. challenge)
-	jschl_answer = ExecJS(challenge)
-
-	if jschl_answer ~= "" then
-		result = true
-		postdata = "r=" .. EncodeURLElement(r) .. "&jschl_vc=" .. EncodeURLElement(jschl_vc) .. "&pass=" .. EncodeURLElement(pass) .. "&jschl_answer" .. EncodeURLElement(jschl_answer)
-	end
-
-	return result, method, surl, postdata, sleeptime
+        };
+    ]], subVars, SplitURL(url)):gsub('%s+', ' ') .. js)
 end
 
-function _cf.bypass(self)
-	print('call cf:bypass')
+function _cf.sleepOrBreak(self, delay)
+	local count = 0
+	while count < delay do
+		if HTTP.Terminated then break end
+		count = count + 250
+		Sleep(250)
+	end
+end
+
+function _cf.solveIUAMChallenge(self, body, url)
+	local answer = self:IUAMChallengeAnswer(body, url)
+	if (answer == nil) or (answer == 'NaN') then
+		LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to solve the javscript challenge\r\n' .. body)
+		return false
+	end
+
+	local form, challengeUUID = body:match('<form (.-="challenge%-form" action="(.-__cf_chl_jschl_tk__=%S+)"(.-)</form>)')
+	if (form == nil) or (challengeUUID == nil) then
+		LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to parse the form\r\n' .. body)
+		return false
+	end
+
+	local payload = {}
+	local k, n, v = '', '', ''
+	for k in form:gmatch('\n%s*<input%s(.-name=".-)/>') do
+		n = k:match('name="(.-)"')
+		v = k:match('value="(.-)"') or ''
+		payload[n] = v
+	end
+
+	local i = 0; for _ in pairs(payload) do i = i + 1 end
+	if i == 0 then
+		LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to parse the form payload\r\n' .. body)
+		return false
+	end
+	payload['jschl_answer'] = answer
+
+	local rawdata = ''
+	for k, v in pairs(payload) do
+		rawdata = rawdata .. k .. '=' .. EncodeURLElement(payload[k]) .. '&'
+	end
+	rawdata = rawdata:gsub('&$', '')
+
+	local domain = SplitURL(url)
+
+	-- no need to redirect if it success
+	HTTP.FollowRedirection = false
+	HTTP.Reset()
+	HTTP.Headers.Values['Origin'] = ' ' .. domain
+	HTTP.Headers.Values['Referer'] = ' ' .. url
+	HTTP.MimeType = "application/x-www-form-urlencoded"
+	HTTP.Document.WriteString(rawdata)
+	HTTP.FollowRedirection = true
+
+	-- cloudflare requires a delay
+	local delay = tonumber(body:match('submit%(%);\r?\n%s*},%s*(%d%d%d%d+)')) or 6000
+	if delay < 6000 then delay = 6000 end
+	self:sleepOrBreak(delay)
+
+	HTTP.Request('POST', domain .. challengeUUID)
+	return HTTP.Cookies.Values["cf_clearance"] ~= ""
+end
+
+function _cf.solveChallenge(self, url)
+	local body = HTTP.Document.ToString()
+	local rc = HTTP.ResultCode
+
+	-- firewall blocked
+	if (rc == 403) and body:find('<span class="cf%-error%-code">1020</span>') then
+		LOGGER.SendError('WebsitBypass[clounflare]: Cloudflare has blocked this request (Code 1020 Detected). ')
+		return false
+	end
+	-- reCapthca challenge
+	if (rc == 403) and body:find('action="/.-__cf_chl_captcha_tk__=%S+".-data%-sitekey=.-') then
+		LOGGER.SendError('WebsitBypass[clounflare]: detected reCapthca challenge, not supported right now. can be redirected to third party capthca solver in the future')
+		return false
+	end
+	-- new IUAM challenge
+	if ((rc == 429) or (rc == 503)) and body:find('cpo.src%s*=%s*"/cdn%-cgi/challenge%-platform/orchestrate/jsch/v1"') then
+		LOGGER.SendError('WebsitBypass[clounflare]: detected the new Cloudflare challenge, not supported yet')
+		return false
+	end
+	-- IUAM challenge
+	if ((rc == 429) or (rc == 503)) and body:find('<form .-="challenge%-form" action="/.-__cf_chl_jschl_tk__=%S+"') then
+		return self:solveIUAMChallenge(body, url)
+	end
+
+	LOGGER.SendWarning('WebsitBypass[clounflare]: no Cloudflare solution found!')
+	return false
+end
+
+function _cf.bypass(self, METHOD, URL)
 	local counter = 0
 	local maxretry = HTTP.RetryCount; HTTP.RetryCount = 0
-	local method, url, postdata, host = "POST", "", "", AppendURLDelim(GetHostURL(URL):gsub("http://", "https"))
-	local sleeptime, sleepcount = 5000, 0
-	local result, result_getcf = false, false
 
 	while true do
 		counter = counter + 1
-		result_getcf, method, url, postdata, sleeptime = self:getcf(host)
-		if resultgetjs and (method ~= "") and (url ~= "") then
-			HTTP.Reset()
-			if method == "POST" then
-				StringToStream(HTTP.Document, postdata)
-				HTTP.MimeType = "application/x-www-form-urlencoded"
-			end
-			HTTP.Headers.Values["Referer"] = " " + URL
-			if sleeptime < 5000 then sleeptime = 5000 end
-			sleepcount = 0
-			while sleepcount < sleeptime do
-				if HTTP.Terminated then break end
-				sleepcount = sleepcount + 250
-				Sleep(250)
-			end
-			HTTP.FollowRedirection = False
-			HTTP.Request(method, FillHost(host, url))
-			result = HTTP.Cookies.Values["cf_clearance"] ~= ""
-			if HTTP.ResultCode == 403 then
-				LOGGER.SendError("cloudflare bypass failed, probably asking for captcha? " .. URL)
-			end
-			HTTP.FollowRedirection = true
-		end
-		if result then break end
+		if self:solveChallenge(URL) then break end
 		if HTTP.Terminated then break end
+		-- delay before retry
+		self:sleepOrBreak(2000)
 		if (maxretry > -1) and (maxretry <= counter) then break end
 		HTTP.Reset()
-		HTTP.GET(URL)
+		HTTP.Request('GET', URL)
 	end
 
 	HTTP.RetryCount = maxretry
