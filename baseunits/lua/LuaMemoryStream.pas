@@ -31,9 +31,13 @@ begin
 end;
 
 function mem_writeAnsiString(L: Plua_State): Integer; cdecl;
+var
+  slen: size_t;
+  s: PAnsiChar;
 begin
   Result := 0;
-  TUserData(luaClassGetObject(L)).WriteAnsiString(luaGetString(L, 1));
+  s := lua_tolstring(L, 1, @slen);
+  TUserData(luaClassGetObject(L)).Write(s^, slen);
 end;
 
 function mem_loadFromFile(L: Plua_State): Integer; cdecl;
@@ -63,8 +67,8 @@ end;
 const
   methods: packed array [0..5] of luaL_Reg = (
     (name: 'ToString'; func: @mem_tostring),
-    (name: 'ReadAnsiString'; func: @mem_readAnsiString),
-    (name: 'WriteAnsiString'; func: @mem_writeAnsiString),
+    (name: 'ReadString'; func: @mem_readAnsiString),
+    (name: 'WriteString'; func: @mem_writeAnsiString),
     (name: 'LoadFromFile'; func: @mem_loadFromFile),
     (name: 'SaveToFile'; func: @mem_saveToFile),
     (name: nil; func: nil)

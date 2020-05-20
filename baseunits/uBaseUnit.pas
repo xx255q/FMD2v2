@@ -1175,9 +1175,9 @@ end;
 
 procedure StringToStream(const S: String; Stream: TStream);
 begin
-  Stream.Position := 0;
   Stream.Size := 0;
-  Stream.WriteAnsiString(s);
+  Stream.Position := 0;
+  Stream.Write(PAnsiChar(S)^, Length(s));
 end;
 
 function GetRightValue(const Name, s: String): String;
