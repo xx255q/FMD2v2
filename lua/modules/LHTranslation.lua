@@ -67,7 +67,7 @@ function Init()
   m.ID                    = '7fb5fbed6d3a44fe923ecc7bf929e6cb'
   m.Category              = 'English-Scanlation'
   m.Name                  = 'LHTranslation'
-  m.RootURL               = 'http://lhtranslation.net'
+  m.RootURL               = 'https://lhtranslation.net'
   m.LastUpdated           = 'March 30, 2019'
   m.TotalDirectory        = 1
   m.OnGetInfo             = 'getinfo'
