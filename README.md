@@ -1,6 +1,9 @@
-# Free Manga Downloader (FMD)
+# Free Manga Downloader 2 (FMD2)
 
 <sup>(Forked from https://github.com/riderkick/FMD)</sup>
+
+Use the converter if you want to migrate your FMD1 settings and databases.
+[Converter](https://github.com/dazedcat19/FMD2/releases/tag/2.0.2.0)
 
 ## Download
 
