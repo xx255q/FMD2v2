@@ -296,11 +296,11 @@ begin
     try
       FConn.ExecuteDirect('END TRANSACTION');
       FConn.ExecuteDirect('VACUUM');
-      FConn.ExecuteDirect('BEGIN TRANSACTION');
-    finally
-      if FQuery.Active <> qactive then
-        FQuery.Active := qactive;
+    except
     end;
+    FConn.ExecuteDirect('BEGIN TRANSACTION');
+    if FQuery.Active <> qactive then
+      FQuery.Active := qactive;
   except
     on E: Exception do
       DoOnError(E);

@@ -134,8 +134,8 @@ const
     '"numchapter" INTEGER,' +
     '"jdn" INTEGER';
 
-function DBDataFilePath(const AWebsite: String): String;
-function DataFileExist(const AWebsite: String): Boolean;
+function DBDataFilePath(const AModuleID: String): String;
+function DBDataFileExist(const AModuleID: String): Boolean;
 procedure CopyDBDataProcess(const AWebsite, NWebsite: String);
 function DeleteDBDataProcess(const AWebsite: String): Boolean;
 procedure OverwriteDBDataProcess(const AWebsite, NWebsite: String);
@@ -192,24 +192,21 @@ begin
   Result := QuotedStr('%'+S+'%');
 end;
 
-function DBDataFilePath(const AWebsite: String): String;
+function DBDataFilePath(const AModuleID: String): String;
 begin
-  Result := DATA_FOLDER + AWebsite + DBDATA_EXT;
+  Result := DATA_FOLDER + AModuleID + DBDATA_EXT;
 end;
 
-function DataFileExist(const AWebsite: String): Boolean;
+function DBDataFileExist(const AModuleID: String): Boolean;
 begin
-  if AWebsite = '' then
-    Exit(False);
-  Result := FileExistsUTF8(DATA_FOLDER + AWebsite + DATA_EXT) or
-    FileExistsUTF8(DATA_FOLDER + AWebsite + DBDATA_EXT);
+  Result := FileExistsUTF8(DATA_FOLDER + AModuleID + DBDATA_EXT);
 end;
 
 procedure CopyDBDataProcess(const AWebsite, NWebsite: String);
 begin
   if NWebsite = '' then
     Exit;
-  if DataFileExist(AWebsite) then
+  if DBDataFileExist(AWebsite) then
   begin
     try
       CopyFile(DATA_FOLDER + AWebsite + DBDATA_EXT,
@@ -296,12 +293,10 @@ begin
     FQuery.Close;
     with FConn do
     begin
-      ExecuteDirect('END TRANSACTION');
       try
+        ExecuteDirect('END TRANSACTION');
         ExecuteDirect('VACUUM');
       except
-        on E: Exception do
-          Logger.SendException(Self.ClassName+'['+Website+'].VacuumTable.Error!', E);
       end;
       ExecuteDirect('BEGIN TRANSACTION');
     end;

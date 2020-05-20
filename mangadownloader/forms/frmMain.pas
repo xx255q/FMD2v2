@@ -2696,7 +2696,7 @@ begin
     if dataProcess.Connected then
       dataProcess.Close;
     lbMode.Caption := Format(RS_ModeAll, [0]);
-    if DataFileExist(TModuleContainer(currentWebsite).ID) then
+    if DBDataFileExist(TModuleContainer(currentWebsite).ID) then
       OpenDataDB(TModuleContainer(currentWebsite).ID)
     else
     if cbOptionShowDownloadMangalistDialog.Checked then

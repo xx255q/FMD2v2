@@ -343,7 +343,7 @@ begin
   try
     with MainForm do
     begin
-      if cbSelectManga.Text = website then
+      if TModuleContainer(cbSelectManga.Items.Objects[cbSelectManga.ItemIndex]).ID = website then
       begin
         vtMangaList.Clear;
         if dataProcess = nil then
@@ -676,7 +676,7 @@ begin
       module := TModuleContainer(websites.Objects[websitePtr]);
       if Assigned(module) then
       begin
-        website := module.Name;
+        website := module.ID;
         Inc(websitePtr);
 
         cloghead:=Self.ClassName+', '+Module.Name+': ';
