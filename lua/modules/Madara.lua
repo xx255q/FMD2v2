@@ -73,6 +73,18 @@ function Modules.Madara()
       else
         x.XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
       end
+      local idmanga = x.XPathString('//div[@id="manga-chapters-holder"]/@data-id')
+      if MANGAINFO.ChapterLinks.Count < 1 then
+        HTTP.Reset()
+        HTTP.Headers.Values['Cache-Control'] = 'no-cache'
+        HTTP.Headers.Values['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
+        HTTP.Headers.Add('X-Requested-With: XMLHttpRequest')
+        local q = 'action=manga_get_chapters&manga=' .. idmanga
+        if HTTP.POST(MODULE.RootURL .. '/wp-admin/admin-ajax.php', q) then
+            local x = TXQuery.Create(HTTP.Document)
+            x.XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+        end
+      end
       InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
       return no_error
     end
@@ -284,7 +296,7 @@ function Init()
   AddWebsiteModule('349e30b0c30643f4a8d0aaece2a2c41e', 'ManhwaClub', 'https://manhwa.club', cat)
   AddWebsiteModule('3f8ce23cedeb4d4983ca4ff0cb0bad50', 'NManhwa', 'https://nmanhwa.com', cat)
   AddWebsiteModule('ac3452866dd843fda8b859afe8c8faab', 'ManyToonCom', 'https://manytoon.com', cat)
-  AddWebsiteModule('2b5f00cfbb124546b6c11a7e5ec9c403', 'Hiperdex', 'https://hiperdex.com', cat)
+  AddWebsiteModule('2b5f00cfbb124546b6c11a7e5ec9c403', 'Hiperdex', 'https://hiperdex.info', cat)
   AddWebsiteModule('c87aeae76e884adc9de8bc6b9d56f2c6', 'ShosetsuManga', 'https://www.shosetsu-manga.org', cat)
 
   cat = 'Spanish-Scanlation'
@@ -317,7 +329,7 @@ function Init()
   AddWebsiteModule('74e6c5f8121846029f367d48db7da3d6', '365Manga', 'https://365manga.com', cat)
   AddWebsiteModule('59387ea5d936420290485efe70432f07', 'MangaBob', 'https://mangabob.com', cat)
   AddWebsiteModule('35a8b3b4c8064f589aa7da94bb52f1fd', 'Manga68', 'https://manga68.com', cat)
-  AddWebsiteModule('01e9a8ebaa994307bef01780909e8cb7', 'EarlyManga', 'https://earlymanga.Name', cat)
+  AddWebsiteModule('01e9a8ebaa994307bef01780909e8cb7', 'EarlyManga', 'https://earlymanga.net', cat)
   AddWebsiteModule('24619e7027134eaeb26797fa05fdd2b3', 'Mangakiss', 'https://mangakiss.org', cat)
   AddWebsiteModule('35a207b2fd0c47b68e78b531b57cde3f', 'MangaLord', 'https://www.mangalord.com', cat)
   AddWebsiteModule('5d8e32f00a0b4d0da2e5e562b63a5fc3', 'KissMangaIN', 'https://kissmanga.in', cat)
