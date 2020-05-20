@@ -1,17 +1,7 @@
-----------------------------------------------------------------------------------------------------
--- Local Constants
-----------------------------------------------------------------------------------------------------
-
-DirectoryPagination = '/manga-list/page-'
-
-----------------------------------------------------------------------------------------------------
--- Event Functions
-----------------------------------------------------------------------------------------------------
-
 -- Get info and chapter list for current manga.
 function GetInfo()
   local pages, x, v = nil
-  local u = MaybeFillHost(MODULE.RootURL, URL)
+  local u = AppendURLDelim(MaybeFillHost(MODULE.RootURL, URL))
   local p = 1
 
   if not HTTP.GET(u) then return net_problem end
@@ -48,7 +38,7 @@ end
 -- Get the page count for the current chapter.
 function GetPageNumber()
   local x = nil
-  local u = MaybeFillHost(MODULE.RootURL, URL)
+  local u = AppendURLDelim(MaybeFillHost(MODULE.RootURL, URL))
 
   if not HTTP.GET(u) then return net_problem end
 
@@ -62,7 +52,7 @@ end
 -- Get the page count of the manga list of the current website.
 function GetDirectoryPageNumber()
   local x = nil
-  local u = MODULE.RootURL .. DirectoryPagination .. 1 .. '/'
+  local u = MODULE.RootURL .. '/manga-list/page-1/'
 
   if not HTTP.GET(u) then return net_problem end
 
@@ -74,7 +64,7 @@ end
 -- Get LINKS and NAMES from the manga list of the current website.
 function GetNameAndLink()
   local x = nil
-  local u = MODULE.RootURL .. DirectoryPagination .. IncStr(URL) .. '/'
+  local u = MODULE.RootURL .. '/manga-list/page-' .. IncStr(URL) .. '/'
 
   if not HTTP.GET(u) then return net_problem end
 
