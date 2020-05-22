@@ -1096,8 +1096,8 @@ begin
         ExecuteDirect('DROP TABLE IF EXISTS "' + FTableName + '_ordered"');
         ExecuteDirect('CREATE TABLE "' + FTableName + '_ordered" (' + DBDataProccesCreateParam +')');
         ExecuteDirect('INSERT INTO "'+ FTableName + '_ordered" (' + DBDataProcessParam + ') SELECT '+ DBDataProcessParam +' FROM "' + FTableName + '" ORDER BY "title" COLLATE NATCMP');
-        ExecuteDirect('DROP TABLE "' + FTableName);
-        ExecuteDirect('ALTER TABLE "' + FTableName + '_ordered" RENAME TO "' + FTableName);
+        ExecuteDirect('DROP TABLE "' + FTableName + '"');
+        ExecuteDirect('ALTER TABLE "' + FTableName + '_ordered" RENAME TO "' + FTableName + '"');
         FTrans.Commit;
         VacuumTable;
       except
