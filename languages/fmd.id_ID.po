@@ -2463,6 +2463,10 @@ msgstr "&Nanti saja"
 msgid "&Update"
 msgstr "&Mutakhirkan"
 
+#: tupdatedialogform.caption
+msgid "New Version Found"
+msgstr ""
+
 #: tupdatedialogform.lbmessage.caption
 msgid ""
 "New version found! Do you want to update now?\n"
@@ -2649,3 +2653,4 @@ msgstr "Memutakhirkan daftar"
 #, object-pascal-format
 msgid "Can not load WebP codec library \"%s\". Check your installation."
 msgstr "Tidak dapat memuat pustaka kodek WebP \"%s\". Periksa instalasi Anda."
+

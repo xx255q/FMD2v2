@@ -164,7 +164,7 @@ resourcestring
 
 implementation
 
-uses frmCustomColor, frmDialogYesNo, FMDOptions, LazFileUtils;
+uses frmCustomColor, frmDialogYesNo, frmMain, FMDOptions, LazFileUtils;
 
 const
   // RFC 3339 - ISO 8601
@@ -511,7 +511,7 @@ begin
             free;
           end;
       if yesRestart then
-        RestartFMD;
+        MainForm.RestartFMD;
     end;
   end;
 end;

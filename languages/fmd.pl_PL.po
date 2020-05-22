@@ -2519,6 +2519,10 @@ msgstr "&później"
 msgid "&Update"
 msgstr "&Aktualizacja"
 
+#: tupdatedialogform.caption
+msgid "New Version Found"
+msgstr ""
+
 #: tupdatedialogform.lbmessage.caption
 #, fuzzy
 #| msgid ""

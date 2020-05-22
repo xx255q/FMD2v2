@@ -24,7 +24,7 @@ uses
   AnimatedGif, uBaseUnit, uDownloadsManager, uFavoritesManager, uUpdateThread,
   uSilentThread, uMisc, uGetMangaInfosThread, frmDropTarget, frmAccountManager,
   frmWebsiteOptionCustom, frmCustomColor, frmLogger, frmTransferFavorites,
-  frmLuaModulesUpdater, uBaseForms, CheckUpdate, DBDataProcess,
+  frmLuaModulesUpdater, CheckUpdate, DBDataProcess,
   SimpleTranslator, httpsendthread, SimpleException;
 
 type
@@ -681,12 +681,15 @@ type
   protected
     procedure FMDInstanceReceiveMsg(Sender: TObject);
     procedure ClearChapterListState;
+    procedure DoExternalClose(Sender: TObject);
+    procedure DoRestartFMD;
+    procedure CloseNow;
   public
     LastSearchStr: String;
     LastSearchWeb: Pointer;
     LastUserPickedSaveTo: String;
     LastViewMangaInfoSender: TObject;
-    
+
     CurrentFormLeft: Integer;
     CurrentFormTop: Integer;
     CurrentFormWidth: Integer;
@@ -714,7 +717,9 @@ type
     procedure LoadAbout;
     procedure AddToAboutStatus(const ACaption, AValue: String; APanel: TPanel = nil);
 
-    procedure CloseNow;
+    // use ExternalClose to close app in protected mode from thread or auto event
+    procedure ExternalClose;
+    procedure RestartFMD;
 
     // en: Too lazy to add it one by one
     procedure InitCheckboxes;
@@ -962,7 +967,7 @@ implementation
 uses
   frmImportFavorites, frmShutdownCounter, frmSelectDirectory,
   frmWebsiteSettings, WebsiteModules, FMDVars, RegExpr, sqlite3dyn, Clipbrd,
-  ssl_openssl_lib, LazFileUtils, LazUTF8, webp, DBUpdater, pcre2, pcre2lib,
+  ssl_openssl_lib, LazFileUtils, LazUTF8, UTF8Process, webp, DBUpdater, pcre2, pcre2lib,
   LuaWebsiteModules, LuaBase, uBackupSettings;
 
 var
@@ -1341,7 +1346,6 @@ begin
     miDownloadDeleteCompletedClick(nil);
 
   isExiting := True;
-  FormManager.Clear;
 
   {$ifdef windows}
   if Assigned(PrevWndProc) then
@@ -2335,6 +2339,61 @@ begin
     Font.Style := [fsBold];
     BorderSpacing.Right := 16;
   end;
+end;
+
+procedure TMainForm.DoExternalClose(Sender: TObject);
+begin
+  Self.Close;
+end;
+
+procedure TMainForm.DoRestartFMD;
+var
+  p: TProcessUTF8;
+begin
+  p := TProcessUTF8.Create(nil);
+  try
+    p.InheritHandles := False;
+    p.CurrentDirectory := FMD_DIRECTORY;
+    p.Executable := Application.ExeName;
+    p.Options := [];
+    p.InheritHandles := False;
+    p.Parameters.AddStrings(AppParams);
+    {$ifdef windows}
+    p.Parameters.Add('--dorestart-pid=' + IntToStr(GetProcessID));
+    {$ifend}
+    p.Execute;
+  finally
+    p.Free;
+  end;
+end;
+
+procedure TMainForm.ExternalClose;
+var
+  modalcount, i: Integer;
+begin
+  modalcount:=0;
+  for i:=Screen.FormCount-1 downto 0 do
+    if (Screen.Forms[i] <> Application.MainForm) and
+      (fsModal in Screen.Forms[i].FormState) then
+    begin
+      Screen.Forms[i].ModalResult := mrCancel;
+      Inc(modalcount);
+    end;
+  if modalcount=0 then
+    Self.Close
+  else
+    with TTimer.Create(Self) do
+    begin
+      OnTimer := @DoExternalClose;
+      Interval := 1000;
+      Enabled := True;
+    end;
+end;
+
+procedure TMainForm.RestartFMD;
+begin
+  OptionRestartFMD := True;
+  ExternalClose;
 end;
 
 procedure TMainForm.GeneratetvDownloadFilterNodes;

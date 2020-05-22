@@ -2502,6 +2502,10 @@ msgstr "&Αργότερα"
 msgid "&Update"
 msgstr "&Ενημέρωση"
 
+#: tupdatedialogform.caption
+msgid "New Version Found"
+msgstr ""
+
 #: tupdatedialogform.lbmessage.caption
 msgid ""
 "New version found! Do you want to update now?\n"

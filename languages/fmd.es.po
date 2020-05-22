@@ -2458,6 +2458,10 @@ msgstr "&Después"
 msgid "&Update"
 msgstr "&Actualizar"
 
+#: tupdatedialogform.caption
+msgid "New Version Found"
+msgstr ""
+
 #: tupdatedialogform.lbmessage.caption
 msgid ""
 "New version found! Do you want to update now?\n"

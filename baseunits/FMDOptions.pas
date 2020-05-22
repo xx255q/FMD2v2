@@ -195,12 +195,7 @@ var
 procedure SetFMDdirectory(const ADir: String);
 procedure SetAppDataDirectory(const ADir: String);
 
-procedure RestartFMD;
-procedure DoRestartFMD;
-
 implementation
-
-uses process, UTF8Process;
 
 procedure FreeNil(var Obj);
 begin
@@ -278,33 +273,6 @@ begin
   LUA_WEBSITEBYPASS_FOLDER := LUA_REPO_FOLDER + 'websitebypass' + PathDelim;
 
   SetIniFiles;
-end;
-
-procedure RestartFMD;
-begin
-  OptionRestartFMD := True;
-  Application.MainForm.Close;
-end;
-
-procedure DoRestartFMD;
-var
-  p: TProcessUTF8;
-begin
-  p := TProcessUTF8.Create(nil);
-  try
-    p.InheritHandles := False;
-    p.CurrentDirectory := FMD_DIRECTORY;
-    p.Executable := Application.ExeName;
-    p.Options := [];
-    p.InheritHandles := False;
-    p.Parameters.AddStrings(AppParams);
-    {$ifdef windows}
-    p.Parameters.Add('--dorestart-pid=' + IntToStr(GetProcessID));
-    {$ifend}
-    p.Execute;
-  finally
-    p.Free;
-  end;
 end;
 
 procedure doInitialization;

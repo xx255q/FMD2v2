@@ -2458,6 +2458,10 @@ msgstr "&Later"
 msgid "&Update"
 msgstr "&Update"
 
+#: tupdatedialogform.caption
+msgid "New Version Found"
+msgstr ""
+
 #: tupdatedialogform.lbmessage.caption
 msgid ""
 "New version found! Do you want to update now?\n"
@@ -2644,3 +2648,4 @@ msgstr "Updating list"
 #, object-pascal-format
 msgid "Can not load WebP codec library \"%s\". Check your installation."
 msgstr "Can not load WebP codec library \"%s\". Check your installation."
+
