@@ -803,7 +803,7 @@ begin
             if NewMangaInfoChaptersPos.Count > 0 then
             begin
               newChapterListStr += LineEnding + '- ' + Format(
-                RS_FavoriteHasNewChapter, [FavoriteInfo.Title, FavoriteInfo.ModuleID,
+                RS_FavoriteHasNewChapter, [FavoriteInfo.Title, FavoriteInfo.Website,
                 NewMangaInfoChaptersPos.Count]);
               Inc(numOfMangaNewChapters);
               Inc(numOfNewChapters, NewMangaInfoChaptersPos.Count);
@@ -814,7 +814,7 @@ begin
               (NewMangaInfo.Status = MangaInfo_StatusCompleted) then
             begin
               removeListStr += LineEnding + Format('- %s <%s>',
-                [FavoriteInfo.Title, FavoriteInfo.ModuleID]);
+                [FavoriteInfo.Title, FavoriteInfo.Website]);
               Inc(numOfCompleted);
             end;
           end;
@@ -897,7 +897,7 @@ begin
                   begin
                     Manager := DLManager;
                     CurrentDownloadChapterPtr := 0;
-                    DownloadInfo.ModuleID := FavoriteInfo.ModuleID;
+                    DownloadInfo.Module := FavoriteInfo.Module;
                     DownloadInfo.Link := FavoriteInfo.Link;
                     DownloadInfo.Title := FavoriteInfo.Title;
                     DownloadInfo.SaveTo := FavoriteInfo.SaveTo;
@@ -1205,7 +1205,7 @@ function CompareFavoriteContainer(const Item1, Item2: TFavoriteContainer): Integ
       case ARow.Manager.SortColumn of
         1: Result := Title;
         2: Result := currentChapter;
-        3: Result := ModuleID;
+        3: Result := Website;
         4: Result := SaveTo;
         else
           Result := '';
