@@ -15,24 +15,10 @@ function getinfo()
   end
 end
 
-function getimageurl()
-  local lurl=MaybeFillHost(MODULE.RootURL,URL)
-  if WORKID~=0 then lurl=lurl..'_'..WORKID+1 end
-  if HTTP.GET(lurl) then
-    x=TXQuery.Create(HTTP.Document)
-    TASK.PageLinks[WORKID]=x.XPathString('//div[@class="read_image"]//img/@src')
-    return true
-  else
-    return false
-  end
-end
-
 function getpagenumber()
-  TASK.PageLinks.Clear()
-  TASK.PageNumber = 0
   if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
     local x=TXQuery.Create(HTTP.Document)
-    TASK.PageNumber = x.XPathCount('//div[@class="read_selector"]/select/option')
+    x.XPathStringAll('//img[@id="gohere"]/@src', TASK.PageLinks)
   else
     return false
   end
@@ -71,11 +57,9 @@ function Init()
   m.ID = '1d6a75911a1b414f89e5cf95c9a7ae4e'
   m.Category='English'
   m.Name='MangaFreak'
-  m.RootURL='http://w10.mangafreak.net/'
-  m.TotalDirectory=1
+  m.RootURL='https://w11.mangafreak.net'
   m.OnGetInfo='getinfo'
   m.OnGetPageNumber='getpagenumber'
   m.OnGetNameAndLink='getnameandlink'
-  m.OnGetImageURL='getimageurl'
   m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
 end
