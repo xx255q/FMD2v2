@@ -2,7 +2,7 @@ local dirurl = '/explore?search[sort]=date'
 
 function GetDirectoryPageNumber()
 	if HTTP.GET(MODULE.RootURL .. dirurl) then
-		page = tonumber(TXQuery.Create(HTTP.Document).XPathString('//ul[@class="pagination"]/li[last()-1]/a')) or 1
+		PAGENUMBER = tonumber(TXQuery.Create(HTTP.Document).XPathString('//ul[@class="pagination"]/li[last()-1]/a')) or 1
 		return no_error
 	else
 		return net_problem

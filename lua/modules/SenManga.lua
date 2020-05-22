@@ -14,7 +14,7 @@ end
 
 function GetDirectoryPageNumber()
 	if HTTP.GET(MODULE.RootURL .. '/directory') then
-		page = tonumber(TXQuery.Create(HTTP.Document).x.XPathString('//ul[@class="pagination"]/li[./a/@rel="next"]/preceding-sibling::li[1]')) or 1
+		PAGENUMBER = tonumber(TXQuery.Create(HTTP.Document).x.XPathString('//ul[@class="pagination"]/li[./a/@rel="next"]/preceding-sibling::li[1]')) or 1
 		return no_error
 	else
 		return net_problem
