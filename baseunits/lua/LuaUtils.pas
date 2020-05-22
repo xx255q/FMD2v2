@@ -206,7 +206,7 @@ begin
   if i = 0 then
     Exit;
   for i := 1 to i do
-    Result += Format('%.3d: %s'#13#10,[i, LuaToTypeString(L,i)]);
+    Result += Format('%.3d[%s]: %s'#13#10,[i, HexStr(lua_topointer(L, i)), LuaToTypeString(L,i)]);
   SetLength(Result, Length(Result) - 2);
 end;
 

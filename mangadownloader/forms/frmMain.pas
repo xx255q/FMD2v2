@@ -2312,7 +2312,7 @@ begin
   AddToAboutStatus('OpenSSL Version', SSLeayversion(0));
   if WebPLibHandle = 0 then InitWebPModule;
   if WebPLibHandle <> 0 then try AddToAboutStatus('WebP Version', WebPGetVersion); except end;
-  if PCRE2LibHandle <> 0 then try AddToAboutStatus('PCRE Version', PCRE2Version); except end;
+  AddToAboutStatus('PCRE Version', pcre2.Version);
 end;
 
 procedure TMainForm.AddToAboutStatus(const ACaption, AValue: String;
