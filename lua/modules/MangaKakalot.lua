@@ -36,7 +36,7 @@ function getinfo()
 			x.XPathHREFAll('//ul[@class="row-content-chapter"]/li/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
 		end
-		if (Pos('email', MANGAINFO.Title) > 0) and (Pos('protected', MANGAINFO.Title) > 0) then
+		if MANGAINFO.Title:find('email') and (MANGAINFO.Title:find('protected') then
 			MANGAINFO.Title = Trim(x.XPathString('//title/substring-after(substring-before(., "Manga Online"), "Read")'))
 		end
 		return no_error
