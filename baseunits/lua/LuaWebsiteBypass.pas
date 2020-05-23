@@ -88,8 +88,8 @@ begin
   try
     lua_getglobal(checkantibot_state, '____CheckAntiBot');
     if lua_isnoneornil(checkantibot_state, -1) then Exit;
-    luaClassPushUserData(checkantibot_state, AHTTP, 'HTTP', False, @luaHTTPSendThreadAddMetaTable);
-    r := lua_pcall(checkantibot_state, 0, LUA_MULTRET, 0);
+    luaClassPushUserData(checkantibot_state, AHTTP, '', False, @luaHTTPSendThreadAddMetaTable);
+    r := lua_pcall(checkantibot_state, 1, LUA_MULTRET, 0);
     if r <> 0 then
       raise Exception.Create(LuaGetReturnString(r)+': '+luaGetString(checkantibot_state, -1));
     if lua_gettop(checkantibot_state) > 0 then
