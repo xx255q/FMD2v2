@@ -110,8 +110,13 @@ function WebsiteBypassRequest(const AHTTP: THTTPSendThread; const AMethod, AURL:
 var
   L: TLuaHandler;
 begin
+  if (checkantibot_dump = nil) or (websitebypass_dump = nil) then
+  begin
+    Result := AHTTP.HTTPRequest(AMethod, AURL);
+    Exit;
+  end;
+
   Result := False;
-  if (checkantibot_dump = nil) or (websitebypass_dump = nil) then Exit;
   AHTTP.AllowServerErrorResponse := True;
   Result := AHTTP.HTTPRequest(AMethod, AURL);
 
