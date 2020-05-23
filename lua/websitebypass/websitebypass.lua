@@ -3,7 +3,7 @@
 -- must return 1 boolean value
 function ____WebsiteBypass(METHOD, URL, srv)
 	local bypass
-	if srv == 'cloudflare' then
+	if HTTP.Headers.Values['Server']:lower():find('cloudflare') then
 		bypass = require 'websitebypass.cloudflare'
 	end
 	if bypass ~= nil then

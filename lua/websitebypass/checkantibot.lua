@@ -1,5 +1,5 @@
 -- don't change the function name (hardcoded, case sensitive)
--- must return 1 boolean value, the rest of return values will be forwarded to __WebsiteBypass(method, url, ...)
+-- must return 1 boolean value
 -- this function will be called very often(for each of http request), keep it minimal
 function ____CheckAntiBot()
 	local rc = HTTP.ResultCode
