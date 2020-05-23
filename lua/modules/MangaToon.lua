@@ -64,19 +64,18 @@ function getnameandlink()
   end
 end
 
-function AddWebsiteModule(id, site, url, cat)
-  local m=NewWebsiteModule()
-  m.ID=id
-  m.Category=cat
-  m.Name=site
-  m.RootURL=url
-  m.LastUpdated='April 09, 2019'
-  m.OnGetInfo='getinfo'
-  m.OnGetPageNumber='getpagenumber'
-  m.OnGetNameAndLink='getnameandlink'
-end
-
 function Init()
+  function AddWebsiteModule(id, site, url, cat)
+    local m=NewWebsiteModule()
+    m.ID=id
+    m.Category=cat
+    m.Name=site
+    m.RootURL=url
+    m.LastUpdated='April 09, 2019'
+    m.OnGetInfo='getinfo'
+    m.OnGetPageNumber='getpagenumber'
+    m.OnGetNameAndLink='getnameandlink'
+  end
   AddWebsiteModule('e203bd33bcfe4d2b919e696fa5de6f63', 'MangaToon', 'https://mangatoon.mobi', 'English')
   AddWebsiteModule('9f34de1c70824222802b25e656086da8', 'MangaToonID', 'https://mangatoon.mobi/id', 'Indonesian')
   AddWebsiteModule('3bdf6d8182ed43ecb7102156a520add5', 'MangaToonVI', 'https://mangatoon.mobi/vi', 'Vietnamese')

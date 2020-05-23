@@ -44,19 +44,18 @@ function getnameandlink()
   end
 end
 
-function AddWebsiteModule(id, name, URL, category)
-  local m = NewWebsiteModule()
-  m.ID = id
-  m.Name = name
-  m.RootURL = URL
-  m.Category = category
-  m.OnGetInfo = 'getinfo'
-  m.OnGetPageNumber = 'getpagenumber'
-  m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
-  m.OnGetNameAndLink = 'getnameandlink'
-end
-
 function Init()
+  function AddWebsiteModule(id, name, URL, category)
+    local m = NewWebsiteModule()
+    m.ID = id
+    m.Name = name
+    m.RootURL = URL
+    m.Category = category
+    m.OnGetInfo = 'getinfo'
+    m.OnGetPageNumber = 'getpagenumber'
+    m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
+    m.OnGetNameAndLink = 'getnameandlink'
+  end
   local cat = 'English-Scanlation'
   AddWebsiteModule('380e42a9e93e488abcd74cf47b2cf148', 'LetItGoScans', 'https://reader.letitgo.scans.today', cat)
   AddWebsiteModule('14ac824309034a6495fc4f91873aeb30', 'ProjectTime', 'https://read.ptscans.com', cat)

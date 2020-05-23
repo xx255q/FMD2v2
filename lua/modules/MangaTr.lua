@@ -121,20 +121,19 @@ function getimageurl()
   return false
 end
 
-function AddWebsiteModule(id, site, url)
-  local m=NewWebsiteModule()
-  m.ID=id
-  m.Category='Turkish'
-  m.Name=site
-  m.RootURL=URL
-  m.LastUpdated = 'May 06, 2019'
-  m.OnGetInfo='getinfo'
-  m.OnGetPageNumber='getpagenumber'
-  m.OnGetNameAndLink='getnameandlink'
-  m.OnGetImageURL='getimageurl'
-end
-
 function Init()
+  function AddWebsiteModule(id, site, url)
+    local m=NewWebsiteModule()
+    m.ID=id
+    m.Category='Turkish'
+    m.Name=site
+    m.RootURL=URL
+    m.LastUpdated = 'May 06, 2019'
+    m.OnGetInfo='getinfo'
+    m.OnGetPageNumber='getpagenumber'
+    m.OnGetNameAndLink='getnameandlink'
+    m.OnGetImageURL='getimageurl'
+  end
   AddWebsiteModule('bcf6bf0a1b5d4cffa6cc6743e29ee5f2', 'Manga-Tr', 'https://manga-tr.com')
   AddWebsiteModule('85bcc0c0b773495d984cedb6670f78bb', 'Puzzmos', 'http://puzzmos.com')
 end

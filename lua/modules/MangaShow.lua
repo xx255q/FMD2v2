@@ -118,19 +118,18 @@ function getdirectorypagenumber()
 	end
 end
 
-function AddWebsiteModule(id, site, url, cat)
-  local m=NewWebsiteModule()
-  m.ID=id
-  m.Category=cat
-  m.Name=site
-  m.RootURL=URL
-  m.OnGetInfo='getinfo'
-  m.OnGetPageNumber='getpagenumber'
-  m.OnGetNameAndLink='getnameandlink'
-  m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
-end
-
 function Init()
+  function AddWebsiteModule(id, site, url, cat)
+    local m=NewWebsiteModule()
+    m.ID=id
+    m.Category=cat
+    m.Name=site
+    m.RootURL=URL
+    m.OnGetInfo='getinfo'
+    m.OnGetPageNumber='getpagenumber'
+    m.OnGetNameAndLink='getnameandlink'
+    m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
+  end
   local cat = 'Raw'
   AddWebsiteModule('5285bd53ca6442b2b77d290fb8785e8f', 'MangaShow', 'https://mangashow.me', cat)
   AddWebsiteModule('c7b742a4dc8a451fa95baec1aa183b39', '11Toon', 'https://www.11toon.com', cat)

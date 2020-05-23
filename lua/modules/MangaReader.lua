@@ -48,18 +48,17 @@ function GetNameAndLink()
 end
 
 function Init()
+	function AddWebsiteModule(id, name, URL, category)
+		local m = NewWebsiteModule()
+		m.ID = id
+		m.Name				= name
+		m.RootURL				= URL
+		m.Category				= category
+		m.OnGetInfo				= 'GetInfo'
+		m.OnGetPageNumber		= 'GetPageNumber'
+		m.OnGetImageURL			= 'GetImageURL'
+		m.OnGetNameAndLink		= 'GetNameAndLink'
+	end
 	AddWebsiteModule('e9f4e7fe53bc4ff6921db6d67c9b9fb2', 'MangaReader', 'http://www.mangareader.net', 'English')
 	AddWebsiteModule('42bd64394655449b8b39ed2c20481c15', 'MangaPanda', 'http://www.mangapanda.com', 'English')
-end
-
-function AddWebsiteModule(id, name, URL, category)
-	local m = NewWebsiteModule()
-	m.ID = id
-	m.Name				= name
-	m.RootURL				= URL
-	m.Category				= category
-	m.OnGetInfo				= 'GetInfo'
-	m.OnGetPageNumber		= 'GetPageNumber'
-	m.OnGetImageURL			= 'GetImageURL'
-	m.OnGetNameAndLink		= 'GetNameAndLink'
 end

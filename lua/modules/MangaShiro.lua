@@ -333,19 +333,18 @@ function BeforeDownloadImage()
   return true
 end
 
-function AddWebsiteModule(id, site, url, cat)
-  local m=NewWebsiteModule()
-  m.ID=id
-  m.Category=cat
-  m.Name=site
-  m.RootURL=url
-  m.OnGetInfo='getinfo'
-  m.OnGetPageNumber='getpagenumber'
-  m.OnGetNameAndLink='getnameandlink'
-  return m
-end
-
 function Init()
+  function AddWebsiteModule(id, site, url, cat)
+    local m=NewWebsiteModule()
+    m.ID=id
+    m.Category=cat
+    m.Name=site
+    m.RootURL=url
+    m.OnGetInfo='getinfo'
+    m.OnGetPageNumber='getpagenumber'
+    m.OnGetNameAndLink='getnameandlink'
+    return m
+  end
   local cat = 'Indonesian'
   local m = AddWebsiteModule('5eb57a1843d8462dab0fdfd0efc1eca5', 'MangaShiro', 'https://mangashiro.co', cat)
   m.OnBeforeDownloadImage = 'BeforeDownloadImage'

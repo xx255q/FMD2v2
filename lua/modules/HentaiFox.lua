@@ -82,21 +82,20 @@ function getnameandlink()
   end
 end
 
-function AddWebsiteModule(id, name, URL)
-  local m = NewWebsiteModule()
-  m.ID                       = id
-  m.Name                     = name
-  m.RootURL                  = URL
-  m.Category                 = 'H-Sites'
-  m.SortedList               = true
-  m.OnGetInfo                = 'getinfo'
-  m.OnGetPageNumber          = 'getpagenumber'
-  m.OnGetNameAndLink         = 'getnameandlink'
-  m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
-  m.OnGetImageURL            = 'getimageurl'
-end
-
 function Init()
+  function AddWebsiteModule(id, name, URL)
+    local m = NewWebsiteModule()
+    m.ID                       = id
+    m.Name                     = name
+    m.RootURL                  = URL
+    m.Category                 = 'H-Sites'
+    m.SortedList               = true
+    m.OnGetInfo                = 'getinfo'
+    m.OnGetPageNumber          = 'getpagenumber'
+    m.OnGetNameAndLink         = 'getnameandlink'
+    m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
+    m.OnGetImageURL            = 'getimageurl'
+  end
   AddWebsiteModule('58a2dec76ebf43a5a9e7dc9b453e52e9', 'HentaiFox', 'https://hentaifox.com')
   AddWebsiteModule('845f86020f8b4744824f5eaffc1f278f', 'AsmHentai', 'https://asmhentai.com')
 end

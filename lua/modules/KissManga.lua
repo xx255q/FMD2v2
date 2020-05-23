@@ -11,7 +11,6 @@ function Init()
 		m.OnGetPageNumber            = 'GetPageNumber'
 		m.SortedList                 = true
 	end
-
 	AddWebsiteModule('4f40515fb43640ddb08eb61278fc97a5', 'KissManga', 'https://kissmanga.com')
 	AddWebsiteModule('1a7b98800a114a3da5f48de91f45a880', 'ReadComicOnline', 'https://readcomiconline.to')
 end
@@ -104,7 +103,7 @@ function GetPageNumber()
 				end
 				chko1 = JSHexToStr(t[chko_p+1])
 				iv = JSHexToStr(t[iv_p+1])
-				
+
 				local test_p = TASK.PageLinks[0]
 				local function testkeyiv(akey)
 					if AESDecryptCBCSHA256Base64Pkcs7(test_p, akey, iv):find('://') then
@@ -122,7 +121,7 @@ function GetPageNumber()
 				if not testkeyiv(chko1 .. chko2, iv_s) then
 				if not testkeyiv(chko2 .. chko1, iv_s) then
 				end end end end end
-				
+
 				if (key ~= nil) then
 					for i=0,TASK.PageLinks.Count-1 do
 						TASK.PageLinks[i] = AESDecryptCBCSHA256Base64Pkcs7(TASK.PageLinks[i], key, iv)

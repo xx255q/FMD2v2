@@ -63,20 +63,19 @@ function getdirectorypagenumber()
   end
 end
 
-function AddWebsiteModule(id, name, url, category)
-  local m = NewWebsiteModule()
-  m.ID                       = id
-  m.Name                     = name
-  m.RootURL                  = url
-  m.Category                 = category
-  m.SortedList               = true
-  m.OnGetInfo                = 'getinfo'
-  m.OnGetPageNumber          = 'getpagenumber'
-  m.OnGetNameAndLink         = 'getnameandlink'
-  m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
-end
-
 function Init()
+  function AddWebsiteModule(id, name, url, category)
+    local m = NewWebsiteModule()
+    m.ID                       = id
+    m.Name                     = name
+    m.RootURL                  = url
+    m.Category                 = category
+    m.SortedList               = true
+    m.OnGetInfo                = 'getinfo'
+    m.OnGetPageNumber          = 'getpagenumber'
+    m.OnGetNameAndLink         = 'getnameandlink'
+    m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
+  end
   local cat = 'Vietnamese'
   AddWebsiteModule('ef7f922bd45f4f9d9c559a55f987004d', 'TruyenChon', 'http://truyenchon.com', cat)
   AddWebsiteModule('567780dbaa3149e7ad698f11ce68ea9b', 'NetTruyen', 'http://www.nettruyen.com', cat)

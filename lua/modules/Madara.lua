@@ -235,20 +235,18 @@ function BeforeDownloadImage()
 end
 
 -------------------------------------------------------------------------------
-
-function AddWebsiteModule(id, name, url, category)
-  local m = NewWebsiteModule()
-  m.ID                    = id
-  m.Name                  = name
-  m.RootURL               = url
-  m.Category              = category
-  m.OnGetInfo             = 'getinfo'
-  m.OnGetPageNumber       = 'getpagenumber'
-  m.OnGetNameAndLink      = 'getnameandlink'
-  m.OnBeforeDownloadImage = 'BeforeDownloadImage'
-end
-
 function Init()
+  function AddWebsiteModule(id, name, url, category)
+    local m = NewWebsiteModule()
+    m.ID                    = id
+    m.Name                  = name
+    m.RootURL               = url
+    m.Category              = category
+    m.OnGetInfo             = 'getinfo'
+    m.OnGetPageNumber       = 'getpagenumber'
+    m.OnGetNameAndLink      = 'getnameandlink'
+    m.OnBeforeDownloadImage = 'BeforeDownloadImage'
+  end
   local cat = 'Raw'
   AddWebsiteModule('29e070b824344c8697ceb9554a6d1d4b', 'MangazukiClub', 'https://mangazuki.club', cat)
 

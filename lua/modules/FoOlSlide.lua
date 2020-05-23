@@ -191,22 +191,21 @@ function getnameandlink()
   return result
 end
 
-function AddWebsiteModule(id, name, url, category)
-  local m  = NewWebsiteModule()
-  m.ID                       = id
-  m.Name                     = name
-  m.RootURL                  = url
-  m.Category                 = category
-  m.OnGetInfo                = 'getinfo'
-  m.OnTaskStart              = 'taskstart'
-  m.OnGetPageNumber          = 'getpagenumber'
-  m.OnGetImageURL            = 'getimageurl'
-  m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
-  m.OnGetNameAndLink         = 'getnameandlink'
-  return m
-end
-
 function Init()
+  function AddWebsiteModule(id, name, url, category)
+    local m  = NewWebsiteModule()
+    m.ID                       = id
+    m.Name                     = name
+    m.RootURL                  = url
+    m.Category                 = category
+    m.OnGetInfo                = 'getinfo'
+    m.OnTaskStart              = 'taskstart'
+    m.OnGetPageNumber          = 'getpagenumber'
+    m.OnGetImageURL            = 'getimageurl'
+    m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
+    m.OnGetNameAndLink         = 'getnameandlink'
+    return m
+  end
   local cat = 'English-Scanlation'
   AddWebsiteModule('941d6b7dc1bf4ccd9032486f3d18664a', 'AntisenseScans', 'http://antisensescans.com', cat)
   AddWebsiteModule('25a93ecfc2c44cd6978b3083f8a4579c', 'BunnysScans', 'http://bns.shounen-ai.net', cat)

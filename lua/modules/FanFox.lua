@@ -1,4 +1,17 @@
 function Init()
+  function AddWebsiteModule(id, name, rooturl, cat)
+    local m = NewWebsiteModule()
+    m.ID                       = id
+    m.Name                     = name
+    m.RootURL                  = rooturl
+    m.Category                 = cat
+    m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
+    m.OnGetNameAndLink         = 'GetNameAndLink'
+    m.OnGetInfo                = 'GetInfo'
+    m.OnGetPageNumber          = 'GetPageNumber'
+    return m
+  end
+
   local cat = 'English'
   AddWebsiteModule('8e7bd7b38aa041aa9bc1bddeec33b6f4', 'MangaHere', 'https://www.mangahere.cc', cat)
 
@@ -21,19 +34,6 @@ function Init()
   m.AddOptionCheckBox('mf_removewatermark', lang:get('removewatermark'), true)
   m.AddOptionCheckBox('mf_saveaspng', lang:get('saveaspng'), false)
   MangaFoxLoadTemplate(FMD.LuaDirectory .. 'extras' .. PathDelim .. 'mangafoxtemplate')
-end
-
-function AddWebsiteModule(id, name, rooturl, cat)
-  local m = NewWebsiteModule()
-  m.ID                       = id
-  m.Name                     = name
-  m.RootURL                  = rooturl
-  m.Category                 = cat
-  m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
-  m.OnGetNameAndLink         = 'GetNameAndLink'
-  m.OnGetInfo                = 'GetInfo'
-  m.OnGetPageNumber          = 'GetPageNumber'
-  return m
 end
 
 function GetDirectoryPageNumber()

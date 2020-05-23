@@ -87,19 +87,18 @@ function getdirectorypagenumber()
   end
 end
 
-function AddWebsiteModule(id, name, url)
-  local m = NewWebsiteModule()
-  m.ID = id
-  m.Name = name
-  m.RootURL = URL
-  m.Category = 'English'
-  m.OnGetInfo='getinfo'
-  m.OnGetPageNumber='getpagenumber'
-  m.OnGetNameAndLink='getnameandlink'
-  m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
-end
-
 function Init()
+  function AddWebsiteModule(id, name, url)
+    local m = NewWebsiteModule()
+    m.ID = id
+    m.Name = name
+    m.RootURL = URL
+    m.Category = 'English'
+    m.OnGetInfo='getinfo'
+    m.OnGetPageNumber='getpagenumber'
+    m.OnGetNameAndLink='getnameandlink'
+    m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
+  end
   AddWebsiteModule('a4f873c854b248769284896607dfb4dd', 'MangaHubIO', 'https://mangahub.io')
   AddWebsiteModule('e470dc46f8eb4ac0aa1c9e401969c1f3', 'MangaReaderSite', 'https://mangareader.site')
   AddWebsiteModule('70a69ea951fa4d78920a35f0d5bcb2d5', 'MangaFoxFun', 'https://mangafox.fun')

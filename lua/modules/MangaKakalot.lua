@@ -124,19 +124,18 @@ function getdirectorypagenumber()
   end
 end
 
-function AddWebsiteModule(id, name, url)
-  local m = NewWebsiteModule()
-  m.ID = id
-  m.Name = name
-  m.RootURL = URL
-  m.Category = 'English'
-  m.OnGetInfo='getinfo'
-  m.OnGetPageNumber='getpagenumber'
-  m.OnGetNameAndLink='getnameandlink'
-  m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
-end
-
 function Init()
+  function AddWebsiteModule(id, name, url)
+    local m = NewWebsiteModule()
+    m.ID = id
+    m.Name = name
+    m.RootURL = URL
+    m.Category = 'English'
+    m.OnGetInfo='getinfo'
+    m.OnGetPageNumber='getpagenumber'
+    m.OnGetNameAndLink='getnameandlink'
+    m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
+  end
   AddWebsiteModule('74674292e13c496699b8c5e4efd4b583', 'MangaKakalot', 'https://mangakakalot.com')
   AddWebsiteModule('fa8bb4d1ceea4c8fa0e98c00755f95d4', 'MangaNelo', 'https://manganelo.com')
   AddWebsiteModule('ed4175a390e74aedbe4b4f622f3767c6', 'MangaKakalots', 'https://mangakakalots.com')

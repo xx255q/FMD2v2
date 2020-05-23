@@ -1,19 +1,18 @@
 function Init()
+	function AddWebsiteModule(id, name, url)
+		local m = NewWebsiteModule()
+		m.ID                         = id
+		m.Name                       = name
+		m.RootURL                    = url
+		m.Category                   = 'Adult'
+		m.OnGetDirectoryPageNumber   = 'GetDirectoryPageNumber'
+		m.OnGetNameAndLink           = 'GetNameAndLink'
+		m.OnGetInfo                  = 'GetInfo'
+		m.OnGetPageNumber            = 'GetPageNumber'
+		m.OnGetImageURL              = 'GetImageURL'
+		m.SortedList                 = true
+	end
 	AddWebsiteModule('8760050d777d432dab8e776e3f1a6474', 'PornComix', 'http://www.porncomix.info')
-end
-
-function AddWebsiteModule(id, name, url)
-	local m = NewWebsiteModule()
-	m.ID                         = id
-	m.Name                       = name
-	m.RootURL                    = url
-	m.Category                   = 'Adult'
-	m.OnGetDirectoryPageNumber   = 'GetDirectoryPageNumber'
-	m.OnGetNameAndLink           = 'GetNameAndLink'
-	m.OnGetInfo                  = 'GetInfo'
-	m.OnGetPageNumber            = 'GetPageNumber'
-	m.OnGetImageURL              = 'GetImageURL'
-	m.SortedList                 = true
 end
 
 function GetDirectoryPageNumber()

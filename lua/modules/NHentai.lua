@@ -88,20 +88,19 @@ end
 ----------------------------------------------------------------------------------------------------
 
 function Init()
+  function AddWebsiteModule(id, name, url, category)
+    local m = NewWebsiteModule()
+    m.ID                       = id
+    m.Name                     = name
+    m.RootURL                  = url
+    m.Category                 = category
+    m.OnGetInfo                = 'GetInfo'
+    m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
+    m.OnGetNameAndLink         = 'GetNameAndLink'
+    m.OnGetPageNumber          = 'GetPageNumber'
+    m.OnGetImageURL            = 'GetImageURL'
+    m.SortedList               = True
+  end
   AddWebsiteModule('f8d26ca921af4876b7ba84bd7e06fe82', 'NHentai', 'https://nhentai.net', 'H-Sites')
   AddWebsiteModule('0052cb4aabe0443ca0c97e1eb217728a', 'HentaiHand', 'https://hentaihand.com', 'H-Sites')
-end
-
-function AddWebsiteModule(id, name, url, category)
-  local m = NewWebsiteModule()
-  m.ID                       = id
-  m.Name                     = name
-  m.RootURL                  = url
-  m.Category                 = category
-  m.OnGetInfo                = 'GetInfo'
-  m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
-  m.OnGetNameAndLink         = 'GetNameAndLink'
-  m.OnGetPageNumber          = 'GetPageNumber'
-  m.OnGetImageURL            = 'GetImageURL'
-  m.SortedList               = True
 end

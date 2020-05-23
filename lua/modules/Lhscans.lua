@@ -71,20 +71,19 @@ function BeforeDownloadImage()
   return true
 end
 
-function AddWebsiteModule(id, name, url, cat)
-  local m = NewWebsiteModule()
-  m.ID                    = id
-  m.Category              = cat
-  m.Name                  = name
-  m.RootURL               = url
-  m.TotalDirectory        = 1
-  m.OnGetInfo             = 'getinfo'
-  m.OnGetPageNumber       = 'getpagenumber'
-  m.OnGetNameAndLink      = 'getnameandlink'
-  m.OnBeforeDownloadImage = 'BeforeDownloadImage'
-end
-
 function Init()
+  function AddWebsiteModule(id, name, url, cat)
+    local m = NewWebsiteModule()
+    m.ID                    = id
+    m.Category              = cat
+    m.Name                  = name
+    m.RootURL               = url
+    m.TotalDirectory        = 1
+    m.OnGetInfo             = 'getinfo'
+    m.OnGetPageNumber       = 'getpagenumber'
+    m.OnGetNameAndLink      = 'getnameandlink'
+    m.OnBeforeDownloadImage = 'BeforeDownloadImage'
+  end
   local cat = 'Raw'
   AddWebsiteModule('9e96846a035646988e1b2eb0f356d795', 'Lhscans', 'https://loveheaven.net', cat)
   AddWebsiteModule('4c089029492f43c98d9f27a23403247b', 'HanaScan', 'https://hanascan.com', cat)

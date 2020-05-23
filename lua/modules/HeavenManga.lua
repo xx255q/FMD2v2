@@ -79,18 +79,17 @@ end
 ----------------------------------------------------------------------------------------------------
 
 function Init()
+  function AddWebsiteModule(id, name, URL, cat)
+    local m = NewWebsiteModule()
+    m.ID                          = id
+    m.Name                        = name
+    m.RootURL                     = URL
+    m.Category                    = cat
+    m.OnGetInfo                   = 'GetInfo'
+    m.OnGetNameAndLink            = 'GetNameAndLink'
+    m.OnGetPageNumber             = 'GetPageNumber'
+    m.OnGetDirectoryPageNumber    = 'GetDirectoryPageNumber'
+  end
   AddWebsiteModule('3b0d5c38081a4b21a39a388a3ec59197', 'HeavenManga', 'http://www.heaventoon.com', 'English')
   AddWebsiteModule('a9a8bd394d63495686794a8d427bda00', 'HolyManga', 'http://w15.holymanga.net', 'English')
-end
-
-function AddWebsiteModule(id, name, URL, cat)
-  local m = NewWebsiteModule()
-  m.ID                          = id
-  m.Name                        = name
-  m.RootURL                     = URL
-  m.Category                    = cat
-  m.OnGetInfo                   = 'GetInfo'
-  m.OnGetNameAndLink            = 'GetNameAndLink'
-  m.OnGetPageNumber             = 'GetPageNumber'
-  m.OnGetDirectoryPageNumber    = 'GetDirectoryPageNumber'
 end

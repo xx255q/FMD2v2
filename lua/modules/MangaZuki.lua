@@ -45,19 +45,18 @@ function GetPageNumber()
 	end
 end
 
-function AddWebsiteModule(id, website, rooturl, category)
-	local m = NewWebsiteModule()
-	m.ID                       = id
-	m.Name                     = website
-	m.RootURL                  = rooturl
-	m.Category                 = category
-	m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
-	m.OnGetNameAndLink         = 'GetNameAndLink'
-	m.OnGetInfo                = 'GetInfo'
-	m.OnGetPageNumber          = 'GetPageNumber'
-end
-
 function Init()
+	function AddWebsiteModule(id, website, rooturl, category)
+		local m = NewWebsiteModule()
+		m.ID                       = id
+		m.Name                     = website
+		m.RootURL                  = rooturl
+		m.Category                 = category
+		m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
+		m.OnGetNameAndLink         = 'GetNameAndLink'
+		m.OnGetInfo                = 'GetInfo'
+		m.OnGetPageNumber          = 'GetPageNumber'
+	end
 	AddWebsiteModule('6c116508a52448eeae4d09ff909c9d22', 'MangaZuki', 'https://mangazuki.co', 'English-Scanlation')
 	AddWebsiteModule('5d1a3c9e886f4e0b83894c8894914c24', 'MangaZukiRaws', 'https://raws.mangazuki.co', 'Raw')
 end

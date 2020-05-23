@@ -1,27 +1,26 @@
 function Init()
+	function AddWebsiteModule(id, name, url)
+		local m = NewWebsiteModule()
+		m.ID                         = id
+		m.Name                       = name
+		m.RootURL                    = url
+		m.Category                   = 'H-Sites'
+		m.OnGetDirectoryPageNumber   = 'GetDirectoryPageNumber'
+		m.OnGetNameAndLink           = 'GetNameAndLink'
+		m.OnGetInfo                  = 'GetInfo'
+		m.OnGetPageNumber            = 'GetPageNumber'
+		m.OnDownloadImage            = 'DownloadImage'
+		m.SortedList                 = true
+		m.DynamicPageLink            = true
+		m.MaxTaskLimit               = 1
+		m.MaxConnectionLimit         = 2
+		m.AddOptionComboBox('imagesize', 'Image size:', 'Auto\n780x\n980x\n1280x\n1600x\n2400x\nOriginal', 0)
+		return m
+	end
 	AddWebsiteModule('f7ab487b6d29468e8280e8a3cbebbeb4', 'E-Hentai', 'https://e-hentai.org')
 	local m = AddWebsiteModule('17e196ebe84c4042a6fbf4594d25d9e0', 'ExHentai', 'https://exhentai.org')
 	m.AccountSupport = true
 	m.OnLogin        = 'ExHentaiLogin'
-end
-
-function AddWebsiteModule(id, name, url)
-	local m = NewWebsiteModule()
-	m.ID                         = id
-	m.Name                       = name
-	m.RootURL                    = url
-	m.Category                   = 'H-Sites'
-	m.OnGetDirectoryPageNumber   = 'GetDirectoryPageNumber'
-	m.OnGetNameAndLink           = 'GetNameAndLink'
-	m.OnGetInfo                  = 'GetInfo'
-	m.OnGetPageNumber            = 'GetPageNumber'
-	m.OnDownloadImage            = 'DownloadImage'
-	m.SortedList                 = true
-	m.DynamicPageLink            = true
-	m.MaxTaskLimit               = 1
-	m.MaxConnectionLimit         = 2
-	m.AddOptionComboBox('imagesize', 'Image size:', 'Auto\n780x\n980x\n1280x\n1600x\n2400x\nOriginal', 0)
-	return m
 end
 
 local dirURL           = 'f_doujinshi=on&f_manga=on&f_western=on&f_apply=Apply+Filter';

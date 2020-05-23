@@ -44,18 +44,17 @@ end
 ----------------------------------------------------------------------------------------------------
 
 function Init()
+  function AddWebsiteModule(id, name, url, category)
+    local m = NewWebsiteModule()
+    m.ID               = id
+    m.Name             = name
+    m.RootURL          = url
+    m.Category         = category
+    m.OnGetInfo        = 'GetInfo'
+    m.OnGetNameAndLink = 'GetNameAndLink'
+    m.OnGetPageNumber  = 'GetPageNumber'
+    m.OnGetImageURL    = 'GetImageURL'
+  end
   AddWebsiteModule('68c51e4148ee471fa221cd2d05cb216a', 'NineManga', 'http://www.ninemanga.com', 'English')
   AddWebsiteModule('a28662b823d449aa9f4cb246d9cd2921', 'NineManga', 'http://en.ninemanga.com', 'English')
-end
-
-function AddWebsiteModule(id, name, url, category)
-  local m = NewWebsiteModule()
-  m.ID               = id
-  m.Name             = name
-  m.RootURL          = url
-  m.Category         = category
-  m.OnGetInfo        = 'GetInfo'
-  m.OnGetNameAndLink = 'GetNameAndLink'
-  m.OnGetPageNumber  = 'GetPageNumber'
-  m.OnGetImageURL    = 'GetImageURL'
 end

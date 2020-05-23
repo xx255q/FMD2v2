@@ -63,21 +63,20 @@ function getnameandlink()
   end
 end
 
-function AddWebsiteModule(id, name, url)
-  local m = NewWebsiteModule()
-  m.ID = id
-  m.Name = name
-  m.RootURL = url
-  m.Category = 'English'
-  m.LastUpdated = 'April 09, 2019'
-  m.OnGetInfo='getinfo'
-  m.OnGetPageNumber='getpagenumber'
-  m.OnGetNameAndLink='getnameandlink'
-  m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
-  m.SortedList = true
-end
-
 function Init()
+  function AddWebsiteModule(id, name, url)
+    local m = NewWebsiteModule()
+    m.ID = id
+    m.Name = name
+    m.RootURL = url
+    m.Category = 'English'
+    m.LastUpdated = 'April 09, 2019'
+    m.OnGetInfo='getinfo'
+    m.OnGetPageNumber='getpagenumber'
+    m.OnGetNameAndLink='getnameandlink'
+    m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
+    m.SortedList = true
+  end
   AddWebsiteModule('09d49c7760904bc2817dbc80757de44a', 'MangaPark', 'https://mangapark.me')
   AddWebsiteModule('32b25f04931b414a803286a6f8cabd8d', 'MangaParkNet', 'https://mangapark.net')
   AddWebsiteModule('273268fd7b1a42b38e50c010a630bfad', 'MangaParkCom', 'https://mangapark.com')

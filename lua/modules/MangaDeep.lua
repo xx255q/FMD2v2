@@ -83,19 +83,18 @@ end
 ----------------------------------------------------------------------------------------------------
 
 function Init()
+  function AddWebsiteModule(name, url, category)
+    local m = NewWebsiteModule()
+    m.ID                       = id
+    m.Name                     = name
+    m.RootURL                  = url
+    m.Category                 = category
+    m.OnGetInfo                = 'GetInfo'
+    m.OnGetNameAndLink         = 'GetNameAndLink'
+    m.OnGetPageNumber          = 'GetPageNumber'
+    m.OnGetImageURL            = 'GetImageURL'
+  end
   AddWebsiteModule('742219d5bd524064a608c7521539372e', 'MangaDeep', 'http://www.mangadeep.com', 'English')
   AddWebsiteModule('64aab3bdbc264cda9c0ef2a2e8e71929', 'Manga99', 'http://www.manga99.com', 'English')
   AddWebsiteModule('7acb300c93504802b08657ba374d8bfb', 'TenManga', 'http://www.tenmanga.com', 'English')
-end
-
-function AddWebsiteModule(name, url, category)
-  local m = NewWebsiteModule()
-  m.ID                       = id
-  m.Name                     = name
-  m.RootURL                  = url
-  m.Category                 = category
-  m.OnGetInfo                = 'GetInfo'
-  m.OnGetNameAndLink         = 'GetNameAndLink'
-  m.OnGetPageNumber          = 'GetPageNumber'
-  m.OnGetImageURL            = 'GetImageURL'
 end

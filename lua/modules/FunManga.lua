@@ -54,20 +54,19 @@ function getnameandlink()
   end
 end
 
-function AddWebsiteModule(id, name, URL)
-  local m = NewWebsiteModule()
-  m.ID               = id
-  m.Name             = name
-  m.RootURL          = URL
-  m.Category         = 'English'
-  m.LastUpdated      = 'March 1, 2018'
-  m.OnGetInfo        = 'getinfo'
-  m.OnGetPageNumber  = 'getpagenumber'
-  m.OnGetNameAndLink = 'getnameandlink'
-  m.TotalDirectory   = ALPHA_LIST:len()
-end
-
 function Init()
+  function AddWebsiteModule(id, name, URL)
+    local m = NewWebsiteModule()
+    m.ID               = id
+    m.Name             = name
+    m.RootURL          = URL
+    m.Category         = 'English'
+    m.LastUpdated      = 'March 1, 2018'
+    m.OnGetInfo        = 'getinfo'
+    m.OnGetPageNumber  = 'getpagenumber'
+    m.OnGetNameAndLink = 'getnameandlink'
+    m.TotalDirectory   = ALPHA_LIST:len()
+  end
   AddWebsiteModule('aec40749e25a4fe9963d12bd1ad75b3d', 'FunManga', 'http://www.funmanga.com')
   AddWebsiteModule('2f6e385022144072bfd8407a004a2891', 'MangaDoom', 'http://www.mngdoom.com')
 end

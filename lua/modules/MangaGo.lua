@@ -244,24 +244,23 @@ function r_getnameandlink()
   end
 end
 
-function AddWebsiteModule(id, name, url)
-  local m = NewWebsiteModule()
-  filldef(m)
-  m.ID = id
-  m.Name = name
-  m.RootURL = url
-  m.Category = 'English'
-  m.LastUpdated='March 2, 2018'
-  m.OnGetInfo='getinfo'
-  m.OnGetPageNumber = 'getpagenumber'
-  m.OnGetNameAndLink = 'getnameandlink'
-  m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
-  m.OnBeforeDownloadImage = 'beforedownloadimage'
-  m.OnDownloadImage = 'downloadimage'
-  return m
-end
-
 function Init()
+  function AddWebsiteModule(id, name, url)
+    local m = NewWebsiteModule()
+    filldef(m)
+    m.ID = id
+    m.Name = name
+    m.RootURL = url
+    m.Category = 'English'
+    m.LastUpdated='March 2, 2018'
+    m.OnGetInfo='getinfo'
+    m.OnGetPageNumber = 'getpagenumber'
+    m.OnGetNameAndLink = 'getnameandlink'
+    m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
+    m.OnBeforeDownloadImage = 'beforedownloadimage'
+    m.OnDownloadImage = 'downloadimage'
+    return m
+  end
   AddWebsiteModule('77c3c3cd38444bd7bb4e5f63f2c5c93c', 'MangaGo', 'http://www.mangago.me')
   local m = AddWebsiteModule('872e595f6f52477090b8d50942a7c2aa', 'Rocaca', 'http://www.rocaca.com')
   m.OnGetInfo = 'r_getinfo'

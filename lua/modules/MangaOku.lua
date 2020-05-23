@@ -55,20 +55,19 @@ function getimageurl()
   end
 end
 
-function AddWebsiteModule(id, name, url)
-  local m = NewWebsiteModule()
-  m.ID = id
-  m.Name = name
-  m.RootURL = url
-  m.Category = 'Turkish'
-  m.LastUpdated = 'February 16, 2018'
-  m.OnGetInfo = 'getinfo'
-  m.OnGetPageNumber = 'getpagenumber'
-  m.OnGetImageURL = 'getimageurl'
-  m.OnGetNameAndLink = 'getnameandlink'
-end
-
 function Init()
+  function AddWebsiteModule(id, name, url)
+    local m = NewWebsiteModule()
+    m.ID = id
+    m.Name = name
+    m.RootURL = url
+    m.Category = 'Turkish'
+    m.LastUpdated = 'February 16, 2018'
+    m.OnGetInfo = 'getinfo'
+    m.OnGetPageNumber = 'getpagenumber'
+    m.OnGetImageURL = 'getimageurl'
+    m.OnGetNameAndLink = 'getnameandlink'
+  end
   AddWebsiteModule('1642d82b6c0e4bb88bfaa62589dccb98', 'MangaOku', 'http://www.mangaoku.net')
   AddWebsiteModule('bdbd8eff725747d3a756b998c9f6dc9b', 'Turkcraft', 'http://turkcraft.com')
 end

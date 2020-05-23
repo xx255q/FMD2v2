@@ -115,19 +115,18 @@ function getimageurl()
   end
 end
 
-function AddWebsiteModule(id, name, url, category)
-  local m = NewWebsiteModule()
-  m.ID               = id
-  m.Name             = name
-  m.RootURL          = url
-  m.Category         = category
-  m.OnGetInfo        = 'getinfo'
-  m.OnGetPageNumber  = 'getpagenumber'
-  m.OnGetNameAndLink = 'getnameandlink'
-  m.OnGetImageURL    = 'getimageurl'
-end
-
 function Init()
+  function AddWebsiteModule(id, name, url, category)
+    local m = NewWebsiteModule()
+    m.ID               = id
+    m.Name             = name
+    m.RootURL          = url
+    m.Category         = category
+    m.OnGetInfo        = 'getinfo'
+    m.OnGetPageNumber  = 'getpagenumber'
+    m.OnGetNameAndLink = 'getnameandlink'
+    m.OnGetImageURL    = 'getimageurl'
+  end
   AddWebsiteModule('1230bae145b3452580164d00acc05e6f', 'NiAdd', 'https://www.niadd.com', 'English')
   AddWebsiteModule('482deba9267346418abf3d381712e87a', 'NiAddES', 'https://es.niadd.com', 'Spanish')
   AddWebsiteModule('6f3f9352aa6a4751bfcccc695105c571', 'NiAddIT', 'https://it.niadd.com', 'Italian')

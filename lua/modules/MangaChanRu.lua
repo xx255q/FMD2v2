@@ -66,20 +66,19 @@ function getdirectorypagenumber()
   end
 end
 
-function AddWebsiteModule(id, name, url, category)
-  local m = NewWebsiteModule()
-  m.ID = id
-  m.Name = name
-  m.RootURL = url
-  m.Category = category
-  m.LastUpdated='May 6, 2019'
-  m.OnGetInfo='getinfo'
-  m.OnGetPageNumber='getpagenumber'
-  m.OnGetNameAndLink='getnameandlink'
-  m.OnGetDirectoryPageNumber='getdirectorypagenumber'
-end
-
 function Init()
+  function AddWebsiteModule(id, name, url, category)
+    local m = NewWebsiteModule()
+    m.ID = id
+    m.Name = name
+    m.RootURL = url
+    m.Category = category
+    m.LastUpdated='May 6, 2019'
+    m.OnGetInfo='getinfo'
+    m.OnGetPageNumber='getpagenumber'
+    m.OnGetNameAndLink='getnameandlink'
+    m.OnGetDirectoryPageNumber='getdirectorypagenumber'
+  end
   AddWebsiteModule('adb5ad9b022e4b5c82586d10404c253e', 'MangaChanRU', 'http://manga-chan.me', 'Russian')
 
   local cat = 'H-Sites'

@@ -75,20 +75,19 @@ function GetNameAndLink()
   end
 end
 
-function AddWebsiteModule(id, website, rooturl, category)
-  local m = NewWebsiteModule()
-  m.ID=id
-  m.Category=category
-  m.Name=website
-  m.RootURL=rooturl
-  m.LastUpdated='May 17, 2019'
-  m.OnGetInfo='GetInfo'
-  m.OnGetPageNumber='GetPageNumber'
-  m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
-  m.OnGetNameAndLink='GetNameAndLink'
-end
-
 function Init()
+  function AddWebsiteModule(id, website, rooturl, category)
+    local m = NewWebsiteModule()
+    m.ID=id
+    m.Category=category
+    m.Name=website
+    m.RootURL=rooturl
+    m.LastUpdated='May 17, 2019'
+    m.OnGetInfo='GetInfo'
+    m.OnGetPageNumber='GetPageNumber'
+    m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
+    m.OnGetNameAndLink='GetNameAndLink'
+  end
   AddWebsiteModule('d040b868cc844649aee94abf758267a1', 'MangaEden', 'http://www.mangaeden.com', 'English')
   AddWebsiteModule('8aafeb82bfda4aeda5c1b6cd8e96016a', 'MangaEden_IT', 'http://www.mangaeden.com', 'Italian')
   AddWebsiteModule('c7b212ad0856455396d53a67fc4eb180', 'PervEden', 'http://www.perveden.com', 'H-Sites')

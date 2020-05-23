@@ -103,19 +103,18 @@ function beforedownloadimage()
   return createInstance():beforedownloadimage()
 end
 
-function AddWebsiteModule(id, name, url, cat)
-  local m = NewWebsiteModule()
-  m.ID = id
-  m.Category = cat
-  m.Name = name
-  m.RootURL = url
-  m.OnGetNameAndLink = 'getnameandlink'
-  m.OnGetInfo = 'getinfo'
-  m.OnGetPageNumber = 'getpagenumber'
-  m.OnBeforeDownloadImage='beforedownloadimage'
-end
-
 function Init()
+  function AddWebsiteModule(id, name, url, cat)
+    local m = NewWebsiteModule()
+    m.ID = id
+    m.Category = cat
+    m.Name = name
+    m.RootURL = url
+    m.OnGetNameAndLink = 'getnameandlink'
+    m.OnGetInfo = 'getinfo'
+    m.OnGetPageNumber = 'getpagenumber'
+    m.OnBeforeDownloadImage='beforedownloadimage'
+  end
   local c='Raw'
   AddWebsiteModule('70fbb8b02bd34fdab64975f93a8162d2', 'MangaRawOnline', 'http://mangaraw.online', c)
   AddWebsiteModule('c5c49466990f43e3b099719a13a2f887', 'RawMangaSite', 'https://rawmanga.site', c)
