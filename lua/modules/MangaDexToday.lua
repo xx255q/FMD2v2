@@ -25,7 +25,7 @@ function GetNameAndLink()
 	local data = 'action=load_series_list_entries&parameter%5Bpage%5D=' .. IncStr(URL) .. '&parameter%5Bletter%5D=&parameter%5Bsortby%5D=alphabetic&parameter%5Border%5D=asc'
 	local s = MODULE.RootURL .. dirurl
 	if URL ~= '0' then
-	  s = s .. '?page=' .. IncStr(URL)
+		s = s .. '?page=' .. IncStr(URL)
 	end
 	if HTTP.GET(s) then
 		local x = TXQuery.Create(HTTP.Document)

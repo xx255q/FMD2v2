@@ -15,23 +15,23 @@ DirectoryParameters = '/manga/free/changeMangaList?type=text'
 
 -- Get info and chapter list for current manga.
 function GetInfo()
-  Template.GetInfo()
+	Template.GetInfo()
 
-  return no_error
+	return no_error
 end
 
 -- Get LINKS and NAMES from the manga list of the current website.
 function GetNameAndLink()
-  Template.GetNameAndLink()
+	Template.GetNameAndLink()
 
-  return no_error
+	return no_error
 end
 
 -- Get the page count for the current chapter.
 function GetPageNumber()
-  Template.GetPageNumber()
+	Template.GetPageNumber()
 
-  return no_error
+	return no_error
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -39,12 +39,12 @@ end
 ----------------------------------------------------------------------------------------------------
 
 function Init()
-  local m = NewWebsiteModule()
-  m.ID                       = 'd7b50edfda2d4dc69eae3e1c1886000d'
-  m.Name                     = 'WhiteCloudPavilion'
-  m.RootURL                  = 'https://whitecloudpavilion.com'
-  m.Category                 = 'English-Scanlation'
-  m.OnGetInfo                = 'GetInfo'
-  m.OnGetNameAndLink         = 'GetNameAndLink'
-  m.OnGetPageNumber          = 'GetPageNumber'
+	local m = NewWebsiteModule()
+	m.ID                       = 'd7b50edfda2d4dc69eae3e1c1886000d'
+	m.Name                     = 'WhiteCloudPavilion'
+	m.RootURL                  = 'https://whitecloudpavilion.com'
+	m.Category                 = 'English-Scanlation'
+	m.OnGetInfo                = 'GetInfo'
+	m.OnGetNameAndLink         = 'GetNameAndLink'
+	m.OnGetPageNumber          = 'GetPageNumber'
 end

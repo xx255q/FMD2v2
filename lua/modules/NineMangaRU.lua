@@ -13,32 +13,32 @@ local Template = require 'templates.NineManga'
 
 -- Get info and chapter list for current manga.
 function GetInfo()
-  Template.GetInfo()
+	Template.GetInfo()
 
-  MANGAINFO.Title = MANGAINFO.Title:gsub(' Манга %(', ' (')
+	MANGAINFO.Title = MANGAINFO.Title:gsub(' Манга %(', ' (')
 
-  return no_error
+	return no_error
 end
 
 -- Get LINKS and NAMES from the manga list of the current website.
 function GetNameAndLink()
-  Template.GetNameAndLink()
+	Template.GetNameAndLink()
 
-  return no_error
+	return no_error
 end
 
 -- Get the page count for the current chapter.
 function GetPageNumber()
-  Template.GetPageNumber()
+	Template.GetPageNumber()
 
-  return no_error
+	return no_error
 end
 
 -- Extract/Build/Repair image urls before downloading them.
 function GetImageURL()
-  Template.GetImageURL()
+	Template.GetImageURL()
 
-  return no_error
+	return no_error
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -46,13 +46,13 @@ end
 ----------------------------------------------------------------------------------------------------
 
 function Init()
-  local m = NewWebsiteModule()
-  m.ID                       = '472b36c3f1284d018b1f48c8bf2d46ad'
-  m.Name                     = 'NineMangaRU'
-  m.RootURL                  = 'http://ru.ninemanga.com'
-  m.Category                 = 'Russian'
-  m.OnGetInfo                = 'GetInfo'
-  m.OnGetNameAndLink         = 'GetNameAndLink'
-  m.OnGetPageNumber          = 'GetPageNumber'
-  m.OnGetImageURL            = 'GetImageURL'
+	local m = NewWebsiteModule()
+	m.ID                       = '472b36c3f1284d018b1f48c8bf2d46ad'
+	m.Name                     = 'NineMangaRU'
+	m.RootURL                  = 'http://ru.ninemanga.com'
+	m.Category                 = 'Russian'
+	m.OnGetInfo                = 'GetInfo'
+	m.OnGetNameAndLink         = 'GetNameAndLink'
+	m.OnGetPageNumber          = 'GetPageNumber'
+	m.OnGetImageURL            = 'GetImageURL'
 end

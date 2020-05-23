@@ -12,7 +12,7 @@ end
 
 function GetNameAndLink()
 	if HTTP.GET(MODULE.RootURL..dirurl..'/page:'..IncStr(URL)) then
-	    TXQuery.Create(HTTP.Document).XPathHREFAll('//div[@id="mangadirectory"]/div[@class="mangacontainer"]/a[2]', LINKS, NAMES)
+			TXQuery.Create(HTTP.Document).XPathHREFAll('//div[@id="mangadirectory"]/div[@class="mangacontainer"]/a[2]', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem
@@ -28,8 +28,8 @@ function GetInfo()
 		MANGAINFO.Authors=x.XPathString('//div[@class="manga-details-author"]/h4[1]')
 		MANGAINFO.Genres=x.XPathString('//div[@class="manga-details-extended"]/ul/string-join(./li/a,", ")')
 		MANGAINFO.Status=MangaInfoStatusIfPos(x.XPathString('//div[@class="manga-details-extended"]/h4[2]'),
-          'مستمرة',
-          'مكتملة')
+					'مستمرة',
+					'مكتملة')
 		x.XPathHREFAll('//ul[@class="new-manga-chapters"]/li/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		return no_error

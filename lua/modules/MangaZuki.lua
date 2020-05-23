@@ -12,7 +12,7 @@ end
 
 function GetNameAndLink()
 	if HTTP.GET(MODULE.RootURL..dirurl..'?page='..IncStr(URL)) then
-	    TXQuery.Create(HTTP.Document).XPathHREFAll('//*[@class="row"]//a[@class="chart-title"]', LINKS, NAMES)
+			TXQuery.Create(HTTP.Document).XPathHREFAll('//*[@class="row"]//a[@class="chart-title"]', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem

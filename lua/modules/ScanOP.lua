@@ -15,30 +15,30 @@ XPathTokenStatus    = 'Statut'
 
 -- Get info and chapter list for current manga.
 function GetInfo()
-  Template.GetInfo()
-  local x = nil
-  local u = MaybeFillHost(MODULE.RootURL, URL)
+	Template.GetInfo()
+	local x = nil
+	local u = MaybeFillHost(MODULE.RootURL, URL)
 
-  if not HTTP.GET(u) then return net_problem end
+	if not HTTP.GET(u) then return net_problem end
 
-  x = TXQuery.Create(HTTP.Document)
-  MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//dt[text()="' .. XPathTokenStatus .. '"]/following-sibling::dd[1]/span'), 'En cours', 'Complete')
+	x = TXQuery.Create(HTTP.Document)
+	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//dt[text()="' .. XPathTokenStatus .. '"]/following-sibling::dd[1]/span'), 'En cours', 'Complete')
 
-  return no_error
+	return no_error
 end
 
 -- Get LINKS and NAMES from the manga list of the current website.
 function GetNameAndLink()
-  Template.GetNameAndLink()
+	Template.GetNameAndLink()
 
-  return no_error
+	return no_error
 end
 
 -- Get the page count for the current chapter.
 function GetPageNumber()
-  Template.GetPageNumber()
+	Template.GetPageNumber()
 
-  return no_error
+	return no_error
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -46,12 +46,12 @@ end
 ----------------------------------------------------------------------------------------------------
 
 function Init()
-  local m = NewWebsiteModule()
-  m.ID                       = '9d37501925e94fa8a447c0aa34914db6'
-  m.Name                     = 'ScanOP'
-  m.RootURL                  = 'https://www.scan-op.com'
-  m.Category                 = 'French'
-  m.OnGetInfo                = 'GetInfo'
-  m.OnGetNameAndLink         = 'GetNameAndLink'
-  m.OnGetPageNumber          = 'GetPageNumber'
+	local m = NewWebsiteModule()
+	m.ID                       = '9d37501925e94fa8a447c0aa34914db6'
+	m.Name                     = 'ScanOP'
+	m.RootURL                  = 'https://www.scan-op.com'
+	m.Category                 = 'French'
+	m.OnGetInfo                = 'GetInfo'
+	m.OnGetNameAndLink         = 'GetNameAndLink'
+	m.OnGetPageNumber          = 'GetPageNumber'
 end

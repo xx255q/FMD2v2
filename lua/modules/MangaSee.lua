@@ -34,7 +34,7 @@ function GetInfo()
 		local s,v for _,v in ipairs(x.XPathI('//div[@class="list chapter-list"]//a')) do
 			s = v.GetAttribute('href')
 			if s:find('%-page%-1') then
-			  s = s:gsub('%-page%-1','')
+				s = s:gsub('%-page%-1','')
 			end
 			MANGAINFO.ChapterLinks.Add(s)
 			MANGAINFO.ChapterNames.Add(x.XPathString('span[@class="chapterLabel"]',v))

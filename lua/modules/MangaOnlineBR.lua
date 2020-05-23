@@ -1,6 +1,6 @@
 function GetNameAndLink()
 	if HTTP.GET(MODULE.RootURL..'/titulos/') then
-	    TXQuery.Create(HTTP.Document).XPathHREFAll('//div[@class="manga"]/p[1]/a', LINKS, NAMES)
+			TXQuery.Create(HTTP.Document).XPathHREFAll('//div[@class="manga"]/p[1]/a', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem

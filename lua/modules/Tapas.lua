@@ -54,7 +54,7 @@ function GetInfo()
 			MANGAINFO.ChapterLinks.Add(MODULE.RootURL .. '/episode/' .. x.XPathString('./id', v))
 			locked = ''
 			if x.XPathString('./locked', v) == 'true' then
-			  locked = ' [locked]'
+				locked = ' [locked]'
 			end
 			MANGAINFO.ChapterNames.Add(x.XPathString('./title', v) .. locked)
 		end

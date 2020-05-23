@@ -8,7 +8,7 @@ end
 function GetNameAndLink()
 	local i = (tonumber(URL) or 0) + 1
 	if HTTP.GET(MODULE.RootURL..'/manga-list/'..dirurls:sub(i, i)) then
-	    TXQuery.Create(HTTP.Document).XPathHREFAll('//*[@class="manga-item"]//a', LINKS, NAMES)
+			TXQuery.Create(HTTP.Document).XPathHREFAll('//*[@class="manga-item"]//a', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem

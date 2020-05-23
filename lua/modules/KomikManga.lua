@@ -15,23 +15,23 @@ XPathTokenGenres    = 'Kategori'
 
 -- Get info and chapter list for current manga.
 function GetInfo()
-  Template.GetInfo()
+	Template.GetInfo()
 
-  return no_error
+	return no_error
 end
 
 -- Get LINKS and NAMES from the manga list of the current website.
 function GetNameAndLink()
-  Template.GetNameAndLink()
+	Template.GetNameAndLink()
 
-  return no_error
+	return no_error
 end
 
 -- Get the page count for the current chapter.
 function GetPageNumber()
-  Template.GetPageNumber()
+	Template.GetPageNumber()
 
-  return no_error
+	return no_error
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -39,12 +39,12 @@ end
 ----------------------------------------------------------------------------------------------------
 
 function Init()
-  local m = NewWebsiteModule()
-  m.ID               = 'e52bd731f8d04e27a3e4a3ad4b29f72c'
-  m.Name             = 'KomikManga'
-  m.RootURL          = 'https://komikmanga.com'
-  m.Category         = 'Indonesian'
-  m.OnGetInfo        = 'GetInfo'
-  m.OnGetNameAndLink = 'GetNameAndLink'
-  m.OnGetPageNumber  = 'GetPageNumber'
+	local m = NewWebsiteModule()
+	m.ID               = 'e52bd731f8d04e27a3e4a3ad4b29f72c'
+	m.Name             = 'KomikManga'
+	m.RootURL          = 'https://komikmanga.com'
+	m.Category         = 'Indonesian'
+	m.OnGetInfo        = 'GetInfo'
+	m.OnGetNameAndLink = 'GetNameAndLink'
+	m.OnGetPageNumber  = 'GetPageNumber'
 end

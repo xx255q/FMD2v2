@@ -4,7 +4,7 @@ local dirstates = {'stopped', 'ongoing', 'completed'}
 function GetNameAndLink()
 	local s, p = dirstates[MODULE.CurrentDirectoryIndex + 1], IncStr(URL)
 	if HTTP.GET(MODULE.RootURL .. dirurl .. s .. '?page=' .. p) then
-	    local x = TXQuery.Create(HTTP.Document)
+			local x = TXQuery.Create(HTTP.Document)
 		if URL == '0' then
 			s = x.XPathString('json(*).last_page')
 			UPDATELIST.CurrentDirectoryPageNumber = x.XPathString('json(*).last_page') or 0

@@ -46,8 +46,8 @@ function GetInfo()
 		MANGAINFO.Genres    = x.XPathStringAll('//div[@class="book-line"][starts-with(.,"Parody") or starts-with(.,"Characters") or starts-with(.,"Tags")]/div[@class="book-data"]/*')
 
 		if MANGAINFO.Title ~= '' then
-		  MANGAINFO.ChapterLinks.Add(MANGAINFO.URL)
-		  MANGAINFO.ChapterNames.Add(MANGAINFO.Title)
+			MANGAINFO.ChapterLinks.Add(MANGAINFO.URL)
+			MANGAINFO.ChapterNames.Add(MANGAINFO.Title)
 		end
 		return no_error
 	else

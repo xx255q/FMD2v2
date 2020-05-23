@@ -1,6 +1,6 @@
 function GetNameAndLink()
 	if HTTP.GET(MODULE.RootURL..'/comics/') then
-	    TXQuery.Create(HTTP.Document).XPathHREFAll('//ul[@class="manga-list__list"]/li/h4/a', LINKS, NAMES)
+			TXQuery.Create(HTTP.Document).XPathHREFAll('//ul[@class="manga-list__list"]/li/h4/a', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem
@@ -16,7 +16,7 @@ function GetInfo()
 		MANGAINFO.Summary=x.XPathString('//*[@class="single-story"]/p')
 		-- there is no chapter list?
 		-- assuming the first chapter link in manga info is always the last chapters
-	    x.XPathHREFAll('//a[@class="single"]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+			x.XPathHREFAll('//a[@class="single"]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		return no_error
 	else
 		return net_problem

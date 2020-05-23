@@ -12,30 +12,30 @@ local Template = require 'templates.ReadMangaRU'
 
 -- Get info and chapter list for current manga.
 function GetInfo()
-  Template.GetInfo()
+	Template.GetInfo()
 
-  return no_error
+	return no_error
 end
 
 -- Get the page count of the manga list of the current website.
 function GetDirectoryPageNumber()
-  Template.GetDirectoryPageNumber()
+	Template.GetDirectoryPageNumber()
 
-  return no_error
+	return no_error
 end
 
 -- Get LINKS and NAMES from the manga list of the current website.
 function GetNameAndLink()
-  Template.GetNameAndLink()
+	Template.GetNameAndLink()
 
-  return no_error
+	return no_error
 end
 
 -- Get the page count for the current chapter.
 function GetPageNumber()
-  Template.GetPageNumber()
+	Template.GetPageNumber()
 
-  return no_error
+	return no_error
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -43,13 +43,13 @@ end
 ----------------------------------------------------------------------------------------------------
 
 function Init()
-  local m = NewWebsiteModule()
-  m.ID                       = 'dfb4dff2709d49d6bd9cbb6e4515bd4a'
-  m.Name                     = 'MintMangaRU'
-  m.RootURL                  = 'https://mintmanga.live'
-  m.Category                 = 'Russian'
-  m.OnGetInfo                = 'GetInfo'
-  m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
-  m.OnGetNameAndLink         = 'GetNameAndLink'
-  m.OnGetPageNumber          = 'GetPageNumber'
+	local m = NewWebsiteModule()
+	m.ID                       = 'dfb4dff2709d49d6bd9cbb6e4515bd4a'
+	m.Name                     = 'MintMangaRU'
+	m.RootURL                  = 'https://mintmanga.live'
+	m.Category                 = 'Russian'
+	m.OnGetInfo                = 'GetInfo'
+	m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
+	m.OnGetNameAndLink         = 'GetNameAndLink'
+	m.OnGetPageNumber          = 'GetPageNumber'
 end
