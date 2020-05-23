@@ -50,7 +50,6 @@ function getpagenumber()
 	TASK.PageNumber=0
 	local u = MaybeFillHost(MODULE.RootURL, URL)
 	HTTP.Cookies.Values['content_server'] = 'server2'
-	print('cookies:\r\n'..HTTP.Cookies.Text);
 	if HTTP.GET(u) then
 		local function spliturl(u)
 			local pos = 0

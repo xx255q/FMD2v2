@@ -74,7 +74,7 @@ end
 
 function GetInfo()
 	URL = URL:gsub('/%?%w.*$', '/'):gsub('/*$', '') .. '/'
-	HTTP.Cookies.Values['nw'] = ' 1'
+	HTTP.Cookies.Values['nw'] = '1'
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
 		-- if there's only 1 line, it's a banned message
@@ -110,7 +110,7 @@ end
 
 function GetPageNumber()
 	URL = URL:gsub('/%?%w.*$', '/'):gsub('/*$', '') .. '/'
-	HTTP.Cookies.Values['nw'] = ' 1'
+	HTTP.Cookies.Values['nw'] = '1'
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		x = TXQuery.Create()
 		GetImageLink()
