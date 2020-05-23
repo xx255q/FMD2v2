@@ -52,7 +52,6 @@ end
 function GetInfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL,URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		-- write_file('20-Mensou-ni-Onegai--.html', HTTP.Document.ReadString())
 		x=TXQuery.Create(HTTP.Document)
 		MANGAINFO.Title     = x.XPathString('//title'):match('^[\r\n%s]-(.-)[\r\n]')
 		MANGAINFO.CoverLink = x.XPathString('//div[@id="rightside"]//img/@src')
@@ -78,9 +77,9 @@ function GetPageNumber()
 			TASK.PageLinks.Add(i)
 		end
 
+		if TASK.PageLinks.Count == 0 then return false end
 		-- kissmanga encrypted data
 		if (MODULE.ID == '4f40515fb43640ddb08eb61278fc97a5') and HTTP.GET(MODULE.RootURL .. '/Scripts/lo.js') then
-			if TASK.PageLinks.Count == 0 then return false end
 			local key, iv
 			-- get the key and initialization vector
 
