@@ -224,10 +224,6 @@
             <CompilerMessages>
               <IgnoredMessages idx6058="True" idx3123="True"/>
             </CompilerMessages>
-            <OtherDefines Count="2">
-              <Define0 Value="DEBUGLEAKS"/>
-              <Define1 Value="DEVBUILD"/>
-            </OtherDefines>
             <ExecuteBefore>
               <Command Value="..\git2revision.bat ..\baseunits\revision.inc"/>
               <CompileReasons Run="False"/>
