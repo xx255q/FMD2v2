@@ -17,7 +17,7 @@ function getinfo()
 		end
 		MANGAINFO.URL=u
 		local x=TXQuery.Create(HTTP.Document)
-		if MODULE.Name == 'MangaKakalot' or MODULE.Name == 'MangaKakalots' then
+		if MODULE.ID == '74674292e13c496699b8c5e4efd4b583' or MODULE.ID == 'ed4175a390e74aedbe4b4f622f3767c6' then
 			MANGAINFO.Title=x.XPathString('//ul[@class="manga-info-text"]/li/h1')
 			MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//div[@class="manga-info-pic"]/img/@src'))
 			MANGAINFO.Authors=x.XPathStringAll('//ul[@class="manga-info-text"]/li[contains(., "Author")]/a')
@@ -46,19 +46,22 @@ function getinfo()
 end
 
 function getpagenumber()
-	function spliturl(u)
-		local pos = 0
-		for i = 1, 3 do
-			local p = string.find(u, '/', pos+1, true)
-			if p == nil then break; end
-			pos = p
-		end
-		return string.sub(u, 1, pos-1), string.sub(u, pos)
-	end
 	TASK.PageLinks.Clear()
 	TASK.PageNumber=0
 	local u = MaybeFillHost(MODULE.RootURL, URL)
+	HTTP.Cookies.Values['content_server'] = 'server2'
+	print('cookies:\r\n'..HTTP.Cookies.Text);
 	if HTTP.GET(u) then
+		local function spliturl(u)
+			local pos = 0
+			for i = 1, 3 do
+				local p = string.find(u, '/', pos+1, true)
+				if p == nil then break; end
+				pos = p
+			end
+			return string.sub(u, 1, pos-1), string.sub(u, pos)
+		end
+		
 		local s = GetRedirectUrl(HTTP.Document)
 		if (s ~= '') and (s ~= nil) then
 			local host, _ = spliturl(s)
@@ -83,11 +86,10 @@ function getpagenumber()
 	end
 end
 
-local dirurl = '/manga_list?type=newest&category=all&state=all&page='
-local dirs = '/genre-all/'
-
 function getnameandlink()
-	if MODULE.Name == 'MangaKakalot' or MODULE.Name == 'MangaKakalots' then
+	local dirurl = '/manga_list?type=newest&category=all&state=all&page='
+	local dirs = '/genre-all/'
+	if MODULE.ID == '74674292e13c496699b8c5e4efd4b583' or MODULE.ID == 'ed4175a390e74aedbe4b4f622f3767c6' then
 		if HTTP.GET(MODULE.RootURL .. dirurl .. IncStr(URL)) then
 			local x = TXQuery.Create(HTTP.Document)
 			x.XPathHREFAll('//div[@class="truyen-list"]/div[@class="list-truyen-item-wrap"]/h3/a', LINKS, NAMES)
@@ -107,7 +109,9 @@ function getnameandlink()
 end
 
 function getdirectorypagenumber()
-	if MODULE.Name == 'MangaKakalot' or MODULE.Name == 'MangaKakalots' then
+	local dirurl = '/manga_list?type=newest&category=all&state=all&page='
+	local dirs = '/genre-all/'
+	if MODULE.ID == '74674292e13c496699b8c5e4efd4b583' or MODULE.ID == 'ed4175a390e74aedbe4b4f622f3767c6' then
 		if HTTP.GET(MODULE.RootURL .. dirurl .. '1') then
 			PAGENUMBER = tonumber(TXQuery.Create(HTTP.Document).XPathString('//a[contains(@class, "page_last")]/@href'):match('page=(%d+)'))
 			return no_error
@@ -129,7 +133,7 @@ function Init()
 		local m = NewWebsiteModule()
 		m.ID = id
 		m.Name = name
-		m.RootURL = URL
+		m.RootURL = url
 		m.Category = 'English'
 		m.OnGetInfo='getinfo'
 		m.OnGetPageNumber='getpagenumber'
