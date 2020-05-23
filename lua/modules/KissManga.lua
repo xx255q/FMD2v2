@@ -68,7 +68,7 @@ function GetInfo()
 end
 
 function GetPageNumber()
-	HTTP.Cookies.Values['rco_quality'] = ' hq'
+	HTTP.Cookies.Values['rco_quality'] = 'hq'
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local body = HTTP.Document.ToString()
 		local s = body:match('var%s+(lstImages.-)%s+var%s')
