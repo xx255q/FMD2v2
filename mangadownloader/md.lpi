@@ -123,10 +123,6 @@
             <CompilerMessages>
               <IgnoredMessages idx6058="True" idx4079="True" idx3123="True"/>
             </CompilerMessages>
-            <OtherDefines Count="2">
-              <Define0 Value="DEBUGLEAKS"/>
-              <Define1 Value="DEVBUILD"/>
-            </OtherDefines>
             <ExecuteBefore>
               <Command Value="..\git2revision.bat ..\baseunits\revision.inc"/>
               <CompileReasons Run="False"/>
@@ -299,10 +295,11 @@
           </Other>
         </CompilerOptions>
       </Item6>
-      <SharedMatrixOptions Count="3">
-        <Item1 ID="102754335437" Targets="#project" Value="-dluajit"/>
-        <Item2 ID="952607008458" Targets="#project" Modes="Win64 Debug Leaks,Win32 Debug Leaks" Value="-dDEVBUILD -dDEBUGLEAKS"/>
-        <Item3 ID="676605726087" Targets="#project" Modes="Win64 Debug,Win32 Debug,Win64 Debug Leaks,Win64,Win32 Debug Leaks,Win32" Value="-dlua54"/>
+      <SharedMatrixOptions Count="4">
+        <Item1 ID="952607008458" Targets="#project" Modes="Win64 Debug Leaks,Win32 Debug Leaks" Value="-dDEVBUILD"/>
+        <Item2 ID="192299838639" Targets="#project" Modes="Win64 Debug Leaks,Win32 Debug Leaks,Win64 Debug,Win32 Debug" Value="-gh -dDEBUGLEAKS"/>
+        <Item3 ID="102754335437" Targets="#project" Value="-dluajit"/>
+        <Item4 ID="676605726087" Targets="#project" Modes="Win64 Debug,Win32 Debug,Win64 Debug Leaks,Win64,Win32 Debug Leaks,Win32" Value="-dlua54"/>
       </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>
