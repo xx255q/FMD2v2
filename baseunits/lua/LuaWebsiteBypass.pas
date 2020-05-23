@@ -108,6 +108,7 @@ end;
 
 function WebsiteBypassRequest(const AHTTP: THTTPSendThread; const AMethod, AURL: String; const Response: TObject; const AWebsiteBypass: TWebsiteBypass): Boolean;
 var
+  localLuaHandler,
   L: TLuaHandler;
 begin
   if (checkantibot_dump = nil) or (websitebypass_dump = nil) then
@@ -120,10 +121,14 @@ begin
   AHTTP.AllowServerErrorResponse := True;
   Result := AHTTP.HTTPRequest(AMethod, AURL);
 
+  localLuaHandler := nil;
   if AHTTP.LuaHandler <> nil then
     L := TLuaHandler(AHTTP.LuaHandler)
   else
-    L := TLuaHandler.Create;
+  begin
+    localLuaHandler := TLuaHandler.Create;
+    L := localLuaHandler;
+  end;
   L.LoadObject('HTTP', AHTTP, @luaHTTPSendThreadAddMetaTable);
   if CheckAntiBotActive(L) then
   begin
@@ -138,8 +143,9 @@ begin
         Result := AHTTP.HTTPRequest(AMethod, AURL);
     end;
   end;
-  if AHTTP.LuaHandler = nil then
-    L.Free;
+
+  if localLuaHandler<>nil then
+    localLuaHandler.Free;
 
   if Assigned(Response) then
     if Response is TStringList then
