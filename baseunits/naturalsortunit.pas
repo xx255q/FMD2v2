@@ -40,31 +40,33 @@ uses
   Classes, SysUtils, Math
   {$IFDEF LINUX}
   , UnixType
-  {$eNDIF}
+  {$ENDIF}
   ;
 
 type
   TSortType = (stNatural, stFloatThousand);
 
-var
-  L: TStringList;
-  AtLeastXP :boolean = False;
-
 procedure NaturalSort(aList: TStrings; SortType: TSortType);
 function UTF8FloatThousandCompareList(aList: TStringList;  Index1, Index2: Integer): Integer;
 function UTF8NaturalCompareList(aList: TStringList;  Index1, Index2: Integer): Integer;
+function UTF8FloatThousandCompareText(const S1, S2: string): Integer;
 function UTF8LogicalCompareText(const S1, S2: string): Integer;
 function UTF8NaturalCompareText(const S1, S2: string): Integer;
+{$IFNDEF WINDOWS}
+function strcoll(s1, s2: pchar):integer; cdecl; external 'libc';
+function wcscoll(s1, s2: pwchar_t): integer; cdecl; external 'libc' Name 'wcscoll';
+{$ELSE}
+function StrCmpLogicalW(psz1, psz2: PWideChar): Integer; stdcall; external 'shlwapi.dll';
 
-{$IFDEF WINDOWS}
 const
   //LINGUISTIC_IGNORECASE  = $00000010;
   NORM_LINGUISTIC_CASING = $08000000;
+{$ENDIF}
 
-function StrCmpLogicalW(psz1, psz2: PWideChar): Integer; stdcall; external 'shlwapi.dll';
-{$ELSE}
-function strcoll(s1, s2: pchar):integer; cdecl; external 'libc';
-function wcscoll(s1, s2: pwchar_t): integer; cdecl; external 'libc' Name 'wcscoll';
+var
+  L: TStringList;
+{$IFDEF WINDOWS}
+  AtLeastXP :boolean = False;
 {$ENDIF}
 
 implementation
@@ -376,11 +378,7 @@ begin
     to use the human, intuitive sort way. Otherwise use Windows API function.}
     Result := UTF8NaturalCompareText(aList[Index1], aList[Index2]);
   {$ELSE}
-    {$IFDEF WINDOWS}
-      Result := StrCmpLogicalW(PWideChar(UTF8Decode(aList[Index1])), PWideChar(UTF8Decode(aList[Index2])));
-    {$ELSE}
-      Result := UTF8LogicalCompareText(aList[Index1], aList[Index2]);
-    {$ENDIF}
+    Result := UTF8LogicalCompareText(aList[Index1], aList[Index2]);
   {$ENDIF}
 end;
 
@@ -394,6 +392,7 @@ begin
   aList.Assign(L);
 end;
 
+{$IFDEF WINDOWS}
 function IsAtLeastXP: boolean;
 begin
   case SysUtils.Win32MajorVersion of
@@ -403,10 +402,13 @@ begin
   6..20: Result := True;
   end;
 end;
+{$ENDIF}
 
 initialization
   L := TStringList.Create;
+  {$IFDEF WINDOWS}
   AtLeastXP := IsAtLeastXP;
+  {$ENDIF}
 finalization
   L.Free;
 
