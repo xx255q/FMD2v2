@@ -44,19 +44,14 @@ type
     FTask: TTaskThread;
     procedure SetTask(AValue: TTaskThread);
   public
-    // Get download link from URL
+    // Get real image url
     function GetLinkPageFromURL(const URL: String): Boolean;
-    // Get number of download link from URL
-    function GetPageNumberFromURL(const URL: String): Boolean;
+
     // Download image
     function DownloadImage: Boolean;
 
-    procedure SockOnStatus(Sender: TObject; Reason: THookSocketReason;
-      const Value: String);
-    function GetPage(var output: TObject; URL: String;
-      const Reconnect: Integer = 0): Boolean; inline;
-
     procedure Execute; override;
+    procedure SockOnStatus(Sender: TObject; Reason: THookSocketReason; const Value: String);
   public
     HTTP: THTTPSendThread;
     WorkId: Integer;
@@ -71,6 +66,7 @@ type
 
   TTaskThread = class(TBaseThread)
   private
+    FCS_CURRENTMAXTHREADS,
     FCS_THREADS: TRTLCriticalSection;
     FCheckAndActiveTaskFlag: Boolean;
     FCurrentWorkingDir: String;
@@ -79,9 +75,15 @@ type
     {$ENDIF}
     FCurrentCustomFileName: String;
     FIsForDelete: Boolean;
+    currentMaxThread, currentMaxConnections: Integer;
     procedure SetCurrentWorkingDir(AValue: String);
     procedure SetIsForDelete(AValue: Boolean);
     procedure SyncShowBallonHint;
+  protected
+    function CanDownload: Boolean;
+    function GetPageNumber: Boolean;
+    procedure GetCurrentMaxThreads;
+    procedure SockOnStatus(Sender: TObject; Reason: THookSocketReason; const Value: String);
   protected
     procedure CheckOut;
     procedure Execute; override;
@@ -95,6 +97,7 @@ type
     // general exception info
     function GetExceptionInfo: String;
   public
+    HTTP: THTTPSendThread;
     Flag: TFlagType;
     // container (for storing information)
     Container: TTaskContainer;
@@ -103,6 +106,7 @@ type
     constructor Create;
     destructor Destroy; override;
     function GetFileName(const AWorkId: Integer): String;
+    function GetWorkId: Integer;
     property CurrentWorkingDir: String read FCurrentWorkingDir write SetCurrentWorkingDir;
     property CurrentMaxFileNameLength: Integer read FCurrentMaxFileNameLength;
     // current custom filename with only %FILENAME% left intact
@@ -283,13 +287,6 @@ begin
   TModuleContainer(FTask.Container.DownloadInfo.Module).PrepareHTTP(HTTP);
 end;
 
-procedure TDownloadThread.SockOnStatus(Sender: TObject;
-  Reason: THookSocketReason; const Value: String);
-begin
-  if Reason = HR_ReadCount then
-    Task.Container.IncReadCount(StrToIntDef(Value, 0));
-end;
-
 constructor TDownloadThread.Create;
 begin
   inherited Create(True);
@@ -311,60 +308,39 @@ begin
   inherited Destroy;
 end;
 
-function TDownloadThread.GetPage(var output: TObject; URL: String;
-  const Reconnect: Integer): Boolean;
-begin
-  if HTTP.Sock.Tag <> 100 then
-    HTTP.Clear;
-  Result := uBaseUnit.GetPage(HTTP, output, URL, Reconnect);
-end;
-
 procedure TDownloadThread.Execute;
 var
   Reslt: Boolean = False;
 begin
   try
-    case Task.Flag of
-      // Get number of images.
-      CS_GETPAGENUMBER:
-      begin
-        Reslt := GetPageNumberFromURL(
-          Task.Container.ChapterLinks.Strings[
-          Task.Container.CurrentDownloadChapterPtr]);
-        // Prepare 'space' for storing image url.
-        if (not Terminated) and
-          (Task.Container.PageNumber > 0) then
-        begin
-          while Task.Container.PageLinks.Count < Task.Container.PageNumber do
-            Task.Container.PageLinks.Add('W');
-        end
-        else
-          Reslt := False;
-      end;
-      // Get image urls.
-      CS_GETPAGELINK:
+    WorkId := Task.GetWorkId;
+    while WorkId <> -1 do
+    begin
+      if Task.Flag = CS_GETPAGELINK then
       begin
         Reslt := GetLinkPageFromURL(
           Task.Container.ChapterLinks.Strings[
           Task.Container.CurrentDownloadChapterPtr]);
-      end;
+      end
       // Download images.
-      CS_DOWNLOAD:
+      else if Task.Flag = CS_DOWNLOAD then
       begin
         Reslt := DownloadImage;
       end;
-    end;
 
-    if not Terminated and Reslt then
-    begin
-      EnterCriticalSection(Task.Container.CS_Container);
-      try
-        InterLockedIncrement(Task.Container.DownCounter);
-        Task.Container.DownloadInfo.Progress :=
-          Format('%d/%d', [Task.Container.DownCounter, Task.Container.PageNumber]);
-      finally
-        LeaveCriticalSection(Task.Container.CS_Container);
+      if not Terminated and Reslt then
+      begin
+        EnterCriticalSection(Task.Container.CS_Container);
+        try
+          InterLockedIncrement(Task.Container.DownCounter);
+          Task.Container.DownloadInfo.Progress :=
+            Format('%d/%d', [Task.Container.DownCounter, Task.Container.PageNumber]);
+        finally
+          LeaveCriticalSection(Task.Container.CS_Container);
+        end;
       end;
+
+      WorkId := Task.GetWorkId;
     end;
   except
     on E: Exception do
@@ -375,15 +351,11 @@ begin
   end;
 end;
 
-function TDownloadThread.GetPageNumberFromURL(const URL: String): Boolean;
+procedure TDownloadThread.SockOnStatus(Sender: TObject; Reason: THookSocketReason;
+  const Value: String);
 begin
-  Result := False;
-  Task.Container.PageNumber := 0;
-
-  if Assigned(TModuleContainer(Task.Container.DownloadInfo.Module).OnGetPageNumber) then
-    Result := TModuleContainer(Task.Container.DownloadInfo.Module).OnGetPageNumber(Self, URL, TModuleContainer(Task.Container.DownloadInfo.Module));
-  if Task.Container.PageLinks.Count > 0 then
-    TrimStrings(Task.Container.PageLinks);
+  if Reason = HR_ReadCount then
+    Task.Container.IncReadCount(StrToIntDef(Value, 0));
 end;
 
 function TDownloadThread.GetLinkPageFromURL(const URL: String): Boolean;
@@ -399,6 +371,7 @@ end;
 constructor TTaskThread.Create;
 begin
   inherited Create(True);
+  InitCriticalSection(FCS_CURRENTMAXTHREADS);
   InitCriticalSection(FCS_THREADS);
   Threads := TDownloadThreads.Create;
   FCheckAndActiveTaskFlag := True;
@@ -461,7 +434,10 @@ begin
     end;
   end;
   Threads.Free;
+  if HTTP<>nil then
+    HTTP.Free;
   DoneCriticalsection(FCS_THREADS);
+  DoneCriticalSection(FCS_CURRENTMAXTHREADS);
   inherited Destroy;
 end;
 
@@ -486,6 +462,44 @@ begin
     Result := UTF8Encode(s);
   end;
   {$ENDIF}
+end;
+
+function TTaskThread.GetWorkId: Integer;
+begin
+  Result := -1;
+  if Terminated then Exit;
+
+  GetCurrentMaxThreads;
+
+  if (Threads.Count > currentMaxThread) then
+    Exit;
+
+  if (Flag = CS_GETPAGELINK) then
+  begin
+    if (Container.WorkCounter >= Container.PageNumber) then
+      Exit;
+  end
+  else
+  if (Flag = CS_DOWNLOAD) then
+  begin
+    if (Container.WorkCounter >= Container.PageLinks.Count) then
+      Exit;
+  end;
+
+  if CanDownload then
+  try
+    EnterCriticalsection(FCS_THREADS);
+
+    Result := Container.WorkCounter;
+    InterLockedIncrement(Container.WorkCounter);
+
+    if Flag = CS_GETPAGELINK then
+      InterLockedIncrement(Container.CurrentPageNumber);
+
+    InterLockedIncrement(Container.DownloadInfo.iProgress);
+  finally
+    LeaveCriticalSection(FCS_THREADS);
+  end;
 end;
 
 function TTaskThread.Compress: Boolean;
@@ -697,66 +711,110 @@ begin
   end;
 end;
 
-procedure TTaskThread.CheckOut;
-var
-  currentMaxThread, currentMaxConnections: Integer;
-  s: String;
+function TTaskThread.CanDownload: Boolean;
 begin
-  if Terminated then Exit;
-
-  try
-  if TModuleContainer(Container.DownloadInfo.Module).MaxThreadPerTaskLimit > 0 then
-    currentMaxThread := TModuleContainer(Container.DownloadInfo.Module).MaxThreadPerTaskLimit
-  else
-    currentMaxThread := OptionMaxThreads;
-  if currentMaxThread > OptionMaxThreads then
-    currentMaxThread := OptionMaxThreads;
-
   if Container.PageLinks.Count > 0 then
-  begin
-    s := Trim(Container.PageLinks[Container.WorkCounter]);
-    if ((Flag = CS_GETPAGELINK) and (s <> 'W')) or
-      ((Flag = CS_DOWNLOAD) and (s = 'D')) then
     begin
-      InterLockedIncrement(Container.WorkCounter);
-      InterLockedIncrement(Container.DownCounter);
-      Container.DownloadInfo.Progress :=
-        Format('%d/%d', [Container.DownCounter, Container.PageNumber]);
-      if Flag = CS_GETPAGELINK then
-        InterLockedIncrement(Container.CurrentPageNumber);
-      Exit;
+      if ((Flag = CS_GETPAGELINK) and (Container.PageLinks[Container.WorkCounter] <> 'W')) or
+        ((Flag = CS_DOWNLOAD) and (Container.PageLinks[Container.WorkCounter] = 'D')) then
+      begin
+        InterLockedIncrement(Container.WorkCounter);
+        InterLockedIncrement(Container.DownCounter);
+        Container.DownloadInfo.Progress :=
+          Format('%d/%d', [Container.DownCounter, Container.PageNumber]);
+        if Flag = CS_GETPAGELINK then
+          InterLockedIncrement(Container.CurrentPageNumber);
+        Exit(False);
+      end;
     end;
+  Result := True;
+end;
+
+function TTaskThread.GetPageNumber: Boolean;
+begin
+  // Get total number of images/pages per chapter
+  Container.PageNumber := 0;
+
+  if Assigned(TModuleContainer(Container.DownloadInfo.Module).OnGetPageNumber) then
+  begin
+    if HTTP = nil then
+    begin
+      HTTP := THTTPSendThread.Create(Self);
+      HTTP.Sock.OnStatus := @SockOnStatus;
+      TModuleContainer(Container.DownloadInfo.Module).PrepareHTTP(HTTP);
+    end;
+    Result := TModuleContainer(Container.DownloadInfo.Module).OnGetPageNumber(
+      Container,
+      Container.ChapterLinks.Strings[Container.CurrentDownloadChapterPtr],
+      TModuleContainer(Container.DownloadInfo.Module));
+  end;
+  if Container.PageLinks.Count > 0 then
+    TrimStrings(Container.PageLinks);
+
+  // Prepare 'space' for storing image url.
+  if (not Terminated) and
+    (Container.PageNumber > 0) then
+  begin
+    while Container.PageLinks.Count < Container.PageNumber do
+      Container.PageLinks.Add('W');
+  end
+  else
+    Result := False;
+end;
+
+procedure TTaskThread.GetCurrentMaxThreads;
+begin
+  if TryEnterCriticalSection(FCS_CURRENTMAXTHREADS)<>0 then
+  try
+    if TModuleContainer(Container.DownloadInfo.Module).MaxThreadPerTaskLimit > 0 then
+      currentMaxThread := TModuleContainer(Container.DownloadInfo.Module).MaxThreadPerTaskLimit
+    else
+      currentMaxThread := OptionMaxThreads;
+    if currentMaxThread > OptionMaxThreads then
+      currentMaxThread := OptionMaxThreads;
+
+    currentMaxConnections := TModuleContainer(Container.DownloadInfo.Module).MaxConnectionLimit;
+    if currentMaxConnections <= 0 then
+      currentMaxConnections := currentMaxThread;
+  finally
+    LeaveCriticalSection(FCS_CURRENTMAXTHREADS);
   end;
 
   if TModuleContainer(Container.DownloadInfo.Module).MaxConnectionLimit > 0 then
     while (not Terminated) and (not TModuleContainer(Container.DownloadInfo.Module).CanCreateConnection) do
       Sleep(SOCKHEARTBEATRATE)
-  else
+end;
+
+procedure TTaskThread.SockOnStatus(Sender: TObject; Reason: THookSocketReason; const Value: String);
+begin
+  if Reason = HR_ReadCount then
+    Container.IncReadCount(StrToIntDef(Value, 0));
+end;
+
+procedure TTaskThread.CheckOut;
+var
+  t: TDownloadThread;
+begin
+  try
+    GetCurrentMaxThreads;
+
     while (not Terminated) and (Threads.Count >= currentMaxThread) do
       Sleep(SOCKHEARTBEATRATE);
 
-  currentMaxConnections := TModuleContainer(Container.DownloadInfo.Module).MaxConnectionLimit;
-  if currentMaxConnections <= 0 then
-    currentMaxConnections := currentMaxThread;
-
-  if (not Terminated) and (Threads.Count < currentMaxThread) then
+    EnterCriticalsection(FCS_THREADS);
     try
-      EnterCriticalsection(FCS_THREADS);
-      if TModuleContainer(Container.DownloadInfo.Module).ActiveConnectionCount >= currentMaxConnections then Exit;
-      TModuleContainer(Container.DownloadInfo.Module).IncActiveConnectionCount;
-      Threads.Add(TDownloadThread.Create);
-      with TDownloadThread(Threads.Last) do begin
-        Task := Self;
-        WorkId := Container.WorkCounter;
-        Start;
-        InterLockedIncrement(Container.WorkCounter);
+      while Threads.Count < currentMaxThread do
+      begin
+        if TModuleContainer(Container.DownloadInfo.Module).ActiveConnectionCount >= currentMaxConnections then Exit;
+        TModuleContainer(Container.DownloadInfo.Module).IncActiveConnectionCount;
+        t := TDownloadThread.Create;
+        Threads.Add(t);
+        t.Task:=Self;
+        t.Start;
       end;
-      if Flag = CS_GETPAGELINK then
-        InterLockedIncrement(Container.CurrentPageNumber);
     finally
       LeaveCriticalsection(FCS_THREADS);
     end;
-
   except
     on E: Exception do
     begin
@@ -777,8 +835,8 @@ procedure TTaskThread.Execute;
     Result := False;
     if Container.PageLinks.Count > 0 then
       for i := 0 to Container.PageLinks.Count - 1 do
-        if (Trim(Container.PageLinks[i]) = 'W') or
-          (Trim(Container.PageLinks[i]) = '') then
+        if (Container.PageLinks[i] = 'W') or
+          (Container.PageLinks[i] = '') then
           Exit(True);
   end;
 
@@ -798,7 +856,7 @@ procedure TTaskThread.Execute;
     c := 0;
     sf := '';
     for i := 0 to Container.PageLinks.Count - 1 do
-      if Trim(Container.PageLinks[i]) <> 'D' then
+      if Container.PageLinks[i] <> 'D' then
       begin
         Inc(c);
         sf += Container.PageLinks[i] + LineEnding;
@@ -822,7 +880,7 @@ procedure TTaskThread.Execute;
   end;
 
 var
-  j: Integer;
+  i: Integer;
   DynamicPageLink: Boolean;
   FailedRetryCount: Integer = 0;
 begin
@@ -881,14 +939,13 @@ begin
         OptionChangeUnicodeCharacterStr,
         CR_FILENAME);
 
-      // Get page number.
+      // Get total number of images/pages per chapter
       if Container.PageLinks.Count = 0 then
       begin
         Container.PageNumber := 0;
         Flag := CS_GETPAGENUMBER;
         Container.WorkCounter := 0;
         Container.DownCounter := 0;
-        Container.DownloadInfo.iProgress := 0;
         Container.DownloadInfo.Progress := '0/0';
         Container.DownloadInfo.Status :=
           Format('[%d/%d] %s (%s)',
@@ -897,8 +954,9 @@ begin
           RS_Preparing,
           Container.ChapterNames[Container.CurrentDownloadChapterPtr]]);
         Container.Status := STATUS_PREPARE;
-        CheckOut;
-        WaitForThreads;
+
+        GetPageNumber;
+
         if Terminated then begin
           Container.PageLinks.Clear;
           Container.PageNumber := 0;
@@ -906,25 +964,25 @@ begin
         end;
       end;
 
-      //Check file, if exist set mark 'D', otherwise 'W' or 'G' for dynamic image url
+      // Check files, if exist set mark 'D', otherwise 'W' or 'G' for dynamic image url
       if Container.PageLinks.Count > 0 then
       begin
-        for j := 0 to Container.PageLinks.Count - 1 do
+        for i := 0 to Container.PageLinks.Count - 1 do
         begin
-          if ImageFileExist(CurrentWorkingDir + GetFileName(j)) then
-            Container.PageLinks[j] := 'D'
+          if ImageFileExist(CurrentWorkingDir + GetFileName(i)) then
+            Container.PageLinks[i] := 'D'
           else
-          if Container.PageLinks[j] = 'D' then
+          if Container.PageLinks[i] = 'D' then
           begin
             if DynamicPageLink then
-              Container.PageLinks[j] := 'G'
+              Container.PageLinks[i] := 'G'
             else
-              Container.PageLinks[j] := 'W';
+              Container.PageLinks[i] := 'W';
           end;
         end;
       end;
 
-      //Get page links
+      // Get the real image urls
       if Container.PageLinks.Count = 0 then
         Container.PageLinks.Add('W');
       Container.PageNumber := Container.PageLinks.Count;
@@ -946,8 +1004,7 @@ begin
         while Container.WorkCounter < Container.PageNumber do
         begin
           if Terminated then Exit;
-          Checkout;
-          InterLockedIncrement(Container.DownloadInfo.iProgress);
+            Checkout;
         end;
         WaitForThreads;
         if Terminated then Exit;
@@ -955,16 +1012,16 @@ begin
         //check if pagelink is found. Else set again to 'W'(some script return '')
         if Container.PageLinks.Count > 0 then
         begin
-          for j := 0 to Container.PageLinks.Count - 1 do
+          for i := 0 to Container.PageLinks.Count - 1 do
           begin
-            if Trim(Container.PageLinks[j]) = '' then
-              Container.PageLinks[j] := 'W';
+            if Trim(Container.PageLinks[i]) = '' then
+              Container.PageLinks[i] := 'W';
           end;
         end;
       end;
       if Terminated then Exit;
 
-      // download pages
+      // download the images
       // If Container doesn't have any image, we will skip the loop. Otherwise
       // download them
       Container.PageNumber := Container.PageLinks.Count;
@@ -986,8 +1043,8 @@ begin
         while Container.WorkCounter < Container.PageLinks.Count do
         begin
           if Terminated then Exit;
-          Checkout;
-          InterLockedIncrement(Container.DownloadInfo.iProgress);
+          if CanDownload then
+            Checkout;
         end;
         WaitForThreads;
         if Terminated then Exit;
@@ -1135,12 +1192,7 @@ end;
 
 procedure TTaskContainer.IncReadCount(const ACount: Integer);
 begin
-  EnterCriticalSection(CS_Container);
-  try
-    Inc(ReadCount, ACount);
-  finally
-    LeaveCriticalSection(CS_Container);
-  end;
+  InterlockedExchangeAdd(ReadCount, ACount);
 end;
 
 procedure TTaskContainer.SaveToDB(const AOrder: Integer);

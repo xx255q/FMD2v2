@@ -3262,15 +3262,16 @@ end;
 
 function FindImageFile(const AFileName: String): String;
 var
-  i: Byte;
+  i: TImageHandlerRec;
+  s: String;
 begin
+  for i in ImageHandlerMgr.List do
+  begin
+    s := AFileName + '.' + i.Ext;
+    if FileExistsUTF8(s) then
+      Exit(s);
+  end;
   Result := '';
-  for i := Low(ImageHandlerMgr.List) to High(ImageHandlerMgr.List) do
-    if FileExistsUTF8(AFileName + '.' + ImageHandlerMgr.List[i].Ext) then
-    begin
-      Result := AFileName + '.' + ImageHandlerMgr.List[i].Ext;
-      Break;
-    end;
 end;
 
 function LoadImageFromFileUTF8(const FileName: String; var Image: TFPCustomImage): Boolean;

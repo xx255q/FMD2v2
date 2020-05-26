@@ -35,7 +35,7 @@ type
     const Module: TModuleContainer): Integer;
 
   TOnTaskStart = function(const Task: TTaskContainer; const Module: TModuleContainer): Boolean;
-  TOnGetPageNumber = function(const DownloadThread: TDownloadThread;
+  TOnGetPageNumber = function(const Task: TTaskContainer;
     const AURL: String; const Module: TModuleContainer): Boolean;
   TOnGetImageURL = function(const DownloadThread: TDownloadThread;
     const AURL: String; const Module: TModuleContainer): Boolean;
