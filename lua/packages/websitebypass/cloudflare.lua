@@ -1,10 +1,10 @@
 local _cf = {}
 
 function _cf.IUAMChallengeAnswer(self, body, url)
-	local js = body:match('setTimeout%(function%(%){%s+(.-a%.value%s*=%s*%S+)')
+	local js = body:match('setTimeout%(function%(%){%s+(.+a%.value%s*=%s*%S+)')
 
 	if js == nil then
-		LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to parse the javascript\r\n' .. body)
+		LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to parse the javascript\r\n' .. url)
 		return nil
 	end
 
@@ -19,7 +19,10 @@ function _cf.IUAMChallengeAnswer(self, body, url)
 		subVars = subVars:gsub(',\n$', '')
 	end
 
-	return ExecJS(string.format([[String.prototype.italics=function(str) {return "<i>" + this + "</i>";};
+	-- cleanup js
+	js = js:gsub('%(setInterval%(.-%),(.-)%);', '%1;')
+
+	local challenge = string.format([[String.prototype.italics=function(str) {return "<i>" + this + "</i>";};
         var subVars= {%s};
         var document = {
             createElement: function () {
@@ -29,7 +32,14 @@ function _cf.IUAMChallengeAnswer(self, body, url)
                 return {"innerHTML": subVars[str]};
             }
         };
-    ]], subVars, SplitURL(url)):gsub('%s+', ' ') .. js)
+    ]], subVars, SplitURL(url)):gsub('%s+', ' ') .. js
+	local answer = ExecJS(challenge)
+	LOGGER.Send('answer = "'..tostring(answer)..'"')
+	if (answer == 'NaN') or (answer == '') then
+		-- LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to solve the javscript challenge ' .. url .. '\r\n' .. body)
+		LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to solve the javscript challenge ' .. url .. '\r\n' .. challenge)
+	end
+	return answer
 end
 
 function _cf.sleepOrBreak(self, delay)
@@ -43,14 +53,13 @@ end
 
 function _cf.solveIUAMChallenge(self, body, url)
 	local answer = self:IUAMChallengeAnswer(body, url)
-	if (answer == nil) or (answer == 'NaN') then
-		LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to solve the javscript challenge\r\n' .. body)
+	if (answer == nil) or (answer == 'NaN') or (answer == '') then
 		return false
 	end
 
 	local form, challengeUUID = body:match('<form (.-="challenge%-form" action="(.-__cf_chl_jschl_tk__=%S+)"(.-)</form>)')
 	if (form == nil) or (challengeUUID == nil) then
-		LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to parse the form\r\n' .. body)
+		LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to parse the form\r\n' .. url)
 		return false
 	end
 
@@ -64,7 +73,7 @@ function _cf.solveIUAMChallenge(self, body, url)
 
 	local i = 0; for _ in pairs(payload) do i = i + 1 end
 	if i == 0 then
-		LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to parse the form payload\r\n' .. body)
+		LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to parse the form payload\r\n' .. url)
 		return false
 	end
 	payload['jschl_answer'] = answer
@@ -101,17 +110,17 @@ function _cf.solveChallenge(self, url)
 
 	-- firewall blocked
 	if (rc == 403) and body:find('<span class="cf%-error%-code">1020</span>') then
-		LOGGER.SendError('WebsitBypass[clounflare]: Cloudflare has blocked this request (Code 1020 Detected). ')
+		LOGGER.SendError('WebsitBypass[clounflare]: Cloudflare has blocked this request (Code 1020 Detected)\r\n' .. url)
 		return false
 	end
 	-- reCapthca challenge
 	if (rc == 403) and body:find('action="/.-__cf_chl_captcha_tk__=%S+".-data%-sitekey=.-') then
-		LOGGER.SendError('WebsitBypass[clounflare]: detected reCapthca challenge, not supported right now. can be redirected to third party capthca solver in the future')
+		LOGGER.SendError('WebsitBypass[clounflare]: detected reCapthca challenge, not supported right now. can be redirected to third party capthca solver in the future\r\n' .. url)
 		return false
 	end
 	-- new IUAM challenge
 	if ((rc == 429) or (rc == 503)) and body:find('cpo.src%s*=%s*"/cdn%-cgi/challenge%-platform/orchestrate/jsch/v1"') then
-		LOGGER.SendError('WebsitBypass[clounflare]: detected the new Cloudflare challenge, not supported yet')
+		LOGGER.SendError('WebsitBypass[clounflare]: detected the new Cloudflare challenge, not supported yet\r\n' .. url)
 		return false
 	end
 	-- IUAM challenge
@@ -119,7 +128,7 @@ function _cf.solveChallenge(self, url)
 		return self:solveIUAMChallenge(body, url)
 	end
 
-	LOGGER.SendWarning('WebsitBypass[clounflare]: no Cloudflare solution found!')
+	LOGGER.SendWarning('WebsitBypass[clounflare]: no Cloudflare solution found!\r\n' .. url)
 	return false
 end
 
