@@ -87,7 +87,7 @@ function GetPageNumber()
 			end
 
 			local chko2 = body:match('%["([^"]+)"%]; chko = _') or ''
-			local chko2_plus = body:match('%["([^"]+)"%]; chko = chko %+ _') or ''
+			local chko2_plus = body:match('chko = .+%["([^"]+)"%]; chko = ') or ''
 			chko2 = JSHexToStr(chko2)
 			chko2_plus = JSHexToStr(chko2_plus)
 
@@ -115,20 +115,30 @@ function GetPageNumber()
 				end
 
 				-- test all possibilities
-				if not testkeyiv(chko2 .. chko2_plus, iv_s) then
-				if not testkeyiv(chko2, iv_s) then
-				if not testkeyiv(chko1, iv_s) then
-				if not testkeyiv(chko1 .. chko2, iv_s) then
-				if not testkeyiv(chko2 .. chko1, iv_s) then
-				end end end end end
+				if not testkeyiv(chko2 .. chko2_plus) then
+				if not testkeyiv(chko2_plus) then
+				if not testkeyiv(chko2) then
+				if not testkeyiv(chko1) then
+				if not testkeyiv(chko1 .. chko2) then
+				if not testkeyiv(chko2 .. chko1) then
+				end end end end end end
 
 				if (key ~= nil) then
 					for i=0,TASK.PageLinks.Count-1 do
 						TASK.PageLinks[i] = AESDecryptCBCSHA256Base64Pkcs7(TASK.PageLinks[i], key, iv)
 					end
 				else
+					LOGGER.SendError(string.format([[KissManga: failed to get a key to decrypt
+iv          : %s
+chko1       : %s
+chko2       : %s
+chko2_plus  : %s
+test_string : %s
+					]], tostring(iv), tostring(chko1), tostring(chko2), tostring(chko2_plus), test_p))
 					TASK.PageLinks.Clear()
 				end
+			else
+				LOGGER.SendError('[KissManga] unable to extract the parameters to decrypt ' .. URL)
 			end
 		end
 		return true
