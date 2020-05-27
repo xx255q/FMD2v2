@@ -294,7 +294,7 @@ function Init()
 	AddWebsiteModule('349e30b0c30643f4a8d0aaece2a2c41e', 'ManhwaClub', 'https://manhwa.club', cat)
 	AddWebsiteModule('3f8ce23cedeb4d4983ca4ff0cb0bad50', 'NManhwa', 'https://nmanhwa.com', cat)
 	AddWebsiteModule('ac3452866dd843fda8b859afe8c8faab', 'ManyToonCom', 'https://manytoon.com', cat)
-	AddWebsiteModule('2b5f00cfbb124546b6c11a7e5ec9c403', 'Hiperdex', 'https://hiperdex.info', cat)
+	AddWebsiteModule('2b5f00cfbb124546b6c11a7e5ec9c403', 'Hiperdex', 'https://hiperdex.com', cat)
 	AddWebsiteModule('c87aeae76e884adc9de8bc6b9d56f2c6', 'ShosetsuManga', 'https://www.shosetsu-manga.org', cat)
 
 	cat = 'Spanish-Scanlation'
