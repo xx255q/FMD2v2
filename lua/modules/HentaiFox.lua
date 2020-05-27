@@ -7,8 +7,8 @@ function getinfo()
 		end
 		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//div[@class="cover"]//img/@src'))
 		if MODULE.Name == 'HentaiFox' then
-			MANGAINFO.Artists=x.XPathStringAll('//*[@class="artists"]/li/a')
-			MANGAINFO.Genres=x.XPathStringAll('//*[@class="tags"]//li/a')
+			MANGAINFO.Artists=x.XPathStringAll('//*[@class="artists"]/li/a/text()[not(parent::span/@class="t_badge")]')
+			MANGAINFO.Genres=x.XPathStringAll('//*[@class="tags"]//li/a/text()[not(parent::span/@class="t_badge")]')
 		else
 			MANGAINFO.Artists=x.XPathStringAll('//div[@class="tags" and contains(h3, "Artist")]/div/a/span/text()')
 			MANGAINFO.Genres=x.XPathStringAll('//div[@class="tags" and (contains(h3, "Tags") or contains(h3, "Category"))]/div/a/span/text()')
