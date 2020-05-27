@@ -34,7 +34,7 @@ function _cf.IUAMChallengeAnswer(self, body, url)
         };
     ]], subVars, SplitURL(url)):gsub('%s+', ' ') .. js
 	local answer = ExecJS(challenge)
-	LOGGER.Send('answer = "'..tostring(answer)..'"')
+	-- LOGGER.Send('answer = "'..tostring(answer)..'"')
 	if (answer == 'NaN') or (answer == '') then
 		-- LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to solve the javscript challenge ' .. url .. '\r\n' .. body)
 		LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to solve the javscript challenge ' .. url .. '\r\n' .. challenge)
