@@ -24,9 +24,9 @@ function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
 		x=TXQuery.Create(HTTP.Document)
 		x.XPathStringAll('//*[@id="book_data_area"]/input[@data-key="imageCodes"]/@value', TASK.PageLinks)
-				TASK.PageContainerLinks.Add(URL:gsub('^/',''))
-				-- TASK.PageContainerLinks.Add(x.XPathString('//*[@id="book_data_area"]/input[@data-key="isbn"]/@value'))
-				TASK.PageContainerLinks.Add(x.XPathString('//*[@id="book_data_area"]/input[@data-key="vsid"]/@value'))
+		TASK.PageContainerLinks.Add(URL:gsub('^/',''))
+		-- TASK.PageContainerLinks.Add(x.XPathString('//*[@id="book_data_area"]/input[@data-key="isbn"]/@value'))
+		TASK.PageContainerLinks.Add(x.XPathString('//*[@id="book_data_area"]/input[@data-key="vsid"]/@value'))
 		return true
 	else
 		return false
@@ -34,12 +34,13 @@ function GetPageNumber()
 end
 
 function DownloadImage()
-		if WORKID == 0 then
+	if WORKID == 0 then
 		HTTP.Headers.Values['Referer']=' '..MODULE.RootURL..'/'..TASK.PageContainerLinks[1]
-		else
+	else
 		HTTP.Headers.Values['Referer']=' '..MODULE.RootURL..'/'..TASK.PageContainerLinks[1]..'?page='..tostring(WorkId)
 	end
-		if HTTP.POST(MODULE.RootURL..'/imgDeliver?jan_cd='..TASK.PageContainerLinks[0],'base64=1&vsid='..TASK.PageContainerLinks[1]..'&trgCode='..TASK.PageLinks[WORKID]) then
+
+	if HTTP.POST(MODULE.RootURL..'/imgDeliver?jan_cd='..TASK.PageContainerLinks[0],'base64=1&vsid='..TASK.PageContainerLinks[1]..'&trgCode='..TASK.PageLinks[WORKID]) then
 		return Base64Decode(HTTP.Document)
 	else
 		return false
