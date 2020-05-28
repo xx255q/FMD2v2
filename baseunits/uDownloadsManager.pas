@@ -41,8 +41,6 @@ type
 
   TDownloadThread = class(TBaseThread)
   private
-    FTask: TTaskThread;
-    procedure SetTask(AValue: TTaskThread);
   public
     // Get real image url
     function GetLinkPageFromURL(const URL: String): Boolean;
@@ -53,11 +51,11 @@ type
     procedure Execute; override;
     procedure SockOnStatus(Sender: TObject; Reason: THookSocketReason; const Value: String);
   public
+    Task: TTaskThread;
     HTTP: THTTPSendThread;
     WorkId: Integer;
-    constructor Create;
+    constructor Create(const ATask: TTaskThread);
     destructor Destroy; override;
-    property Task: TTaskThread read FTask write SetTask;
   end;
 
   TDownloadThreads = specialize TFPGList<TDownloadThread>;
@@ -155,7 +153,7 @@ type
     CustomFileName: String;
     constructor Create;
     destructor Destroy; override;
-    procedure IncReadCount(const ACount: Integer);
+    procedure IncReadCount(const ACount: Integer); inline;
     procedure SaveToDB(const AOrder: Integer = -1);
     procedure ClearDirty(const AOrder: Integer = -1);
   public
@@ -280,26 +278,19 @@ end;
 
 { TDownloadThread }
 
-procedure TDownloadThread.SetTask(AValue: TTaskThread);
+constructor TDownloadThread.Create(const ATask: TTaskThread);
 begin
-  if FTask = AValue then Exit;
-  FTask := AValue;
-  TModuleContainer(FTask.Container.DownloadInfo.Module).PrepareHTTP(HTTP);
-end;
-
-constructor TDownloadThread.Create;
-begin
-  inherited Create(True);
+  inherited Create(False);
+  Task := ATask;
   HTTP := THTTPSendThread.Create(Self);
-  HTTP.Headers.NameValueSeparator := ':';
   HTTP.Sock.OnStatus := @SockOnStatus;
+  TModuleContainer(Task.Container.DownloadInfo.Module).PrepareHTTP(HTTP);
 end;
 
 destructor TDownloadThread.Destroy;
 begin
   EnterCriticalsection(Task.FCS_THREADS);
   try
-    TModuleContainer(Task.Container.DownloadInfo.Module).DecActiveConnectionCount;
     Task.Threads.Remove(Self);
   finally
     LeaveCriticalsection(Task.FCS_THREADS);
@@ -312,10 +303,11 @@ procedure TDownloadThread.Execute;
 var
   Reslt: Boolean = False;
 begin
-  try
-    WorkId := Task.GetWorkId;
-    while WorkId <> -1 do
-    begin
+  WorkId := Task.GetWorkId;
+  while WorkId <> -1 do
+  begin
+    TModuleContainer(Task.Container.DownloadInfo.Module).IncActiveConnectionCount;
+    try
       if Task.Flag = CS_GETPAGELINK then
       begin
         Reslt := GetLinkPageFromURL(
@@ -324,9 +316,7 @@ begin
       end
       // Download images.
       else if Task.Flag = CS_DOWNLOAD then
-      begin
         Reslt := DownloadImage;
-      end;
 
       if not Terminated and Reslt then
       begin
@@ -339,15 +329,10 @@ begin
           LeaveCriticalSection(Task.Container.CS_Container);
         end;
       end;
-
-      WorkId := Task.GetWorkId;
+    finally
+      TModuleContainer(Task.Container.DownloadInfo.Module).DecActiveConnectionCount;
     end;
-  except
-    on E: Exception do
-    begin
-      E.Message := E.Message + LineEnding + '  In TDownloadThread.Execute' + LineEnding + Task.GetExceptionInfo;
-      MainForm.ExceptionHandler(Self, E);
-    end;
+    WorkId := Task.GetWorkId;
   end;
 end;
 
@@ -780,9 +765,8 @@ begin
     LeaveCriticalSection(FCS_CURRENTMAXTHREADS);
   end;
 
-  if TModuleContainer(Container.DownloadInfo.Module).MaxConnectionLimit > 0 then
-    while (not Terminated) and (not TModuleContainer(Container.DownloadInfo.Module).CanCreateConnection) do
-      Sleep(SOCKHEARTBEATRATE)
+  while (not Terminated) and (not TModuleContainer(Container.DownloadInfo.Module).CanCreateConnection) do
+    Sleep(SOCKHEARTBEATRATE)
 end;
 
 procedure TTaskThread.SockOnStatus(Sender: TObject; Reason: THookSocketReason; const Value: String);
@@ -792,35 +776,18 @@ begin
 end;
 
 procedure TTaskThread.CheckOut;
-var
-  t: TDownloadThread;
 begin
+  GetCurrentMaxThreads;
+
+  while (not Terminated) and (Threads.Count >= currentMaxThread) do
+    Sleep(SOCKHEARTBEATRATE);
+
+  EnterCriticalsection(FCS_THREADS);
   try
-    GetCurrentMaxThreads;
-
-    while (not Terminated) and (Threads.Count >= currentMaxThread) do
-      Sleep(SOCKHEARTBEATRATE);
-
-    EnterCriticalsection(FCS_THREADS);
-    try
-      while Threads.Count < currentMaxThread do
-      begin
-        if TModuleContainer(Container.DownloadInfo.Module).ActiveConnectionCount >= currentMaxConnections then Exit;
-        TModuleContainer(Container.DownloadInfo.Module).IncActiveConnectionCount;
-        t := TDownloadThread.Create;
-        Threads.Add(t);
-        t.Task:=Self;
-        t.Start;
-      end;
-    finally
-      LeaveCriticalsection(FCS_THREADS);
-    end;
-  except
-    on E: Exception do
-    begin
-      E.Message := E.Message + LineEnding + '  In TTaskThread.Checkout' + LineEnding + GetExceptionInfo;
-      MainForm.ExceptionHandler(Self, E);
-    end;
+    while (Threads.Count < currentMaxThread) and TModuleContainer(Container.DownloadInfo.Module).CanCreateConnection do
+      Threads.Add(TDownloadThread.Create(Self));
+  finally
+    LeaveCriticalsection(FCS_THREADS);
   end;
 end;
 
