@@ -7,7 +7,7 @@ function GetRedirectUrl(document)
 	return ''
 end
 
-function getinfo()
+function GetInfo()
 	local u = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(u) then
 		local s = GetRedirectUrl(HTTP.Document)
@@ -45,7 +45,7 @@ function getinfo()
 	end
 end
 
-function getpagenumber()
+function GetPageNumber()
 	TASK.PageLinks.Clear()
 	TASK.PageNumber=0
 	local u = MaybeFillHost(MODULE.RootURL, URL)
@@ -60,7 +60,7 @@ function getpagenumber()
 			end
 			return string.sub(u, 1, pos-1), string.sub(u, pos)
 		end
-		
+
 		local s = GetRedirectUrl(HTTP.Document)
 		if (s ~= '') and (s ~= nil) then
 			local host, _ = spliturl(s)
@@ -68,16 +68,16 @@ function getpagenumber()
 			u = host .. PATH
 			if not HTTP.GET(u) then return false; end
 		end
-		local x=TXQuery.Create(HTTP.Document)
-		x.XPathStringAll('//div[@id="vungdoc"]/img/@src', TASK.PageLinks)
+		local x = TXQuery.Create(HTTP.Document)
+		x.XPathStringAll('//div[@id="vungdoc"]/img[@title]/@src', TASK.PageLinks)
 		if TASK.PageLinks.Count == 0 then
-			x.XPathStringAll('//div[@class="vung_doc"]/img/@src', TASK.PageLinks)
-		end
-		if TASK.PageLinks.Count == 0 then
-			x.XPathStringAll('//div[@class="container-chapter-reader"]/img/@src', TASK.PageLinks)
-		end
-		if TASK.PageLinks.Count == 0 then
-			x.XPathStringAll('//div[@id="vungdoc"]/img/@data-src', TASK.PageLinks)
+			x.XPathStringAll('//div[@class="vung_doc"]/img[@title]/@src', TASK.PageLinks)
+			if TASK.PageLinks.Count == 0 then
+				x.XPathStringAll('//div[@class="container-chapter-reader"]/img[@title]/@src', TASK.PageLinks)
+				if TASK.PageLinks.Count == 0 then
+					x.XPathStringAll('//div[@id="vungdoc"]/img[@title]/@data-src', TASK.PageLinks)
+				end
+			end
 		end
 		return true
 	else
@@ -85,7 +85,7 @@ function getpagenumber()
 	end
 end
 
-function getnameandlink()
+function GetNameAndLink()
 	local dirurl = '/manga_list?type=newest&category=all&state=all&page='
 	local dirs = '/genre-all/'
 	if MODULE.ID == '74674292e13c496699b8c5e4efd4b583' or MODULE.ID == 'ed4175a390e74aedbe4b4f622f3767c6' then
@@ -107,7 +107,7 @@ function getnameandlink()
 	end
 end
 
-function getdirectorypagenumber()
+function GetDirectoryPageNumber()
 	local dirurl = '/manga_list?type=newest&category=all&state=all&page='
 	local dirs = '/genre-all/'
 	if MODULE.ID == '74674292e13c496699b8c5e4efd4b583' or MODULE.ID == 'ed4175a390e74aedbe4b4f622f3767c6' then
@@ -130,14 +130,14 @@ end
 function Init()
 	function AddWebsiteModule(id, name, url)
 		local m = NewWebsiteModule()
-		m.ID = id
-		m.Name = name
-		m.RootURL = url
-		m.Category = 'English'
-		m.OnGetInfo='getinfo'
-		m.OnGetPageNumber='getpagenumber'
-		m.OnGetNameAndLink='getnameandlink'
-		m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
+		m.ID                       = id
+		m.Name                     = name
+		m.RootURL                  = url
+		m.Category                 = 'English'
+		m.OnGetInfo                ='GetInfo'
+		m.OnGetPageNumber          ='GetPageNumber'
+		m.OnGetNameAndLink         ='GetNameAndLink'
+		m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
 	end
 	AddWebsiteModule('74674292e13c496699b8c5e4efd4b583', 'MangaKakalot', 'https://mangakakalot.com')
 	AddWebsiteModule('fa8bb4d1ceea4c8fa0e98c00755f95d4', 'MangaNelo', 'https://manganelo.com')
