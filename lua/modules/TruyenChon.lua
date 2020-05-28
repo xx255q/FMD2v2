@@ -4,7 +4,7 @@ local dirurl = {
 	['MangaNT'] = '/genres?status=-1&sort=15&page=%s'
 }
 
-function getinfo()
+function GetInfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
 		local x=TXQuery.Create(HTTP.Document)
@@ -31,7 +31,7 @@ function getinfo()
 	end
 end
 
-function getpagenumber()
+function GetPageNumber()
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local x=TXQuery.Create(HTTP.Document)
@@ -42,7 +42,12 @@ function getpagenumber()
 	return true
 end
 
-function getnameandlink()
+function BeforeDownloadImage()
+	HTTP.Headers.Values['Referer'] = ' ' .. MaybeFillHost(MODULE.RootURL, TASK.ChapterLinks[TASK.CurrentDownloadChapterPtr])
+	return true
+end
+
+function GetNameAndLink()
 	if HTTP.GET(MODULE.RootURL .. dirurl[MODULE.Name]:format(IncStr(URL))) then
 		local x = TXQuery.Create(HTTP.Document)
 		x.XPathHREFAll('//div[@class="item"]//h3/a', LINKS, NAMES)
@@ -52,7 +57,7 @@ function getnameandlink()
 	end
 end
 
-function getdirectorypagenumber()
+function GetDirectoryPageNumber()
 	if HTTP.GET(MODULE.RootURL .. dirurl[MODULE.Name]:format('1')) then
 		local x = TXQuery.Create(HTTP.Document)
 		local s = x.XPathString('//ul[@class="pagination"]/li[last()]/a/@href')
@@ -71,10 +76,11 @@ function Init()
 		m.RootURL                  = url
 		m.Category                 = category
 		m.SortedList               = true
-		m.OnGetInfo                = 'getinfo'
-		m.OnGetPageNumber          = 'getpagenumber'
-		m.OnGetNameAndLink         = 'getnameandlink'
-		m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
+		m.OnGetInfo                = 'GetInfo'
+		m.OnGetPageNumber          = 'GetPageNumber'
+		m.OnBeforeDownloadImage    = 'BeforeDownloadImage'
+		m.OnGetNameAndLink         = 'GetNameAndLink'
+		m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
 	end
 	local cat = 'Vietnamese'
 	AddWebsiteModule('ef7f922bd45f4f9d9c559a55f987004d', 'TruyenChon', 'http://truyenchon.com', cat)
