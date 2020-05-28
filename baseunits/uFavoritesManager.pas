@@ -271,7 +271,7 @@ begin
         if not Terminated then
         begin
           Container.FavoriteInfo.DateLastChecked := Now;
-          if (NewMangaInfoChaptersPos.Count <> 0) or (NewMangaInfo.Status = MangaInfo_StatusCompleted) then
+          if (NewMangaInfoChaptersPos.Count <> 0) then
             Container.FavoriteInfo.DateLastUpdated := Now;
         end;
 
