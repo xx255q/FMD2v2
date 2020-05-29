@@ -23,11 +23,8 @@ function Init()
 	m.OnLogin        = 'ExHentaiLogin'
 end
 
-local dirURL           = 'f_doujinshi=on&f_manga=on&f_western=on&f_apply=Apply+Filter';
-local exhentaiurllogin = 'https://forums.e-hentai.org/index.php?act=Login&CODE=01';
-local imagesize        = {'xr_a', 'xr_780', 'xr_980', 'xr_1280', 'xr_1600', 'xr_2400', '_'}
-
 function ExHentaiLogin()
+	local exhentaiurllogin = 'https://forums.e-hentai.org/index.php?act=Login&CODE=01'
 	if MODULE.Account.Enabled == false then return false end
 	local s = 'returntype=8&CookieDate=1&b=d&bt=pone' ..
 		'&UserName=' .. EncodeURLElement(MODULE.Account.Username) ..
@@ -49,6 +46,7 @@ function ExHentaiLogin()
 end
 
 function GetDirectoryPageNumber()
+	local dirURL = 'f_doujinshi=on&f_manga=on&f_western=on&f_apply=Apply+Filter'
 	if HTTP.GET(MODULE.RootURL .. '/?' .. dirURL) then
 		PAGENUMBER = tonumber(TXQuery.Create(HTTP.Document).x.XPathString('css("table.ptt>tbody>tr>td:nth-last-child(2)>a")')) or 1
 		return no_error
@@ -58,6 +56,7 @@ function GetDirectoryPageNumber()
 end
 
 function GetNameAndLink()
+	local dirURL = 'f_doujinshi=on&f_manga=on&f_western=on&f_apply=Apply+Filter'
 	local rurl
 	if URL == '0' then
 		rurl = MODULE.RootURL .. '/?' .. dirURL
@@ -128,7 +127,7 @@ function GetPageNumber()
 		SerializeAndMaintainNames(TASK.FileNames)
 		local p, i, j = 0
 		for i = 0, TASK.FileNames.Count - 1 do
-			j = TASK.FileNames[i].len()
+			j = TASK.FileNames[i]:len()
 			if j > p then
 				p = j
 			end
@@ -142,21 +141,22 @@ function GetPageNumber()
 	end
 end
 
-function find_var_value(str, var)
-	if str:find('var%s*' .. var) then
-		return str:match('var%s*' .. var .. '%s*=%s*(.-);'):gsub('^[\'\"]*',''):gsub('[\'\"]*$','')
-	else
-		return ''
-	end
-end
-
 function DownloadImage()
-	local reconnect = HTTP.RetryCount
-	local sel_imagesize = MODULE.GetOption('imagesize') or 0
+	local imagesize = {'xr_a', 'xr_780', 'xr_980', 'xr_1280', 'xr_1600', 'xr_2400', '_'}
+	local sel_imagesize = (MODULE.GetOption('imagesize') or 0) + 1
 	if sel_imagesize < #imagesize then
 		HTTP.Cookies.Values['uconfig'] = ' ' .. imagesize[sel_imagesize]
 	end
+	local reconnect = HTTP.RetryCount
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
+		local function find_var_value(str, var)
+			if str:find('var%s*' .. var) then
+				return str:match('var%s*' .. var .. '%s*=%s*(.-);'):gsub('^[\'\"]*',''):gsub('[\'\"]*$','')
+			else
+				return ''
+			end
+		end
+
 		local result = false
 		local x = TXQuery.Create(HTTP.Document)
 		local rcount, nls, iurl = 0, '', ''
