@@ -62,6 +62,7 @@ function _cf.solveIUAMChallenge(self, body, url)
 		LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to parse the form\r\n' .. url)
 		return false
 	end
+	challengeUUID = challengeUUID:gsub('&amp;', '&')
 
 	local payload = {}
 	local k, n, v = '', '', ''
