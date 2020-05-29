@@ -1,4 +1,4 @@
-function getinfo()
+function GetInfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
 		local x=TXQuery.Create(HTTP.Document)
@@ -25,7 +25,7 @@ function getinfo()
 	end
 end
 
-function getpagenumber()
+function GetPageNumber()
 	TASK.PageLinks.Clear()
 	local u = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(u) then
@@ -44,14 +44,13 @@ function getpagenumber()
 		else
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@src', TASK.PageLinks)
 		end
-		if MODULE.Name == 'Lhscans' or MODULE.Name == 'MangaHato' then TASK.PageContainerLinks.Text = u end
 	else
 		return false
 	end
 	return true
 end
 
-function getnameandlink()
+function GetNameAndLink()
 	if HTTP.GET(MODULE.RootURL .. '/manga-list.html?listType=allABC') then
 		local x = TXQuery.Create(HTTP.Document)
 		local v = x.XPath('//span[@manga-slug]//a')
@@ -67,7 +66,7 @@ function getnameandlink()
 end
 
 function BeforeDownloadImage()
-	if MODULE.Name == 'Lhscans' or MODULE.Name == 'MangaHato' then HTTP.Headers.Values['Referer'] = TASK.PageContainerLinks.Text end
+	HTTP.Headers.Values['Referer'] = ' ' .. MaybeFillHost(MODULE.RootURL, TASK.ChapterLinks[TASK.CurrentDownloadChapterPtr])
 	return true
 end
 
@@ -79,9 +78,9 @@ function Init()
 		m.Name                  = name
 		m.RootURL               = url
 		m.TotalDirectory        = 1
-		m.OnGetInfo             = 'getinfo'
-		m.OnGetPageNumber       = 'getpagenumber'
-		m.OnGetNameAndLink      = 'getnameandlink'
+		m.OnGetInfo             = 'GetInfo'
+		m.OnGetPageNumber       = 'GetPageNumber'
+		m.OnGetNameAndLink      = 'GetNameAndLink'
 		m.OnBeforeDownloadImage = 'BeforeDownloadImage'
 	end
 	local cat = 'Raw'
