@@ -982,6 +982,27 @@ var
   END_SESSION: Boolean = False;
 
 {$ifdef windows}
+  // prevent computer sleep counter
+  StandbyCounter: Integer;
+
+const
+  ES_SYSTEM_REQUIRED = DWORD($00000001);
+  {$EXTERNALSYM ES_SYSTEM_REQUIRED}
+  ES_DISPLAY_REQUIRED = DWORD($00000002);
+  {$EXTERNALSYM ES_DISPLAY_REQUIRED}
+  ES_USER_PRESENT = DWORD($00000004);
+  {$EXTERNALSYM ES_USER_PRESENT}
+  ES_CONTINUOUS = DWORD($80000000);
+  {$EXTERNALSYM ES_CONTINUOUS}
+  ES_AWAYMODE_REQUIRED = DWORD($00000040);
+  {$EXTERNALSYM ES_AWAYMODE_REQUIRED}
+
+type
+  EXECUTION_STATE = DWORD;
+
+function SetThreadExecutionState(esFlags: EXECUTION_STATE): EXECUTION_STATE; stdcall; external 'kernel32.dll';
+
+var
   PrevWndProc: windows.WNDPROC;
 
 function WndCallback(Ahwnd: HWND; uMsg: UINT; wParam: WParam; lParam: LParam): LRESULT; stdcall;
@@ -1902,6 +1923,9 @@ begin
   begin
     TransferRateGraphInit(round(TransferRateGraph.Width/4)+1);
     TransferRateGraph.Visible := True;
+    {$ifdef windows}
+    StandbyCounter := 0;
+    {$endif}
   end
   else
     tmRefreshDownloadsInfo.Enabled := False;
@@ -1915,8 +1939,16 @@ end;
 
 procedure TMainForm.tmRefreshDownloadsInfoTimer(Sender: TObject);
 begin
-  if Assigned(DLManager) then
-    TransferRateGraphAddItem(DLManager.TransferRate);
+  {$ifdef windows}
+  Inc(StandbyCounter, tmRefreshDownloadsInfo.Interval);
+  // reset windows sleep counter every 50s, minimum windows sleep is 1 minute
+  if StandbyCounter > 50000 then
+  begin
+    SetThreadExecutionState(ES_SYSTEM_REQUIRED);
+    StandbyCounter := 0;
+  end;
+  {$endif}
+  TransferRateGraphAddItem(DLManager.TransferRate);
   vtDownload.Repaint;
 end;
 
