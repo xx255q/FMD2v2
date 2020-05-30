@@ -39,7 +39,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\baseunits;..\baseunits\animatedgifs;..\baseunits\extras;..\baseunits\lua;..\baseunits\modules;..\baseunits\SimpleException;..\baseunits\synapse;forms"/>
+            <OtherUnitFiles Value="..\baseunits;..\baseunits\animatedgifs;..\baseunits\lua;..\baseunits\modules;..\baseunits\SimpleException;forms"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -89,7 +89,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\baseunits;..\baseunits\animatedgifs;..\baseunits\extras;..\baseunits\lua;..\baseunits\modules;..\baseunits\SimpleException;..\baseunits\synapse;forms"/>
+            <OtherUnitFiles Value="..\baseunits;..\baseunits\animatedgifs;..\baseunits\lua;..\baseunits\modules;..\baseunits\SimpleException;forms"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -139,7 +139,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\baseunits;..\baseunits\animatedgifs;..\baseunits\extras;..\baseunits\lua;..\baseunits\modules;..\baseunits\SimpleException;..\baseunits\synapse;forms"/>
+            <OtherUnitFiles Value="..\baseunits;..\baseunits\animatedgifs;..\baseunits\lua;..\baseunits\modules;..\baseunits\SimpleException;forms"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -189,7 +189,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\baseunits;..\baseunits\animatedgifs;..\baseunits\extras;..\baseunits\lua;..\baseunits\modules;..\baseunits\SimpleException;..\baseunits\synapse;forms"/>
+            <OtherUnitFiles Value="..\baseunits;..\baseunits\animatedgifs;..\baseunits\lua;..\baseunits\modules;..\baseunits\SimpleException;forms"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -244,7 +244,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="..\baseunits;..\baseunits\animatedgifs;..\baseunits\extras;..\baseunits\lua;..\baseunits\modules;..\baseunits\SimpleException;..\baseunits\synapse;forms"/>
+            <OtherUnitFiles Value="..\baseunits;..\baseunits\animatedgifs;..\baseunits\lua;..\baseunits\modules;..\baseunits\SimpleException;forms"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -306,34 +306,37 @@
         <Mode0 Name="default"/>
       </Modes>
     </RunParams>
-    <RequiredPackages Count="9">
+    <RequiredPackages Count="10">
       <Item1>
-        <PackageName Value="LCL"/>
+        <PackageName Value="laz_synapse"/>
       </Item1>
       <Item2>
-        <PackageName Value="RunTimeTypeInfoControls"/>
+        <PackageName Value="LCL"/>
       </Item2>
       <Item3>
-        <PackageName Value="LazControls"/>
+        <PackageName Value="RunTimeTypeInfoControls"/>
       </Item3>
       <Item4>
-        <PackageName Value="TAChartLazarusPkg"/>
+        <PackageName Value="LazControls"/>
       </Item4>
       <Item5>
-        <PackageName Value="virtualtreeview_package"/>
+        <PackageName Value="TAChartLazarusPkg"/>
       </Item5>
       <Item6>
-        <PackageName Value="richmemopackage"/>
+        <PackageName Value="virtualtreeview_package"/>
       </Item6>
       <Item7>
-        <PackageName Value="multiloglaz"/>
+        <PackageName Value="richmemopackage"/>
       </Item7>
       <Item8>
-        <PackageName Value="dcpcrypt"/>
+        <PackageName Value="multiloglaz"/>
       </Item8>
       <Item9>
-        <PackageName Value="internettools"/>
+        <PackageName Value="dcpcrypt"/>
       </Item9>
+      <Item10>
+        <PackageName Value="internettools"/>
+      </Item10>
     </RequiredPackages>
     <Units Count="27">
       <Unit0>
@@ -502,7 +505,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\baseunits;..\baseunits\animatedgifs;..\baseunits\extras;..\baseunits\lua;..\baseunits\modules;..\baseunits\SimpleException;..\baseunits\synapse;forms"/>
+      <OtherUnitFiles Value="..\baseunits;..\baseunits\animatedgifs;..\baseunits\lua;..\baseunits\modules;..\baseunits\SimpleException;forms"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>
