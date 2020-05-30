@@ -491,6 +491,8 @@ type
     procedure edURLKeyPress(Sender: TObject; var Key: Char);
     procedure edWebsitesSearchButtonClick(Sender: TObject);
     procedure edWebsitesSearchChange(Sender: TObject);
+    procedure HandleApplicationQueryEndSession(var Cancel: Boolean);
+    procedure HandleApplicationEndSession(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
 
@@ -977,8 +979,7 @@ var
   // thread for search db
   SearchDBThread: TSearchDBThread;
 
-  // ...
-  UpdateStatusTextStyle: TTextStyle;
+  END_SESSION: Boolean = False;
 
 {$ifdef windows}
   PrevWndProc: windows.WNDPROC;
@@ -1151,6 +1152,8 @@ begin
   PrevWndProc := windows.WNDPROC(windows.GetWindowLongPtr(Self.Handle, GWL_WNDPROC));
   windows.SetWindowLongPtr(Self.Handle, GWL_WNDPROC, PtrInt(@WndCallback));
   {$endif}
+  Application.OnQueryEndSession := @HandleApplicationQueryEndSession;
+  Application.OnEndSession := @HandleApplicationEndSession;
 
   isRunDownloadFilter := False;
   isUpdating := False;
@@ -1235,22 +1238,6 @@ begin
 
   mangaCover := TPicture.Create;
 
-  //textstyle for updatestatusbar
-  with UpdateStatusTextStyle do
-  begin
-    Alignment := taLeftJustify;
-    Layout := tlCenter;
-    SingleLine := True;
-    Clipping := False;
-    ExpandTabs := False;
-    ShowPrefix := False;
-    Wordbreak := False;
-    Opaque := True;
-    SystemFont := False;
-    RightToLeft := False;
-    EndEllipsis := True;
-  end;
-
   // embed form
   CustomColorForm := TCustomColorForm.Create(Self);
   EmbedForm(CustomColorForm, tsCustomColor);
@@ -1325,7 +1312,8 @@ end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  if cbOptionShowQuitDialog.Checked and (DoAfterFMD = DO_NOTHING) and (not OptionRestartFMD) then
+  if (END_SESSION=False) and
+    (cbOptionShowQuitDialog.Checked and (DoAfterFMD = DO_NOTHING) and (not OptionRestartFMD)) then
   begin
     if MessageDlg('', RS_DlgQuit, mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
     begin
@@ -1401,6 +1389,8 @@ begin
     FreeAndNil(FMDInstance);
   end;
   isNormalExit:=True;
+
+  Logger.Send('NormalExit', isNormalExit);
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -2977,6 +2967,20 @@ end;
 procedure TMainForm.edWebsitesSearchChange(Sender: TObject);
 begin
   SearchOnVT(vtOptionMangaSiteSelection, edWebsitesSearch.Text);
+end;
+
+procedure TMainForm.HandleApplicationQueryEndSession(var Cancel: Boolean);
+begin
+  Cancel := False;
+end;
+
+procedure TMainForm.HandleApplicationEndSession(Sender: TObject);
+begin
+  Logger.Send('Application.OnEndSession');
+  END_SESSION := True;
+  DoAfterFMD := DO_NOTHING;
+  OptionRestartFMD := False;
+  Close;
 end;
 
 procedure TMainForm.btRemoveFilterClick(Sender: TObject);
