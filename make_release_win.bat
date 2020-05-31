@@ -23,12 +23,14 @@ GOTO :EOF
 
 :makerelease
 TITLE make %~1
-SET lbuild=%LAZ%\lazbuild --build-mode="%~2" %~3
-%lbuild% "%cdir%\updaterslim\updater.lpi"
-%lbuild% "%cdir%\mangadownloader\md.lpi"
 SET tdir=%cdir%\bin\%~1
 SET rdir=%cdir%\Release
 SET odir=%rdir%\%~1
+DEL /F "%tdir%\fmd.exe"
+DEL /F "%tdir%\fmd.dbg"
+SET lbuild=%LAZ%\lazbuild --build-mode="%~2" %~3
+%lbuild% "%cdir%\updaterslim\updater.lpi"
+%lbuild% "%cdir%\mangadownloader\md.lpi"
 CALL :getfileversion "%tdir%\fmd.exe"
 SET oname=fmd_%fverb%_%~1.7z
 RMDIR /S /Q "%odir%"
