@@ -1000,7 +1000,9 @@ const
 type
   EXECUTION_STATE = DWORD;
 
-function SetThreadExecutionState(esFlags: EXECUTION_STATE): EXECUTION_STATE; stdcall; external 'kernel32.dll';
+function SetThreadExecutionState(esFlags: EXECUTION_STATE): EXECUTION_STATE; stdcall; external kernel32;
+function ShutdownBlockReasonCreate(Handle: HWND; Msg: LPCWSTR): BOOL; stdcall; external user32;
+function ShutdownBlockReasonDestroy(Handle: HWND): BOOL; stdcall; external user32;
 
 var
   PrevWndProc: windows.WNDPROC;
@@ -3004,15 +3006,19 @@ end;
 procedure TMainForm.HandleApplicationQueryEndSession(var Cancel: Boolean);
 begin
   Cancel := False;
+  ShutdownBlockReasonCreate(Handle, 'FMD: saving userdata');
 end;
 
 procedure TMainForm.HandleApplicationEndSession(Sender: TObject);
 begin
-  Logger.Send('Application.OnEndSession');
-  END_SESSION := True;
-  DoAfterFMD := DO_NOTHING;
-  OptionRestartFMD := False;
-  Close;
+  try
+    END_SESSION := True;
+    DoAfterFMD := DO_NOTHING;
+    OptionRestartFMD := False;
+    Close;
+  finally
+    ShutdownBlockReasonDestroy(Handle);
+  end;
 end;
 
 procedure TMainForm.btRemoveFilterClick(Sender: TObject);
