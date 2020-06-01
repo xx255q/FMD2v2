@@ -967,6 +967,9 @@ implementation
 {$R *.lfm}
 
 uses
+  {$ifdef windows}
+  WinAPI,
+  {$endif}
   frmImportFavorites, frmShutdownCounter, frmSelectDirectory,
   frmWebsiteSettings, WebsiteModules, FMDVars, RegExpr, sqlite3dyn, Clipbrd,
   ssl_openssl_lib, LazFileUtils, LazUTF8, UTF8Process, webp, DBUpdater, pcre2, pcre2lib,
@@ -984,25 +987,6 @@ var
 {$ifdef windows}
   // prevent computer sleep counter
   StandbyCounter: Integer;
-
-const
-  ES_SYSTEM_REQUIRED = DWORD($00000001);
-  {$EXTERNALSYM ES_SYSTEM_REQUIRED}
-  ES_DISPLAY_REQUIRED = DWORD($00000002);
-  {$EXTERNALSYM ES_DISPLAY_REQUIRED}
-  ES_USER_PRESENT = DWORD($00000004);
-  {$EXTERNALSYM ES_USER_PRESENT}
-  ES_CONTINUOUS = DWORD($80000000);
-  {$EXTERNALSYM ES_CONTINUOUS}
-  ES_AWAYMODE_REQUIRED = DWORD($00000040);
-  {$EXTERNALSYM ES_AWAYMODE_REQUIRED}
-
-type
-  EXECUTION_STATE = DWORD;
-
-function SetThreadExecutionState(esFlags: EXECUTION_STATE): EXECUTION_STATE; stdcall; external kernel32;
-function ShutdownBlockReasonCreate(Handle: HWND; Msg: LPCWSTR): BOOL; stdcall; external user32;
-function ShutdownBlockReasonDestroy(Handle: HWND): BOOL; stdcall; external user32;
 
 var
   PrevWndProc: windows.WNDPROC;
