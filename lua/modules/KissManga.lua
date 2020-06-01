@@ -59,7 +59,11 @@ function GetInfo()
 		MANGAINFO.Summary   = x.XPathString('//div[@class="barContent"]/div/p[starts-with(.,"Summary:")]//following-sibling::p[1]')
 		MANGAINFO.Genres    = x.XPathStringAll('//div[@class="barContent"]//span[starts-with(., "Genre")]/parent::*/a')
 		MANGAINFO.Status    = MangaInfoStatusIfPos((x.XPathString('//div[@class="barContent"]/div/p[starts-with(.,"Status:")]')))
-		x.XPathHREFAll('//table[@class="listing"]/tbody/tr/td/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+		local v, s; for _, v in ipairs(x.XPathI('//table[@class="listing"]/tbody/tr/td/a')) do
+			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
+			s = v.GetAttribute('title'):match('^Read (.+) online$')
+			MANGAINFO.ChapterNames.Add(s)
+		end
 		InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		return no_error
 	else
@@ -71,7 +75,8 @@ function GetPageNumber()
 	HTTP.Cookies.Values['rco_quality'] = 'hq'
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local body = HTTP.Document.ToString()
-		local s = body:match('var%s+(lstImages.-)%s+var%s')
+		local s = body:match('var%s+lstImages%s+.-;(.-)%s+var%s')
+		print(tostring(s))
 		local i; for i in s:gmatch('%("(.-)"%)') do
 			TASK.PageLinks.Add(i)
 		end
