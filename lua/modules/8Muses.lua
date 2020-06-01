@@ -21,20 +21,17 @@ function GetInfo()
 			MANGAINFO.Title = x.XPathString('//*[@class="top-menu-breadcrumb"]//li[last()-1]')
 		end
 		-- multi
-		local a, n
-		if x.XPathString('//*[@class="gallery"]/a') ~= '' then
-			for _, v in ipairs(x.XPathI('//*[@class="gallery"]/a')) do
-				a = v.GetAttribute('href')
-				if a ~= '' then
-					n = v.ToString()
-					if (MANGAINFO.Title ~= '') and n:find('[iI][sS][sS][uU][eE]') then
-						n = MANGAINFO.Title .. '-' .. n
-					end
-					MANGAINFO.ChapterLinks.Add(a)
-					MANGAINFO.ChapterNames.Add(n)
-				end
+		local v, n
+		for _, v in ipairs(x.XPathI('//*[@class="gallery"]/a[@href!="" and ./div[@class="image-title"]]')) do
+			n = v.ToString()
+			if (MANGAINFO.Title ~= '') and n:find('[iI][sS][sS][uU][eE]') then
+				n = MANGAINFO.Title .. '-' .. n
 			end
-		else
+			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
+			MANGAINFO.ChapterNames.Add(n)
+		end
+		
+		if x.XPath('//*[@class="gallery"]/a[@href!="" and not(./div[@class="image-title"])]').Count > 0 then
 			MANGAINFO.ChapterLinks.Add(MANGAINFO.URL)
 			if s ~= '' then
 				MANGAINFO.ChapterNames.Add(MANGAINFO.Title .. ' - ' .. s)
@@ -52,15 +49,11 @@ function GetPageNumber()
 	if HTTP.GET(RemoveURLDelim(MaybeFillHost(MODULE.RootURL, URL))) then
 		local x = TXQuery.Create(HTTP.Document)
 		local v, s
-		for _, v in ipairs(x.XPathI('//*[@class="gallery"]/a/div/img/@data-src')) do
-			s = v.ToString()
-			if s ~= '' then
-				s = MaybeFillHost(MODULE.RootURL, s:gsub('/th/', '/fm/')):gsub('^//', 'https://')
-				TASK.PageLinks.Add(s)
-			end
+		for _, v in ipairs(x.XPathI('//*[@class="gallery"]/a[@href!="" and not(./div[@class="image-title"])]/div/img/@data-src')) do
+			TASK.PageLinks.Add(MaybeFillHost(MODULE.RootURL, v.ToString():gsub('/th/', '/fm/')):gsub('^//', 'https://'))
 		end
 		if TASK.PageLinks.Count == 0 then
-			for _, v in ipairs(x.XPathI('//*[@class="gallery"]/a/@href')) do
+			for _, v in ipairs(x.XPathI('//*[@class="gallery"]/a[@href!=""]/@href')) do
 				TASK.PageContainerLinks.Add(v.ToString())
 			end
 			TASK.PageNumber = TASK.PageContainerLinks.Count
