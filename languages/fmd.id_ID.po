@@ -1633,7 +1633,7 @@ msgstr "Batas waktu koneksi (detik)"
 
 #: tmainform.lboptiondefaultuseragent.caption
 msgid "Default user-agent"
-msgstr "User-agent bawaan"
+msgstr "User-agent asali"
 
 #: tmainform.lboptionexternal.caption
 msgid "Open manga by using external program:"
@@ -2465,7 +2465,7 @@ msgstr "&Mutakhirkan"
 
 #: tupdatedialogform.caption
 msgid "New Version Found"
-msgstr ""
+msgstr "Versi Mutakhir Ditemukan"
 
 #: tupdatedialogform.lbmessage.caption
 msgid ""
