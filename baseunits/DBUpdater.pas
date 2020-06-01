@@ -32,7 +32,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    procedure Add(const AWebsite: String; const AModule: TModuleContainer); overload;
+    procedure Add(const AModule: TModuleContainer); overload;
     procedure Add(const S: TStrings); overload;
     procedure UpdateStatus;    // should be called from mainthread
     property Items: TStringList read FItems;
@@ -66,7 +66,7 @@ end;
 procedure TDBUpdaterThread.HTTPRedirected(const AHTTP: THTTPSendThread;
   const AURL: String);
 begin
-  UpdateStatusText(Format('[%d/%d] ' + RS_Downloading, [FIndex + 1, FItems.Count, Format('%s (%s)', [FModule.Name, FModule.ID + DBDATA_EXT]) + ' ' + AURL]));
+  UpdateStatusText(Format('[%d/%d] ' + RS_Downloading, [FIndex + 1, FItems.Count, FModule.Name + ' ' + AURL]));
 end;
 
 procedure TDBUpdaterThread.SyncStart;
@@ -99,7 +99,7 @@ end;
 
 procedure TDBUpdaterThread.SyncReopenUsed;
 begin
-  //FormMain.OpenDataDB(FModule.Name); //todo: remote download db
+  FormMain.OpenDataDB(FModule.ID);
 end;
 
 procedure TDBUpdaterThread.SyncRemoveAttached;
@@ -121,7 +121,7 @@ begin
       Break;
     try
       FModule := TModuleContainer(FItems.Objects[FIndex]);
-      UpdateStatusText(Format('[%d/%d] ' + RS_Downloading, [FIndex + 1, FItems.Count, Format('%s (%s)', [FModule.Name, FModule.ID + DBDATA_EXT])]));
+      UpdateStatusText(Format('[%d/%d] ' + RS_Downloading, [FIndex + 1, FItems.Count, FModule.Name]));
       if HTTP.GET(GetDBURL(FModule.ID)) and (HTTP.ResultCode < 300) then
       begin
         cont := True;
@@ -163,9 +163,7 @@ begin
             Synchronize(@SyncRemoveAttached);
           with TProcess.Create(nil) do
             try
-              UpdateStatusText(Format('[%d/%d] ' + RS_Extracting,
-                [FIndex + 1, FItems.Count,
-                FModule.ID + DBDATA_EXT]));
+              UpdateStatusText(Format('[%d/%d] ' + RS_Extracting, [FIndex + 1, FItems.Count, FModule.Name]));
               Executable := CURRENT_ZIP_EXE;
               CurrentDirectory := FMD_DIRECTORY;
               Parameters.Add('x');                                     // extract
@@ -217,17 +215,15 @@ begin
   inherited Destroy;
 end;
 
-procedure TDBUpdaterThread.Add(const AWebsite: String;
-  const AModule: TModuleContainer);
+procedure TDBUpdaterThread.Add(const AModule: TModuleContainer);
 var
   i: Integer;
 begin
-  if FItems = nil then Exit;
   // search on not sorted
   for i := 0 to FItems.Count - 1 do
-    if AWebsite = FItems[i] then
+    if AModule.Name = FItems[i] then
       Exit;
-  FItems.AddObject(AWebsite, TModuleContainer(AModule));
+  FItems.AddObject(AModule.Name, AModule);
   UpdateStatus;
 end;
 

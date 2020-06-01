@@ -3431,14 +3431,13 @@ var
   m: TModuleContainer;
 begin
   if cbSelectManga.ItemIndex < 0 then Exit;
-  m := TModuleContainer(cbSelectManga.Items.Objects[cbSelectManga.ItemIndex]);
   if DBUpdaterThread <> nil then
-    DBUpdaterThread.Add(m.ID, m)
+    DBUpdaterThread.Add(TModuleContainer(cbSelectManga.Items.Objects[cbSelectManga.ItemIndex]))
   else
   if MessageDlg('', RS_DlgUpdaterWantToUpdateDB, mtInformation, [mbYes, mbNo], 0) = mrYes then
   begin
     DBUpdaterThread := TDBUpdaterThread.Create;
-    DBUpdaterThread.Add(m.ID, m);
+    DBUpdaterThread.Add(TModuleContainer(cbSelectManga.Items.Objects[cbSelectManga.ItemIndex]));
     DBUpdaterThread.Start;
   end;
 end;
