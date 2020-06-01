@@ -1,3 +1,16 @@
+
+function Init()
+	local m = NewWebsiteModule()
+	m.ID               = '834bc6e9402640c8a5a739fedc999075'
+	m.Category         = 'English-Scanlation'
+	m.Name             = 'SleepyPandaScans'
+	m.RootURL          = 'https://sleepypandascans.co'
+	m.LastUpdated      = 'February 15, 2018'
+	m.OnGetInfo        = 'GetInfo'
+	m.OnGetPageNumber  = 'GetPageNumber'
+	m.OnGetNameAndLink = 'GetNameAndLink'
+end
+
 function GetInfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL,URL)
 	if HTTP.GET(MANGAINFO.URL) then
@@ -43,16 +56,4 @@ function GetNameAndLink()
 	else
 		return net_problem
 	end
-end
-
-function Init()
-	local m = NewWebsiteModule()
-	m.ID = '834bc6e9402640c8a5a739fedc999075'
-	m.Category='English-Scanlation'
-	m.Name='ManhwaCo'
-	m.RootURL='https://sleepypandascans.co'
-	m.LastUpdated='February 15, 2018'
-	m.OnGetInfo='GetInfo'
-	m.OnGetPageNumber='GetPageNumber'
-	m.OnGetNameAndLink='GetNameAndLink'
 end
