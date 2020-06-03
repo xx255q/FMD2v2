@@ -7,6 +7,7 @@ assignees: ''
 
 ---
 
+<!-- If developer asking for additional informations and you're unable to provide it within 3 days this issue will be closed -->
 **Website Information**
 * **Name:** 
 * **Root URL:**

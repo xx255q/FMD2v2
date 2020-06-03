@@ -1,12 +1,13 @@
 ---
 name: Website module report
 about: Create a report to help us improve
-title: "[website module]"
+title: "[bug-website module]"
 labels: ''
 assignees: ''
 
 ---
 
+<!-- If developer asking for additional informations and you're unable to provide it within 3 days this issue will be closed -->
 **Prerequisite**
 - [ ] I'm using the latest version.
 - [ ] All website modules are up to date.
