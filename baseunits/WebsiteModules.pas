@@ -367,7 +367,7 @@ begin
     begin
       s:='';
       case Proxy.ProxyType of
-        ptDefault,ptDirect:AHTTP.SetNoProxy;
+        ptDirect:AHTTP.SetNoProxy;
         ptHTTP:s:='HTTP';
         ptSOCKS4:s:='SOCKS4';
         ptSOCKS5:s:='SOCKS5';
