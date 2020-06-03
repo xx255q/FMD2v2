@@ -613,7 +613,7 @@ function DownloadAndSaveImage(const AHTTP: THTTPSendThread; const AURL, APath, A
 function DownloadAndSaveImage(const AHTTP: THTTPSendThread; const AURL, APath, AFileName: String): Boolean; overload;
 
 // check file exist with known extensions. AFilename is a filename without extensions
-function ImageFileExist(const AFileName: String): Boolean;
+function ImageFileExists(const AFileName: String): Boolean;
 function FindImageFile(const AFileName: String): String;
 
 // load iamge from file with UTF8 aware
@@ -3255,7 +3255,7 @@ begin
     Result := SaveImageStreamToFile(AHTTP, APath, AFileName) <> '';
 end;
 
-function ImageFileExist(const AFileName: String): Boolean;
+function ImageFileExists(const AFileName: String): Boolean;
 begin
   Result := FindImageFile(AFileName) <> '';
 end;

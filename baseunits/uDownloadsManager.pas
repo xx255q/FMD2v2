@@ -792,6 +792,9 @@ begin
 end;
 
 procedure TTaskThread.Execute;
+var
+  DynamicPageLink: Boolean;
+  FailedRetryCount: Integer = 0;
 
   function CheckForPrepare: Boolean;
   var
@@ -807,37 +810,51 @@ procedure TTaskThread.Execute;
           Exit(True);
   end;
 
+  function CheckForExists: Integer;
+  var
+    i: Integer;
+  begin
+    Result := 0;
+    if Container.PageLinks.Count > 0 then
+      begin
+        for i := 0 to Container.PageLinks.Count - 1 do
+        begin
+          if ImageFileExists(CurrentWorkingDir + GetFileName(i)) then
+          begin
+            Container.PageLinks[i] := 'D';
+            Inc(Result);
+          end
+          else
+          if Container.PageLinks[i] = 'D' then
+          begin
+            if DynamicPageLink then
+              Container.PageLinks[i] := 'G'
+            else
+              Container.PageLinks[i] := 'W';
+          end;
+        end;
+      end;
+  end;
+
   function CheckForFinish: Boolean;
   var
-    i, c: Integer;
-    sf: String;
+    c: Integer;
   begin
-    if Container.PageLinks.Count > 0 then
-      Result := True
-    else
-    begin
-      Result := False;
+    Result := False;
+    if Container.PageLinks.Count = 0 then
       Exit;
-    end;
 
-    c := 0;
-    sf := '';
-    for i := 0 to Container.PageLinks.Count - 1 do
-      if Container.PageLinks[i] <> 'D' then
-      begin
-        Inc(c);
-        sf += Container.PageLinks[i] + LineEnding;
-      end;
-    if c > 0 then begin
+    c := Container.PageLinks.Count - CheckForExists;
+
+    Result := c = 0;
+    if Result = False then
       Logger.SendWarning(Format('%s, checkforfinish failed=%d/%d [%s] "%s" > "%s"',
         [Self.ClassName,
         c,
         Container.PageLinks.Count,
         Container.DownloadInfo.Website,
         Container.DownloadInfo.Title,
-        Container.ChapterLinks[Container.CurrentDownloadChapterPtr]]) + LineEnding + Trim(sf));
-      Result := False;
-    end;
+        Container.ChapterLinks[Container.CurrentDownloadChapterPtr]]));
   end;
 
   procedure WaitForThreads;
@@ -848,8 +865,6 @@ procedure TTaskThread.Execute;
 
 var
   i: Integer;
-  DynamicPageLink: Boolean;
-  FailedRetryCount: Integer = 0;
 begin
   Container.ThreadState := True;
   Container.DownloadInfo.DateLastDownloaded := Now;
@@ -932,22 +947,7 @@ begin
       end;
 
       // Check files, if exist set mark 'D', otherwise 'W' or 'G' for dynamic image url
-      if Container.PageLinks.Count > 0 then
-      begin
-        for i := 0 to Container.PageLinks.Count - 1 do
-        begin
-          if ImageFileExist(CurrentWorkingDir + GetFileName(i)) then
-            Container.PageLinks[i] := 'D'
-          else
-          if Container.PageLinks[i] = 'D' then
-          begin
-            if DynamicPageLink then
-              Container.PageLinks[i] := 'G'
-            else
-              Container.PageLinks[i] := 'W';
-          end;
-        end;
-      end;
+      CheckForExists;
 
       // Get the real image urls
       if Container.PageLinks.Count = 0 then
