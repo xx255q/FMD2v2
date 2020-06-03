@@ -5166,7 +5166,10 @@ begin
       WriteInteger('connections', 'ConnectionTimeout', seOptionConnectionTimeout.Value);
       WriteInteger('connections', 'NumberOfAutoRetryFailedTask', seOptionRetryFailedTask.Value);
       WriteBool('connections', 'AlwaysRetruFailedChaptersOnStart', ckOptionsAlwaysStartTaskFromFailedChapters.Checked);
-	    WriteString('connections', 'DefaultUserAgent', DefaultUserAgent);
+      if DefaultUserAgent <> UserAgentDefault then
+	      WriteString('connections', 'DefaultUserAgent', DefaultUserAgent)
+      else
+	      WriteString('connections', 'DefaultUserAgent', '');
 
       // proxy
       WriteBool('connections', 'UseProxy', cbOptionUseProxy.Checked);
@@ -5333,9 +5336,10 @@ begin
     SetDefaultTimeoutAndApply(OptionConnectionTimeout * 1000);
     OptionRetryFailedTask := seOptionRetryFailedTask.Value;
     OptionAlwaysStartTaskFromFailedChapters := ckOptionsAlwaysStartTaskFromFailedChapters.Checked;
-    if Trim(edOptionDefaultUserAgent.Text) = '' then
-      edOptionDefaultUserAgent.Text:=UserAgentFirefox;
-    DefaultUserAgent := Trim(edOptionDefaultUserAgent.Text);
+    edOptionDefaultUserAgent.Text := Trim(edOptionDefaultUserAgent.Text);
+    if edOptionDefaultUserAgent.Text = '' then
+      edOptionDefaultUserAgent.Text := UserAgentDefault;
+    DefaultUserAgent := edOptionDefaultUserAgent.Text;
 
     // proxy
     if cbOptionUseProxy.Checked then

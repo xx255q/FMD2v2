@@ -124,10 +124,10 @@ function FormatByteSize(const ABytes: Integer; AShowPerSecond: Boolean = False):
 const
   UserAgentSynapse   = 'Mozilla/4.0 (compatible; Synapse)';
   UserAgentCURL      = 'curl/7.61.1';
-  UserAgentFirefox   = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/76.0';
+  UserAgentDefault   = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/76.0';
 
 var
-  DefaultUserAgent: String = UserAgentFirefox;
+  DefaultUserAgent: String = UserAgentDefault;
   DefaultRetryCount: Integer = 0;
   DefaultTimeout: Integer = 15000;
   DefaultProxyType: String = '';
