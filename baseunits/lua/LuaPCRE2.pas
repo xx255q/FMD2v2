@@ -90,6 +90,7 @@ threadvar
   _gmatch_input_string, _gmatch_expression: PAnsiChar;
   _gmatch_input_length, _gmatch_expression_length: Cardinal;
   _gmatch_start_offset: Cardinal;
+  _gmatch_re: ppcre2_code_8;
 
 function re_match(L: Plua_State): Integer; cdecl;
 var
@@ -103,6 +104,7 @@ var
   i: Integer;
 begin
   Result := 0;
+  re := nil;
   if _gmatch<>nil then //for gmatch iterator
   begin
     InputString := _gmatch_input_string;
@@ -110,6 +112,9 @@ begin
     InputLength := _gmatch_input_length;
     ExpressionLength := _gmatch_expression_length;
     start_offset := _gmatch_start_offset;
+    if _gmatch_re = nil then
+      _gmatch_re := pcre2_compile_8(Expression, ExpressionLength, PCRE2_UTF, @offset_count, @error_offset, nil);
+    re := _gmatch_re;
   end
   else
   begin
@@ -120,7 +125,8 @@ begin
     else
       start_offset := 0;
   end;
-  re := pcre2_compile_8(Expression, ExpressionLength, PCRE2_UTF, @offset_count, @error_offset, nil);
+  if re = nil then
+    re := pcre2_compile_8(Expression, ExpressionLength, PCRE2_UTF, @offset_count, @error_offset, nil);
   if re <> nil then
   begin
     match_data := pcre2_match_data_create_from_pattern_8(re, nil);
@@ -145,7 +151,17 @@ begin
       end;
     end;
     pcre2_match_data_free_8(match_data);
-    pcre2_code_free_8(re);
+    if _gmatch <> nil then
+    begin
+      if Result = 0 then
+      begin
+        pcre2_code_free_8(_gmatch_re);
+        _gmatch_re := nil;
+        _gmatch := nil;
+      end;
+    end
+    else
+      pcre2_code_free_8(re);
   end
   else
     Logger.Send(pcre2.GetErrorMessage(offset_count, error_offset));
@@ -154,6 +170,9 @@ end;
 function re_gmatch(L: Plua_State): Integer; cdecl;
 begin
   _gmatch := @re_match;
+  if _gmatch_re<>nil then
+    pcre2_code_free_8(_gmatch_re);
+  _gmatch_re := nil;
   _gmatch_input_string := lua_tolstring(L, 1, @_gmatch_input_length);
   _gmatch_expression := lua_tolstring(L, 2, @_gmatch_expression_length);
   if lua_gettop(L) >= 3 then
