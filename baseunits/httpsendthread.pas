@@ -61,6 +61,8 @@ type
     FFollowRedirection: Boolean;
     FMaxRedirect: Integer;
     FAllowServerErrorResponse: Boolean;
+    FEnabledCookies: Boolean;
+    FClearCookies: Boolean;
     procedure SetTimeout(AValue: Integer);
     procedure OnOwnerTerminate(Sender: TObject);
   protected
@@ -88,6 +90,7 @@ type
     procedure SetDefaultProxy;
     procedure Reset;
     procedure ResetBasic;
+    procedure ClearCookies;
     procedure SaveDocumentToFile(const AFileName: String; const ATryOriginalFileName: Boolean = False; const ALastModified: TDateTime = -1);
     property Timeout: Integer read FTimeout write SetTimeout;
     property RetryCount: Integer read FRetryCount write FRetryCount;
@@ -97,6 +100,7 @@ type
     property Thread: TBaseThread read FOwner;
     property MaxRedirect: Integer read FMaxRedirect write FMaxRedirect;
     property LastURL: String read FURL;
+    property EnabledCookies: Boolean read FEnabledCookies write FEnabledCookies;
   public
     BeforeHTTPMethod: THTTPMethodEvent;
     AfterHTTPMethod: THTTPMethodEvent;
@@ -381,12 +385,16 @@ end;
 
 procedure THTTPSendThread.SetHTTPCookies;
 begin
-  if Assigned(CookieManager) then
+  if FEnabledCookies and not(FClearCookies) and Assigned(CookieManager) then
     CookieManager.SetCookies(FURL, Self);
+  if FClearCookies then FClearCookies := False;
 end;
 
 procedure THTTPSendThread.ParseHTTPCookies;
 begin
+  if FEnabledCookies=False then
+    Cookies.Clear
+  else
   if Assigned(CookieManager) then
     CookieManager.AddServerCookies(FURL, Self);
 end;
@@ -411,6 +419,8 @@ begin
   Headers.NameValueSeparator := ':';
   Cookies.NameValueSeparator := '=';
   Cookies.Delimiter := ';';
+  FEnabledCookies := True;
+  FClearCookies := False;
   FGZip := True;
   FFollowRedirection := True;
   FAllowServerErrorResponse := False;
@@ -741,18 +751,24 @@ end;
 
 procedure THTTPSendThread.Reset;
 begin
-  Clear;
+  ResetBasic;
   Headers.Values['DNT'] := ' 1';
   Headers.Values['Accept'] := ' text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
   Headers.Values['Accept-Charset'] := ' utf8';
   Headers.Values['Accept-Language'] := ' en-US,en;q=0.8';
-  if FGZip then Headers.Values['Accept-Encoding'] := ' gzip, deflate';
 end;
 
 procedure THTTPSendThread.ResetBasic;
 begin
   Clear;
+  ClearCookies;
   if FGZip then Headers.Values['Accept-Encoding'] := ' gzip, deflate';
+end;
+
+procedure THTTPSendThread.ClearCookies;
+begin
+  Cookies.Clear;
+  FClearCookies:=True;
 end;
 
 procedure THTTPSendThread.SaveDocumentToFile(const AFileName: String;

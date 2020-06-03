@@ -55,6 +55,18 @@ begin
   TUserData(luaClassGetObject(L)).Reset;
 end;
 
+function http_resetbasic(L: Plua_State): Integer; cdecl;
+begin
+  Result := 0;
+  TUserData(luaClassGetObject(L)).ResetBasic;
+end;
+
+function http_clearcookies(L: Plua_State): Integer; cdecl;
+begin
+  Result := 0;
+  TUserData(luaClassGetObject(L)).ClearCookies;
+end;
+
 function http_getcookies(L: Plua_State): Integer; cdecl;
 begin
   lua_pushstring(L, TUserData(luaClassGetObject(L)).GetCookies);
@@ -93,13 +105,15 @@ begin
 end;
 
 const
-  methods: packed array [0..8] of luaL_Reg = (
+  methods: packed array [0..10] of luaL_Reg = (
     (name: 'Request'; func: @http_request),
     (name: 'GET'; func: @http_get),
     (name: 'POST'; func: @http_post),
     (name: 'HEAD'; func: @http_head),
     (name: 'XHR'; func: @http_xhr),
     (name: 'Reset'; func: @http_reset),
+    (name: 'ResetBasic'; func: @http_resetbasic),
+    (name: 'ClearCookies'; func: @http_clearcookies),
     (name: 'GetCookies'; func: @http_getcookies),
     (name: 'SetProxy'; func: @http_setproxy),
     (name: nil; func: nil)
@@ -125,6 +139,7 @@ begin
     luaClassAddStringProperty(L, MetaTable, 'MimeType', @TUserData(Obj).MimeType);
     luaClassAddStringProperty(L, MetaTable, 'UserAgent', @TUserData(Obj).UserAgent);
     luaClassAddIntegerProperty(L, MetaTable, 'RetryCount', @TUserData(Obj).RetryCount);
+    luaClassAddBooleanProperty(L,MetaTable, 'EnabledCookies', @TUserData(Obj).EnabledCookies);
   end;
 end;
 
