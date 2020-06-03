@@ -24,4 +24,4 @@ A clear and concise description of what the bug is. To able to localize the issu
 Add any other context about the problem here.
 
 **Log**
-Attach your log file containing the issue if available.
+Attach your log file containing the issue if available. Also attach the page source if you can. It will help us solve the issue faster. You can get the page source by opening the particular chapter you're unable to download from your browser with right-click > view page source.
