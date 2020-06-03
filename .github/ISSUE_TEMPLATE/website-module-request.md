@@ -12,6 +12,9 @@ assignees: ''
 * **Name:** 
 * **Root URL:**
 * **Directory list URL:**
+<!-- manga info should contains chapter list or provide a way to get the chapter list -->
+* **Example manga info URL:**
+* **Example chapter URL:**
 
 **Additional context**
 Add any other context about the problem here.
