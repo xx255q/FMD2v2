@@ -13,11 +13,12 @@ function GetInfo()
 	if HTTP.GET(MANGAINFO.URL) then
 		local x=TXQuery.Create(HTTP.Document)
 		MANGAINFO.CoverLink = x.XPathString('//img[@class="thumbnail"]/@src')
-		MANGAINFO.Title     = Trim(x.XPathString('//title/substring-before(., "- Çevrimiçi Türkçe Manga")'))
+		MANGAINFO.Title     = Trim(x.XPathString('//title'):gsub('- Çevrimiçi Türkçe Manga', ''):gsub('- Çevrimiçi Türkçe Webtoon', ''):gsub('- Çevrimiçi Türkçe Novel', ''))
 		MANGAINFO.Authors   = x.XPathString('//table[2]/tbody/tr[2]/td[1]')
 		MANGAINFO.Artists   = x.XPathString('//table[2]/tbody/tr[2]/td[2]')
-		MANGAINFO.Genres    = Trim(x.XPathString('//table[2]/tbody/tr[2]/td[3]'))
-		MANGAINFO.Summary   = x.XPathString('//div[@class="well"]/text()')
+		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//table[1]/tbody/tr[2]/td[2]'), 'Devam Ediyor', 'Tamamlandı')
+		MANGAINFO.Genres    = x.XPathString('//table[2]/tbody/tr[2]/td[3]')
+		MANGAINFO.Summary   = x.XPathString('//div[@id="tab1"]/div[@class="well"]/text()')
 
 		local info = x.XPathString('//*[@slug]/@slug')
 		local pages = 2
