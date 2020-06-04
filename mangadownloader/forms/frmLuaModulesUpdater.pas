@@ -123,7 +123,6 @@ type
     FDownloadedCount: Integer;
     FProceed: Boolean;
     FStatusList: TStringList;
-    Flast_commit: String;
     procedure RemoveThread(const T: TDownloadThread);
     procedure AddThread(const T: TDownloadThread);
   protected
