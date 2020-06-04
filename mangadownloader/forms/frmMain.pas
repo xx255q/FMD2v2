@@ -5043,6 +5043,8 @@ begin
     seOptionRetryFailedTask.Value := ReadInteger('connections', 'NumberOfAutoRetryFailedTask', OptionRetryFailedTask);
     ckOptionsAlwaysStartTaskFromFailedChapters.Checked := ReadBool('connections', 'AlwaysStartFromFailedChapters', OptionAlwaysStartTaskFromFailedChapters);
     edOptionDefaultUserAgent.Text := ReadString('connections', 'DefaultUserAgent', DefaultUserAgent);
+    if edOptionDefaultUserAgent.Text = '' then
+      edOptionDefaultUserAgent.Text := DefaultUserAgent;
 
     // proxy
     cbOptionUseProxy.Checked := ReadBool('connections', 'UseProxy', False);
