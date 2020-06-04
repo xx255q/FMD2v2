@@ -58,13 +58,20 @@ begin
   TUserData(luaClassGetObject(L)).Size := lua_tointeger(L, 1);
 end;
 
+function mem_clear(L: Plua_State): Integer; cdecl;
+begin
+  Result := 0;
+  TUserData(luaClassGetObject(L)).Clear;
+end;
+
 const
-  methods: packed array [0..5] of luaL_Reg = (
+  methods: packed array [0..6] of luaL_Reg = (
     (name: 'ToString'; func: @mem_tostring),
     (name: 'ReadString'; func: @mem_toString),
     (name: 'WriteString'; func: @mem_writeString),
     (name: 'LoadFromFile'; func: @mem_loadFromFile),
     (name: 'SaveToFile'; func: @mem_saveToFile),
+    (name: 'Clear'; func: @mem_Clear),
     (name: nil; func: nil)
     );
   props: packed array[0..1] of luaL_Reg_prop = (
