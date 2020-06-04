@@ -71,7 +71,7 @@ type
   public
     constructor Create(AOwner: TBaseThread = nil);
     destructor Destroy; override;
-    procedure ParseHTTPCookies;
+    procedure ParseHTTPCookies; inline;
     function HTTPMethod(const Method, URL: string): Boolean;
     function HTTPRequest(const Method, URL: String; const Response: TObject = nil): Boolean;
     function HEAD(const URL: String; const Response: TObject = nil): Boolean;
@@ -80,7 +80,7 @@ type
     function XHR(const URL: String; const Response: TObject = nil): Boolean;
     function GetCookies: String;
     procedure MergeCookies(const ACookies: String);
-    procedure AddServerCookie(const AURL, ACookies: String; const AServerDate: TDateTime);
+    procedure AddServerCookie(const AURL, ACookies: String; const AServerDate: TDateTime); inline;
     function GetLastModified: TDateTime;
     function GetOriginalFileName: String;
     function ThreadTerminated: Boolean;
@@ -386,16 +386,17 @@ end;
 
 procedure THTTPSendThread.SetHTTPCookies;
 begin
-  if FEnabledCookies and not(FClearCookies) and Assigned(CookieManager) then
+  if FClearCookies then
+  begin
+    FClearCookies := False;
+    Exit;
+  end;
+  if FEnabledCookies and Assigned(CookieManager) then
     CookieManager.SetCookies(FURL, Self);
-  if FClearCookies then FClearCookies := False;
 end;
 
 procedure THTTPSendThread.ParseHTTPCookies;
 begin
-  if FEnabledCookies=False then
-    Cookies.Clear
-  else
   if Assigned(CookieManager) then
     CookieManager.AddServerCookies(FURL, Self.Headers);
 end;
@@ -469,7 +470,10 @@ begin
     BeforeHTTPMethod(Self, amethod, aurl);
   SetHTTPCookies;
   Result := inherited HTTPMethod(amethod, aurl);
-  ParseHTTPCookies;
+  if FEnabledCookies then
+    ParseHTTPCookies
+  else
+    Cookies.Clear;
   if Assigned(AfterHTTPMethod) then
     AfterHTTPMethod(Self, amethod, aurl);
 end;
@@ -769,7 +773,6 @@ end;
 procedure THTTPSendThread.ResetBasic;
 begin
   Clear;
-  ClearCookies;
   if FGZip then Headers.Values['Accept-Encoding'] := ' gzip, deflate';
 end;
 

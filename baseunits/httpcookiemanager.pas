@@ -79,66 +79,76 @@ end;
 procedure THTTPCookieManager.InternalAddServerCookie(const AURL, ACookie: String;
   const AServerDate: TDateTime);
 var
+  Prot, User, Pass, Host, Port, Path, Para: String;
   s, n, ni, v: String;
   c: THTTPCookie;
-  Prot, User, Pass, Host, Port, Path, Para: String;
   i: Integer;
+  scookie: TStringArray;
 begin
-  if Trim(ACookie) = '' then Exit;
-  n := Trim(SeparateLeft(ACookie, '='));
-  for i := 0 to FCookies.Count-1 do
-  begin
-    if n = FCookies[i].Name then
-    begin
-      FCookies.Delete(i);
-      Break;
-    end;
-  end;
-  c := THTTPCookie.Create;
-  FCookies.Add(c);
-  for s in ACookie.Split([';']) do
-  begin
-    n := Trim(SeparateLeft(s,'='));
-    v := Trim(SeparateRight(s, '='));
-    ni := LowerCase(n);
-    if ni = 'domain' then
-      {
-        leading %x2E (".") is ignored per revised specification
-        https://tools.ietf.org/html/rfc6265#section-4.1.2.3
-      }
-      c.Domain := LowerCase(TrimLeftSet(v, ['.']))
-    else if ni = 'path' then
-      c.Path := v
-    else if ni = 'expires' then
-    begin
-      c.Expires := DecodeRfcDateTime(v);
-      c.Persistent := True;
-    end
-    else if ni = 'max-age' then
-    begin
-      c.Expires := IncSecond(AServerDate, StrToIntDef(v, 0));
-      c.Persistent := True;
-    end
-    else if ni = 'secure' then
-      c.Secure := True
-    else if ni = 'httponly' then
-      c.HttpOnly := True
-    else if ni = 'samesite' then
-      c.SameSite := LowerCase(v)
-    else
-    begin
-      c.Name := n;
-      c.Value := v;
-    end;
-  end;
+  s := Trim(ACookie);
+  if s = '' then Exit;
 
   ParseURL(AURL, Prot, User, Pass, Host, Port, Path, Para);
-  if c.Domain = '' then
-    c.Domain := LowerCase(Host);
-  if c.Path = '' then
+  scookie := s.Split(';');
+  if Length(scookie) = 0 then Exit;
+
+  c := THTTPCookie.Create;
+  try
+    c.Name := Trim(SeparateLeft(scookie[0], '='));
+    c.Value := Trim(SeparateRight(scookie[0], '='));
+    c.Domain := Host;
     c.Path := Path;
-  if c.SameSite = '' then
-    c.SameSite := 'none';
+    Delete(scookie, 0, 1);
+    for s in scookie do
+    begin
+      n := Trim(SeparateLeft(s,'='));
+      v := Trim(SeparateRight(s, '='));
+      ni := LowerCase(n);
+      if ni = 'domain' then
+        {
+          leading %x2E (".") is ignored per revised specification
+          https://tools.ietf.org/html/rfc6265#section-4.1.2.3
+        }
+        c.Domain := v.ToLower.TrimLeft('.')
+      else
+      if ni = 'path' then
+        c.Path := v
+      else
+      if ni = 'expires' then
+      begin
+        c.Expires := DecodeRfcDateTime(v);
+        c.Persistent := True;
+      end
+      else
+      if ni = 'max-age' then
+      begin
+        c.Expires := IncSecond(AServerDate, StrToIntDef(v, 0));
+        c.Persistent := True;
+      end
+      else
+      if ni = 'secure' then
+        c.Secure := True
+      else
+      if ni = 'httponly' then
+        c.HttpOnly := True
+      else
+      if ni = 'samesite' then
+        c.SameSite := LowerCase(v);
+    end;
+    if c.SameSite = '' then
+      c.SameSite := 'none';
+
+    // search and delete existing cookie
+    for i := 0 to FCookies.Count-1 do
+      if (c.Name = FCookies[i].Name) and (c.Domain = FCookies[i].Domain) and (c.Path = FCookies[i].Path) then
+      begin
+        FCookies.Delete(i);
+        Break;
+      end;
+  finally
+    FCookies.Add(c);
+  end;
+  Finalize(scookie);
 end;
 
 procedure THTTPCookieManager.AddServerCookie(const AURL, ACookie: String;
