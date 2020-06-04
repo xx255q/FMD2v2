@@ -7,6 +7,7 @@ function Init()
 	m.OnGetInfo                  = 'GetInfo'
 	m.OnGetPageNumber            = 'GetPageNumber'
 	m.OnGetNameAndLink           = 'GetNameAndLink'
+	m.MaxConnectionLimit         = 8
 end
 
 function GetInfo()
@@ -30,7 +31,7 @@ function GetInfo()
 				HTTP.Headers.Values['content-type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
 				HTTP.Headers.Add('X-Requested-With: XMLHttpRequest')
 				if HTTP.POST(MODULE.RootURL .. '/cek/fetch_pages_manga.php?manga_cek='..info, 'page='..p) then
-					x=TXQuery.Create(HTTP.Document)
+					x.ParseHTML(HTTP.Document)
 				else
 					break
 				end
@@ -40,12 +41,7 @@ function GetInfo()
 				local pg = x.XPathString('//*[@class="last"]/a/@data-page')
 				if pg ~= '' then pages = tonumber(pg) end
 			end
-			local v=x.XPath('//tr/td[1]/a')
-			for i=1,v.Count do
-				local v1=v.Get(i)
-				MANGAINFO.ChapterLinks.Add(v1.GetAttribute('href'))
-				MANGAINFO.ChapterNames.Add(v1.ToString())
-			end
+			x.XPathHREFAll('//tr/td[1]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			p = p + 1
 		end
 		InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
