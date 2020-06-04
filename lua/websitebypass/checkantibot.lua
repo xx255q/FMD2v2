@@ -3,9 +3,10 @@
 -- this function will be called very often(for each of http request), keep it minimal
 function ____CheckAntiBot(HTTP)
 	local rc = HTTP.ResultCode
-	if ((rc == 403) or (rc == 429) or (rc == 503)) and HTTP.Headers.Values["Content-Type"]:lower():find("text/html") then
-		if HTTP.Headers.Values['Server']:lower():find('cloudflare') then
-			return true, 'cloudflare'
+	if ((rc == 403) or (rc == 429) or (rc == 503)) and HTTP.Headers.Values['Content-Type']:lower():find('text/html') then
+		local server = HTTP.Headers.Values['Server']:lower()
+		if server:find('cloudflare') or server:find('ddos%-guard') then
+			return true
 		end
 	end
 	return false
