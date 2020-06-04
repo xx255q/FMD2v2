@@ -273,6 +273,8 @@ function Init()
 	AddWebsiteModule('9bec8a0a18e94de1b99c2bc2598438b4', 'MangaDods', 'https://www.mangadods.com', cat)
 	AddWebsiteModule('a24656d5e72544469f656e490ffc2591', 'DisasterScans', 'https://disasterscans.com', cat)
 	AddWebsiteModule('a1b569bcec9147f4945383655c052676', 'RaiderScans', 'https://raiderscans.com', cat)
+	AddWebsiteModule('3524f691a195425897acd98909fcbb1f', 'WordExcerpt', 'https://wordexcerpt.com', cat)
+	AddWebsiteModule('4efbab5ca3364cd0bb63b776b895262e', 'ManhwaTime', 'https://manhwatime.xyz', cat)
 
 	cat = 'French'
 	AddWebsiteModule('41867fa36f2f49959df9fef8aa53ffb5', 'WakaScan', 'https://wakascan.com', cat)
@@ -310,6 +312,8 @@ function Init()
 	AddWebsiteModule('7976200824a7422d8f16a71dea38f672', 'ArtemisNF', 'https://artemisnf.com', cat)
 	AddWebsiteModule('cfc11bf4971f4db892f96867239771e7', 'LazyBoysScan', 'https://lazyboysscan.com', cat)
 	AddWebsiteModule('a9e9305e841f43f588a0deff0bc6ac88', 'BDSFansub', 'https://bdsfansub.com', cat)
+	AddWebsiteModule('df25c494b176424785ee82142d0af425', 'LeerManhua', 'https://leermanhua.com', cat)
+	AddWebsiteModule('1a9038c97ad04b6b8c54425a01b0bcb9', 'BakaguyaScan', 'https://bakaguya-scan.tk', cat)
 
 	cat = 'Webcomics'
 	AddWebsiteModule('2e6196018ffc4c92bc7ff332e41d52d4', 'ManyToon', 'https://manytoon.me', cat)
@@ -333,6 +337,10 @@ function Init()
 	AddWebsiteModule('5d8e32f00a0b4d0da2e5e562b63a5fc3', 'KissMangaIN', 'https://kissmanga.in', cat)
 	AddWebsiteModule('03cb00729e26448294329face3a8b53b', 'MiracleScans', 'https://miraclescans.com', cat)
 	AddWebsiteModule('c7aebe73845f43149bd5a8cbe84fd926', '1stKissManga', 'https://1stkissmanga.com', cat)
+	AddWebsiteModule('3ca6fe8322b64c9cb31d214c36e0789a', 'WuxiaWorld', 'https://wuxiaworld.site', cat)
+	AddWebsiteModule('c368172d02684553925cc7675490ae6e', 'WebNovelLive', 'https://webnovel.live', cat)
+	AddWebsiteModule('94b5ff5f2dd3421ab9e76113d5a1e600', 'MangaRockTeam', 'https://mangarockteam.com', cat)
+	AddWebsiteModule('2b653482cef845d980a0cba2a7e798e0', 'PhenomenalNoFansub', 'https://www.phenomenalnofansub.site', cat)
 
 	cat = 'Arabic-Scanlation'
 	AddWebsiteModule('7bda2905b61c49d1976777e9f2356361', '3asqOrg', 'https://3asq.org', cat)
@@ -357,6 +365,6 @@ function Init()
 	cat = 'Adult'
 	AddWebsiteModule('53ea37e05bb6487e8bfe0dde6248fdc6', 'Milftoon', 'https://milftoon.xxx', cat)
 
-	cat = 'Portuguese'
-	AddWebsiteModule('b2395d7d5e5244fea800216c12cac7dd', 'NeoxScanlator', 'https://neoxscan.com/newsite', cat)
+	cat = 'Portuguese-Scanlation'
+	AddWebsiteModule('b2395d7d5e5244fea800216c12cac7dd', 'NeoxScanlator', 'https://neoxscans.com', cat)
 end
