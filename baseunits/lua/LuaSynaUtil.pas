@@ -38,12 +38,29 @@ begin
   Result := 1;
 end;
 
+function lua_parseurl(L: Plua_State): Integer; cdecl;
+var
+  prot, user, pass, host, port, path, para, s: string;
+begin
+  s := ParseURL(luaGetString(L, 1), prot, user, pass, host, port, path, para);
+  lua_pushstring(L, prot);
+  lua_pushstring(L, user);
+  lua_pushstring(L, pass);
+  lua_pushstring(L, host);
+  lua_pushstring(L, port);
+  lua_pushstring(L, path);
+  lua_pushstring(L, para);
+  lua_pushstring(L, s);
+  Result := 8;
+end;
+
 procedure luaSynaUtilRegister(L: Plua_State);
 begin
   luaPushFunctionGlobal(L, 'GetBetween', @lua_getbetween);
   luaPushFunctionGlobal(L, 'SeparateLeft', @lua_separateleft);
   luaPushFunctionGlobal(L, 'SeparateRight', @lua_separateright);
   luaPushFunctionGlobal(L, 'ReplaceString', @lua_replacestring);
+  luaPushFunctionGlobal(L, 'ParseURL', @lua_parseurl);
 end;
 
 end.
