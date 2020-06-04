@@ -561,6 +561,9 @@ begin
     SplitURL(h, @h, nil, False, False);
     if h = '' then Exit;
     Result := PosModule(h);
+    // if host starts with www. try without it
+    if (Result = nil) and h.StartsWith('www.') then
+      Result := PosModule(h.Substring(4));
   end;
   if Assigned(Result) then
     InterlockedExchange(Pointer(FLastLocateModule), Pointer(Result));
