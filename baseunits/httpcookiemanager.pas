@@ -45,11 +45,12 @@ type
     FCookies: THTTPCookies;
     FGuardian: TCriticalSection;
   protected
-    procedure AddServerCookie(const AURL, ACookie: String; const AServerDate: TDateTime);
+    procedure InternalAddServerCookie(const AURL, ACookie: String; const AServerDate: TDateTime);
   public
     constructor Create;
     destructor Destroy; override;
-    procedure AddServerCookies(const AURL: String; const AHTTP: THTTPSend);
+    procedure AddServerCookie(const AURL, ACookie: String; const AServerDate: TDateTime);
+    procedure AddServerCookies(const AURL: String; const AServerHeaders: TStringList);
     procedure SetCookies(const AURL: String; const AHTTP: THTTPSend);
     procedure Clear;
   published
@@ -75,7 +76,7 @@ begin
   inherited Destroy;
 end;
 
-procedure THTTPCookieManager.AddServerCookie(const AURL, ACookie: String;
+procedure THTTPCookieManager.InternalAddServerCookie(const AURL, ACookie: String;
   const AServerDate: TDateTime);
 var
   s, n, ni, v: String;
@@ -140,8 +141,19 @@ begin
     c.SameSite := 'none';
 end;
 
-procedure THTTPCookieManager.AddServerCookies(const AURL: String;
-  const AHTTP: THTTPSend);
+procedure THTTPCookieManager.AddServerCookie(const AURL, ACookie: String;
+  const AServerDate: TDateTime);
+begin
+  FGuardian.Enter;
+  try
+    InternalAddServerCookie(AURL, ACookie, AServerDate);
+  finally
+    FGuardian.Leave;
+  end;
+end;
+
+procedure THTTPCookieManager.AddServerCookies(const AURL: String; const AServerHeaders: TStringList
+  );
 var
   i: Integer;
   s: String;
@@ -149,16 +161,16 @@ var
 begin
   FGuardian.Enter;
   try
-    s := Trim(AHTTP.Headers.Values['Date']);
+    s := Trim(AServerHeaders.Values['Date']);
     if s <> '' then
       d := DecodeRfcDateTime(s)
     else
       d := Now;
-    for i := 0 to AHTTP.Headers.Count - 1 do
+    for i := 0 to AServerHeaders.Count - 1 do
     begin
-      if Pos('set-cookie', LowerCase(AHTTP.Headers[i])) = 1 then
+      if Pos('set-cookie', LowerCase(AServerHeaders[i])) = 1 then
       begin
-        AddServerCookie(AURL, Trim(AHTTP.Headers.ValueFromIndex[i]), d);
+        InternalAddServerCookie(AURL, Trim(AServerHeaders.ValueFromIndex[i]), d);
       end;
     end;
   finally

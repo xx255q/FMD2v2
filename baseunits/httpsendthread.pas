@@ -67,11 +67,11 @@ type
     procedure OnOwnerTerminate(Sender: TObject);
   protected
     procedure SetHTTPCookies;
-    procedure ParseHTTPCookies;
     function InternalHTTPRequest(const Method, URL: String; const Response: TObject = nil): Boolean;
   public
     constructor Create(AOwner: TBaseThread = nil);
     destructor Destroy; override;
+    procedure ParseHTTPCookies;
     function HTTPMethod(const Method, URL: string): Boolean;
     function HTTPRequest(const Method, URL: String; const Response: TObject = nil): Boolean;
     function HEAD(const URL: String; const Response: TObject = nil): Boolean;
@@ -80,6 +80,7 @@ type
     function XHR(const URL: String; const Response: TObject = nil): Boolean;
     function GetCookies: String;
     procedure MergeCookies(const ACookies: String);
+    procedure AddServerCookie(const AURL, ACookies: String; const AServerDate: TDateTime);
     function GetLastModified: TDateTime;
     function GetOriginalFileName: String;
     function ThreadTerminated: Boolean;
@@ -396,7 +397,7 @@ begin
     Cookies.Clear
   else
   if Assigned(CookieManager) then
-    CookieManager.AddServerCookies(FURL, Self);
+    CookieManager.AddServerCookies(FURL, Self.Headers);
 end;
 
 function THTTPSendThread.InternalHTTPRequest(const Method, URL: String;
@@ -627,6 +628,13 @@ begin
     if Pos('=', s) > 0 then
       Cookies.Values[SeparateLeft(s,'=')] := SeparateRight(s,'=');
   end;
+end;
+
+procedure THTTPSendThread.AddServerCookie(const AURL, ACookies: String; const AServerDate: TDateTime
+  );
+begin
+  if Assigned(CookieManager) then
+    CookieManager.AddServerCookie(AURL, ACookies, AServerDate);
 end;
 
 function THTTPSendThread.GetLastModified: TDateTime;

@@ -67,6 +67,25 @@ begin
   TUserData(luaClassGetObject(L)).ClearCookies;
 end;
 
+function http_addservercookie(L: Plua_State): Integer; cdecl;
+begin
+  Result := 0;
+  TUserData(luaClassGetObject(L)).AddServerCookie(luaGetString(L, 1), luaGetString(L, 2), Now);
+end;
+
+function http_parseservercookies(L: Plua_State): Integer; cdecl;
+begin
+  Result := 0;
+  TUserData(luaClassGetObject(L)).ParseHTTPCookies;
+end;
+
+function http_setproxy(L: Plua_State): Integer; cdecl;
+begin
+  Result := 0;
+  TUserData(luaClassGetObject(L)).SetProxy(luaGetString(L, 1), luaGetString(L, 2),
+    luaGetString(L, 3), luaGetString(L, 4), luaGetString(L, 5));
+end;
+
 function http_getcookies(L: Plua_State): Integer; cdecl;
 begin
   lua_pushstring(L, TUserData(luaClassGetObject(L)).GetCookies);
@@ -77,13 +96,6 @@ function http_threadterminated(L: Plua_State): Integer; cdecl;
 begin
   lua_pushboolean(L, TUserData(luaClassGetObject(L)).ThreadTerminated);
   Result := 1;
-end;
-
-function http_setproxy(L: Plua_State): Integer; cdecl;
-begin
-  Result := 0;
-  TUserData(luaClassGetObject(L)).SetProxy(luaGetString(L, 1), luaGetString(L, 2),
-    luaGetString(L, 3), luaGetString(L, 4), luaGetString(L, 5));
 end;
 
 function http_threadlasturl(L: Plua_State): Integer; cdecl;
@@ -105,7 +117,7 @@ begin
 end;
 
 const
-  methods: packed array [0..10] of luaL_Reg = (
+  methods: packed array [0..12] of luaL_Reg = (
     (name: 'Request'; func: @http_request),
     (name: 'GET'; func: @http_get),
     (name: 'POST'; func: @http_post),
@@ -115,6 +127,8 @@ const
     (name: 'ResetBasic'; func: @http_resetbasic),
     (name: 'ClearCookies'; func: @http_clearcookies),
     (name: 'GetCookies'; func: @http_getcookies),
+    (name: 'AddServerCookie'; func: @http_addservercookie),
+    (name: 'ParseServerCookies'; func: @http_parseservercookies),
     (name: 'SetProxy'; func: @http_setproxy),
     (name: nil; func: nil)
     );
