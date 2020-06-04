@@ -1,6 +1,6 @@
-local _cf = {}
+local _m = {}
 
-function _cf.IUAMChallengeAnswer(self, body, url)
+function _m.IUAMChallengeAnswer(self, body, url)
 	local js = body:match('setTimeout%(function%(%){%s+(.+a%.value%s*=%s*%S+)')
 
 	if js == nil then
@@ -42,7 +42,7 @@ function _cf.IUAMChallengeAnswer(self, body, url)
 	return answer
 end
 
-function _cf.sleepOrBreak(self, delay)
+function _m.sleepOrBreak(self, delay)
 	local count = 0
 	while count < delay do
 		if HTTP.Terminated then break end
@@ -51,7 +51,7 @@ function _cf.sleepOrBreak(self, delay)
 	end
 end
 
-function _cf.solveIUAMChallenge(self, body, url)
+function _m.solveIUAMChallenge(self, body, url)
 	local answer = self:IUAMChallengeAnswer(body, url)
 	if (answer == nil) or (answer == 'NaN') or (answer == '') then
 		return false
@@ -105,7 +105,7 @@ function _cf.solveIUAMChallenge(self, body, url)
 	return HTTP.Cookies.Values["cf_clearance"] ~= ""
 end
 
-function _cf.solveChallenge(self, url)
+function _m.solveChallenge(self, url)
 	local body = HTTP.Document.ToString()
 	local rc = HTTP.ResultCode
 
@@ -133,7 +133,7 @@ function _cf.solveChallenge(self, url)
 	return false
 end
 
-function _cf.bypass(self, METHOD, URL)
+function _m.bypass(self, METHOD, URL)
 	local result = false
 	local counter = 0
 	local maxretry = HTTP.RetryCount;
@@ -155,4 +155,4 @@ function _cf.bypass(self, METHOD, URL)
 	return result
 end
 
-return _cf
+return _m
