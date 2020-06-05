@@ -12,7 +12,7 @@ procedure luaStringsAddMetaTable(const L: Plua_State; const Obj: Pointer;
 
 implementation
 
-uses LuaClass, LuaUtils;
+uses LuaClass, LuaUtils, LuaPackage;
 
 type
   TUserData = TStrings;
@@ -214,12 +214,13 @@ begin
   luaClassAddDefaultArrayProperty(L, MetaTable, UserData, @strings_get, @strings_set);
 end;
 
-procedure luaStringsRegister(const L: Plua_State);
+function luaopen_strings(L: Plua_State): Integer; cdecl;
 begin
-  luaClassNewLib(L, TUserData.ClassName, constructs);
+  luaClassNewLib(L, '', constructs);
+  Result := 1;
 end;
 
 initialization
-  luaClassRegister(TUserData, @luaStringsAddMetaTable, @luaStringsRegister);
+  LuaPackage.AddLib('strings', @luaopen_strings);
 
 end.

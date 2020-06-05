@@ -31,10 +31,10 @@ implementation
 uses
   MultiLog,
   LuaPackage, LuaClass, LuaUtils,
-  LuaStrings, LuaCriticalSection, LuaMemoryStream,
+  LuaCriticalSection, LuaMemoryStream,
   LuaBaseUnit, LuaSynaUtil, LuaSynaCode,
   // -- in lua package
-  LuaFMD, LuaPCRE2, LuaDuktape, LuaCrypto, LuaImagePuzzle, LuaMangaFox, LuaLogger;
+  LuaFMD, LuaPCRE2, LuaDuktape, LuaCrypto, LuaStrings, LuaImagePuzzle, LuaMangaFox, LuaLogger;
   // --
 
 function luabase_print(L: Plua_State): Integer; cdecl;
