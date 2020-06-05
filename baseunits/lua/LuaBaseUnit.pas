@@ -14,12 +14,6 @@ implementation
 uses
   LuaUtils, httpsendthread, LazFileUtils, MultiLog, htmlelements, dateutils;
 
-function lua_pos(L: Plua_State): Integer; cdecl;
-begin
-  lua_pushinteger(L, Pos(luaGetString(L, 1), luaGetString(L, 2)));
-  Result := 1;
-end;
-
 function lua_trim(L: Plua_State): Integer; cdecl;
 begin
   if lua_gettop(L) > 1 then
@@ -149,20 +143,6 @@ begin
   Result := 2;
 end;
 
-function lua_incstr(L: Plua_State): Integer; cdecl;
-var
-  n: Integer;
-begin
-  n := 1;
-  if (lua_gettop(L) = 2) and lua_isnumber(L, 2) then
-    n := lua_tointeger(L, 2);
-  if lua_isnumber(L, 1) then
-    lua_pushstring(L, IncStr(lua_tointeger(L, 1), n))
-  else
-    lua_pushstring(L, IncStr(luaGetString(L, 1), n));
-  Result := 1;
-end;
-
 function lua_streamtostring(L: Plua_State): Integer; cdecl;
 begin
   if lua_isuserdata(L, 1) then
@@ -280,7 +260,6 @@ begin
   luaPushFunctionGlobal(L, 'HTMLDecode', @lua_htmldecode);
   luaPushFunctionGlobal(L, 'HTMLEncode', @lua_htmlencode);
   luaPushFunctionGlobal(L, 'URLDecode', @lua_urldecode);
-  luaPushFunctionGlobal(L, 'IncStr', @lua_incstr);
   luaPushFunctionGlobal(L, 'StreamToString', @lua_streamtostring);
   luaPushFunctionGlobal(L, 'StringToStream', @lua_stringtostream);
   luaPushFunctionGlobal(L, 'Round', @lua_round);
