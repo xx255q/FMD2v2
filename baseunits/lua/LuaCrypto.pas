@@ -42,15 +42,6 @@ begin
   Result := 1;
 end;
 
-procedure luaCryptoRegister(L: Plua_State);
-begin
-  luaPushFunctionGlobal(L, 'HexToStr', @crypto_hextostr);
-  luaPushFunctionGlobal(L, 'StrToHexStr', @crypto_strtohexstr);
-  luaPushFunctionGlobal(L, 'MD5Hex', @crypto_md5hex);
-  luaPushFunctionGlobal(L, 'AESDecryptCBC', @crypto_aesdecryptcbc);
-  luaPushFunctionGlobal(L, 'AESDecryptCBCSHA256Base64Pkcs7', @crypto_AESDecryptCBCSHA256Base64Pkcs7);
-end;
-
 function luaopen_crypto(L: Plua_State): Integer; cdecl;
 var
   t: Integer;
