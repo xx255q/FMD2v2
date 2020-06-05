@@ -7,12 +7,10 @@ interface
 uses
   Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif};
 
-procedure luaLoggerRegister(L: Plua_State);
-
 implementation
 
 uses
-  MultiLog, LuaClass, LuaUtils;
+  MultiLog, LuaClass, LuaUtils, LuaPackage;
 
 function logger_send(L: Plua_State): Integer; cdecl;
 begin
@@ -40,9 +38,13 @@ const
     (name: nil; func: nil)
     );
 
-procedure luaLoggerRegister(L: Plua_State);
+function luaopen_logger(L: Plua_State): Integer; cdecl;
 begin
-  luaClassNewLib(L, 'LOGGER', methods);
+  luaClassNewLib(L, '', methods);
+  Result := 1;
 end;
+
+initialization
+  LuaPackage.AddLib('logger', @luaopen_logger);
 
 end.

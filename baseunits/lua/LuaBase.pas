@@ -36,9 +36,8 @@ uses
   LuaStrings, LuaCriticalSection, LuaMemoryStream,
   LuaBaseUnit, LuaSynaUtil, LuaSynaCode,LuaCrypto, LuaImagePuzzle, LuaDuktape,
   // -- in lua package
-  LuaFMD, LuaPCRE2, LuaMangaFox,
+  LuaFMD, LuaPCRE2, LuaMangaFox, LuaLogger;
   // --
-  LuaLogger;
 
 function luabase_print(L: Plua_State): Integer; cdecl;
 var
@@ -71,7 +70,6 @@ begin
   luaSynaCodeRegister(L);
   luaCryptoRegister(L);
   luaDuktapeRegister(L);
-  luaLoggerRegister(L);
 
   luaClassRegisterAll(L);
 end;
