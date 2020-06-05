@@ -60,7 +60,7 @@ end;
 procedure LuaBaseRegister(const L: Plua_State);
 begin
   luaPushFunctionGlobal(L, 'print', @luabase_print);
-  luaPushFunctionGlobal(L, 'Sleep', @luabase_sleep);
+  luaPushFunctionGlobal(L, 'sleep', @luabase_sleep);
 
   luaBaseUnitRegister(L);
   luaSynaUtilRegister(L);
