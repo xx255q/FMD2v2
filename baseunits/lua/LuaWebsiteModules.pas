@@ -437,6 +437,12 @@ begin
   end;
 end;
 
+function _newwebsitemodule(L: Plua_State): Integer; cdecl;
+begin
+  luaClassPushObject(L, TLuaWebsiteModule.Create, '', False, @luaWebsiteModuleAddMetaTable);
+  Result := 1;
+end;
+
 function DoInit(const AFileName: String; var AStream: TMemoryStream): Boolean;
 var
   L: Plua_State;
@@ -454,6 +460,7 @@ begin
         lua_getglobal(L, PAnsiChar('Init'));
         if lua_isfunction(L, -1) then
         begin
+          lua_register(L, 'NewWebsiteModule', @_newwebsitemodule);
           i := lua_pcall(L, 0, 0, 0);
           if i = 0 then
             Result := True
@@ -952,21 +959,8 @@ begin
   end;
 end;
 
-function _create(L: Plua_State): Integer; cdecl;
-begin
-  luaClassPushObject(L, TLuaWebsiteModule.Create, '', False,
-    @luaWebsiteModuleAddMetaTable);
-  Result := 1;
-end;
-
-procedure luaWebsiteModuleRegister(const L: Plua_State);
-begin
-  lua_register(L, 'NewWebsiteModule', @_create);
-end;
-
 initialization
   LuaWebsiteModulesManager := TLuaWebsiteModulesManager.Create;
-  luaClassRegister(TLuaWebsiteModule, @luaWebsiteModuleAddMetaTable, @luaWebsiteModuleRegister);
 
 finalization
   LuaWebsiteModulesManager.Free;
