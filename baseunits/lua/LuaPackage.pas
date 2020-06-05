@@ -15,6 +15,9 @@ implementation
 
 uses FileUtil, LazFileUtils, MultiLog, LuaUtils;
 
+const
+  LIBPREFIX = 'fmd.';
+
 type
 
   TLuaLib = class
@@ -131,7 +134,7 @@ var
 begin
   lib := TLuaLib.Create;
   lib.RegLib := ARegLib;
-  Packages.AddObject(AName, lib);
+  Packages.AddObject(LIBPREFIX + AName, lib);
 end;
 
 initialization
