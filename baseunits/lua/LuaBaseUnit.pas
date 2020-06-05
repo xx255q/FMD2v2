@@ -263,7 +263,6 @@ end;
 
 procedure luaBaseUnitRegister(L: Plua_State);
 begin
-  luaPushFunctionGlobal(L, 'Pos', @lua_pos);
   luaPushFunctionGlobal(L, 'Trim', @lua_trim);
   luaPushFunctionGlobal(L, 'ExtractFileName', @lua_extractfilename);
   luaPushFunctionGlobal(L, 'ExtractFileNameOnly', @lua_extractfilenameonly);
