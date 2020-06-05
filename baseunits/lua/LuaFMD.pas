@@ -27,6 +27,6 @@ begin
 end;
 
 initialization
-  LuaPackage.AddLib('fmd', @luaopen_fmd);
+  LuaPackage.AddLib('env', @luaopen_fmd);
 
 end.
