@@ -229,7 +229,7 @@ begin
         Logger.SendException('LuaExecute.pcall.Error',E);
     end;
   if r <> 0 then
-    raise Exception.Create(LuaGetReturnString(r));
+    raise Exception.Create('LuaExecute.Error '+LuaGetReturnString(r));
 end;
 
 end.
