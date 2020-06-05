@@ -113,7 +113,7 @@ begin
       FindAllFiles(files, APath, '*.lua', True, faAnyFile);
       for f in files do
       begin
-        s:=ExtractFileNameWithoutExt(f.Replace(APath, '', [])).Replace(PathDelim, '.', [rfReplaceAll]);
+        s := ExtractFileNameWithoutExt(f.Replace(APath, '', [])).Replace(PathDelim, '.', [rfReplaceAll]);
         m := nil;
         m := LuaDumpFileToStream(f);
         if Assigned(m) then
