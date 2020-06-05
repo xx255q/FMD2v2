@@ -30,9 +30,6 @@ type
     property Text: String read GetText write SetText;
   end;
 
-procedure luaStringsStoragePush(const L: Plua_State; const Obj: TStringsStorage;
-  const Name: String = ''; const AutoFree: Boolean = False); inline;
-
 procedure luaStringsStorageAddMetaTable(const L: Plua_State; const Obj: Pointer;
   const MetaTable, UserData: Integer);
 
@@ -106,12 +103,6 @@ end;
 type
   TUserData = TStringsStorage;
 
-function strings_create(L: Plua_State): Integer; cdecl;
-begin
-  luaStringsStoragePush(L, TStringsStorage.Create, '', True);
-  Result := 1;
-end;
-
 function strings_destroy(L: Plua_State): Integer; cdecl;
 begin
   TUserData(luaClassGetObject(L)).Free;
@@ -149,13 +140,6 @@ begin
 end;
 
 const
-  constructs: packed array [0..4] of luaL_Reg = (
-    (name: 'New'; func: @strings_create),
-    (name: 'Create'; func: @strings_Create),
-    (name: 'new'; func: @strings_create),
-    (name: 'create'; func: @strings_create),
-    (name: nil; func: nil)
-    );
   methods: packed array [0..3] of luaL_Reg = (
     (name: 'Remove'; func: @strings_remove),
     (name: 'Free'; func: @strings_destroy),
@@ -174,18 +158,7 @@ begin
   luaClassAddStringProperty(L, MetaTable, 'Status', @TUserData(Obj).Status);
 end;
 
-procedure luaStringsStoragePush(const L: Plua_State;
-  const Obj: TStringsStorage; const Name: String; const AutoFree: Boolean);
-begin
-  luaClassPushObject(L, Obj, Name, AutoFree, @luaStringsStorageAddMetaTable);
-end;
-
-procedure luaStringsStorageRegister(const L: Plua_State);
-begin
-  luaClassNewLib(L, TUserData.ClassName, constructs);
-end;
-
 initialization
-  luaClassRegister(TUserData, @luaStringsStorageAddMetaTable, @luaStringsStorageRegister);
+  luaClassRegister(TUserData, @luaStringsStorageAddMetaTable);
 
 end.
