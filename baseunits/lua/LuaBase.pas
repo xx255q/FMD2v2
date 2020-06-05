@@ -32,10 +32,12 @@ implementation
 
 uses
   MultiLog,
-  LuaPackage, LuaClass, LuaUtils, LuaFMD,
+  LuaPackage, LuaClass, LuaUtils,
   LuaStrings, LuaCriticalSection, LuaMemoryStream,
   LuaBaseUnit, LuaSynaUtil, LuaSynaCode,LuaCrypto, LuaImagePuzzle, LuaDuktape,
-  LuaPCRE2, LuaMangaFox,
+  // -- in lua package
+  LuaFMD, LuaPCRE2, LuaMangaFox,
+  // --
   LuaLogger;
 
 function luabase_print(L: Plua_State): Integer; cdecl;

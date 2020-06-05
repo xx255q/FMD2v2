@@ -7,14 +7,12 @@ interface
 uses
   Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif};
 
-procedure luaFMDRegister(L: Plua_State);
-
 implementation
 
 uses
-  LuaClass, LuaUtils, FMDOptions, SimpleTranslator;
+  LuaUtils, LuaPackage, FMDOptions, SimpleTranslator;
 
-procedure luaFMDRegister(L: Plua_State);
+function luaopen_fmd(L: Plua_State): Integer; cdecl;
 var
   t: Integer;
 begin
@@ -25,7 +23,10 @@ begin
   luaAddStringToTable(L, t, 'Revision', REVISION_NUMBER);
   luaAddStringToTable(L, t, 'LuaDirectory', LUA_REPO_FOLDER);
   luaAddStringToTable(L, t, 'SelectedLanguage', SimpleTranslator.LastSelected);
-  lua_setglobal(L, 'FMD');
+  Result := 1;
 end;
+
+initialization
+  LuaPackage.AddLib('fmd', @luaopen_fmd);
 
 end.
