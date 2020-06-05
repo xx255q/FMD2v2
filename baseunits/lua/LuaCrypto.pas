@@ -5,14 +5,12 @@ unit LuaCrypto;
 interface
 
 uses
-  Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif}, BaseCrypto;
-
-procedure luaCryptoRegister(L: Plua_State);
+  Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif};
 
 implementation
 
 uses
-  LuaUtils;
+  LuaUtils, LuaPackage, BaseCrypto;
 
 function crypto_hextostr(L: Plua_State): Integer; cdecl;
 begin
@@ -52,6 +50,22 @@ begin
   luaPushFunctionGlobal(L, 'AESDecryptCBC', @crypto_aesdecryptcbc);
   luaPushFunctionGlobal(L, 'AESDecryptCBCSHA256Base64Pkcs7', @crypto_AESDecryptCBCSHA256Base64Pkcs7);
 end;
+
+function luaopen_crypto(L: Plua_State): Integer; cdecl;
+var
+  t: Integer;
+begin
+  t := luaNewTable(L);
+  luaAddCFunctionToTable(L, t, 'HexToStr', @crypto_hextostr);
+  luaAddCFunctionToTable(L, t, 'StrToHexStr', @crypto_strtohexstr);
+  luaAddCFunctionToTable(L, t, 'MD5Hex', @crypto_md5hex);
+  luaAddCFunctionToTable(L, t, 'AESDecryptCBC', @crypto_aesdecryptcbc);
+  luaAddCFunctionToTable(L, t, 'AESDecryptCBCSHA256Base64Pkcs7', @crypto_AESDecryptCBCSHA256Base64Pkcs7);
+  Result := 1;
+end;
+
+initialization
+  LuaPackage.AddLib('mangafoxwatermark', @luaopen_crypto);
 
 end.
 
