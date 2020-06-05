@@ -65,7 +65,7 @@ begin
 end;
 
 initialization
-  LuaPackage.AddLib('mangafoxwatermark', @luaopen_crypto);
+  LuaPackage.AddLib('crypto', @luaopen_crypto);
 
 end.
 
