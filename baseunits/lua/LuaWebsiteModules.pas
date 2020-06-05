@@ -460,7 +460,7 @@ begin
         lua_getglobal(L, PAnsiChar('Init'));
         if lua_isfunction(L, -1) then
         begin
-          lua_register(L, 'NewWebsiteModule', @_newwebsitemodule);
+          luaPushFunctionGlobal(L, 'NewWebsiteModule', @_newwebsitemodule);
           i := lua_pcall(L, 0, 0, 0);
           if i = 0 then
             Result := True

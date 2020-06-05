@@ -9,20 +9,20 @@ uses
 
 function luaNewTable(const L: Plua_State): Integer; inline;
 procedure luaAddCFunctionToTable(const L: Plua_State; const Table: Integer;
-  const Name: String; const Func: lua_CFunction);
+  const Name: String; const Func: lua_CFunction); inline;
 procedure luaAddCClosureToTable(const L: Plua_State; const Table, Value: Integer;
-  const Name: String; const Func: lua_CFunction); overload;
+  const Name: String; const Func: lua_CFunction); overload; inline;
 procedure luaAddCClosureToTable(const L: Plua_State; const Table: Integer; const Value: Pointer;
-  const Name: String; const Func: lua_CFunction); overload;
-procedure luaAddStringToTable(const L: Plua_State; const Table: Integer; const Name, Value: String);
-procedure luaAddIntegerToTable(const L: Plua_State; const Table: Integer; const Name: String; const Value: lua_Integer);
-procedure luaAddBooleanToTable(const L: Plua_State; const Table: Integer; const Name: String; const Value: Boolean);
+  const Name: String; const Func: lua_CFunction); overload; inline;
+procedure luaAddStringToTable(const L: Plua_State; const Table: Integer; const Name, Value: String); inline;
+procedure luaAddIntegerToTable(const L: Plua_State; const Table: Integer; const Name: String; const Value: lua_Integer); inline;
+procedure luaAddBooleanToTable(const L: Plua_State; const Table: Integer; const Name: String; const Value: Boolean); inline;
 
-procedure luaPushFunctionGlobal(const L: Plua_State; const Name: String; const Func: lua_CFunction);
+procedure luaPushFunctionGlobal(const L: Plua_State; const Name: String; const Func: lua_CFunction); inline;
 
-procedure luaPushStringGlobal(const L: Plua_State; const Name, Value: String);
-procedure luaPushIntegerGlobal(const L: Plua_State; const Name: String; const Value: lua_Integer);
-procedure luaPushBooleanGlobal(const L: Plua_State; const Name: String; const Value: Boolean);
+procedure luaPushStringGlobal(const L: Plua_State; const Name, Value: String); inline;
+procedure luaPushIntegerGlobal(const L: Plua_State; const Name: String; const Value: lua_Integer); inline;
+procedure luaPushBooleanGlobal(const L: Plua_State; const Name: String; const Value: Boolean); inline;
 procedure luaPushObjectGlobal(const L: Plua_State; const AObj: TObject; const AName: String;
   const AddMetaTable: TluaClassAddMetaTable = nil; const AutoFree: Boolean = False); inline;
 

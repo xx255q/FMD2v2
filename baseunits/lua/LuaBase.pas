@@ -8,8 +8,6 @@ uses
   Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif};
 
 procedure LuaBaseRegister(const L: Plua_State);
-procedure LuaBaseRegisterPrint(const L: Plua_State); inline;
-procedure LuaBaseRegisterSleep(const L: Plua_State); inline;
 
 function LuaDoFile(const AFileName: String; const AFuncName: String = ''): Plua_State;
 function LuaNewBaseState: Plua_State;
@@ -61,24 +59,14 @@ end;
 
 procedure LuaBaseRegister(const L: Plua_State);
 begin
-  LuaBaseRegisterPrint(L);
-  LuaBaseRegisterSleep(L);
+  luaPushFunctionGlobal(L, 'print', @luabase_print);
+  luaPushFunctionGlobal(L, 'Sleep', @luabase_sleep);
 
   luaBaseUnitRegister(L);
   luaSynaUtilRegister(L);
   luaSynaCodeRegister(L);
 
   luaClassRegisterAll(L);
-end;
-
-procedure LuaBaseRegisterPrint(const L: Plua_State);
-begin
-  lua_register(L, 'print', @luabase_print);
-end;
-
-procedure LuaBaseRegisterSleep(const L: Plua_State);
-begin
-  lua_register(L, 'Sleep', @luabase_sleep);
 end;
 
 function LuaDoFile(const AFileName: String; const AFuncName: String
