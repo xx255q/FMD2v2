@@ -5,17 +5,18 @@ unit LuaImagePuzzle;
 interface
 
 uses
-  Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif}, ImagePuzzle;
+  Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif};
 
 procedure luaImagePuzzleAddMetaTable(const L: Plua_State; const Obj: Pointer;
   const MetaTable, UserData: Integer);
 
 implementation
 
-uses LuaClass, LuaUtils;
+uses LuaClass, LuaUtils, LuaPackage, ImagePuzzle;
 
 type
   TUserData = TImagePuzzle;
+
 
 function imagepuzzle_create(L: Plua_State): Integer; cdecl;
 begin
@@ -85,13 +86,14 @@ begin
   luaClassAddIntegerProperty(L, MetaTable, 'Multiply', @TUserData(Obj).Multiply);
 end;
 
-procedure luaImagePuzzleRegister(const L: Plua_State);
+function luaopen_imagepuzzle(L: Plua_State): Integer; cdecl;
 begin
-  luaClassNewLib(L, 'TImagePuzzle', constructs);
+  luaClassNewLib(L, '', constructs);
+  Result := 1;
 end;
 
 initialization
-  luaClassRegister(TUserData, @luaImagePuzzleAddMetaTable, @luaImagePuzzleRegister);
+  LuaPackage.AddLib('imagepuzzle', @luaopen_imagepuzzle);
 
 end.
 

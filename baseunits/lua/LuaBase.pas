@@ -34,9 +34,9 @@ uses
   MultiLog,
   LuaPackage, LuaClass, LuaUtils,
   LuaStrings, LuaCriticalSection, LuaMemoryStream,
-  LuaBaseUnit, LuaSynaUtil, LuaSynaCode, LuaImagePuzzle,
+  LuaBaseUnit, LuaSynaUtil, LuaSynaCode,
   // -- in lua package
-  LuaFMD, LuaPCRE2, LuaDuktape, LuaCrypto, LuaMangaFox, LuaLogger;
+  LuaFMD, LuaPCRE2, LuaDuktape, LuaCrypto, LuaImagePuzzle, LuaMangaFox, LuaLogger;
   // --
 
 function luabase_print(L: Plua_State): Integer; cdecl;
