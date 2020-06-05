@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif}, LuaClass;
 
-function luaNewTable(const L: Plua_State): Integer;
+function luaNewTable(const L: Plua_State): Integer; inline;
 procedure luaAddCFunctionToTable(const L: Plua_State; const Table: Integer;
   const Name: String; const Func: lua_CFunction);
 procedure luaAddCClosureToTable(const L: Plua_State; const Table, Value: Integer;

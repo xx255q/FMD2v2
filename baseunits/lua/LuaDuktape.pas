@@ -7,11 +7,9 @@ interface
 uses
   Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif}, uBaseUnit;
 
-procedure luaDuktapeRegister(L: Plua_State);
-
 implementation
 
-uses JSUtils, LuaUtils;
+uses JSUtils, LuaUtils, LuaPackage;
 
 function lua_execjs(L: Plua_State): Integer; cdecl;
 begin
@@ -19,10 +17,17 @@ begin
   Result := 1;
 end;
 
-procedure luaDuktapeRegister(L: Plua_State);
+function luaopen_duktape(L: Plua_State): Integer; cdecl;
+var
+  t: Integer;
 begin
-  luaPushFunctionGlobal(L, 'ExecJS', @lua_execjs);
+  t := luaNewTable(L);
+  luaAddCFunctionToTable(L, t, 'ExecJS', @lua_execjs);
+  Result := 1;
 end;
+
+initialization
+  LuaPackage.AddLib('duktape', @luaopen_duktape);
 
 end.
 
