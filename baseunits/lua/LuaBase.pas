@@ -35,7 +35,7 @@ uses
   LuaPackage, LuaClass, LuaUtils, LuaFMD,
   LuaStrings, LuaCriticalSection, LuaMemoryStream,
   LuaBaseUnit, LuaSynaUtil, LuaSynaCode,LuaCrypto, LuaImagePuzzle, LuaDuktape,
-  LuaPCRE2,
+  LuaPCRE2, LuaMangaFox,
   LuaLogger;
 
 function luabase_print(L: Plua_State): Integer; cdecl;

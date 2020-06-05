@@ -136,7 +136,7 @@ implementation
 uses
   FMDOptions, FileUtil, MultiLog, LuaClass, LuaBase, LuaMangaInfo, LuaHTTPSend,
   LuaXQuery, LuaUtils, LuaDownloadTask, LuaUpdateListManager, LuaStrings,
-  LuaCriticalSection, LuaWebsiteModulesExtras, LuaPackage, uData,
+  LuaCriticalSection, LuaPackage, uData,
   uDownloadsManager, xquery, httpsendthread, FMDVars, LuaWebsiteBypass,
   LuaWebsiteModuleHandler;
 
@@ -407,7 +407,6 @@ begin
     L := GetLuaWebsiteModuleHandler(Module);
     try
       luaPushStringGlobal(L.Handle, 'FILENAME', AFilename);
-      luaWebsiteModulesExtrasRegisterAfterImageSaved(L.Handle);
 
       L.CallFunction(OnAfterImageSaved);
       Result := lua_toboolean(L.Handle, -1);
@@ -455,7 +454,6 @@ begin
         lua_getglobal(L, PAnsiChar('Init'));
         if lua_isfunction(L, -1) then
         begin
-          luaWebsiteModulesExtrasRegisterInit(L);
           i := lua_pcall(L, 0, 0, 0);
           if i = 0 then
             Result := True

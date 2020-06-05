@@ -1,4 +1,4 @@
-unit LuaWebsiteModulesExtras;
+unit LuaMangaFox;
 
 {$mode objfpc}{$H+}
 
@@ -7,13 +7,10 @@ interface
 uses
   Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif};
 
-procedure luaWebsiteModulesExtrasRegisterInit(L: Plua_State);
-procedure luaWebsiteModulesExtrasRegisterAfterImageSaved(L: Plua_State);
-
 implementation
 
 uses
-  LuaClass, LuaUtils, LuaFMD, MangaFoxWatermark;
+  LuaUtils, LuaPackage, MangaFoxWatermark;
 
 function mf_loadtemplate(L: Plua_State): Integer; cdecl;
 begin
@@ -32,15 +29,17 @@ begin
   Result := 1;
 end;
 
-procedure luaWebsiteModulesExtrasRegisterInit(L: Plua_State);
+function luaopen_mangafoxwatermark(L: Plua_State): Integer; cdecl;
+var
+  t: Integer;
 begin
-  luaFMDRegister(L);
-  luaPushFunctionGlobal(L, 'MangaFoxLoadTemplate', @mf_loadtemplate);
+  t := luaNewTable(L);
+  luaAddCFunctionToTable(L, t, 'LoadTemplate', @mf_loadtemplate);
+  luaAddCFunctionToTable(L, t, 'RemoveWatermark', @mf_removewatermark);
+  Result := 1;
 end;
 
-procedure luaWebsiteModulesExtrasRegisterAfterImageSaved(L: Plua_State);
-begin
-  luaPushFunctionGlobal(L, 'MangaFoxRemoveWatermark', @mf_removewatermark);
-end;
+initialization
+  LuaPackage.AddLib('mangafoxwatermark', @luaopen_mangafoxwatermark);
 
 end.
