@@ -13,7 +13,7 @@ procedure AddLib(const AName: String; const ARegLib: lua_CFunction);
 
 implementation
 
-uses FileUtil, LazFileUtils, MultiLog;
+uses FileUtil, LazFileUtils, MultiLog, LuaUtils;
 
 type
 
@@ -57,7 +57,7 @@ var
   c: TCachedPackage;
 begin
   Result := 0;
-  if Packages.Find(lua_tostring(L, 1), i) then
+  if Packages.Find(luaGetString(L, 1), i) then
   begin
     if Packages.Objects[i] is TLuaLib then
     begin
