@@ -66,17 +66,16 @@ function GMatch(const InputString, Expression: String; const StartOffset: Intege
 function Substitute(const InputString, Expression, Replacement: String; ReplaceAll: Boolean = False): String;
 function GSub(const InputString, Expression, Replacement: String): String; inline;
 function Version: String;
-function GetErrorMessage(const error_code: Integer; const error_offset: Integer = -1): String;
+function GetErrorMessage(const error_code: Integer; const error_offset: Cardinal = 0): String;
 
 implementation
 
-function GetErrorMessage(const error_code: Integer; const error_offset: Integer = -1): String;
-
+function GetErrorMessage(const error_code: Integer; const error_offset: Cardinal): String;
 begin
   setlength(Result, MAX_PATH);
   setlength(Result, pcre2_get_error_message_8(error_code, PAnsiChar(Result), MAX_PATH));
   Result := 'PCRE2 error ' + IntToStr(error_code) + ': ' + Result;
-  if error_offset > 0 then
+  if error_offset <> 0 then
     Result := Result + ' at ' + IntToStr(error_offset) + ' position';
 end;
 
