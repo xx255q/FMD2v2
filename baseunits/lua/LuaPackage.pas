@@ -8,13 +8,18 @@ uses
   Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif}, LuaBase;
 
 procedure RegisterLoader(const L: Plua_State);
-procedure LoadPackages(const APath: String);
+procedure ScanAndLoadPackages(const APath: String);
+procedure AddLib(const AName: String; const ARegLib: lua_CFunction);
 
 implementation
 
 uses FileUtil, LazFileUtils, MultiLog;
 
 type
+
+  TLuaLib = class
+    RegLib: lua_CFunction;
+  end;
 
   { TCachedPackage }
 
@@ -27,7 +32,7 @@ type
   end;
 
 var
-  CachedPackages: TStringList;
+  Packages: TStringList;
 
 { TCacheItem }
 
@@ -52,14 +57,22 @@ var
   c: TCachedPackage;
 begin
   Result := 0;
-  if CachedPackages.Find(lua_tostring(L, 1), i) then
+  if Packages.Find(lua_tostring(L, 1), i) then
   begin
-    c := TCachedPackage(CachedPackages.Objects[i]);
-    i := LuaLoadFromStreamOrFile(L, c.Stream, c.FileName);
-    if i = 0 then
-      Result := 1
+    if Packages.Objects[i] is TLuaLib then
+    begin
+      lua_pushcfunction(L, TLuaLib(Packages.Objects[i]).RegLib);
+      Result := 1;
+    end
     else
-      Logger.SendError('require '+lua_tostring(L,1)+' '+LuaGetReturnString(i)+': '+lua_tostring(L,-1));
+    begin
+      c := TCachedPackage(Packages.Objects[i]);
+      i := LuaLoadFromStreamOrFile(L, c.Stream, c.FileName);
+      if i = 0 then
+        Result := 1
+      else
+        Logger.SendError('require '+lua_tostring(L,1)+' '+LuaGetReturnString(i)+': '+lua_tostring(L,-1));
+    end;
   end;
 end;
 
@@ -87,14 +100,14 @@ begin
   lua_settop(L,top);
 end;
 
-procedure LoadPackages(const APath: String);
+procedure ScanAndLoadPackages(const APath: String);
 var
   files: TStringList;
   f, s: String;
   m: TMemoryStream;
 begin
   if not DirectoryExists(APath) then Exit;
-  CachedPackages.Sorted := False;
+  Packages.Sorted := False;
   files := TStringList.Create;
     try
       FindAllFiles(files, APath, '*.lua', True, faAnyFile);
@@ -104,19 +117,28 @@ begin
         m := nil;
         m := LuaDumpFileToStream(f);
         if Assigned(m) then
-          CachedPackages.AddObject(s, TCachedPackage.Create(f, m));
+          Packages.AddObject(s, TCachedPackage.Create(f, m));
       end;
     finally
       files.Free;
     end;
-  CachedPackages.Sorted := True;
+  Packages.Sorted := True;
+end;
+
+procedure AddLib(const AName: String; const ARegLib: lua_CFunction);
+var
+  lib: TLuaLib;
+begin
+  lib := TLuaLib.Create;
+  lib.RegLib := ARegLib;
+  Packages.AddObject(AName, lib);
 end;
 
 initialization
-  CachedPackages := TStringList.Create;
-  CachedPackages.OwnsObjects := True;
+  Packages := TStringList.Create;
+  Packages.OwnsObjects := True;
 
 finalization
-  CachedPackages.Free;
+  Packages.Free;
 
 end.

@@ -617,7 +617,7 @@ var
   cpu_count: LongWord;
 begin
   LuaWebsiteBypass.doInitialization;
-  LuaPackage.LoadPackages(LUA_PACKAGES_FOLDER);
+  LuaPackage.ScanAndLoadPackages(LUA_PACKAGES_FOLDER);
 
   FindAllFiles(FFileList, LUA_WEBSITEMODULE_FOLDER, '*.lua;*.luac', False, faAnyFile);
   if FFileList.Count = 0 then Exit;
