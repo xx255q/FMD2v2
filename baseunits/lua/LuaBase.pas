@@ -31,9 +31,12 @@ var
 implementation
 
 uses
-  LuaPackage, LuaClass, LuaStrings, LuaBaseUnit, LuaRegExpr, LuaSynaUtil, LuaSynaCode,
-  MultiLog, LuaCrypto, LuaImagePuzzle, LuaDuktape, LuaCriticalSection,
-  LuaLogger, LuaUtils, LuaMemoryStream, LuaFMD;
+  MultiLog,
+  LuaPackage, LuaClass, LuaUtils, LuaFMD,
+  LuaStrings, LuaCriticalSection, LuaMemoryStream,
+  LuaBaseUnit, LuaSynaUtil, LuaSynaCode,LuaCrypto, LuaImagePuzzle, LuaDuktape,
+  LuaPCRE2,
+  LuaLogger;
 
 function luabase_print(L: Plua_State): Integer; cdecl;
 var
@@ -62,7 +65,6 @@ begin
   LuaBaseRegisterSleep(L);
 
   luaBaseUnitRegister(L);
-  luaRegExprRegister(L);
   luaSynaUtilRegister(L);
   luaSynaCodeRegister(L);
   luaCryptoRegister(L);
