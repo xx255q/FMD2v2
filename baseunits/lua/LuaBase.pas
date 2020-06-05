@@ -31,7 +31,7 @@ var
 implementation
 
 uses
-  LuaPackage, LuaClass, LuaStrings, LuaBaseUnit, LuaRegExpr, LuaPCRE2, LuaSynaUtil, LuaSynaCode,
+  LuaPackage, LuaClass, LuaStrings, LuaBaseUnit, LuaRegExpr, LuaSynaUtil, LuaSynaCode,
   MultiLog, LuaCrypto, LuaImagePuzzle, LuaDuktape, LuaCriticalSection,
   LuaLogger, LuaUtils, LuaMemoryStream, LuaFMD;
 
@@ -63,7 +63,6 @@ begin
 
   luaBaseUnitRegister(L);
   luaRegExprRegister(L);
-  luaPCRE2Register(L);
   luaSynaUtilRegister(L);
   luaSynaCodeRegister(L);
   luaCryptoRegister(L);

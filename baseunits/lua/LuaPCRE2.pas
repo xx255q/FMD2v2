@@ -7,12 +7,10 @@ interface
 uses
   Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif};
 
-procedure luaPCRE2Register(L: Plua_State);
-
 implementation
 
 uses
-  pcre2, pcre2lib, MultiLog, LuaClass, LuaUtils;
+  pcre2, pcre2lib, MultiLog, LuaClass, LuaUtils, LuaPackage;
 
 {/* directly pass the pointer by lua stack to pcre2 lib to save memory /*}
 
@@ -238,9 +236,13 @@ const
     (name: nil; func: nil)
     );
 
-procedure luaPCRE2Register(L: Plua_State);
+function luaopen_pcre2(L: Plua_State): Integer; cdecl;
 begin
-  luaClassNewLib(L,'RE',methods);
+  luaClassNewLib(L, '', methods);
+  Result := 1;
 end;
+
+initialization
+  LuaPackage.AddLib('pcre2', @luaopen_pcre2);
 
 end.
