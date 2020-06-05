@@ -61,7 +61,6 @@ end;
 
 procedure LuaBaseRegister(const L: Plua_State);
 begin
-  luaPushStringGlobal(L, 'PathDelim', PathDelim);
   LuaBaseRegisterPrint(L);
   LuaBaseRegisterSleep(L);
 
