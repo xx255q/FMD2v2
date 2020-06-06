@@ -1,7 +1,7 @@
 ﻿function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//div[@class="con"]/h2')
 		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//*[@class="bg_img_small"]/img/@src'))
 		MANGAINFO.Authors=x.XPathStringAll('//div[@class="con"]/dl/dd[@class="name"]/span[@class="aln"]')
@@ -29,7 +29,10 @@ end
 function getpagenumber()
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
+		local function HexToStr(str)
+			return str:gsub('%x%x',function(c)return c.char(tonumber(c,16))end)
+		end
 		json = HexToStr(GetBetween('keyList : "', '"', x.XPathString('//script[contains(., "keyList")]')))
 		x.ParseHTML(json)
 		x.XPathStringAll('json(*).list().URL', TASK.PageLinks)
@@ -46,8 +49,8 @@ local dirurls = {
 
 function getnameandlink()
 	local lurl = dirurls[MODULE.CurrentDirectoryIndex+1]
-	if HTTP.GET(MODULE.RootURL .. lurl .. IncStr(URL)) then
-		local x = TXQuery.Create(HTTP.Document)
+	if HTTP.GET(MODULE.RootURL .. lurl .. (URL + 1)) then
+		local x = CreateTXQuery(HTTP.Document)
 		local s = 'json(*).data().list()'
 		if MODULE.CurrentDirectoryIndex == 1 then
 			s = 'json(*).data.list()'

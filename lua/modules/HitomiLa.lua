@@ -11,7 +11,7 @@ end
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if not HTTP.GET(MANGAINFO.URL) then return net_problem end
-	local x=TXQuery.Create(HTTP.Document)
+	local x=CreateTXQuery(HTTP.Document)
 	if x.XPathString('//title'):lower()=='redirect' then
 		if HTTP.GET(x.XPathString('//a/@href')) then
 			x.ParseHTML(HTTP.Document)
@@ -102,12 +102,12 @@ function getpagenumber()
 		end
 		-- end of https://ltn.hitomi.la/common.js
 
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		local galleryid   = URL:match('/(%d+)%.html')
 		local gallery_url = x.XPathString('//script[contains(@src,"reader.js")]/@src'):match('//(.+)/')
 		if galleryid and gallery_url and HTTP.GET('https://'..gallery_url..'/galleries/'..galleryid..'.js') then
 			local no_webp=not MODULE.GetOption('download_webp')
-			local s = StreamToString(HTTP.Document):match('(%[.-%])')
+			local s = HTTP.Document.ToString():match('(%[.-%])')
 			if s then
 				x.ParseHTML(s)
 				local image={},v for _,v in ipairs(x.XPathI('json(*)()')) do
@@ -134,7 +134,7 @@ end
 
 function getnameandlink()
 	if not HTTP.GET('https://ltn.'..domain..'/index-all.nozomi') then return net_problem end
-	local s = StreamToString(HTTP.Document)
+	local s = HTTP.Document.ToString()
 	-- number in uint32 little-endian
 	local n
 	for i=1,s:len(),4 do

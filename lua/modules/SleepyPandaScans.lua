@@ -14,7 +14,7 @@ end
 function GetInfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL,URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//h4[contains(@class, "card-title")]')
 		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//img[contains(@class, "card-img-top")]/@src'))
 		MANGAINFO.Summary = x.XPathString('//p[contains(@class, "card-text")]')
@@ -35,7 +35,7 @@ function GetPageNumber()
 	TASK.PageLinks.Clear()
 	TASK.PageNumber=0
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		local v = x.XPath('//div[@class="view"]/img')
 		for i=1,v.Count do
 			v1=v.Get(i)
@@ -49,7 +49,7 @@ end
 
 function GetNameAndLink()
 	if HTTP.GET(MODULE.RootURL..'/series') then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('//h6[@class="card-title"]', NAMES)
 		x.XPathStringAll('//div[@class="container"]//div[contains(@class,"card")]//div/a/@href', LINKS)
 		return no_error

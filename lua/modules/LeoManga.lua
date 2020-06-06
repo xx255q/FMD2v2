@@ -21,7 +21,7 @@ function GetInfo()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	MANGAINFO.Title     = x.XPathString('(//section[contains(@class, "container")]//h3)[1]'):gsub('%(Manga%)', '')
 	MANGAINFO.CoverLink = x.XPathString('//div[@class="list-group"]//img/@src')
 	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('normalize-space(//div[@class="content-wrapper"]//span[contains(b, "' .. XPathTokenStatus .. '")])'):gsub('Estado: ', ''), 'Ongoing', 'Complete')

@@ -5,7 +5,7 @@ function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	HTTP.Cookies.Values['isAdult']=' 1'
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 
 	MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL,x.XPathString('//p[@class="hcover"]/img/@src'))
 	MANGAINFO.Title     = x.XPathString('//div[@class="book-title"]/h1')
@@ -39,7 +39,7 @@ function getpagenumber()
 	math.random(); math.random(); math.random();
 
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		local s = x.XPathString('//script[contains(., "p,a,c,k")]')
 		s = SeparateRight(s, "}('")
 		local text = SeparateLeft(s, "',");
@@ -71,7 +71,7 @@ end
 
 function getdirectorypagenumber()
 	if HTTP.GET(MODULE.RootURL .. '/list/') then
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 		local s = x.XPathString('//div[contains(@id, "AspNetPager")]/a[last()]/@href')
 		PAGENUMBER = tonumber(s:match('%d+')) or 1
 		return no_error
@@ -81,8 +81,8 @@ function getdirectorypagenumber()
 end
 
 function getnameandlink()
-	if HTTP.GET(MODULE.RootURL..'/list/index_p'..IncStr(URL)..'.html') then
-		TXQuery.Create(HTTP.Document).XPathHREFAll('//ul[@id="contList"]/li/p/a',LINKS,NAMES)
+	if HTTP.GET(MODULE.RootURL..'/list/index_p'..(URL + 1)..'.html') then
+		CreateTXQuery(HTTP.Document).XPathHREFAll('//ul[@id="contList"]/li/p/a',LINKS,NAMES)
 		return no_error
 	else
 		return net_problem

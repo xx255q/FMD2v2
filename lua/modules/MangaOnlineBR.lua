@@ -1,6 +1,6 @@
 function GetNameAndLink()
 	if HTTP.GET(MODULE.RootURL..'/titulos/') then
-			TXQuery.Create(HTTP.Document).XPathHREFAll('//div[@class="manga"]/p[1]/a', LINKS, NAMES)
+			CreateTXQuery(HTTP.Document).XPathHREFAll('//div[@class="manga"]/p[1]/a', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem
@@ -10,7 +10,7 @@ end
 function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//*[@id="page-mangas"]//*[@class="image"]/img/@src'))
 		MANGAINFO.Title     = x.XPathString('//h1')
@@ -39,7 +39,7 @@ function GetPageNumber()
 	local a, c = URL:match('/([^/]+)/capitulo/(%d+)')
 	if a and c then
 		if HTTP.GET(MODULE.RootURL .. '/capitulo.php?act=getImg&anime=' .. EncodeURLElement(a) .. '&capitulo=' .. c .. '&src=1&view=2') then
-			local x = TXQuery.Create(HTTP.Document)
+			local x = CreateTXQuery(HTTP.Document)
 			local v, i = x.XPath('//*[@id="imgAvancadoVisualizacao"]/img')
 			for i = 1, v.Count do
 				TASK.PageLinks.Add(MaybeFillHost(MODULE.RootURL, v.Get(i).GetAttribute('src')))

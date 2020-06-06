@@ -17,7 +17,7 @@ end
 
 function GetDirectoryPageNumber()
 	if HTTP.GET(MODULE.RootURL) then
-		PAGENUMBER = tonumber(TXQuery.Create(HTTP.Document).x.XPathString('//div[@class="paginator"]/span[starts-with(.,"Page") and contains(.," of ")]/normalize-space(substring-after(.," of "))')) or 1
+		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).x.XPathString('//div[@class="paginator"]/span[starts-with(.,"Page") and contains(.," of ")]/normalize-space(substring-after(.," of "))')) or 1
 		return no_error
 	else
 		return net_problem
@@ -27,10 +27,10 @@ end
 function GetNameAndLink()
 	local s = MODULE.RootURL
 	if URL ~= '0' then
-		s = s .. '/page/' .. IncStr(URL)
+		s = s .. '/page/' .. (URL + 1)
 	end
 	if HTTP.GET(s) then
-		TXQuery.Create(HTTP.Document).XPathHREFTitleAll('//div[@class="posts"]/div[starts-with(@id,"post-")]/a', LINKS, NAMES)
+		CreateTXQuery(HTTP.Document).XPathHREFTitleAll('//div[@class="posts"]/div[starts-with(@id,"post-")]/a', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem
@@ -40,7 +40,7 @@ end
 function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 
 		MANGAINFO.CoverLink = x.XPathString('//div[@class="single-post"]//img[starts-with(@class,"attachment-") and not(@data-lazy-src)]/@src')
 		if MANGAINFO.CoverLink == '' then
@@ -61,7 +61,7 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('//div[@class="single-post"]//dl[@class="gallery-item"]/dt/a/@href', TASK.PageContainerLinks)
 		x.XPathStringAll('//div[@class="single-post"]/p//a[./img[not(data-lazy-src)]]/@href', TASK.PageContainerLinks)
 		if TASK.PageContainerLinks.Count == 0 then
@@ -83,7 +83,7 @@ function GetImageURL()
 	if s ~= '' then
 		return true
 	elseif HTTP.GET(MaybeFillHost(MODULE.RootURL, TASK.PageContainerLinks[WORKID])) then
-			TASK.PageLinks[WORKID] = MaybeFillHost(MODULE.RootURL, TXQuery.Create(HTTP.Document).XPathString('//div[@class="attachment-image"]//img/@src'))
+			TASK.PageLinks[WORKID] = MaybeFillHost(MODULE.RootURL, CreateTXQuery(HTTP.Document).XPathString('//div[@class="attachment-image"]//img/@src'))
 		return true
 	else
 		return false

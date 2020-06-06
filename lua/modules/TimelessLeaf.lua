@@ -1,7 +1,7 @@
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//h1[@class="entry-title"]')
 		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//article//img/@src'))
 		MANGAINFO.Summary=x.XPathStringAll('//div[@class="entry-content page-content"]/p[not(contains(., "Chapter"))]/text()', '')
@@ -16,7 +16,7 @@ function getpagenumber()
 	TASK.PageLinks.Clear()
 	TASK.PageNumber = 0
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('//figure[@class="gallery-item"]//img/@src', TASK.PageLinks)
 	else
 		return false
@@ -26,7 +26,7 @@ end
 
 function getnameandlink()
 	if HTTP.GET(MODULE.RootURL .. '/comic-list') then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		x.XPathHREFAll('//a[.="Manga"]/following-sibling::ul//li/a[not(contains(@href,"more"))]', LINKS, NAMES)
 		return no_error
 	else

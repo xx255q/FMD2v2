@@ -15,7 +15,7 @@ function GetInfo()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	MANGAINFO.Title     = x.XPathString('//title/text()'):gsub('Bahasa Indonesia', ''):gsub('ManhuaID.com', ''):gsub('-', '')
 	MANGAINFO.CoverLink = x.XPathString('//div[contains(@class, "col-md-4")]/img/@src')
 	MANGAINFO.Authors   = x.XPathString('//th[contains(., "Author(s)")]/following-sibling::td'):gsub(',', ', ')
@@ -35,7 +35,7 @@ function GetNameAndLink()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	x.XPathHREFAll('//div[@class="col-md-12"]//div[@class="col-md"]/a', LINKS, NAMES)
 
 	return no_error
@@ -48,7 +48,7 @@ function GetPageNumber()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	x.XPathStringAll('//div[@class="col-md-12"]/img/@src', TASK.PageLinks)
 
 	return no_error

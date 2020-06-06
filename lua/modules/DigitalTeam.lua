@@ -1,7 +1,7 @@
 function GetInfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL,URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		if MANGAINFO.Title == '' then
 			MANGAINFO.Title=x.XPathString('css("div.title")')
 		end
@@ -24,11 +24,12 @@ function GetPageNumber()
 	TASK.PageLinks.Clear()
 	TASK.PageNumber = 0
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x=TXQuery.Create(HTTP.Document)
+		local duktape = require 'fmd.duktape'
+		local x=CreateTXQuery(HTTP.Document)
 		local isExt = (x.XPathString('//script[contains(@src, "rext.js")]/@src') ~= '')
 		local title=x.XPathString('//title')
 		local s=x.XPathString('//script[contains(., "current_page")]')
-		s=ExecJS(s .. ';JSON.stringify({m:m,ch:ch,chs:chs});')
+		s=duktape.ExecJS(s .. ';JSON.stringify({m:m,ch:ch,chs:chs});')
 		x.ParseHTML(s)
 		local m=x.XPathString('json(*).m')
 		local ch=x.XPathString('json(*).ch')
@@ -37,7 +38,7 @@ function GetPageNumber()
 		if isExt then data = data .. '&info[external]=1' end
 		HTTP.Reset()
 		if HTTP.POST(MaybeFillHost(MODULE.RootURL, '/reader/c_i'), EncodeURL(data)) then
-			x.ParseHTML(ExecJS(StreamToString(HTTP.Document)))
+			x.ParseHTML(duktape.ExecJS(HTTP.Document.ToString()))
 			local PATH = x.XPathString('json(*)()[3]')
 			local v=x.XPath('json(*)()[2]()')
 			local t={}
@@ -63,7 +64,7 @@ end
 
 function GetNameAndLink()
 	if HTTP.GET(MODULE.RootURL..'/reader/series') then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		x.XPathHREFAll('css(".manga_title > a")', LINKS, NAMES)
 		return no_error
 	else

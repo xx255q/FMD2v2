@@ -25,7 +25,7 @@ function _M.GetInfo()
 
   if not HTTP.GET(u) then return net_problem end
 
-  x = TXQuery.Create(HTTP.Document)
+  x = CreateTXQuery(HTTP.Document)
   MANGAINFO.Title     = x.XPathString('(//div[contains(@class, "container")]//h2)[1]')
   MANGAINFO.CoverLink = x.XPathString('//div[@class="boxed"]/img/@src')
   MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//dt[text()="' .. XPathTokenStatus .. '"]/following-sibling::dd[1]/span'), 'Ongoing', 'Complete')
@@ -51,7 +51,7 @@ function _M.GetNameAndLink()
 
   if not HTTP.GET(u) then return net_problem end
 
-  x = TXQuery.Create(HTTP.Document)
+  x = CreateTXQuery(HTTP.Document)
   x.XPathHREFAll('//li/a', LINKS, NAMES)
 
   return no_error
@@ -64,7 +64,7 @@ function _M.GetPageNumber()
 
   if not HTTP.GET(u) then return net_problem end
 
-  x = TXQuery.Create(HTTP.Document)
+  x = CreateTXQuery(HTTP.Document)
   x.XPathStringAll('//div[@id="all"]//img/@data-src', TASK.PageLinks)
   if TASK.PageLinks.Count == 0 then
     x.XPathStringAll('//div[@id="all"]//img/@src', TASK.PageLinks)

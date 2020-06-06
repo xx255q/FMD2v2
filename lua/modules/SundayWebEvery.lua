@@ -11,7 +11,7 @@ end
 
 function GetNameAndLink()
 	if HTTP.GET(MODULE.RootURL .. '/comics/') then
-		TXQuery.Create(HTTP.Document).XPathHREFAll('//ul[@class="manga-list__list"]/li/h4/a', LINKS, NAMES)
+		CreateTXQuery(HTTP.Document).XPathHREFAll('//ul[@class="manga-list__list"]/li/h4/a', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem
@@ -21,7 +21,7 @@ end
 function GetInfo()
 	MANGAINFO.URL = AppendURLDelim(MaybeFillHost(MODULE.RootURL, URL))
 	if HTTP.GET(MANGAINFO.URL) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//*[@id="mainvisual"]/img/@src'))
 		MANGAINFO.Title     = x.XPathString('//*[@class="title"]/h1')
@@ -50,7 +50,7 @@ function GetPageNumber()
 		if (key ~= nil) or (key ~= '') then
 			key = MODULE.RootURL .. '/assets/episodes/' .. key .. '/'
 			if HTTP.GET(key .. 'episode.json') then
-				local v for _, v in ipairs(TXQuery.Create(HTTP.Document).XPathI('json(*).pages()/files/h1536.jpeg')) do
+				local v for _, v in ipairs(CreateTXQuery(HTTP.Document).XPathI('json(*).pages()/files/h1536.jpeg')) do
 					TASK.PageLinks.Add(key .. v.ToString())
 				end
 			end

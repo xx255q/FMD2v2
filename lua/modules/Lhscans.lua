@@ -1,7 +1,7 @@
 function GetInfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title = Trim(SeparateLeft(x.XPathString('//div[@class="container"]//li[3]//span'), '- Raw'))
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//img[@class="thumbnail"]/@src'))
 		MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//ul[@class="manga-info"]/li[contains(., "Status")]//a'))
@@ -29,7 +29,7 @@ function GetPageNumber()
 	TASK.PageLinks.Clear()
 	local u = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(u) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		if MODULE.Name == 'Manhwa18' then
 			local v = x.XPath('//img[contains(@class, "chapter-img")]/@src')
 			for i = 1, v.Count do
@@ -52,7 +52,7 @@ end
 
 function GetNameAndLink()
 	if HTTP.GET(MODULE.RootURL .. '/manga-list.html?listType=allABC') then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		local v = x.XPath('//span[@manga-slug]//a')
 		for i = 1, v.Count do
 			local v1 = v.Get(i)

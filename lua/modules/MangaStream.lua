@@ -1,7 +1,7 @@
 function GetInfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL,URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//h1')
 		x.XPathHREFAll('//table//td/a',MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
 		InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
@@ -13,7 +13,7 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		TASK.PageNumber=tonumber(x.XPathString('//div[contains(@class,"btn-reader-page")]/ul[@class="dropdown-menu"]/li[last()]/substring-before(substring-after(.,"("),")")'))
 		return true
 	else
@@ -23,7 +23,7 @@ end
 
 function GetImageURL()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL):gsub('/1$','')..'/'..tostring(WORKID+1)) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		TASK.PageLinks[WORKID]=x.XPathString('//img[@id="manga-page"]/@src')
 		return true
 	else
@@ -33,7 +33,7 @@ end
 
 function GetNameAndLink()
 	if HTTP.GET(MODULE.RootURL..'/manga') then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		x.XPathHREFAll('//table//tr/td[1]//a', LINKS, NAMES)
 		return no_error
 	else

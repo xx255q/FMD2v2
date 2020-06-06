@@ -24,7 +24,7 @@ function _M.GetInfo()
 
   if not HTTP.GET(u) then return net_problem end
 
-  x = TXQuery.Create(HTTP.Document)
+  x = CreateTXQuery(HTTP.Document)
   rtitle              = x.XPathString('//h1[@class="NAMES"]/span[@class="name"]')
   MANGAINFO.Title     = x.XPathString('//h1[@class="NAMES"]/span[@class="eng-name"]')
   MANGAINFO.CoverLink = x.XPathString('//div[@class="picture-fotorama"]/img/@src')
@@ -34,7 +34,7 @@ function _M.GetInfo()
   MANGAINFO.Summary   = x.XPathString('//div[@class="manga-description"]')
 
   if MANGAINFO.Title == '' then MANGAINFO.Title = rtitle end
-  if Pos('продолжается', x.XPathString('//*[starts-with(@class,"subject-meta")]/*[starts-with(.,"Перевод:")]')) > 0 then MANGAINFO.Status = 1 else MANGAINFO.Status = 0 end
+  if string.find(x.XPathString('//*[starts-with(@class,"subject-meta")]/*[starts-with(.,"Перевод:")]'), 'продолжается', 1, true) then MANGAINFO.Status = 1 else MANGAINFO.Status = 0 end
 
   v = x.XPath('//table[@class="table table-hover"]/tbody/tr/td/a')
   for i = 1, v.Count do
@@ -52,7 +52,7 @@ function _M.GetDirectoryPageNumber()
 
   if not HTTP.GET(u) then return net_problem end
 
-  PAGENUMBER = tonumber(TXQuery.Create(HTTP.Document).XPathString('(//span[@class="pagination"])[last()]/a[@class="step"][last()]')) or 1
+  PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('(//span[@class="pagination"])[last()]/a[@class="step"][last()]')) or 1
 
   return no_error
 end
@@ -66,7 +66,7 @@ function _M.GetNameAndLink()
 
   if not HTTP.GET(u) then return net_problem end
 
-  x = TXQuery.Create(HTTP.Document)
+  x = CreateTXQuery(HTTP.Document)
   x.XPathHREFAll('//div[@class="tiles row"]//div[@class="desc"]/h3/a', LINKS, NAMES)
 
   return no_error
@@ -77,11 +77,11 @@ function _M.GetPageNumber()
   local json, x = nil
   local u = MaybeFillHost(MODULE.RootURL, URL)
 
-  if Pos('mtr=1', URL) == 0 then u = u .. '?mtr=1' end
+  if string.find(URL, 'mtr=1', 1, true) == nil then u = u .. '?mtr=1' end
 
   if not HTTP.GET(u) then return net_problem end
 
-  x = TXQuery.Create(HTTP.Document)
+  x = CreateTXQuery(HTTP.Document)
   json = GetBetween('[[', ', 0, ', Trim(GetBetween('rm_h.init(', 'false);', x.XPathString('//script[@type="text/javascript" and contains(., "rm_h.init")]'))))
   json = json:gsub('%],%[', ';'):gsub('\'', ''):gsub('"', ''):gsub(']]', ';')
   for i in json:gmatch('(.-);') do

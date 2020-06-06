@@ -17,7 +17,7 @@ local cdnurl = 'http://static.hentaicdn.com/hentai';
 
 function GetDirectoryPageNumber()
 	if HTTP.GET(MODULE.RootURL .. dirurl) then
-		PAGENUMBER = tonumber(TXQuery.Create(HTTP.Document).x.XPathString('//ul[starts-with(@class,"pagination")]/li[last()-1]/a')) or 1
+		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).x.XPathString('//ul[starts-with(@class,"pagination")]/li[last()-1]/a')) or 1
 		return no_error
 	else
 		return net_problem
@@ -27,10 +27,10 @@ end
 function GetNameAndLink()
 	local s = MODULE.RootURL .. dirurl
 	if URL ~= '0' then
-		s = s .. '/' .. IncStr(URL) .. '/'
+		s = s .. '/' .. (URL + 1) .. '/'
 	end
 	if HTTP.GET(s) then
-		local v for _, v in ipairs(TXQuery.Create(HTTP.Document).XPathI('//*[@class="img-overlay text-center"]/a')) do
+		local v for _, v in ipairs(CreateTXQuery(HTTP.Document).XPathI('//*[@class="img-overlay text-center"]/a')) do
 			LINKS.Add(v.GetAttribute('href'))
 			NAMES.Add(x.XPathString('h2/@data-title', v))
 		end
@@ -43,7 +43,7 @@ end
 function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 
 		MANGAINFO.CoverLink = MaybeFillHost(cdnurl, x.XPathString('//img[@class="img-responsive border-black-op"]/@src'))
 		MANGAINFO.Title     = x.XPathString('//h3[@class="block-title"]/a/text()')
@@ -66,7 +66,7 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		for _, v in ipairs(x.XPathI('json(//script[contains(.,"images\' :")]/substring-before(substring-after(.,"images\' : "),"]")||"]")()')) do
 			TASK.PageLinks.Add(cdnurl .. v.ToString())
 		end
@@ -81,9 +81,9 @@ end
 
 function GetImageURL()
 	local s = MaybeFillHost(MODULE.RootURL, URL)
-	if WORKID > 0 then s = AppendURLDelim(s) .. IncStr(WORKID) .. '/' end
+	if WORKID > 0 then s = AppendURLDelim(s) .. (WORKID + 1) .. '/' end
 	if HTTP.GET(s) then
-		TASK.PageLinks[WORKID] = MaybeFillHost(cdnurl, TXQuery.Create(HTTP.Document).XPathString('//img[@id="arf-reader"]/@src'):gsub('^/*', ''))
+		TASK.PageLinks[WORKID] = MaybeFillHost(cdnurl, CreateTXQuery(HTTP.Document).XPathString('//img[@id="arf-reader"]/@src'):gsub('^/*', ''))
 		return true
 	end
 		return false

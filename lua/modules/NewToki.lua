@@ -1,7 +1,7 @@
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 		if HTTP.GET(MANGAINFO.URL) then
-			x=TXQuery.Create(HTTP.Document)
+			x=CreateTXQuery(HTTP.Document)
 			MANGAINFO.Title     = x.XPathString('//title'):gsub('미리보기', '')
 			MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//meta[@property="og:image"]/@content'))
 			MANGAINFO.Authors   = x.XPathString('//meta[@property="og:author"]/@content')
@@ -24,7 +24,7 @@ function getpagenumber()
 	TASK.PageNumber=0
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('//div[contains(@class, "view-content")]//img/@data-original', TASK.PageLinks)
 		return true
 	else
@@ -33,8 +33,8 @@ function getpagenumber()
 end
 
 function getnameandlink()
-	if HTTP.GET(MODULE.RootURL..'/webtoon/p'.. IncStr(URL)..'?toon=일반웹툰') then
-		local x=TXQuery.Create(HTTP.Document)
+	if HTTP.GET(MODULE.RootURL..'/webtoon/p'.. (URL + 1)..'?toon=일반웹툰') then
+		local x=CreateTXQuery(HTTP.Document)
 			local v = x.XPath('//*[contains(@id, "webtoon-list-all")]//li')
 			for i = 1, v.Count do
 				local v1 = v.Get(i)

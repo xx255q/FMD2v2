@@ -14,7 +14,7 @@ function GetInfo()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	MANGAINFO.Title     = x.XPathString('//div[@id="breadcrumbs"]/substring-before(substring-after(., "Start"), "|")'):gsub('^%s*(.-)%s*$', '%1')
 	MANGAINFO.Summary   = x.XPathString('//table[@class="infobox"]//tr[6]//td[2]')
 
@@ -45,7 +45,7 @@ function GetNameAndLink()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	v = x.XPath('//div[@id="mangalist"]//a[not(@id="SpinOffOpen")]')
 
 	for i = 1, v.Count do
@@ -59,7 +59,7 @@ end
 -- Get the page count for the current chapter.
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL) .. '/1') then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		-- get total page number
 		TASK.PageNumber = tonumber(x.XPathString('//td[@id="tablecontrols"]/a[last()]')) or 0
 		-- first page image URL
@@ -71,8 +71,8 @@ function GetPageNumber()
 end
 
 function GetImageURL()
-	if HTTP.GET(AppendURLDelim(MaybeFillHost(MODULE.RootURL, URL)) .. IncStr(WORKID)) then
-		TASK.PageLinks[WORKID] = TXQuery.Create(HTTP.Document).XPathString('//img[@id="p"]/@src')
+	if HTTP.GET(AppendURLDelim(MaybeFillHost(MODULE.RootURL, URL)) .. (WORKID + 1)) then
+		TASK.PageLinks[WORKID] = CreateTXQuery(HTTP.Document).XPathString('//img[@id="p"]/@src')
 		return true
 	else
 		return false

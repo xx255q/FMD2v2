@@ -1,7 +1,7 @@
 ﻿function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//h1[@class="ebook_title"]')
 		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//img[contains(@class, "ebook_cover")]/@src'))
 		MANGAINFO.Authors=x.XPathString('//table[@class="details_table"]/tbody/tr[contains(td, "Author")]/td[2]')
@@ -20,7 +20,7 @@ function getpagenumber()
 	TASK.PageLinks.Clear()
 	TASK.PageNumber=0
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		TASK.PageNumber=TXQuery.Create(HTTP.Document).XPathCount('//select[@id="jumpto"]/option')
+		TASK.PageNumber=CreateTXQuery(HTTP.Document).XPathCount('//select[@id="jumpto"]/option')
 	else
 		return false
 	end
@@ -29,7 +29,7 @@ end
 
 function getnameandlink()
 	if HTTP.GET(MODULE.RootURL .. '/manga-list') then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		x.XPathHREFAll('//ul[@class="ul_list"]/li/a', LINKS, NAMES)
 		return no_error
 	else
@@ -39,7 +39,7 @@ end
 
 function getimageurl()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL):gsub('%d+$',tostring(WORKID+1))) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		local s = x.XPathString('//img[contains(@class, "ebook_img")]/@src')
 		TASK.PageLinks[WORKID] = MaybeFillHost(MODULE.RootURL, s)
 		return true

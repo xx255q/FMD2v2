@@ -23,7 +23,7 @@ function GetDirectoryPageNumber()
 		url = url .. '/ComicList/Newest'
 	end
 	if HTTP.GET(url) then
-		PAGENUMBER = tonumber(TXQuery.Create(HTTP.Document).x.XPathString('//ul[@class="pager"]/li[last()]/a/@href'):match('=(%d+)$')) or 1
+		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).x.XPathString('//ul[@class="pager"]/li[last()]/a/@href'):match('=(%d+)$')) or 1
 		return no_error
 	else
 		return net_problem
@@ -38,10 +38,10 @@ function GetNameAndLink()
 		url = url .. '/ComicList/Newest'
 	end
 	if URL ~= '0' then
-		url = url .. '?page=' .. IncStr(URL)
+		url = url .. '?page=' .. (URL + 1)
 	end
 	if HTTP.GET(url) then
-		TXQuery.Create(HTTP.Document).XPathHREFAll('//table[@class="listing"]/tbody/tr/td[1]/a', LINKS, NAMES)
+		CreateTXQuery(HTTP.Document).XPathHREFAll('//table[@class="listing"]/tbody/tr/td[1]/a', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem
@@ -51,7 +51,7 @@ end
 function GetInfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL,URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title     = x.XPathString('//title'):match('^[\r\n%s]-(.-)[\r\n]')
 		MANGAINFO.CoverLink = x.XPathString('//div[@id="rightside"]//img/@src')
 		MANGAINFO.Authors   = x.XPathStringAll('//div[@class="barContent"]//span[starts-with(., "Author") or starts-with(., "Writer")]/parent::*/a')
@@ -76,7 +76,6 @@ function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local body = HTTP.Document.ToString()
 		local s = body:match('var%s+lstImages%s+.-;(.-)%s+var%s')
-		print(tostring(s))
 		local i; for i in s:gmatch('%("(.-)"%)') do
 			TASK.PageLinks.Add(i)
 		end
@@ -84,6 +83,8 @@ function GetPageNumber()
 		if TASK.PageLinks.Count == 0 then return false end
 		-- kissmanga encrypted data
 		if (MODULE.ID == '4f40515fb43640ddb08eb61278fc97a5') and HTTP.GET(MODULE.RootURL .. '/Scripts/lo.js') then
+			LOGGER = require 'fmd.logger'
+			crypto = require 'fmd.crypto'
 			local key, iv
 			-- get the key and initialization vector
 
@@ -111,7 +112,7 @@ function GetPageNumber()
 
 				local test_p = TASK.PageLinks[0]
 				local function testkeyiv(akey)
-					if AESDecryptCBCSHA256Base64Pkcs7(test_p, akey, iv):find('://') then
+					if crypto.AESDecryptCBCSHA256Base64Pkcs7(test_p, akey, iv):find('://') then
 						key = akey
 						return true
 					else
@@ -130,7 +131,7 @@ function GetPageNumber()
 
 				if (key ~= nil) then
 					for i=0,TASK.PageLinks.Count-1 do
-						TASK.PageLinks[i] = AESDecryptCBCSHA256Base64Pkcs7(TASK.PageLinks[i], key, iv)
+						TASK.PageLinks[i] = crypto.AESDecryptCBCSHA256Base64Pkcs7(TASK.PageLinks[i], key, iv)
 					end
 				else
 					LOGGER.SendError(string.format([[KissManga: failed to get a key to decrypt

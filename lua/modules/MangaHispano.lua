@@ -1,7 +1,7 @@
 ﻿function getinfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//div[@class="boxed"]/img/@src'))
 		if MANGAINFO.Title == '' then
 			MANGAINFO.Title = x.XPathString('//h1[contains(@class,"widget-title")]')
@@ -26,7 +26,7 @@ end
 function getpagenumber()
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 		s = x.XPathString('//script[contains(., "var pages")]')
 		s = GetBetween('pages =', ';', s)
 		x.ParseHTML(s)
@@ -39,7 +39,7 @@ end
 
 function getnameandlink()
 	if HTTP.GET(MODULE.RootURL .. '/mangas') then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		x.XPathHREFAll('//div[@class="caption"]/h3/a', LINKS, NAMES)
 		return no_error
 	else

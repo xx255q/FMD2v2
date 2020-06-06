@@ -1,7 +1,7 @@
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//meta[@name="title"]/@content')
 		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//*[@class="bt_thumb"]/a/img/@src'))
 		MANGAINFO.Authors=x.XPathString('//meta[@name="author"]/@content')
@@ -22,7 +22,7 @@ end
 function getpagenumber()
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		local s = x.XPathString('//script[contains(., "toon_img")]')
 		x.ParseHTML(DecodeBase64(GetBetween("toon_img = '", "';", s)))
 		local v = x.XPath('//img/@src')
@@ -43,7 +43,7 @@ local dirurls = {
 function getnameandlink()
 	local lurl = dirurls[MODULE.CurrentDirectoryIndex+1]
 	if HTTP.GET(MODULE.RootURL .. lurl) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		x.XPathHREFAll('//ul[contains(@class, "homelist")]/li/div//a[@id="title"]', LINKS, NAMES)
 		return no_error
 	else

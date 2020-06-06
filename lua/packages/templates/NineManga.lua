@@ -23,7 +23,7 @@ function _M.GetInfo()
 
   if not HTTP.GET(u) then return net_problem end
 
-  x = TXQuery.Create(HTTP.Document)
+  x = CreateTXQuery(HTTP.Document)
   MANGAINFO.Title     = x.XPathString('//div[@class="manga"]/div[@class="ttline"]/h1')
   MANGAINFO.CoverLink = x.XPathString('//a[@class="bookface"]/img/@src')
   MANGAINFO.Authors   = x.XPathString('//ul[@class="message"]/li[starts-with(.,"Author")]/string-join(a,", ")')
@@ -43,15 +43,15 @@ end
 -- Get LINKS and NAMES from the manga list of the current website.
 function _M.GetNameAndLink()
   local x = nil
-  local u = MODULE.RootURL .. DirectoryPagination .. IncStr(URL) .. DirectorySuffix
+  local u = MODULE.RootURL .. DirectoryPagination .. (URL + 1) .. DirectorySuffix
 
   if not HTTP.GET(u) then return net_problem end
 
-  x = TXQuery.Create(HTTP.Document)
+  x = CreateTXQuery(HTTP.Document)
   x.XPathHREFAll('//dl[@class="bookinfo"]//dd/a[@class="bookname"]', LINKS, NAMES)
 
-  if tonumber(IncStr(URL)) < tonumber(x.XPathString('(//ul[@class="pagelist"]/li[last()-1])[1]')) then
-    UPDATELIST.CurrentDirectoryPageNumber = tonumber(IncStr(URL)) + 1
+  if tonumber((URL + 1)) < tonumber(x.XPathString('(//ul[@class="pagelist"]/li[last()-1])[1]')) then
+    UPDATELIST.CurrentDirectoryPageNumber = tonumber((URL + 1)) + 1
   end
 
   return no_error
@@ -64,7 +64,7 @@ function _M.GetPageNumber()
 
   if not HTTP.GET(u) then return net_problem end
 
-  x = TXQuery.Create(HTTP.Document)
+  x = CreateTXQuery(HTTP.Document)
   x.XPathStringAll('(//select[@id="page"])[last()]/option/@value', TASK.PageContainerLinks)
   TASK.PageNumber = TASK.PageContainerLinks.Count
 
@@ -76,7 +76,7 @@ function _M.GetImageURL()
   local u = MaybeFillHost(MODULE.RootURL, TASK.PageContainerLinks[WORKID])
 
   if HTTP.GET(u) then
-    TASK.PageLinks[WORKID] = TXQuery.Create(HTTP.Document).XPathString('//img[contains(@class,"manga_pic")]/@src')
+    TASK.PageLinks[WORKID] = CreateTXQuery(HTTP.Document).XPathString('//img[contains(@class,"manga_pic")]/@src')
     return true
   end
 

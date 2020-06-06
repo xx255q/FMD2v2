@@ -11,7 +11,7 @@ end
 
 function GetNameAndLink()
 	if HTTP.GET(MODULE.RootURL .. '/manga-list.html?listType=allABC') then
-		TXQuery.Create(HTTP.Document).XPathHREFAll('//span[@manga-slug]//a', LINKS, NAMES)
+		CreateTXQuery(HTTP.Document).XPathHREFAll('//span[@manga-slug]//a', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem
@@ -21,7 +21,7 @@ end
 function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title     = x.XPathString('(//ol[@class="breadcrumb"]//span[@itemprop="name"])[last()]')
 		MANGAINFO.CoverLink = x.XPathString('//img[@class="thumbnail"]/@src')
 		MANGAINFO.Authors   = x.XPathStringAll('//ul[@class="manga-info"]/li[starts-with(.,"Author")]//a')
@@ -38,7 +38,7 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MODULE.RootURL, URL) then
-		TXQuery.Create(HTTP.Document).XPathStringAll('//img[@class="_lazy chapter-img"]/@src', TASK.PageLinks)
+		CreateTXQuery(HTTP.Document).XPathStringAll('//img[@class="_lazy chapter-img"]/@src', TASK.PageLinks)
 	else
 		return false
 	end

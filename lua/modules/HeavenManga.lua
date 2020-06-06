@@ -6,7 +6,7 @@ function GetInfo()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//div[@class="comic-info"]/div/img/@src'))
 	MANGAINFO.Title     = x.XPathString('//div[@class="info"]/h1')
 	MANGAINFO.Authors   = x.XPathStringAll('//div[@class="info"]//div[@class="author"]/a')
@@ -25,7 +25,7 @@ function GetInfo()
 		if p > pages then
 			break
 		elseif HTTP.GET(u .. '/page-' .. tostring(p)) then
-			x = TXQuery.Create(HTTP.Document)
+			x = CreateTXQuery(HTTP.Document)
 		else
 			break
 		end
@@ -42,7 +42,7 @@ function GetPageNumber()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	x.XPathStringAll('//div[@class="chapter-content"]//img/@src', TASK.PageLinks)
 	TASK.PageNumber = TASK.PageLinks.Count
 
@@ -56,7 +56,7 @@ function GetDirectoryPageNumber()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	PAGENUMBER = tonumber(TXQuery.Create(HTTP.Document).XPathString('(//div[@class="pagination"]/a[contains(@class, "page-numbers")])[last()]/substring-after(@href, "/page-")'))
+	PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('(//div[@class="pagination"]/a[contains(@class, "page-numbers")])[last()]/substring-after(@href, "/page-")'))
 
 	return no_error
 end
@@ -64,11 +64,11 @@ end
 -- Get LINKS and NAMES from the manga list of the current website.
 function GetNameAndLink()
 	local x = nil
-	local u = MODULE.RootURL .. '/manga-list/page-' .. IncStr(URL) .. '/'
+	local u = MODULE.RootURL .. '/manga-list/page-' .. (URL + 1) .. '/'
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	x.XPathHREFAll('//div[@class="comics-grid"]/div/div/h3/a', LINKS, NAMES)
 
 	return no_error

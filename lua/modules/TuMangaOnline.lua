@@ -1,7 +1,7 @@
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		if MANGAINFO.Title == '' then
 			MANGAINFO.Title = Trim(x.XPathString('//h1[contains(@class, "element-title")]/text()'))
 		end
@@ -42,13 +42,13 @@ end
 function getpagenumber()
 	HTTP.Headers.Values['Referer'] = MODULE.RootURL:gsub('http://', 'https://')
 	if not HTTP.GET(MaybeFillHost(MODULE.RootURL, URL):gsub('http://', 'https://')) then return false; end
-	local x = TXQuery.Create(HTTP.Document)
+	local x = CreateTXQuery(HTTP.Document)
 	local u = x.XPathString('//meta[@property="og:URL"]/@content')
 	if string.match(u, 'cascade') then
 		u = string.gsub(u, '/cascade', '/paginated')
 		print(u)
 		if not HTTP.GET(MaybeFillHost(MODULE.RootURL, u):gsub('http://', 'https://')) then return false; end
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 	end
 	TASK.PageNumber = tonumber(x.XPathString('(//select[@id="viewer-pages-select"])[1]/option[last()]/text()'))
 	for i = 1, TASK.PageNumber do
@@ -61,7 +61,7 @@ function getimageurl()
 	local s = MaybeFillHost(MODULE.RootURL, TASK.PageContainerLinks[WORKID]):gsub('http://', 'https://')
 	HTTP.Headers.Values['Referer'] = MODULE.RootURL:gsub('http://', 'https://')
 	if HTTP.GET(s) then
-		TASK.PageLinks[WORKID] = TXQuery.Create(HTTP.Document).XPathString('//img[@class="viewer-image"]/@src')
+		TASK.PageLinks[WORKID] = CreateTXQuery(HTTP.Document).XPathString('//img[@class="viewer-image"]/@src')
 
 		return true
 	end
@@ -69,9 +69,9 @@ function getimageurl()
 end
 
 function getnameandlink()
-	local s = '/library?order_item=alphabetically&order_dir=asc&filter_by=title&page='..IncStr(URL)
+	local s = '/library?order_item=alphabetically&order_dir=asc&filter_by=title&page='..(URL + 1)
 	if HTTP.GET(MODULE.RootURL .. s) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		local v = x.XPath('//*[@data-identifier]/a')
 		local hasTitles = false
 		for i = 1, v.Count do

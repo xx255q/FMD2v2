@@ -6,7 +6,7 @@ function getinfo()
 	HTTP.Cookies.Values['contents_cid'] = string.gsub(URL, '/contents/', ''):gsub('/', '')
 	HTTP.Cookies.Values['contents_detail_pg'] = '1000'
 	if HTTP.GET(MANGAINFO.URL) then
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//figure/img/@src'))
 		MANGAINFO.Title = x.XPathString('//div[@class="Breadcrumb"]/ul/li/div[@class="current"]/text()')
 		MANGAINFO.Summary = x.XPathString('//section[@id="workInfo"]/p')
@@ -28,8 +28,8 @@ function getpagenumber()
 	local x = nil
 
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		if HTTP.GET(MaybeFillHost(MODULE.RootURL, TXQuery.Create(HTTP.Document).XPathString('//div[@class="ViewerContainer"]/@data-URL'))) then
-			x = TXQuery.Create(HTTP.Document)
+		if HTTP.GET(MaybeFillHost(MODULE.RootURL, CreateTXQuery(HTTP.Document).XPathString('//div[@class="ViewerContainer"]/@data-URL'))) then
+			x = CreateTXQuery(HTTP.Document)
 			x.ParseHTML(GetBetween('{', '}', x.XPathString('//*')))
 			x.XPathStringAll('json(*)()', TASK.PageLinks)
 			for i = 0, TASK.PageLinks.Count do
@@ -50,7 +50,7 @@ function getnameandlink()
 
 	HTTP.Cookies.Values['contents_list_pg'] = '1000'
 	if HTTP.GET(MODULE.RootURL .. '/contents/all') then
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 		v = x.XPath('//li[@class="OblongCard--border"]/a')
 		for i = 1, v.Count do
 			v1 = v.Get(i)

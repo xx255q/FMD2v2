@@ -1,7 +1,7 @@
 function GetInfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL,URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//h4/a/text()')
 		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//div[@id="cover"]//img/@src'))
 		MANGAINFO.Artists = x.XPathString('//div[@id="info"]/div[contains(span, "Artist")]/a')
@@ -22,7 +22,7 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		s=x.XPathString('//script[contains(.,"rff_imageList")]')
 		s=GetBetween('rff_imageList =', ';', s)
 		x.ParseHTML(s)
@@ -38,8 +38,8 @@ function GetPageNumber()
 end
 
 function GetNameAndLink()
-	if HTTP.GET(MODULE.RootURL..'/directory/newest?page='..IncStr(URL)) then
-		x=TXQuery.Create(HTTP.Document)
+	if HTTP.GET(MODULE.RootURL..'/directory/newest?page='..(URL + 1)) then
+		x=CreateTXQuery(HTTP.Document)
 		v=x.XPathHREFAll('//div[contains(@class, "seriesBlock")]/div/div[2]/a', LINKS, NAMES)
 		return no_error
 	else
@@ -49,7 +49,7 @@ end
 
 function getdirectorypagenumber()
 	if HTTP.GET(MODULE.RootURL..'/directory/newest') then
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 		PAGENUMBER = tonumber(x.XPathString('(//ul[contains(@class,"pagination")]/li/a)[last()-1]')) or 1
 		return true
 	else

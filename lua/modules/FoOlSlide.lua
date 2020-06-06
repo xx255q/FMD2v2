@@ -11,7 +11,7 @@ local dirurlreaderlist = '/fs/reader/list/'
 
 function getWithCookie(lurl)
 	if HTTP.GET(lurl) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		local s = x.XPathString('//form//input[(@type="hidden") and (@name="adult")]/@value')
 		if s:lower() == 'true' then
 			HTTP.Reset()
@@ -62,12 +62,12 @@ function getinfo()
 	local lurl = MaybeFillHost(MODULE.RootURL, URL)
 	local result = net_problem
 	if getWithCookie(lurl) then
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 		MANGAINFO.CoverLink = x.XPathString('//div[@class="thumbnail" or contains(@class, "thumb")]/img/@src')
 		if MANGAINFO.Title == '' then
 			MANGAINFO.Title = x.XPathString('//h1[@class="title"]')
 		end
-		if Pos('emailprotected', MANGAINFO.Title) > 0 then
+		if string.find(MANGAINFO.Title, 'emailprotected', 1, true) then
 			MANGAINFO.Title = Trim(SeparateLeft(x.XPathString('//title'), '::'))
 		end
 		local cls = 'info'
@@ -93,7 +93,7 @@ end
 function getinfo_ths()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if getWithCookie(MANGAINFO.URL) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title     = x.XPathString('//div[@id="series_right"]/h1')
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//img[@class="series_img"]/@src'))
 		MANGAINFO.Authors   = x.XPathString('//ul[@class="series_left_data"]/li[contains(span, "Author")]/span[@class="value"]')
@@ -118,12 +118,12 @@ end
 function getpagenumber()
 	local result = false
 	if getWithCookie(MaybeFillHost(MODULE.RootURL, URL)) then
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 		TASK.PageNumber = x.XPath('//div[@class="topbar_right"]//ul[@class="dropdown"]/li').Count
 		s = x.XPathString('//script[contains(.,"var pages")]')
 		if s ~= '' then
 			s = GetBetween('var pages = ', ';', s)
-			if Pos('atob("', s) > 0 then
+			if string.find(s, 'atob("', 1, true) then
 				 s = GetBetween('atob("', '")', s)
 				 s = DecodeBase64(s)
 			end
@@ -145,7 +145,7 @@ function getimageurl()
 		s = AppendURLDelim(s) .. 'page/' .. (WORKID + 1)
 	end
 	if getWithCookie(MaybeFillHost(MODULE.RootURL, s)) then
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 		TASK.PageLinks.Set(WORKID, x.XPathString('//div[@id="page"]//img/@src'))
 	end
 	return result
@@ -156,7 +156,7 @@ function getdirectorypagenumber()
 	PAGENUMBER = 1
 	if getWithCookie(MODULE.RootURL .. getdirurl(MODULE.Name)) then
 		result = no_error
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 		v = x.XPath('//*[@class="next"]/a/@href')
 		for i = 1, v.Count do
 			local s = tonumber(string.match(v.Get(i).ToString(), '/(%d+)/$'))
@@ -176,7 +176,7 @@ function getnameandlink()
 	end
 	if getWithCookie(s) then
 		result = no_error
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		if MODULE.Name == 'TwistedHelScans' then
 			local v = x.XPath('//div[contains(@class, "series_card")]/a')
 			for i = 1, v.Count do

@@ -19,7 +19,7 @@ end
 -- Get Series Name
 function GetNameAndLink()
 	if HTTP.GET(MODULE.RootURL .. dirurl .. '/' .. dirpages[MODULE.CurrentDirectoryIndex + 1]) then
-		local x, v = TXQuery.Create(HTTP.Document)
+		local x, v = CreateTXQuery(HTTP.Document)
 		for _, v in ipairs(x.XPathI('//ul[contains(@class, "resizeTitleList")]/li/a')) do
 			LINKS.Add(v.GetAttribute('href'))
 			NAMES.Add(x.XPathString('div/p[1]/text()', v))
@@ -33,7 +33,7 @@ end
 function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL):gsub('/*$', '')
 	if HTTP.GET(MANGAINFO.URL) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//meta[@property="og:image"]/@content'))
 		MANGAINFO.Title     = Trim(SeparateLeft(x.XPathString('//meta[@property="og:title"]/@content'), '|'))
@@ -65,7 +65,7 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL):gsub('/*$', '')) then
-		TXQuery.Create(HTTP.Document).XPathStringAll('//img[contains(@class, "comic-image")]/@src', TASK.PageLinks)
+		CreateTXQuery(HTTP.Document).XPathStringAll('//img[contains(@class, "comic-image")]/@src', TASK.PageLinks)
 		return true
 	else
 		return false

@@ -1,7 +1,7 @@
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//h1/text()')
 		MANGAINFO.CoverLink=x.XPathString('//main//img/@src')
 		MANGAINFO.Artists=x.XPathStringAll('//main//table//tr[td="Artist:"]/td/a')
@@ -18,7 +18,7 @@ end
 
 function getpagenumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL..'/manifest.json')) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('json(*).readingOrder().href',TASK.PageLinks)
 	else
 		return false
@@ -28,7 +28,7 @@ end
 
 function getdirectorypagenumber()
 	if HTTP.GET(MODULE.RootURL..'/directory/') then
-		PAGENUMBER=tonumber(TXQuery.Create(HTTP.Document).XPathString('//div[@class="pagination"]//a[contains(., "last")]/@href'):match('/(%d+)/'))
+		PAGENUMBER=tonumber(CreateTXQuery(HTTP.Document).XPathString('//div[@class="pagination"]//a[contains(., "last")]/@href'):match('/(%d+)/'))
 		return no_error
 	else
 		return net_problem
@@ -36,8 +36,8 @@ function getdirectorypagenumber()
 end
 
 function getnameandlink()
-	if HTTP.GET(MODULE.RootURL..'/directory/'..IncStr(URL)) then
-		TXQuery.Create(HTTP.Document).XPathHREFAll('//div[@class="mdc-card__media-title"]/a',LINKS,NAMES)
+	if HTTP.GET(MODULE.RootURL..'/directory/'..(URL + 1)) then
+		CreateTXQuery(HTTP.Document).XPathHREFAll('//div[@class="mdc-card__media-title"]/a',LINKS,NAMES)
 		return no_error
 	else
 		return net_problem

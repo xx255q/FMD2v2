@@ -5,8 +5,8 @@ function getinfo()
 	if id == nil then id = URL:match('manga/(%d+)'); end
 	delay()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, '/api/manga/' .. id)) then
-		local resp = HTMLEncode(StreamToString(HTTP.Document))
-		local x = TXQuery.Create(resp)
+		local resp = HTMLEncode(HTTP.Document.ToString())
+		local x = CreateTXQuery(resp)
 
 		local info = x.XPath('json(*)')
 		if MANGAINFO.Title == '' then
@@ -266,8 +266,8 @@ function getpagenumber()
 	local chapterid = URL:match('chapter/(%d+)')
 	delay()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,'/api/chapter/'..chapterid)) then
-		local x=TXQuery.Create(HTTP.Document)
-		x.ParseHTML(StreamToString(HTTP.Document):gsub('<', ''):gsub('>', ''):gsub('&quot;', ''))
+		local x=CreateTXQuery(HTTP.Document)
+		x.ParseHTML(HTTP.Document.ToString():gsub('<', ''):gsub('>', ''):gsub('&quot;', ''))
 		local hash = x.XPathString('json(*).hash')
 		local srv = x.XPathString('json(*).server')
 		local v = x.XPath('json(*).page_array()')
@@ -290,7 +290,7 @@ function getdirectorypagenumber()
 	HTTP.Cookies.Values['mangadex_title_mode'] = '2'
 	delay()
 	if HTTP.GET(MODULE.RootURL .. dirurl) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		PAGENUMBER = tonumber(x.XPathString('(//ul[contains(@class,"pagination")]/li/a)[last()]/@href'):match('/2/(%d+)')) or 1
 		return no_error
 	else
@@ -302,8 +302,8 @@ function getnameandlink()
 	HTTP.Cookies.Values['mangadex_h_toggle'] = '1'
 	HTTP.Cookies.Values['mangadex_title_mode'] = '2'
 	delay()
-	if HTTP.GET(MODULE.RootURL .. dirurl .. '/' .. IncStr(URL) .. '/') then
-		local x = TXQuery.Create(HTTP.Document)
+	if HTTP.GET(MODULE.RootURL .. dirurl .. '/' .. (URL + 1) .. '/') then
+		local x = CreateTXQuery(HTTP.Document)
 		x.XPathHREFAll('//a[contains(@class, "manga_title")]',LINKS,NAMES)
 		return no_error
 	else
@@ -323,7 +323,7 @@ function delay()
 		lastDelay = tonumber(lastDelay)
 		if GetCurrentTime() - lastDelay < interval then
 		print(GetCurrentTime() - lastDelay)
-			Sleep(delay)
+			sleep(delay)
 		end
 	end
 
@@ -353,7 +353,7 @@ function Login()
 		MODULE.Account.Status=asUnknown
 		return false
 	end
-	local login_post_url=TXQuery.Create(HTTP.Document).XPathString('//form[@id="login_form"]/@action') or ''
+	local login_post_url=CreateTXQuery(HTTP.Document).XPathString('//form[@id="login_form"]/@action') or ''
 	if login_post_url=='' then
 		MODULE.Account.Status=asUnknown
 		return false

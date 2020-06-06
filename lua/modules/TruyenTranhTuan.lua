@@ -1,7 +1,7 @@
 ﻿function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		if MANGAINFO.Title == '' then
 			MANGAINFO.Title = x.XPathString('//h1[@itemprop="name"]')
 		end
@@ -21,7 +21,7 @@ end
 function getpagenumber()
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		local s = x.XPathString('//script[contains(.,"var slides_page")]')
 		x.ParseHTML(GetBetween('slides_page_path = ', ';', s))
 		local v = x.XPath('json(*)()')
@@ -47,10 +47,10 @@ end
 function getnameandlink()
 	local s = MODULE.RootURL
 	if URL ~= '0' then
-		s = s .. '/page/' .. IncStr(URL)
+		s = s .. '/page/' .. (URL + 1)
 	end
 	if HTTP.GET(s) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		local p = 1
 		local v = x.XPath('//*[@id="page-nav"]//li')
 		for i = 1, v.Count do

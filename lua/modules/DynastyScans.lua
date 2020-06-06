@@ -1,7 +1,7 @@
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//h2[@class="tag-title"]/b')
 		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL,x.XPathString('//img[@class="thumbnail"]/@src'))
 		MANGAINFO.Authors=x.XPathString('string-join(//a[contains(@href,"/authors/")],", ")')
@@ -17,7 +17,7 @@ end
 
 function getpagenumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
-		TXQuery.Create(HTTP.Document).XPathStringAll('json(//script[contains(.,"var pages")]/substring-after(substring-before(.,";")," = "))()/concat("'..MODULE.RootURL..'",./image)',TASK.PageLinks)
+		CreateTXQuery(HTTP.Document).XPathStringAll('json(//script[contains(.,"var pages")]/substring-after(substring-before(.,";")," = "))()/concat("'..MODULE.RootURL..'",./image)',TASK.PageLinks)
 		return true
 	else
 		return false
@@ -39,7 +39,7 @@ end
 
 function getnameandlink()
 	if HTTP.GET(MODULE.RootURL..diruris[tonumber(URL)+1]) then
-		TXQuery.Create(HTTP.Document).XPathHREFAll('//dd/a',LINKS,NAMES)
+		CreateTXQuery(HTTP.Document).XPathHREFAll('//dd/a',LINKS,NAMES)
 		return no_error
 	else
 		return net_problem

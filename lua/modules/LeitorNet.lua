@@ -1,7 +1,7 @@
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//*[@id="series-data"]//*[@class="series-title"]/h1')
 		MANGAINFO.CoverLink=x.XPathString('//*[@id="series-data"]//img[@class="cover"]/@src')
 		MANGAINFO.Authors=x.XPathString('//*[@id="series-data"]//*[@class="series-author"]/normalize-space(text())')
@@ -18,7 +18,7 @@ function getinfo()
 		while true do
 			if HTTP.XHR(MODULE.RootURL..'/series/chapters_list.json?page='..tostring(page)..'&id_serie='..id) then
 				if HTTP.Terminated then break end
-				x=TXQuery.Create(HTTP.Document)
+				x=CreateTXQuery(HTTP.Document)
 				if x.XPathString('json(*).chapters'):lower() == 'false' then break end
 				v=x.XPath('json(*).chapters()')
 				for i=1,v.Count do
@@ -50,12 +50,12 @@ end
 function getpagenumber()
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 	s=x.XPathString('//script[contains(@src, "token=")]/@src')
 	local token = s:match('%&token=(%w+)&?')
 	local id = s:match('&id_release=(%w+)&?')
 	if HTTP.GET(MODULE.RootURL .. string.format('/leitor/pages/%s.json?key=%s', id, token)) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('json(*).images()', TASK.PageLinks)
 		TASK.PageLinks[0] = MaybeFillHost(MODULE.RootURL, TASK.PageLinks[0])
 	else
@@ -68,8 +68,8 @@ function getpagenumber()
 end
 
 function getnameandlink()
-	if HTTP.GET(MODULE.RootURL..'/lista-de-mangas/ordenar-por-nome/todos?page=' .. IncStr(URL)) then
-		local x=TXQuery.Create(HTTP.Document)
+	if HTTP.GET(MODULE.RootURL..'/lista-de-mangas/ordenar-por-nome/todos?page=' .. (URL + 1)) then
+		local x=CreateTXQuery(HTTP.Document)
 		local p=x.XPathString('//ul[contains(@class,"content-pagination")]/li[last()-1]/a')
 		p = tonumber(p)
 		if p ~= nil then

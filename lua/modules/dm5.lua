@@ -2,7 +2,7 @@
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	HTTP.Cookies.Values['isAdult'] = '1'
 	if HTTP.GET(MANGAINFO.URL) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		if MANGAINFO.Title == '' then
 			MANGAINFO.Title=x.XPathString('//div[@class="banner_detail_form"]//p[@class="title"]/text()')
 		end
@@ -52,7 +52,7 @@ end
 function getpagenumber()
 	local u = MaybeFillHost(MODULE.RootURL,URL)
 	if HTTP.GET(u) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		local s = x.XPathString('//script[contains(., "DM5_MID")]')
 		local dm5mid = GetBetween('DM5_MID=', ';', s)
 		local dm5cid = GetBetween('DM5_CID=', ';', s)
@@ -71,7 +71,7 @@ function getpagenumber()
 			HTTP.Reset()
 			HTTP.Headers.Values['Referer'] = u
 			if HTTP.XHR(xhrurl) then
-				local s = gettext(StreamToString(HTTP.Document))
+				local s = gettext(HTTP.Document.ToString())
 				local cid = GetBetween('cid=', ';', s)
 				local key = GetBetween("key=\\'", "\\';", s)
 				local pix = GetBetween('pix="', '";', s)
@@ -105,7 +105,7 @@ function getdirectorypagenumber()
 	local u = string.format('%s/dm5.ashx?t=%d', MODULE.RootURL, os.time()*1000)
 	local data = 'pagesize=1&pageindex=1&tagid=0&areaid=0&status=0&usergroup=0&pay=-1&char=&sort=18&action=getclasscomics'
 	if HTTP.POST(u, data) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		PAGENUMBER = tonumber(x.XPathString('json(*).Count')) or 1
 	if PAGENUMBER > 1 then
 			PAGENUMBER = math.ceil(PAGENUMBER / perpage)
@@ -118,9 +118,9 @@ end
 
 function getnameandlink()
 	local u = string.format('%s/dm5.ashx?t=%d', MODULE.RootURL, os.time()*1000)
-	local data = string.format('pagesize=%d&pageindex=%d&tagid=0&areaid=0&status=0&usergroup=0&pay=-1&char=&sort=18&action=getclasscomics', perpage, IncStr(URL))
+	local data = string.format('pagesize=%d&pageindex=%d&tagid=0&areaid=0&status=0&usergroup=0&pay=-1&char=&sort=18&action=getclasscomics', perpage, (URL + 1))
 	if HTTP.POST(u, data) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		local v = x.XPath('json(*).UpdateComicItems()')
 		for i = 1, v.Count do
 			local v1 = v.Get(i)

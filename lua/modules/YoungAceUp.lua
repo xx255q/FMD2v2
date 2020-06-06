@@ -1,6 +1,6 @@
 function GetNameAndLink()
 	if HTTP.GET(MODULE.RootURL..'/comics/') then
-			TXQuery.Create(HTTP.Document).XPathHREFAll('//ul[@class="manga-list__list"]/li/h4/a', LINKS, NAMES)
+			CreateTXQuery(HTTP.Document).XPathHREFAll('//ul[@class="manga-list__list"]/li/h4/a', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem
@@ -10,7 +10,7 @@ end
 function GetInfo()
 	MANGAINFO.URL=AppendURLDelim(MaybeFillHost(MODULE.RootURL,URL))
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//strong')
 		MANGAINFO.CoverLink=x.XPathString('//*[@class="fancybox a-alpha"]/img/@src')
 		MANGAINFO.Summary=x.XPathString('//*[@class="single-story"]/p')
@@ -25,7 +25,7 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(FillHost('http://viewer.tonarinoyj.jp',URL)) then
-		TXQuery.Create(HTTP.Document).XPathStringAll('//img[@class="js-page-image"]/@src', TASK.PageLinks)
+		CreateTXQuery(HTTP.Document).XPathStringAll('//img[@class="js-page-image"]/@src', TASK.PageLinks)
 		return true
 	else
 		return false

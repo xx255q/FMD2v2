@@ -15,7 +15,7 @@ function GetInfo()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	MANGAINFO.Title     = x.XPathString('//h1[@class="entry-title"]')
 
 	x.XPathHREFAll('//ul[@class="lcp_catlist"]//a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
@@ -31,7 +31,7 @@ function GetNameAndLink()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	x.XPathHREFAll('//div[contains(@class, "entry-content")]//li//a', LINKS, NAMES)
 
 	return no_error
@@ -44,7 +44,7 @@ function GetPageNumber()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	x.XPathStringAll('//div[contains(@class, "entry-content")]/div//img/@src', TASK.PageLinks)
 
 	return no_error

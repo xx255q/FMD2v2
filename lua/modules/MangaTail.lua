@@ -2,7 +2,7 @@
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	HTTP.Cookies.Values['has_js'] = '1'
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		if MANGAINFO.Title == '' then
 			MANGAINFO.Title = string.gsub(x.XPathString('//h1[@class="page-header"]'), ' Manga$', '')
 		end
@@ -26,7 +26,7 @@
 				HTTP.Reset()
 				HTTP.Headers.Values['X-Authcache'] = '1'
 				if HTTP.XHR(MODULE.RootURL .. aurl) then
-					local s = GetBetween(':"', '"}', StreamToString(HTTP.Document))
+					local s = GetBetween(':"', '"}', HTTP.Document.ToString())
 					x.ParseHTML(s:gsub('\\"', '"'):gsub('\\/', '/'))
 					return x.XPathString(query)
 				end
@@ -49,7 +49,7 @@ end
 function getpagenumber()
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL .. '?page=all')) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('//*[@id="images"]//img[not(contains(@src,"adsense"))]/@src', TASK.PageLinks)
 	else
 		return false
@@ -61,7 +61,7 @@ function getnameandlink()
 	local s = MODULE.RootURL .. '/directory'
 	if URL ~= '0' then s = s .. '?page=' .. URL; end
 	if HTTP.GET(s) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		local i = 1
 		local v = x.XPath('//ul[@class="pagination"]/li')
 		for j = 1, v.Count do

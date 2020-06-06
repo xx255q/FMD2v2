@@ -14,7 +14,7 @@ end
 
 function GetDirectoryPageNumber()
 	if HTTP.GET(MODULE.RootURL .. '/directory') then
-		PAGENUMBER = tonumber(TXQuery.Create(HTTP.Document).x.XPathString('//ul[@class="pagination"]/li[./a/@rel="next"]/preceding-sibling::li[1]')) or 1
+		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).x.XPathString('//ul[@class="pagination"]/li[./a/@rel="next"]/preceding-sibling::li[1]')) or 1
 		return no_error
 	else
 		return net_problem
@@ -22,8 +22,8 @@ function GetDirectoryPageNumber()
 end
 
 function GetNameAndLink()
-	if HTTP.GET(MODULE.RootURL .. '/directory?page=' .. IncStr(URL)) then
-		TXQuery.Create(HTTP.Document).XPathHREFAll('//div[@class="details"]/p[@class="title"]/a', LINKS, NAMES)
+	if HTTP.GET(MODULE.RootURL .. '/directory?page=' .. (URL + 1)) then
+		CreateTXQuery(HTTP.Document).XPathHREFAll('//div[@class="details"]/p[@class="title"]/a', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem
@@ -33,7 +33,7 @@ end
 function GetInfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL,URL):gsub('/*$','')
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title     = x.XPathString('//h1[@class="title"]')
 		MANGAINFO.CoverLink = x.XPathString('//div[@class="thumbnail"]/img/@src')
 		MANGAINFO.Authors   = Trim(x.XPathStringAll('//ul[@class="series-info"]/li[contains(.,"Author:")]/substring-after(text(),":")'))
@@ -52,7 +52,7 @@ end
 function GetPageNumber()
 	HTTP.Cookies.Values['viewer'] = '1'
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		local s = x.XPathString('//script[contains(., "var imglist")]')
 		s = GetBetween('var imglist = ', ';', s):gsub('%s', '')
 		x.ParseHTML(s)

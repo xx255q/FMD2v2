@@ -15,7 +15,7 @@ local dirurl = '/directory'
 
 function GetDirectoryPageNumber()
 	if HTTP.GET(MODULE.RootURL .. dirurl) then
-		PAGENUMBER = TXQuery.Create(HTTP.Document).x.XPath('//select/option').Count
+		PAGENUMBER = CreateTXQuery(HTTP.Document).x.XPath('//select/option').Count
 		return no_error
 	else
 		return net_problem
@@ -24,9 +24,9 @@ end
 
 function GetNameAndLink()
 	local s = MODULE.RootURL .. dirurl
-	if URL ~= '0' then s = s .. '/' .. IncStr(URL) .. '.html' end
+	if URL ~= '0' then s = s .. '/' .. (URL + 1) .. '.html' end
 	if HTTP.GET(s) then
-		TXQuery.Create(HTTP.Document).XPathHREFAll('//div[@class="cover-info"]/p[@class="title"]/a', LINKS, NAMES)
+		CreateTXQuery(HTTP.Document).XPathHREFAll('//div[@class="cover-info"]/p[@class="title"]/a', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem
@@ -36,7 +36,7 @@ end
 function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 
 		MANGAINFO.CoverLink = x.XPathString('//img[@class="detail-cover"]/@src')
 		MANGAINFO.Title     = x.XPathString('//div[@class="manga-detail"]/h1')
@@ -69,7 +69,7 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		TASK.PageNumber = TXQuery.Create(HTTP.Document).XPath('//div[@class="mangaread-pagenav"]/select/option').Count
+		TASK.PageNumber = CreateTXQuery(HTTP.Document).XPath('//div[@class="mangaread-pagenav"]/select/option').Count
 		return true
 	else
 		return false
@@ -78,9 +78,9 @@ end
 
 function GetImageURL()
 	local s = MaybeFillHost(MODULE.RootURL, URL):gsub('/*$', '')
-	if WORKID > 0 then s = s .. '/' .. IncStr(WORKID) .. '.html' end
+	if WORKID > 0 then s = s .. '/' .. (WORKID + 1) .. '.html' end
 	if HTTP.GET(s) then
-		TASK.PageLinks[WORKID] = TXQuery.Create(HTTP.Document).XPathString('//section[@id="viewer"]//img/@src')
+		TASK.PageLinks[WORKID] = CreateTXQuery(HTTP.Document).XPathString('//section[@id="viewer"]//img/@src')
 		return true
 	end
 		return false

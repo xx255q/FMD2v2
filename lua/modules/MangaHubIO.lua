@@ -19,7 +19,7 @@ end
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//div[@id="mangadetail"]//h1/text()')
 		MANGAINFO.CoverLink=x.XPathString('//div[@id="mangadetail"]//img/@src')
 		MANGAINFO.Authors=x.XPathString('//div[@id="mangadetail"]//div/span[contains(., "Author")]/following-sibling::span')
@@ -47,7 +47,7 @@ function getpagenumber()
 	local q = '{"query":"{chapter(x:'..getx()..',slug:\\"'..slug..'\\",number:'..chapter..'){id,title,mangaID,number,slug,date,pages,manga{id,title,slug,mainSlug,isWebtoon,isYaoi}}}"}'
 	HTTP.MimeType = 'application/json'
 	if HTTP.POST(apiurl, q) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		v=x.XPath('json(json(*).data.chapter.pages)/*')
 		for i = 1, v.Count do
 			v1=v.Get(i)
@@ -64,7 +64,7 @@ function getnameandlink()
 	local q = '{"query":"{search(x:'..getx()..',q:\\"\\",genre:\\"all\\",mod:ALPHABET,count:true,offset:'..tostring(offset)..'){rows{id,title, slug},count}}"}'
 	HTTP.MimeType = 'application/json'
 	if HTTP.POST(apiurl, q) then
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('json(*).data.search.rows()/concat("'..MODULE.RootURL..'/manga/", slug)', LINKS)
 		x.XPathStringAll('json(*).data.search.rows().title', NAMES)
 		return no_error
@@ -77,7 +77,7 @@ function getdirectorypagenumber()
 	local q = '{"query":"{search(x:'..getx()..',q:\\"\\",genre:\\"all\\",mod:ALPHABET,count:true,offset:0){rows{id,title, slug},count}}"}'
 	HTTP.MimeType = 'application/json'
 	if HTTP.POST(apiurl, q) then
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 		local total = tonumber(x.XPathString('json(*).data.search.Count'))
 		if total == nil then total = 1 end
 		PAGENUMBER = math.floor(total / perpage)

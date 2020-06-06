@@ -1,7 +1,7 @@
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//meta[@itemprop="alternativeHeadline"]/@content')
 		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//img[@class="manga__cover"]/@src'))
 		MANGAINFO.Authors=x.XPathString('//div[@class="info-list__row"][starts-with(.,"Автор")]')
@@ -26,9 +26,9 @@ function getpagenumber()
 	TASK.PageNumber=0
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
-		local x=TXQuery.Create(HTTP.Document)
-		local imgbaseurl=buildimageurl(TXQuery.Create(string.match(x.XPathString('//script[contains(., "window.__info")]/text()'), 'window.__info =(.*);')))
-		local p=TXQuery.Create(DecodeBase64(StreamToString(HTTP.Document):match('<span class="pp"><!%-%-(.-)%-%-></span>'):gsub('^%s*(.-)%s*$', '%1')))
+		local x=CreateTXQuery(HTTP.Document)
+		local imgbaseurl=buildimageurl(CreateTXQuery(string.match(x.XPathString('//script[contains(., "window.__info")]/text()'), 'window.__info =(.*);')))
+		local p=CreateTXQuery(DecodeBase64(HTTP.Document.ToString():match('<span class="pp"><!%-%-(.-)%-%-></span>'):gsub('^%s*(.-)%s*$', '%1')))
 		local v=p.XPath('json(*)()')
 		for i=1,v.Count do
 			local v1=v.Get(i)
@@ -54,8 +54,8 @@ end
 
 function getnameandlink()
 	if tonumber(URL) <= 0 then URL = 200 end
-	if HTTP.GET(MODULE.RootURL .. '/filterlist?page='..IncStr(URL)..'&cat=&alpha=&sortBy=name&asc=true&author=&artist=') then
-		local x = TXQuery.Create(HTTP.Document)
+	if HTTP.GET(MODULE.RootURL .. '/filterlist?page='..(URL + 1)..'&cat=&alpha=&sortBy=name&asc=true&author=&artist=') then
+		local x = CreateTXQuery(HTTP.Document)
 		local page = x.XPathString('//div[@class="paginator paginator_full paginator_border-top"]//ul[@class="pagination"]/li[last()]/a/substring-after(@href, "?page=")')
 		if x.XPathString('//div/p[contains(., "Ничего не найдено")]') == '' then
 			local v = x.XPath('//*[@class="manga-list-item"]/a[@class="manga-list-item__content"]')

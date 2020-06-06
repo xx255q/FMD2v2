@@ -1,7 +1,7 @@
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		if MANGAINFO.Title == '' then
 			MANGAINFO.Title = Trim(x.XPathString('//div[contains(@class, "col-md-3")]//h3/text()'))
 		end
@@ -26,7 +26,7 @@ function getpagenumber()
 	TASK.PageContainerLinks.Clear()
 	local URL = MaybeFillHost(MODULE.RootURL, URL);
 	if HTTP.GET(URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('//*[@id="all"]/img/@data-src', TASK.PageLinks)
 		TASK.PageContainerLinks.Text = URL
 	else
@@ -42,7 +42,7 @@ end
 
 function getnameandlink()
 	if HTTP.GET(MODULE.RootURL .. '/changeMangaList?type=text') then
-		TXQuery.Create(HTTP.Document).XPathHREFAll('//li/a', LINKS, NAMES)
+		CreateTXQuery(HTTP.Document).XPathHREFAll('//li/a', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem

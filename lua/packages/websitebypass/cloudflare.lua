@@ -33,7 +33,7 @@ function _m.IUAMChallengeAnswer(self, body, url)
             }
         };
     ]], subVars, SplitURL(url)):gsub('%s+', ' ') .. js
-	local answer = ExecJS(challenge)
+	local answer = require('fmd.duktape').ExecJS(challenge)
 	-- LOGGER.Send('answer = "'..tostring(answer)..'"')
 	if (answer == 'NaN') or (answer == '') then
 		-- LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to solve the javscript challenge ' .. url .. '\r\n' .. body)
@@ -47,7 +47,7 @@ function _m.sleepOrBreak(self, delay)
 	while count < delay do
 		if HTTP.Terminated then break end
 		count = count + 250
-		Sleep(250)
+		sleep(250)
 	end
 end
 

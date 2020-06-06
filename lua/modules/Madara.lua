@@ -13,10 +13,10 @@ function Modules.Madara()
 	function Madara:getinfo()
 		MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 		if HTTP.GET(MANGAINFO.URL) then
-			local x=TXQuery.Create(HTTP.Document)
+			local x=CreateTXQuery(HTTP.Document)
 
 			if MODULE.Name == 'NinjaScans' then
-				local fixedHtml = StreamToString(HTTP.Document):gsub('a href=(.-/)>', 'a href="%1">')
+				local fixedHtml = HTTP.Document.ToString():gsub('a href=(.-/)>', 'a href="%1">')
 				x.ParseHTML(fixedHtml)
 			end
 
@@ -81,7 +81,7 @@ function Modules.Madara()
 				HTTP.Headers.Add('X-Requested-With: XMLHttpRequest')
 				local q = 'action=manga_get_chapters&manga=' .. idmanga
 				if HTTP.POST(MODULE.RootURL .. '/wp-admin/admin-ajax.php', q) then
-						local x = TXQuery.Create(HTTP.Document)
+						local x = CreateTXQuery(HTTP.Document)
 						x.XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 				end
 			end
@@ -94,11 +94,11 @@ function Modules.Madara()
 	function Madara:getpagenumber()
 		TASK.PageLinks.Clear()
 		local aurl = MaybeFillHost(MODULE.RootURL, URL)
-		if Pos('style=list', aurl) == 0 then
+		if string.find(aurl, 'style=list', 1, true) == nil then
 			aurl = aurl .. '?style=list'
 		end
 		if HTTP.GET(aurl) then
-			local x = TXQuery.Create(HTTP.Document)
+			local x = CreateTXQuery(HTTP.Document)
 			if MODULE.Name == 'ManhwaHentai' then
 				v = x.XPath('//div[contains(@class, "page-break")]/img')
 				for i = 1, v.Count do
@@ -132,7 +132,7 @@ function Modules.Madara()
 		local q = 'action=madara_load_more&page='.. URL ..'&template=madara-core%2Fcontent%2Fcontent-archive&vars%5Bpost_type%5D=wp-manga&vars%5Berror%5D=&vars%5Bm%5D=&vars%5Bp%5D=0&vars%5Bpost_parent%5D=&vars%5Bsubpost%5D=&vars%5Bsubpost_id%5D=&vars%5Battachment%5D=&vars%5Battachment_id%5D=0&vars%5Bname%5D=&vars%5Bstatic%5D=&vars%5Bpagename%5D=&vars%5Bpage_id%5D=0&vars%5Bsecond%5D=&vars%5Bminute%5D=&vars%5Bhour%5D=&vars%5Bday%5D=0&vars%5Bmonthnum%5D=0&vars%5Byear%5D=0&vars%5Bw%5D=0&vars%5Bcategory_name%5D=&vars%5Btag%5D=&vars%5Bcat%5D=&vars%5Btag_id%5D=&vars%5Bauthor%5D=&vars%5Bauthor_name%5D=&vars%5Bfeed%5D=&vars%5Btb%5D=&vars%5Bpaged%5D=1&vars%5Bmeta_key%5D=&vars%5Bmeta_value%5D=&vars%5Bpreview%5D=&vars%5Bs%5D=&vars%5Bsentence%5D=&vars%5Btitle%5D=&vars%5Bfields%5D=&vars%5Bmenu_order%5D=&vars%5Bembed%5D=&vars%5Bignore_sticky_posts%5D=false&vars%5Bsuppress_filters%5D=false&vars%5Bcache_results%5D=true&vars%5Bupdate_post_term_cache%5D=true&vars%5Blazy_load_term_meta%5D=true&vars%5Bupdate_post_meta_cache%5D=true&vars%5Bposts_per_page%5D='.. tostring(perpage) ..'&vars%5Bnopaging%5D=false&vars%5Bcomments_per_page%5D=50&vars%5Bno_found_rows%5D=false&vars%5Border%5D=ASC&vars%5Borderby%5D=post_title&vars%5Btemplate%5D=archive&vars%5Bsidebar%5D=full&vars%5Bpost_status%5D=publish'
 		if HTTP.POST(MODULE.RootURL .. '/wp-admin/admin-ajax.php', q) then
 			if HTTP.Headers.Values['Content-Length'] == '0' then return no_error end
-			local x = TXQuery.Create(HTTP.Document)
+			local x = CreateTXQuery(HTTP.Document)
 			if x.XPath('//div[contains(@class, "post-title")]/*[self::h5 or self::h3]/a').Count == 0 then return no_error end
 			x.XPathHREFAll('//div[contains(@class, "post-title")]/*[self::h5 or self::h3]/a', LINKS, NAMES)
 			UPDATELIST.CurrentDirectoryPageNumber = UPDATELIST.CurrentDirectoryPageNumber + 1
@@ -152,7 +152,7 @@ function Modules.ChibiManga()
 	function ChibiManga:getpagenumber()
 		TASK.PageLinks.Clear()
 		if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-			local x = TXQuery.Create(HTTP.Document)
+			local x = CreateTXQuery(HTTP.Document)
 			local s = x.XPathString('//script[contains(., "chapter_preloaded_images")]', TASK.PageLinks)
 			s = "["..GetBetween("[", "]", s).."]"
 			x.ParseHTML(s)
@@ -172,7 +172,7 @@ function Modules.HentaiRead()
 	function HentaiRead:getpagenumber()
 		TASK.PageLinks.Clear()
 		if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-			local x = TXQuery.Create(HTTP.Document)
+			local x = CreateTXQuery(HTTP.Document)
 			local s = x.XPathString('//script[contains(., "chapter_preloaded_images")]', TASK.PageLinks)
 			s = "["..GetBetween("[", "]", s).."]"
 			x.ParseHTML(s)
@@ -192,7 +192,7 @@ function Modules.OnManga()
 	function OnManga:getpagenumber()
 		TASK.PageLinks.Clear()
 		if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-			local x = TXQuery.Create(HTTP.Document)
+			local x = CreateTXQuery(HTTP.Document)
 			local s = x.XPathString('//script[contains(., "chapter_preloaded_images")]', TASK.PageLinks)
 			s = "{"..GetBetween("{", "}", s).."}"
 			x.ParseHTML(s)

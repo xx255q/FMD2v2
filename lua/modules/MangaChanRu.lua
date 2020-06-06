@@ -4,7 +4,7 @@ local perpage = 20;
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//img[@id="cover"]/@src'))
 		MANGAINFO.Title=x.XPathString('//*[@class="name_row"]/h1')
 		MANGAINFO.Authors=x.XPathString('//*[@class="item" and contains(.,"Автор")]/following-sibling::*[1]')
@@ -32,9 +32,9 @@ function getpagenumber()
 	TASK.PageNumber=0
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		local v=string.match(x.XPathString('//script[contains(., "var data")]/text()'), 'var data =(.-);')
-		TXQuery.Create(v).XPathStringAll('json(*).fullimg()', TASK.PageLinks)
+		CreateTXQuery(v).XPathStringAll('json(*).fullimg()', TASK.PageLinks)
 		return true
 	else
 		return false
@@ -45,7 +45,7 @@ function getnameandlink()
 	local s = MODULE.RootURL..dirurl
 	if URL ~= '0' then s = s..'?offset='..tostring(tonumber(URL) * perpage) end
 	if HTTP.GET(s) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		x.XPathHREFAll('//*[@class="content_row"]//a[@class="title_link"]',LINKS,NAMES)
 		return no_error
 	else
@@ -56,7 +56,7 @@ end
 function getdirectorypagenumber()
 	PAGENUMBER=1
 	if HTTP.GET(MODULE.RootURL .. dirurl) then
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 		local s = tonumber(x.XPathString('//*[@id="pagination"]/a[last()]/substring-after(@href,"offset=")'))
 		if s ~= '' then PAGENUMBER=s end
 		if PAGENUMBER > 1 then PAGENUMBER=math.floor(PAGENUMBER / perpage) + 1 end

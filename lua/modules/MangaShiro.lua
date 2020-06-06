@@ -1,7 +1,7 @@
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title     = getTitle(x)
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, getCover(x))
 		MANGAINFO.Authors   = getAuthors(x)
@@ -187,12 +187,12 @@ function getpagenumber()
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
 		if MODULE.Name == 'BacaManga' then
-			local x = TXQuery.Create(HTTP.Document)
+			local x = CreateTXQuery(HTTP.Document)
 			local s = x.XPathString('*')
 						x.ParseHTML(DecodeBase64(GetBetween('](atob(', ')),', s)))
 						x.XPathStringAll('json(*)()', TASK.PageLinks)
 		elseif MODULE.Name == 'MangaShiro' then
-			local x = TXQuery.Create(HTTP.Document)
+			local x = CreateTXQuery(HTTP.Document)
 			local v=x.XPath('//*[@id="readerarea"]//a')
 				for i=1,v.Count do
 						local v1=v.Get(i)
@@ -201,7 +201,7 @@ function getpagenumber()
 						end
 				end
 		elseif MODULE.Name == 'Kiryuu' then
-			local x = TXQuery.Create(HTTP.Document)
+			local x = CreateTXQuery(HTTP.Document)
 			local v=x.XPath('//*[@id="readerarea"]//img')
 				for i=1,v.Count do
 						local v1=v.Get(i)
@@ -216,22 +216,22 @@ function getpagenumber()
 								TASK.PageLinks.Add(v1.GetAttribute('src'))
 						end
 				end
-		elseif MODULE.Name == 'MangaSWAT' then TXQuery.Create(HTTP.Document).XPathStringAll('//*[@id="readerarea"]/p/img/@data-src', TASK.PageLinks)
+		elseif MODULE.Name == 'MangaSWAT' then CreateTXQuery(HTTP.Document).XPathStringAll('//*[@id="readerarea"]/p/img/@data-src', TASK.PageLinks)
 		else
-			if TASK.PageLinks.Count < 1 then TXQuery.Create(HTTP.Document).XPathStringAll('//*[@id="readerarea"]/p/img/@src', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then TXQuery.Create(HTTP.Document).XPathStringAll('//*[@id="readerarea"]/p//img/@src', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then TXQuery.Create(HTTP.Document).XPathStringAll('//*[@id="readerarea"]/div//img/@src', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then TXQuery.Create(HTTP.Document).XPathStringAll('//*[@id="readerarea"]//a/@href', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then TXQuery.Create(HTTP.Document).XPathStringAll('//*[@id="readerarea"]//img/@src', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then TXQuery.Create(HTTP.Document).XPathStringAll('//*[@id="readerareaimg"]//img/@src', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then TXQuery.Create(HTTP.Document).XPathStringAll('//*[@id="imgholder"]//img/@src', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then TXQuery.Create(HTTP.Document).XPathStringAll('//*[@class="entry-content"]//img/@src', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then TXQuery.Create(HTTP.Document).XPathStringAll('//*[@class="bc"]/img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count < 1 then CreateTXQuery(HTTP.Document).XPathStringAll('//*[@id="readerarea"]/p/img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count < 1 then CreateTXQuery(HTTP.Document).XPathStringAll('//*[@id="readerarea"]/p//img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count < 1 then CreateTXQuery(HTTP.Document).XPathStringAll('//*[@id="readerarea"]/div//img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count < 1 then CreateTXQuery(HTTP.Document).XPathStringAll('//*[@id="readerarea"]//a/@href', TASK.PageLinks) end
+			if TASK.PageLinks.Count < 1 then CreateTXQuery(HTTP.Document).XPathStringAll('//*[@id="readerarea"]//img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count < 1 then CreateTXQuery(HTTP.Document).XPathStringAll('//*[@id="readerareaimg"]//img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count < 1 then CreateTXQuery(HTTP.Document).XPathStringAll('//*[@id="imgholder"]//img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count < 1 then CreateTXQuery(HTTP.Document).XPathStringAll('//*[@class="entry-content"]//img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count < 1 then CreateTXQuery(HTTP.Document).XPathStringAll('//*[@class="bc"]/img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count < 1 or MODULE.Name == 'KoMBatch' then
 				local link = MaybeFillHost(MODULE.RootURL,URL)
 				link = link:gsub('/read', '/api/chapter')
 				if HTTP.GET(link) then
-					x=TXQuery.Create(HTTP.Document)
+					x=CreateTXQuery(HTTP.Document)
 					x.ParseHTML(HTTP.Document)
 			for _, v in ipairs(x.XPathI('json(*).chapter.images()("text")')) do
 						TASK.PageLinks.Add(v.ToString():gsub('^//', 'https://'))
@@ -286,7 +286,7 @@ function getnameandlink()
 		dirurl = dirs[MODULE.Name]
 	end
 	if HTTP.GET(MODULE.RootURL..dirurl) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		if LINKS.Count < 1 then x.XPathHREFAll('//*[@class="daftarkomik"]//a',LINKS,NAMES) end
 		if LINKS.Count < 1 then x.XPathHREFAll('//*[@class="jdlbar"]//a',LINKS,NAMES) end
 		if LINKS.Count < 1 then x.XPathHREFAll('//*[@class="blix"]//a',LINKS,NAMES) end
@@ -300,7 +300,7 @@ function getnameandlink()
 			while p <= pages do
 				if p > 1 then
 					if HTTP.GET(MODULE.RootURL..dirurl..'?page=' .. tostring(p)) then
-						x=TXQuery.Create(HTTP.Document)
+						x=CreateTXQuery(HTTP.Document)
 					else
 						break
 					end

@@ -1,7 +1,7 @@
 ﻿function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//h2[contains(@class, "works-intro-title")]')
 		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL,x.XPathString('//div[contains(@class,"works-cover")]/a/img/@src'))
 		MANGAINFO.Authors=x.XPathString('//p[@class="works-intro-digi"]/span[contains(., "作者")]/em/substring-before(., " ")')
@@ -15,17 +15,18 @@ end
 
 function getpagenumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
-		x=TXQuery.Create(HTTP.Document)
+		local duktape = require 'fmd.duktape'
+		local x=CreateTXQuery(HTTP.Document)
 		local s = x.XPathString('//script[contains(., "window") and contains(., "eval")]')
-		local nonce = ExecJS('var window={};'..s..';window.nonce;');
+		local nonce = duktape.ExecJS('var window={};'..s..';window.nonce;');
 		s = x.XPathString('//script[contains(., "var DATA")]')
-		local data = ExecJS(s..';DATA;');
+		local data = duktape.ExecJS(s..';DATA;');
 		local script = x.XPathString('//script[contains(@src, "chapter")]/@src')
 		if HTTP.GET(script) then
-			s = StreamToString(HTTP.Document)
+			s = HTTP.Document.ToString()
 			s = '!function(){eval(function(p, a, c, k, e, r)'..GetBetween('eval(function(p, a, c, k, e, r)', '}();', s)..'}();'
 			s = 'var W={nonce:"'..nonce..'",DATA:"'..data..'"};'..s..';JSON.stringify(_v);'
-			s = ExecJS(s)
+			s = duktape.ExecJS(s)
 			x.ParseHTML(s)
 			x.XPathStringAll('json(*).picture().URL', TASK.PageLinks)
 			return true
@@ -44,7 +45,7 @@ end
 
 function getdirectorypagenumber()
 	if HTTP.GET(MODULE.RootURL .. '/Comic/all/search/hot/page/1') then
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 		PAGENUMBER = tonumber(x.XPathString('//span[contains(@class,"ret-result-num")]/em')) or 1
 	if PAGENUMBER > 1 then
 		PAGENUMBER = math.ceil(PAGENUMBER / 12)
@@ -56,8 +57,8 @@ function getdirectorypagenumber()
 end
 
 function getnameandlink()
-	if HTTP.GET(MODULE.RootURL..'/Comic/all/search/hot/page/'..IncStr(URL)) then
-		TXQuery.Create(HTTP.Document).XPathHREFAll('//ul[contains(@class, "ret-search-list")]/li//h3/a',LINKS,NAMES)
+	if HTTP.GET(MODULE.RootURL..'/Comic/all/search/hot/page/'..(URL + 1)) then
+		CreateTXQuery(HTTP.Document).XPathHREFAll('//ul[contains(@class, "ret-search-list")]/li//h3/a',LINKS,NAMES)
 		return no_error
 	else
 		return net_problem

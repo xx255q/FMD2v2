@@ -3,7 +3,7 @@
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		if MANGAINFO.Title == '' then
 			MANGAINFO.Title = x.XPathString('//h1')
 			MANGAINFO.Title = string.gsub(MANGAINFO.Title, '^Manga ', '')
@@ -28,7 +28,7 @@ end
 function getpagenumber()
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		TASK.PageNumber = x.XPathCount('//select[@id="pages"]/option/@value')
 	else
 		return false
@@ -39,7 +39,7 @@ end
 function getimageurl()
 	local s = AppendURLDelim(URL)..(WORKID+1)..'.html'
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,s)) then
-		TASK.PageLinks[WORKID]=TXQuery.Create(HTTP.Document).XPathString('//div[@id="image"]/@data-src')
+		TASK.PageLinks[WORKID]=CreateTXQuery(HTTP.Document).XPathString('//div[@id="image"]/@data-src')
 		return true
 	end
 	return false
@@ -50,8 +50,8 @@ function getnameandlink()
 	if MODULE.CurrentDirectoryIndex ~= 0 then
 		s = ALPHA_LIST_UP:sub(MODULE.CurrentDirectoryIndex+1,MODULE.CurrentDirectoryIndex+1)
 	end
-	if HTTP.GET(MaybeFillHost(MODULE.RootURL, '/mangas/' .. s .. '/' .. IncStr(URL))) then
-		local x = TXQuery.Create(HTTP.Document)
+	if HTTP.GET(MaybeFillHost(MODULE.RootURL, '/mangas/' .. s .. '/' .. (URL + 1))) then
+		local x = CreateTXQuery(HTTP.Document)
 		x.XPathHREFAll('//div[@id="main"]//p/a[contains(@href, "/manga/")]', LINKS, NAMES)
 		UPDATELIST.CurrentDirectoryPageNumber = tonumber(x.XPathString('//ul[contains(@class, "pagination")]/li[last()]/a')) or 1
 		return no_error

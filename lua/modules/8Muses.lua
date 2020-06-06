@@ -11,7 +11,7 @@ end
 function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//*[@class="gallery"]/a/div/img/@data-src')):gsub('^//', 'https://')
 		MANGAINFO.Title     = x.XPathString('//*[@class="top-menu-breadcrumb"]//li[last()]')
@@ -47,7 +47,7 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(RemoveURLDelim(MaybeFillHost(MODULE.RootURL, URL))) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		local v, s
 		for _, v in ipairs(x.XPathI('//*[@class="gallery"]/a[@href!="" and not(./div[@class="image-title"])]/div/img/@data-src')) do
 			TASK.PageLinks.Add(MaybeFillHost(MODULE.RootURL, v.ToString():gsub('/th/', '/fm/')):gsub('^//', 'https://'))
@@ -66,7 +66,7 @@ end
 
 function GetImageURL()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, TASK.PageContainerLinks[WORKID]):gsub('/*$', '')) then
-		TASK.PageLinks[WORKID] = MaybeFillHost(MODULE.RootURL, TXQuery.Create(HTTP.Document).XPathString('string-join((//*[@id="imageDir"]/@value,//*[@id="imageName"]/@value),"")'))
+		TASK.PageLinks[WORKID] = MaybeFillHost(MODULE.RootURL, CreateTXQuery(HTTP.Document).XPathString('string-join((//*[@id="imageDir"]/@value,//*[@id="imageName"]/@value),"")'))
 		return true
 	end
 		return false

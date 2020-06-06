@@ -16,7 +16,7 @@ function GetInfo()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	MANGAINFO.Title     = Trim(x.XPathString('//title/substring-after(substring-before(., "Bahasa Indonesia - 9ekor"), "Baca")'))
 
 	pages = tonumber(x.XPathString('//div[@class="pagination"]/a[last()]/@href[not(parent::span/@id="tie-next-page")]'):match('/page/(%d+)/'))
@@ -27,7 +27,7 @@ function GetInfo()
 		if p > pages then
 			break
 		elseif HTTP.GET(u .. 'page/' .. tostring(p) .. '/') then
-			x = TXQuery.Create(HTTP.Document)
+			x = CreateTXQuery(HTTP.Document)
 		else
 			break
 		end
@@ -44,7 +44,7 @@ function GetNameAndLink()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	x.XPathHREFAll('//a[contains(@class, "cvplbd")]', LINKS, NAMES)
 
 	return no_error
@@ -57,7 +57,7 @@ function GetPageNumber()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	x.XPathStringAll('//div[@id="all"]/img/@src', TASK.PageLinks)
 
 	return no_error

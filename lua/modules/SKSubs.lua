@@ -1,7 +1,7 @@
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL,URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL,x.XPathString('//div[contains(@class,"thumbnail")]/div[1]/img/@src'))
 		MANGAINFO.Title=x.XPathString('//div[contains(@class,"thumbnail")]/div[2]/div[1]/h1')
 		MANGAINFO.Genres=x.XPathString('//div[contains(@class,"thumbnail")]/div[2]/div[1]/string-join(./a,", ")')
@@ -31,7 +31,7 @@ end
 
 function getpagenumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		TASK.PageNumber=tonumber(x.XPathString('//ul[@class="pagination"]/li[not(./a/@rel)][last()]'))
 		return true
 	else
@@ -43,7 +43,7 @@ function getimageurl()
 	local lurl=MaybeFillHost(MODULE.RootURL,URL)
 	if WORKID~=0 then lurl=lurl..'/?page='..WORKID+1 end
 	if HTTP.GET(lurl) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		TASK.PageLinks[WORKID]=MaybeFillHost(MODULE.RootURL,x.XPathString('//div[@class="card-body"]//img/@src'))
 		return true
 	else
@@ -53,7 +53,7 @@ end
 
 function getnameandlink()
 	if HTTP.GET(MODULE.RootURL..'/novelas') then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		x.XPathHREFAll('//div[contains(@class,"thumbnail")]/div[2]/div[1]/a[1]', LINKS, NAMES)
 		return no_error
 	else

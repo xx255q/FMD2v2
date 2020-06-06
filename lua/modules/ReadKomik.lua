@@ -15,7 +15,7 @@ function GetInfo()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	MANGAINFO.Title     = Trim(x.XPathString('//title/substring-before(., " - ReadKomik")'))
 	if MANGAINFO.Title  == "" then MANGAINFO.Title = Trim(x.XPathString('//title/substring-after(., "ReadKomik: ")')) end
 	MANGAINFO.CoverLink = x.XPathString('//div[@class="kerangka-gambar"]//a/@href')
@@ -44,7 +44,7 @@ function GetNameAndLink()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	x.XPathHREFAll('//div[contains(@itemprop, "description")]/a', LINKS, NAMES)
 
 	return no_error
@@ -57,7 +57,7 @@ function GetPageNumber()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	x.XPathStringAll('//div[@class="separator"]/a/@href', TASK.PageLinks)
 
 	return no_error

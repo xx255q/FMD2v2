@@ -2,9 +2,9 @@ local dirurl = '/api/v1/explore/state/'
 local dirstates = {'stopped', 'ongoing', 'completed'}
 
 function GetNameAndLink()
-	local s, p = dirstates[MODULE.CurrentDirectoryIndex + 1], IncStr(URL)
+	local s, p = dirstates[MODULE.CurrentDirectoryIndex + 1], (URL + 1)
 	if HTTP.GET(MODULE.RootURL .. dirurl .. s .. '?page=' .. p) then
-			local x = TXQuery.Create(HTTP.Document)
+			local x = CreateTXQuery(HTTP.Document)
 		if URL == '0' then
 			s = x.XPathString('json(*).last_page')
 			UPDATELIST.CurrentDirectoryPageNumber = x.XPathString('json(*).last_page') or 0
@@ -23,7 +23,7 @@ end
 function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		local v = x.XPath('//div[@id="content"]/noscript/div[@class="container"]')
 		MANGAINFO.CoverLink = x.XPathString('dl[dt="الكاتب"]/dd', v)
 		MANGAINFO.Title     = x.XPathString('h2', v)
@@ -45,7 +45,7 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		TXQuery.Create(HTTP.Document).XPathStringAll('//noscript/div[@class="container"]/ul/li/img/@src', TASK.PageLinks)
+		CreateTXQuery(HTTP.Document).XPathStringAll('//noscript/div[@class="container"]/ul/li/img/@src', TASK.PageLinks)
 		return true
 	else
 		return false

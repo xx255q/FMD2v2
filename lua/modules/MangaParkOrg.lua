@@ -2,7 +2,7 @@ function GetInfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL,URL)
 	HTTP.Cookies.Values['set'] = 'h=1'
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		if MANGAINFO.Title == '' then
 			MANGAINFO.Title=x.XPathString('//h3')
 		end
@@ -35,7 +35,7 @@ function GetPageNumber()
 	TASK.PageLinks.Clear()
 	TASK.PageNumber = 0
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('json(//script[contains(.,"var _load_pages")]/substring-after(substring-before(.,";")," = "))()/u', TASK.PageLinks)
 		return true
 	else
@@ -44,8 +44,8 @@ function GetPageNumber()
 end
 
 function GetNameAndLink()
-	if HTTP.GET(MODULE.RootURL..'/browse?order_by=create&page='..IncStr(URL)) then
-		x=TXQuery.Create(HTTP.Document)
+	if HTTP.GET(MODULE.RootURL..'/browse?order_by=create&page='..(URL + 1)) then
+		x=CreateTXQuery(HTTP.Document)
 		x.XPathHREFAll('css("#browse h6")/a', LINKS, NAMES)
 		return no_error
 	else
@@ -55,7 +55,7 @@ end
 
 function getdirectorypagenumber()
 	if HTTP.GET(MODULE.RootURL .. '/browse?order_by=create') then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		PAGENUMBER = tonumber(x.XPathString('css("#paging nav.d-none ul.pagination")/li[last()-1]/a')) or 1
 		return true
 	else

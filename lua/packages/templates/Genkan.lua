@@ -21,7 +21,7 @@ function _M.GetInfo()
 
   if not HTTP.GET(u) then return net_problem end
 
-  x = TXQuery.Create(HTTP.Document)
+  x = CreateTXQuery(HTTP.Document)
   MANGAINFO.Title     = x.XPathString('//meta[@property="og:title"]/@content')
   MANGAINFO.CoverLink = x.XPathString('//meta[@property="og:image"]/@content')
   MANGAINFO.Summary   = x.XPathString('//meta[@property="og:description"]/@content')
@@ -43,7 +43,7 @@ function _M.GetDirectoryPageNumber()
 
   if not HTTP.GET(u) then return net_problem end
 
-  PAGENUMBER = tonumber(TXQuery.Create(HTTP.Document).XPathString('(//ul[@class="pagination"])[last()]//a[@class="page-link" and not(@rel)]/text()')) or 1
+  PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('(//ul[@class="pagination"])[last()]//a[@class="page-link" and not(@rel)]/text()')) or 1
 
   return no_error
 end
@@ -51,11 +51,11 @@ end
 -- Get LINKS and NAMES from the manga list of the current website.
 function _M.GetNameAndLink()
   local x = nil
-  local u = MODULE.RootURL .. DirectoryPagination .. IncStr(URL)
+  local u = MODULE.RootURL .. DirectoryPagination .. (URL + 1)
 
   if not HTTP.GET(u) then return net_problem end
 
-  x = TXQuery.Create(HTTP.Document)
+  x = CreateTXQuery(HTTP.Document)
   x.XPathHREFAll('//div[@id="content"]//a[contains(@class, "list-title")]', LINKS, NAMES)
 
   return no_error
@@ -68,7 +68,7 @@ function _M.GetPageNumber()
 
   if not HTTP.GET(u) then return net_problem end
 
-  x = TXQuery.Create(HTTP.Document)
+  x = CreateTXQuery(HTTP.Document)
   x.ParseHTML(GetBetween('window.chapterPages = ', ';', x.XPathString('//script[contains(., "window.chapterPages = ")]')):gsub('\\/', '/'))
   v = x.XPath('json(*)()')
   for i = 1, v.Count do

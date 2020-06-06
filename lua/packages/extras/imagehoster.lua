@@ -12,7 +12,7 @@ function GetImageHosterDirectURL(url)
 		end
 	end
 	if x and HTTP.GET(url) then
-		r = TXQuery.Create(HTTP.Document).x.XPathString(x)
+		r = CreateTXQuery(HTTP.Document).x.XPathString(x)
 	end
 	return r
 end

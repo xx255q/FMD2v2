@@ -9,7 +9,7 @@ function getinfo()
 	MANGAINFO.URL = MANGAINFO.URL:gsub('(.*)&page=.*', '%1')
 	HTTP.Cookies.Values['ageGatePass'] = 'True'
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title = x.XPathString('//meta[@property="og:title"]/@content')
 		MANGAINFO.CoverLink=x.XPathString('//meta[@name="twitter:image"]/@content')
 		MANGAINFO.Authors=x.XPathString('//div[@class="info"]//span[@class="author"]')
@@ -23,7 +23,7 @@ function getinfo()
 		while p <= pages do
 			if p > 1 then
 				if HTTP.GET(MANGAINFO.URL .. '&page=' .. tostring(p)) then
-					x=TXQuery.Create(HTTP.Document)
+					x=CreateTXQuery(HTTP.Document)
 				else
 					break
 				end
@@ -52,7 +52,7 @@ function getpagenumber()
 	TASK.PageLinks.Clear()
 	URL = URL:gsub('(.*)&page=.*', '%1')
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
-		TXQuery.Create(HTTP.Document).XPathStringAll('//div[@id="_imageList"]/img[@class="_images"]/@data-URL', TASK.PageLinks)
+		CreateTXQuery(HTTP.Document).XPathStringAll('//div[@id="_imageList"]/img[@class="_images"]/@data-URL', TASK.PageLinks)
 		return true
 	else
 		return false
@@ -68,7 +68,7 @@ function getnameandlink()
 	for key, value in pairs(l) do
 		local dirurl = key..'/genre'
 		if HTTP.GET(MODULE.RootURL..dirurl) then
-			local x=TXQuery.Create(HTTP.Document)
+			local x=CreateTXQuery(HTTP.Document)
 			local v = x.XPath('//div[@class="card_wrap genre"]/ul/li/a')
 			for i = 1, v.Count do
 				local v1 = v.Get(i)
@@ -94,14 +94,14 @@ function getnameandlinkforchallenge()
 	for key, value in pairs(l) do
 		local dirurl = key..'/challenge/list?genreTab=ALL&sortOrder=UPDATE'
 		if HTTP.GET(MODULE.RootURL..dirurl) then
-			local x=TXQuery.Create(HTTP.Document)
+			local x=CreateTXQuery(HTTP.Document)
 
 			local pages = 1
 			local p = 1
 			while p <= pages do
 				if p > 1 then
 					if HTTP.GET(MODULE.RootURL..dirurl..'&page='..tostring(p)) then
-						x=TXQuery.Create(HTTP.Document)
+						x=CreateTXQuery(HTTP.Document)
 					else
 						break
 					end

@@ -1,5 +1,5 @@
 function getinfo_store()
-	local x=TXQuery.Create(HTTP.Document)
+	local x=CreateTXQuery(HTTP.Document)
 	MANGAINFO.Title=x.XPathString('//div[@class="_title"]')
 	MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//meta[@property="og:image"]/@content'))
 	MANGAINFO.Authors=x.XPathString('//*[contains(@class,"__author")]')
@@ -21,7 +21,7 @@ function getinfo_store()
 end
 
 function getinfo_manga()
-	local x=TXQuery.Create(HTTP.Document)
+	local x=CreateTXQuery(HTTP.Document)
 	MANGAINFO.Title=x.XPathString('//*[contains(@class,"__ttl")]')
 	MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//meta[@property="og:image"]/@content'))
 	MANGAINFO.Authors=x.XPathString('//*[contains(@class,"__author")]')
@@ -57,7 +57,7 @@ function getinfo()
 end
 
 function getpagenumber_manga()
-	local x=TXQuery.Create(HTTP.Document)
+	local x=CreateTXQuery(HTTP.Document)
 	local s = x.XPathString('//script[contains(., "imageData:")]')
 	s = GetBetween('imageData:', ']', s) .. ']'
 	x.ParseHTML(s)
@@ -76,8 +76,8 @@ function getpagenumber_store()
 	local tpurl = string.format('&mode=7&file=face.xml&callback=jQ%d_%d', math.random(1000), math.random(1000))
 	if HTTP.GET(base .. tpurl) then
 		if HTTP.Terminated then return false; end
-		local s = GetBetween('("', '")', StreamToString(HTTP.Document))
-		local x=TXQuery.Create(s)
+		local s = GetBetween('("', '")', HTTP.Document.ToString())
+		local x=CreateTXQuery(s)
 		local total_pages = tonumber(x.XPathString('//TotalPage'))
 		if total_pages == nil then return false; end
 		for i = 0, total_pages-1 do
@@ -108,12 +108,12 @@ function downloadimage()
 	if URL:match('%.xml') == nil then return HTTP.GET(URL); end
 	HTTP.Cookies.Text = TASK.PageContainerLinks.Text
 	if HTTP.GET(URL) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		local a = js.splitstr(x.XPathString('//Scramble'), ',')
 		local imgurl = SeparateLeft(URL, '&mode=')
 		imgurl = imgurl .. string.format('&mode=1&file=%04d_0000.bin', WORKID)
 		if HTTP.GET(imgurl) then
-			local s = TImagePuzzle.Create(4, 4)
+			local s = require('fmd.imagepuzzle').Create(4, 4)
 			s.multiply = 8
 			local n = 0
 			for i, v in ipairs(a) do
@@ -137,9 +137,9 @@ local dirurls = {
 
 function getnameandlink()
 	local lurl = dirurls[MODULE.CurrentDirectoryIndex+1]
-	local data = 'page='..IncStr(URL)..'&rankingType=original'
+	local data = 'page='..(URL + 1)..'&rankingType=original'
 	if HTTP.POST(MODULE.RootURL .. lurl, data) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		local total = tonumber(x.XPathString('json(*).result.totalPageCnt'))
 		if total == nil then total = 1 end
 		UPDATELIST.CurrentDirectoryPageNumber = total

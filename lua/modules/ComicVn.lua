@@ -1,7 +1,7 @@
 ﻿function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//div[@class="manga-info"]//h1')
 		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//div[@class="manga-info"]/div[contains(@class, "manga-detail")]//img/@src'))
 		MANGAINFO.Authors=x.XPathString('//div[@class="manga-info"]/div[contains(@class, "manga-detail")]//ul/li[contains(span, "Tác giả")]/span[2]')
@@ -21,7 +21,7 @@ function getpagenumber()
 	TASK.PageLinks.Clear()
 	TASK.PageNumber=0
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('//div[contains(@class, "manga-chapter-image")]/textarea/img/@src', TASK.PageLinks)
 	else
 		return false
@@ -35,7 +35,7 @@ local perpage = 30
 function getnameandlink()
 	if tonumber(URL) < 0 then return no_error end
 	if HTTP.GET(MODULE.RootURL .. dirurl .. tostring(tonumber(URL) * perpage)) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		x.XPathHREFAll('//div[contains(@class, "manga-list")]//div[contains(@class,"tit")]/a', LINKS, NAMES)
 		local s = x.XPathString('(//ul[@class="pagination"])[1]/li[last()-1]/a/@href')
 		s = tonumber(s:match('(%d+)/?$'))

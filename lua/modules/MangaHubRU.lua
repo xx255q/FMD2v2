@@ -2,7 +2,7 @@ local dirurl = '/explore?search[sort]=date'
 
 function GetDirectoryPageNumber()
 	if HTTP.GET(MODULE.RootURL .. dirurl) then
-		PAGENUMBER = tonumber(TXQuery.Create(HTTP.Document).XPathString('//ul[@class="pagination"]/li[last()-1]/a')) or 1
+		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//ul[@class="pagination"]/li[last()-1]/a')) or 1
 		return no_error
 	else
 		return net_problem
@@ -10,8 +10,8 @@ function GetDirectoryPageNumber()
 end
 
 function GetNameAndLink()
-	if HTTP.GET(MODULE.RootURL .. dirurl .. '&page=' .. IncStr(URL)) then
-		TXQuery.Create(HTTP.Document).XPathHREFAll('//a[contains(@class,"comic-grid-name")]', LINKS, NAMES)
+	if HTTP.GET(MODULE.RootURL .. dirurl .. '&page=' .. (URL + 1)) then
+		CreateTXQuery(HTTP.Document).XPathHREFAll('//a[contains(@class,"comic-grid-name")]', LINKS, NAMES)
 	else
 		return net_problem
 	end
@@ -20,7 +20,7 @@ end
 function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//img[@class="cover-detail-img"]/@src'))
 		MANGAINFO.Title     = x.XPathString('//h1')
@@ -38,7 +38,7 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		local s = x.XPathString('//div[@data-js-scans]/@data-js-scans')
 		if s ~= '' then
 			x.ParseHTML(s)

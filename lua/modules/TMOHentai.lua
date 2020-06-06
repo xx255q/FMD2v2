@@ -1,7 +1,7 @@
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//h3')
 		MANGAINFO.CoverLink=x.XPathString('//*[@alt="cover"]/@src')
 		MANGAINFO.Artists=x.XPathStringAll('//*[@class="tag tag-accepted"][contains(@href,"=artist")]/text()')
@@ -20,7 +20,7 @@ function getpagenumber()
 	URL = MODULE.RootURL..URL..'/paginated/1'
 	URL = string.gsub(URL, 'contents', 'reader')
 	if HTTP.GET(URL) then
-		TASK.PageNumber=TXQuery.Create(HTTP.Document).XPathCount('//select[@id="select-page"]/option')
+		TASK.PageNumber=CreateTXQuery(HTTP.Document).XPathCount('//select[@id="select-page"]/option')
 	else
 		return false
 	end
@@ -31,7 +31,7 @@ function getimageurl()
 	URL = MODULE.RootURL..URL..'/paginated/'
 	URL = string.gsub(URL, 'contents', 'reader')
 	if HTTP.GET(URL..(WORKID+1)) then
-		local img = TXQuery.Create(HTTP.Document).XPathString('//*[@class="content-image lazy"]/@data-original')
+		local img = CreateTXQuery(HTTP.Document).XPathString('//*[@class="content-image lazy"]/@data-original')
 		TASK.PageLinks[WORKID]=MODULE.RootURL..img
 		return true
 	end
@@ -39,9 +39,9 @@ function getimageurl()
 end
 
 function getnameandlink()
-	local s = '/section/all?page='..IncStr(URL)
+	local s = '/section/all?page='..(URL + 1)
 	if HTTP.GET(MODULE.RootURL .. s) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		local v = x.XPath('//*[@class="content-title truncate"]/a')
 		local hasTitles = false
 		for i = 1, v.Count do

@@ -17,7 +17,7 @@ function GetInfo()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	MANGAINFO.Title     = x.XPathString('(//h5[@class="widget-heading"])[1]')
 	MANGAINFO.CoverLink = x.XPathString('//div[@class="content"]//img/@src')
 	MANGAINFO.Status    = x.XPathString('//dt[contains(., "Status")]/following-sibling::dd[1]')
@@ -43,7 +43,7 @@ function GetNameAndLink()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	x.XPathHREFAll('//ul[contains(@class, "manga-list")]/li/a', LINKS, NAMES)
 	UPDATELIST.CurrentDirectoryPageNumber = 1
 
@@ -57,7 +57,7 @@ function GetPageNumber()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	x.ParseHTML(GetBetween('var images = ', ';', x.XPathString('//script[contains(., "var images = ")]')):gsub('\\/', '/'))
 	x.XPathStringAll('json(*)().URL', TASK.PageLinks)
 

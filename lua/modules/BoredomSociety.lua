@@ -1,7 +1,7 @@
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('css("div.titlesinfo_top > h2")')
 		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('css("img.titlesinfo_coverimage")/@src'))
 		MANGAINFO.Status=MangaInfoStatusIfPos(x.XPathString('//div[contains(span, "Status")]/span[@class="titleinfo_infovalue"]'))
@@ -41,7 +41,7 @@ function getpagenumber()
 	HTTP.POST(MODULE.RootURL .. '/module/reader/ajax.php', 'readingtype=all')
 	HTTP.Reset()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('//div[@class="reader_mangaimagebox"]/img/@src', TASK.PageLinks)
 		return true
 	end
@@ -49,8 +49,8 @@ function getpagenumber()
 end
 
 function getnameandlink()
-	if HTTP.GET(MODULE.RootURL .. '/titles/page/' .. IncStr(URL)) then
-		local x = TXQuery.Create(HTTP.Document)
+	if HTTP.GET(MODULE.RootURL .. '/titles/page/' .. (URL + 1)) then
+		local x = CreateTXQuery(HTTP.Document)
 		x.XPathHREFAll('css("div.titlelist_name > a")', LINKS, NAMES)
 		return no_error
 	else
@@ -60,7 +60,7 @@ end
 
 function getdirectorypagenumber()
 	if HTTP.GET(MODULE.RootURL .. '/titles') then
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 		PAGENUMBER = tonumber(x.XPathString('//div[@class="titles_pages"]/a[last()-1]')) or 1
 		return no_error
 	else

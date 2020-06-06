@@ -1,7 +1,7 @@
 function GetInfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL,URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		if MANGAINFO.Title == '' then
 			MANGAINFO.Title=x.XPathString('//h1[@itemprop="headline"]')
 			MANGAINFO.Title=MANGAINFO.Title:gsub('^Baca Manga','')
@@ -35,7 +35,7 @@ function GetPageNumber()
 	HTTP.Cookies.Values['age_confirmed'] = '1'
 	local u = AppendURLDelim(MaybeFillHost(MODULE.RootURL,URL)) .. '_/1'
 	if HTTP.GET(u) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('//img[@class="imagechap"]/@data-src', TASK.PageLinks)
 		return true
 	else
@@ -45,7 +45,7 @@ end
 
 function GetNameAndLink()
 	if HTTP.GET(MODULE.RootURL..'/manga') then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		x.XPathHREFAll('//div[@class="alplist"]/li/a', LINKS, NAMES)
 		return no_error
 	else

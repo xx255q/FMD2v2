@@ -11,7 +11,7 @@ end
 
 function GetNameAndLink()
 	if HTTP.GET(MODULE.RootURL .. '/directory/') then
-		TXQuery.Create(HTTP.Document).x.XPathHREFAll('//*[@id="content"]//a', LINKS, NAMES)
+		CreateTXQuery(HTTP.Document).x.XPathHREFAll('//*[@id="content"]//a', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem
@@ -21,7 +21,7 @@ end
 function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//meta[@property="og:image"]/@content'))
 		MANGAINFO.Title     = x.XPathString('//*[@class="row"]//h1')
@@ -48,7 +48,7 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		TXQuery.Create(HTTP.Document).XPathStringAll('//*[contains(@class,"image-container")]//img/@src', TASK.PageLinks)
+		CreateTXQuery(HTTP.Document).XPathStringAll('//*[contains(@class,"image-container")]//img/@src', TASK.PageLinks)
 		return true
 	else
 		return false

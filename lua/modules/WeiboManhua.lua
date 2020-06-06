@@ -12,7 +12,7 @@ function GetInfo()
 	local id = URL:match('c/(%d+)')
 
 	if HTTP.GET(string.format(infoURL,id)) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title = x.XPathString('json(*)/data/comic/name')
 		if(x.XPathString('json(*)/data/comic/hcover') ~= '') then
 			MANGAINFO.CoverLink = string.format(coverURL, x.XPathString('json(*)/data/comic/hcover'))
@@ -47,7 +47,7 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost('http://apiwap.vcomic.com/',URL)) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		local pages = x.XPath('json(*).data.json_content.page()')
 		for i = 1, pages.Count do
 			TASK.PageLinks.Add(x.XPathString('mobileImgUrl',pages.Get(i)))
@@ -61,7 +61,7 @@ end
 function GetNameAndLink()
 	-- based on assumption of <10,000 comics, rows num must be increased if this is exceeded (!2500 at time of writing)
 	if(HTTP.GET'(https://apiwap.vcomic.com/wbcomic/comic/filter_result?page_num=1&rows_num=10000&cate_id=0&end_status=0&comic_pay_status=0&order=comic_read_num&_request_from=pc') then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		local list = x.XPath('json(*).data.data()')
 		for i = 1, list.Count do
 			LINKS.Add(string.format(seriesURL,x.XPathString('comic_id',list.Get(i))))
@@ -74,7 +74,7 @@ end
 
 function GetDirectoryPageNumber()
 	if(HTTP.GET'(https://apiwap.vcomic.com/wbcomic/comic/filter_result?page_num=1&rows_num=10000&cate_id=0&end_status=0&comic_pay_status=0&order=comic_read_num&_request_from=pc') then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		PAGENUMBER = tonumber(x.XPathString('json(*).data.data.rows_total')) or 1
 		return no_error
 	else

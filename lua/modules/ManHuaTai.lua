@@ -1,7 +1,7 @@
 ﻿function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//div[contains(@class, "mhjsbody")]/div/ul/li[contains(., "名称")]/substring-after(., "名称：")')
 		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL,x.XPathString('//div[@class="comic-cover"]/img/@src'))
 		MANGAINFO.Authors=x.XPathString('//div[contains(@class, "mhjsbody")]/div/ul/li[contains(., "作者")]/substring-after(., "作者：")')
@@ -37,7 +37,7 @@ function getpagenumber()
 	math.random(); math.random(); math.random();
 
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		local s = x.XPathString('//script[contains(., "mh_info")]')
 		local imgpath = GetBetween('imgpath:"', '",', s)
 		imgpath = imgpath:gsub('\\\\', '\\'):gsub("\\'", "'"):gsub('\\"', '"')
@@ -68,7 +68,7 @@ end
 
 function getdirectorypagenumber()
 	if HTTP.GET(MODULE.RootURL .. '/all.html') then
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 		PAGENUMBER = tonumber(x.XPathString('//div[@class="pages"]/a[last()-1]')) or 1
 		return no_error
 	else
@@ -77,8 +77,8 @@ function getdirectorypagenumber()
 end
 
 function getnameandlink()
-	if HTTP.GET(MODULE.RootURL..'/all_p'..IncStr(URL)..'.html') then
-		TXQuery.Create(HTTP.Document).XPathHREFTitleAll('//a[contains(div/ul/li/@class, "title")]',LINKS,NAMES)
+	if HTTP.GET(MODULE.RootURL..'/all_p'..(URL + 1)..'.html') then
+		CreateTXQuery(HTTP.Document).XPathHREFTitleAll('//a[contains(div/ul/li/@class, "title")]',LINKS,NAMES)
 		return no_error
 	else
 		return net_problem

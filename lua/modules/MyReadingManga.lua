@@ -1,7 +1,7 @@
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//*[contains(@class,"entry-content")]/h2')
 		if MANGAINFO.Title == '' then
 			MANGAINFO.Title = Trim(x.XPathString('//*[contains(@class,"entry-content")]/p[starts-with(.,"Title")]/substring-after(.,":")'))
@@ -36,7 +36,7 @@ end
 function getpagenumber()
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('//*[contains(@class,"entry-content")]//img/@data-lazy-src', TASK.PageLinks)
 		if TASK.PageLinks.Count == 0 then
 			x.XPathStringAll('//div[@class="separator" and @style]//img/@data-lazy-src', TASK.PageLinks)
@@ -49,7 +49,7 @@ end
 
 function getdirectorypagenumber()
 	if HTTP.GET(MODULE.RootURL) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		PAGENUMBER = tonumber(x.XPathString('//*[contains(@class,"archive-pagination")]/ul/li[last()-1]')) or 1
 		return no_error
 	else
@@ -58,8 +58,8 @@ function getdirectorypagenumber()
 end
 
 function getnameandlink()
-	if HTTP.GET(MODULE.RootURL .. '/page/' .. IncStr(URL) .. '/') then
-		local x = TXQuery.Create(HTTP.Document)
+	if HTTP.GET(MODULE.RootURL .. '/page/' .. (URL + 1) .. '/') then
+		local x = CreateTXQuery(HTTP.Document)
 		x.XPathHREFAll('//h2[@class="entry-title"]/a', LINKS, NAMES)
 		return no_error
 	else

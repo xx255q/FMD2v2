@@ -1,7 +1,7 @@
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL,URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//select[@name="manga"]/option[@selected]')
 		s=x.XPathString('//select[@name="manga"]/option[@selected]/@value')
 		v=x.XPath('//select[@name="chapter"]/option')
@@ -21,7 +21,7 @@ function getpagenumber()
 	TASK.PageLinks.Clear()
 	TASK.PageNumber=0
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		TASK.PageNumber = x.XPath('//select[@name="page"]/option').Count
 		return true
 	else
@@ -31,7 +31,7 @@ end
 
 function getnameandlink()
 	if HTTP.GET(MODULE.RootURL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		v=x.XPath('//select[@name="manga"]/option[@value!="0"]')
 		for i = 1, v.Count do
 			v1=v.Get(i)
@@ -47,7 +47,7 @@ end
 function getimageurl()
 	local s = MaybeFillHost(MODULE.RootURL,URL) .. '/' .. tostring(WORKID+1)
 	if HTTP.GET(s) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		TASK.PageLinks[WORKID]=MaybeFillHost(MODULE.RootURL,x.XPathString('//img[@id="manga_img"]/@src'))
 		return true
 	else

@@ -16,7 +16,7 @@ function GetInfo()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	MANGAINFO.URL       = x.XPathString('//meta[@property="og:URL"]/@content')
 	MANGAINFO.Title     = x.XPathString('//meta[@property="og:title"]/@content')
 	MANGAINFO.CoverLink = x.XPathString('//meta[@property="og:image"]/@content')
@@ -32,7 +32,7 @@ function GetInfo()
 	if c > 1 then
 		for i = 2, c do
 			if HTTP.GET(MANGAINFO.URL .. '/p/' .. i) then
-				x = TXQuery.Create(HTTP.Document)
+				x = CreateTXQuery(HTTP.Document)
 				x.XPathHREFAll('//table[contains(@class, "table")]//h4[@class="title"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			end
 		end
@@ -49,7 +49,7 @@ function GetDirectoryPageNumber()
 
 	if not HTTP.POST(u, DirectoryParameters .. '1') then return net_problem end
 
-	PAGENUMBER = math.ceil(tonumber(TXQuery.Create(HTTP.Document).XPathString('json(*).totalContents')) / 18)
+	PAGENUMBER = math.ceil(tonumber(CreateTXQuery(HTTP.Document).XPathString('json(*).totalContents')) / 18)
 
 	return no_error
 end
@@ -59,9 +59,9 @@ function GetNameAndLink()
 	local c, x = nil
 	local u = MODULE.RootURL .. DirectoryPagination
 
-	if not HTTP.POST(u, DirectoryParameters .. IncStr(URL)) then return net_problem end
+	if not HTTP.POST(u, DirectoryParameters .. (URL + 1)) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	c = x.XPathCount('json(*).contents()')
 
 	for i = 1, c do
@@ -79,7 +79,7 @@ function GetPageNumber()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	c = tonumber(x.XPathString('//script[contains(., "konekomangareader")]'):match('\'pages\':(.-),'))
 	p = x.XPathString('//script[contains(., "konekomangareader")]'):match('\'pageFormat\':\'(.-)\',')
 

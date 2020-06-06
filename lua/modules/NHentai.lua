@@ -15,7 +15,7 @@ function GetInfo()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	MANGAINFO.Title     = x.XPathString('//h1')
 	MANGAINFO.CoverLink = x.XPathString('//div[@id="cover"]//img/@data-src')
 	if MANGAINFO.CoverLink == '' then MANGAINFO.CoverLink = x.XPathString('//div[@id="cover"]//img/@src') end
@@ -36,9 +36,9 @@ function GetDirectoryPageNumber()
 	if not HTTP.GET(u) then return net_problem end
 
 	if MODULE.Name == 'NHentai' then
-		PAGENUMBER = tonumber(TXQuery.Create(HTTP.Document).XPathString('//a[@class="last"]/@href/substring-after(.,"=")'))
+		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//a[@class="last"]/@href/substring-after(.,"=")'))
 	else
-		PAGENUMBER = tonumber(TXQuery.Create(HTTP.Document).XPathString('//section[@class="pagination"]/li[last()]/a/@href'):match('?page=(%d+)&order='))
+		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//section[@class="pagination"]/li[last()]/a/@href'):match('?page=(%d+)&order='))
 	end
 
 	return no_error
@@ -47,11 +47,11 @@ end
 -- Get LINKS and NAMES from the manga list of the current website.
 function GetNameAndLink()
 	local x = nil
-	local u = MODULE.RootURL .. DirectoryPagination .. IncStr(URL)
+	local u = MODULE.RootURL .. DirectoryPagination .. (URL + 1)
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	x.XPathHREFAll('//div[@id="content"]/div/div[@class="gallery"]/a', LINKS, NAMES)
 
 	return no_error
@@ -64,7 +64,7 @@ function GetPageNumber()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	x.XPathStringAll('//a[@class="gallerythumb"]/@href', TASK.PageContainerLinks)
 	TASK.PageNumber = TASK.PageContainerLinks.Count
 
@@ -76,7 +76,7 @@ function GetImageURL()
 	local u = MaybeFillHost(MODULE.RootURL, TASK.PageContainerLinks[WORKID])
 
 	if HTTP.GET(u) then
-		TASK.PageLinks[WORKID] = TXQuery.Create(HTTP.Document).XPathString('//section[@id="image-container"]//img/@src')
+		TASK.PageLinks[WORKID] = CreateTXQuery(HTTP.Document).XPathString('//section[@id="image-container"]//img/@src')
 		return true
 	end
 

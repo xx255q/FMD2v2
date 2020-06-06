@@ -8,7 +8,7 @@ end
 function GetNameAndLink()
 	local i = (tonumber(URL) or 0) + 1
 	if HTTP.GET(MODULE.RootURL..'/manga-list/'..dirurls:sub(i, i)) then
-			TXQuery.Create(HTTP.Document).XPathHREFAll('//*[@class="manga-item"]//a', LINKS, NAMES)
+			CreateTXQuery(HTTP.Document).XPathHREFAll('//*[@class="manga-item"]//a', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem
@@ -18,7 +18,7 @@ end
 function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 
 		MANGAINFO.CoverLink = x.XPathString('//*[@class="panel-body"]//img/@src')
 		MANGAINFO.Title     = x.XPathString('//h1')
@@ -43,7 +43,7 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		x.ParseHTML(Trim(GetBetween('var images = ', ';', x.XPathString('//script[@type="text/javascript" and contains(., "var images")]'))))
 		for _, v in ipairs(x.XPathI('json(*)()("URL")')) do
 			TASK.PageLinks.Add(v.ToString():gsub('///', '//'))

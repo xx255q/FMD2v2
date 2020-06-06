@@ -17,7 +17,7 @@ function GetInfo()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	MANGAINFO.Title     = Trim(SeparateLeft(x.XPathString('//div[@class="book-info"]/h1'), ' Manga'))
 	MANGAINFO.CoverLink = x.XPathString('//div[@class="book-info"]//img/@src')
 	MANGAINFO.Authors   = x.XPathString('string-join(//dd[@class="about-book"]//span[starts-with(.,"Author")]/following-sibling::a)')
@@ -37,11 +37,11 @@ end
 -- Get LINKS and NAMES from the manga list of the current website.
 function GetNameAndLink()
 	local v, x = nil
-	local u = MODULE.RootURL .. DirectoryPagination .. IncStr(URL)
+	local u = MODULE.RootURL .. DirectoryPagination .. (URL + 1)
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	if x.XPath('//dd[@class="book-list"]/a[not(@class="follow")]').Count == 0 then return no_error end
 	for _, v in ipairs(x.XPathI('//dd[@class="book-list"]/a[not(@class="follow")]')) do
 		LINKS.Add(v.GetAttribute('href'))
@@ -59,7 +59,7 @@ function GetPageNumber()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	x.XPathStringAll('(//select[@class="sl-page"])[last()]/option/@value', TASK.PageContainerLinks)
 	TASK.PageNumber = TASK.PageContainerLinks.Count
 
@@ -71,7 +71,7 @@ function GetImageURL()
 	local u = MaybeFillHost(MODULE.RootURL, TASK.PageContainerLinks[WORKID])
 
 	if HTTP.GET(u) then
-		TASK.PageLinks[WORKID] = TXQuery.Create(HTTP.Document).XPathString('//img[contains(@class,"manga_pic")]/@src')
+		TASK.PageLinks[WORKID] = CreateTXQuery(HTTP.Document).XPathString('//img[contains(@class,"manga_pic")]/@src')
 		return true
 	end
 

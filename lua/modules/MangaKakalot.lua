@@ -1,43 +1,35 @@
-function GetRedirectUrl(document)
-	local x = TXQuery.Create(document)
-	local s = x.XPathString('//script[contains(., "window.location.assign")]')
-	if (s ~= '') and (s ~= nil) then
-		return GetBetween('("', '")', s)
-	end
-	return ''
-end
-
 function GetInfo()
 	local u = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(u) then
-		local s = GetRedirectUrl(HTTP.Document)
-		if (s ~= '') and (s ~= nil) then
-			u = s
-			if not HTTP.GET(u) then return false; end
+		local s = string.match(HTTP.Document.ToString(), 'window%.location%.assign%([\'"]([^\'"]+)')
+		if s ~= nil then u = s;
+			if not HTTP.GET(u) then
+				return net_problem
+			end
 		end
-		MANGAINFO.URL=u
-		local x=TXQuery.Create(HTTP.Document)
-		if MODULE.ID == '74674292e13c496699b8c5e4efd4b583' or MODULE.ID == 'ed4175a390e74aedbe4b4f622f3767c6' then
-			MANGAINFO.Title=x.XPathString('//ul[@class="manga-info-text"]/li/h1')
-			MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//div[@class="manga-info-pic"]/img/@src'))
-			MANGAINFO.Authors=x.XPathStringAll('//ul[@class="manga-info-text"]/li[contains(., "Author")]/a')
-			MANGAINFO.Genres=x.XPathStringAll('//ul[@class="manga-info-text"]/li[contains(., "Genre")]/a')
-			MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//ul[@class="manga-info-text"]/li[contains(., "Status")]'))
-			MANGAINFO.Summary=x.XPathStringAll('//div[@id="noidungm"]/text()', '')
+		MANGAINFO.URL = u
+		local id = MODULE.ID; if u:lower():find('manganelo.com', 1, true) then id = '' end
+		local x = CreateTXQuery(HTTP.Document)
+		if (id == '74674292e13c496699b8c5e4efd4b583')	-- mangakakalot
+			or (id == 'ed4175a390e74aedbe4b4f622f3767c6')	-- mangakakalots
+		then
+			MANGAINFO.Title     = x.XPathString('//div[@class="manga-info-pic"]/img/@alt')
+			MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//div[@class="manga-info-pic"]/img/@src'))
+			MANGAINFO.Authors   = x.XPathStringAll('//ul[@class="manga-info-text"]/li[contains(., "Author")]/a')
+			MANGAINFO.Genres    = x.XPathStringAll('//ul[@class="manga-info-text"]/li[contains(., "Genre")]/a')
+			MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//ul[@class="manga-info-text"]/li[contains(., "Status")]'))
+			MANGAINFO.Summary   = x.XPathStringAll('//div[@id="noidungm"]/text()', '')
 			x.XPathHREFAll('//div[@class="chapter-list"]/div[@class="row"]/span/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
 		else
-			MANGAINFO.Title=x.XPathString('//div[@class="story-info-right"]/h1')
-			MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//span[@class="info-image"]/img/@src'))
-			MANGAINFO.Authors=x.XPathStringAll('//td[contains(., "Author(s)")]/following-sibling::td/a')
-			MANGAINFO.Genres=x.XPathStringAll('//td[contains(., "Genres")]/following-sibling::td/a')
-			MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//td[contains(., "Status")]/following-sibling::td'))
-			MANGAINFO.Summary=x.XPathStringAll('//div[@class="panel-story-info-description"]/text()', '')
+			MANGAINFO.Title     = x.XPathString('//span[@class="info-image"]/img/@alt')
+			MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//span[@class="info-image"]/img/@src'))
+			MANGAINFO.Authors   = x.XPathStringAll('//td[contains(., "Author(s)")]/following-sibling::td/a')
+			MANGAINFO.Genres    = x.XPathStringAll('//td[contains(., "Genres")]/following-sibling::td/a')
+			MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//td[contains(., "Status")]/following-sibling::td'))
+			MANGAINFO.Summary   = x.XPathStringAll('//div[@class="panel-story-info-description"]/text()', '')
 			x.XPathHREFAll('//ul[@class="row-content-chapter"]/li/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
-		end
-		if MANGAINFO.Title:find('email') and MANGAINFO.Title:find('protected') then
-			MANGAINFO.Title = Trim(x.XPathString('//title/substring-after(substring-before(., "Manga Online"), "Read")'))
 		end
 		return no_error
 	else
@@ -51,24 +43,12 @@ function GetPageNumber()
 	local u = MaybeFillHost(MODULE.RootURL, URL)
 	HTTP.Cookies.Values['content_server'] = 'server2'
 	if HTTP.GET(u) then
-		local function spliturl(u)
-			local pos = 0
-			for i = 1, 3 do
-				local p = string.find(u, '/', pos+1, true)
-				if p == nil then break; end
-				pos = p
-			end
-			return string.sub(u, 1, pos-1), string.sub(u, pos)
+		local s = string.match(HTTP.Document.ToString(), 'window%.location%.assign%([\'"]([^\'"]+)')
+		if s ~= nil then
+			local h, p = SplitURL(s), SplitURL(u)
+			if not HTTP.GET(h .. p) then return false end
 		end
-
-		local s = GetRedirectUrl(HTTP.Document)
-		if (s ~= '') and (s ~= nil) then
-			local host, _ = spliturl(s)
-			local _, PATH = spliturl(u)
-			u = host .. PATH
-			if not HTTP.GET(u) then return false; end
-		end
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('//div[@id="vungdoc"]/img[@title]/@src', TASK.PageLinks)
 		if TASK.PageLinks.Count == 0 then
 			x.XPathStringAll('//div[@class="vung_doc"]/img[@title]/@src', TASK.PageLinks)
@@ -86,19 +66,20 @@ function GetPageNumber()
 end
 
 function GetNameAndLink()
-	local dirurl = '/manga_list?type=newest&category=all&state=all&page='
-	local dirs = '/genre-all/'
-	if MODULE.ID == '74674292e13c496699b8c5e4efd4b583' or MODULE.ID == 'ed4175a390e74aedbe4b4f622f3767c6' then
-		if HTTP.GET(MODULE.RootURL .. dirurl .. IncStr(URL)) then
-			local x = TXQuery.Create(HTTP.Document)
+	local id = MODULE.ID
+	if (id == '74674292e13c496699b8c5e4efd4b583')	-- mangakakalot
+		or (id == 'ed4175a390e74aedbe4b4f622f3767c6')	-- mangakakalots
+	then
+		if HTTP.GET(MODULE.RootURL .. '/manga_list?type=newest&category=all&state=all&page=' .. (URL + 1)) then
+			local x = CreateTXQuery(HTTP.Document)
 			x.XPathHREFAll('//div[@class="truyen-list"]/div[@class="list-truyen-item-wrap"]/h3/a', LINKS, NAMES)
 			return no_error
 		else
 			return net_problem
 		end
 	else
-		if HTTP.GET(MODULE.RootURL .. dirs .. IncStr(URL)) then
-			local x = TXQuery.Create(HTTP.Document)
+		if HTTP.GET(MODULE.RootURL .. '/genre-all/' .. (URL + 1)) then
+			local x = CreateTXQuery(HTTP.Document)
 			x.XPathHREFAll('//div[@class="panel-content-genres"]//div[@class="genres-item-info"]/h3/a', LINKS, NAMES)
 			return no_error
 		else
@@ -108,18 +89,18 @@ function GetNameAndLink()
 end
 
 function GetDirectoryPageNumber()
-	local dirurl = '/manga_list?type=newest&category=all&state=all&page='
-	local dirs = '/genre-all/'
-	if MODULE.ID == '74674292e13c496699b8c5e4efd4b583' or MODULE.ID == 'ed4175a390e74aedbe4b4f622f3767c6' then
-		if HTTP.GET(MODULE.RootURL .. dirurl .. '1') then
-			PAGENUMBER = tonumber(TXQuery.Create(HTTP.Document).XPathString('//a[contains(@class, "page_last")]/@href'):match('page=(%d+)'))
+	if (MODULE.ID == '74674292e13c496699b8c5e4efd4b583')	-- mangakakalot
+		or (MODULE.ID == 'ed4175a390e74aedbe4b4f622f3767c6')	-- mangakakalots
+	then
+		if HTTP.GET(MODULE.RootURL .. '/manga_list?type=newest&category=all&state=all&page=' .. '1') then
+			PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//a[contains(@class, "page_last")]/@href'):match('page=(%d+)'))
 			return no_error
 		else
 			return net_problem
 		end
 	else
-		if HTTP.GET(MODULE.RootURL .. dirs .. '1') then
-			PAGENUMBER = tonumber(TXQuery.Create(HTTP.Document).XPathString('//a[contains(@class, "page-last")]/@href'):match('.-//.-/.-/(%d+)'))
+		if HTTP.GET(MODULE.RootURL .. '/genre-all/' .. '1') then
+			PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//a[contains(@class, "page-last")]/@href'):match('.-//.-/.-/(%d+)'))
 			return no_error
 		else
 			return net_problem

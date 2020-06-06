@@ -1,7 +1,7 @@
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//meta[@property="og:title"]/@content')
 		MANGAINFO.CoverLink=x.XPathString('//meta[@property="og:image"]/@content')
 		MANGAINFO.Authors=x.XPathString('//a[@class="post-account"]')
@@ -24,7 +24,7 @@ function getpagenumber()
 	if hash ~= nil then
 		-- album
 		if HTTP.GET(MODULE.RootURL .. '/ajaxalbums/getimages/' .. hash .. '/hit.json') then
-			local x = TXQuery.Create(HTTP.Document)
+			local x = CreateTXQuery(HTTP.Document)
 			local v = x.XPath('json(*).data.images()')
 			for i = 1, v.Count do
 				local v1 = v.Get(i)
@@ -37,7 +37,7 @@ function getpagenumber()
 	else
 		-- single image
 		if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
-			x=TXQuery.Create(HTTP.Document)
+			x=CreateTXQuery(HTTP.Document)
 			x.XPathStringAll('//div[contains(@class,"post-image")]/a/img/concat("https:",@src)', TASK.PageLinks)
 			return true
 		else

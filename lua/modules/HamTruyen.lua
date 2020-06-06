@@ -1,7 +1,7 @@
 ﻿function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		if MANGAINFO.Title == '' then
 			MANGAINFO.Title = x.XPathString('//h1[@class="tentruyen"]')
 		end
@@ -21,7 +21,7 @@ end
 function getpagenumber()
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('//div[@id="content_chap"]/img/@src', TASK.PageLinks)
 	else
 		return false
@@ -30,9 +30,9 @@ function getpagenumber()
 end
 
 function getnameandlink()
-	local s = MODULE.RootURL .. string.format('/danhsach/P%s/index.html?sort=1', IncStr(URL))
+	local s = MODULE.RootURL .. string.format('/danhsach/P%s/index.html?sort=1', (URL + 1))
 	if HTTP.GET(s) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		x.XPathHREFAll('//a[h5[@class="tentruyen_slide"]]', LINKS, NAMES)
 		local maxp = -1
 		local v = x.XPath('//ul[@class="pagination"]/li/a/@href')

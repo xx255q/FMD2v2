@@ -5,7 +5,7 @@ function getinfo()
 		MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL..'/episodes')
 	end
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title = x.XPathString('//div[@class="detail-top-left"]/h1')
 		MANGAINFO.CoverLink=x.XPathString('//div[@class="detail-top-right"]/img/@src')
 		MANGAINFO.Authors=x.XPathString('//div[@class="detail-top-left"]//div[@class="created-by"]')
@@ -26,7 +26,7 @@ function getpagenumber()
 	TASK.PageNumber=0
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
-		TXQuery.Create(HTTP.Document).XPathStringAll('//div[@class="pictures"]//img/@src', TASK.PageLinks)
+		CreateTXQuery(HTTP.Document).XPathStringAll('//div[@class="pictures"]//img/@src', TASK.PageLinks)
 
 		if TASK.PageNumber == 1 then
 			return false
@@ -45,9 +45,9 @@ function getnameandlink()
 	 dirurl = '/en/genre?page='
 	end
 
-	if HTTP.GET(MODULE.RootURL..dirurl.. IncStr(URL)) then
-		local x=TXQuery.Create(HTTP.Document)
-		TXQuery.Create(HTTP.Document).XPathHREFAll('//ul[contains(@class, "ret-search-list")]/li//h3/a',LINKS,NAMES)
+	if HTTP.GET(MODULE.RootURL..dirurl.. (URL + 1)) then
+		local x=CreateTXQuery(HTTP.Document)
+		CreateTXQuery(HTTP.Document).XPathHREFAll('//ul[contains(@class, "ret-search-list")]/li//h3/a',LINKS,NAMES)
 		local v = x.XPath('//div[@class="items"]/a')
 		for i = 1, v.Count do
 			local v1 = v.Get(i)

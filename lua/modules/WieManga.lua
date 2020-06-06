@@ -3,7 +3,7 @@ local ALPHA_LIST_UP = '#ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 function GetInfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL,URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//div[@class="bookfrontpage"]/a/img/@src'))
 		if MODULE.Name == 'WieManga' then
 			MANGAINFO.Title=x.XPathString('//div[@class="bookmessagebox"]/h1/substring-before(., " Manga")')
@@ -32,7 +32,7 @@ function GetPageNumber()
 	TASK.PageNumber=0
 	local s=MaybeFillHost(MODULE.RootURL,URL):gsub('/$', '') .. '-1.html'
 	if HTTP.GET(s) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		TASK.PageNumber=x.XPath('(//select[@id="page"])[1]/option').Count
 		return true
 	else
@@ -45,7 +45,7 @@ function GetImageURL()
 	local s = baseurl:gsub('/$','') .. '-' .. tostring(WORKID+1) .. '.html'
 	HTTP.Headers.Values['Referer'] = baseurl
 	if HTTP.GET(s) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		TASK.PageLinks[WORKID]=x.XPathString('//img[@id="comicpic"]/@src')
 		return true
 	else
@@ -58,8 +58,8 @@ function GetNameAndLink()
 	if MODULE.CurrentDirectoryIndex ~= 0 then
 		s = ALPHA_LIST_UP:sub(MODULE.CurrentDirectoryIndex+1,MODULE.CurrentDirectoryIndex+1)
 	end
-	if HTTP.GET(MODULE.RootURL..'/category/' .. s .. '_'.. IncStr(URL) .. '.html') then
-		x=TXQuery.Create(HTTP.Document)
+	if HTTP.GET(MODULE.RootURL..'/category/' .. s .. '_'.. (URL + 1) .. '.html') then
+		x=CreateTXQuery(HTTP.Document)
 		v=x.XPath('//*[@class="booklist"]//span[@class="pagetor"]//text()')
 		local i = 1
 		for j=1,v.Count do

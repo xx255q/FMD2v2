@@ -15,7 +15,7 @@ function GetInfo()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	MANGAINFO.Title     = x.XPathString('//meta[@property="og:title"]/@content')
 	MANGAINFO.CoverLink = x.XPathString('//img[contains(@class, "thumbnail")]/@src')
 	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//li[contains(strong, "Status:")]/text()'), 'Ativo', 'Completo')
@@ -46,7 +46,7 @@ function GetDirectoryPageNumber()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	PAGENUMBER = tonumber(TXQuery.Create(HTTP.Document).XPathString('(//div[@class="wp-pagenavi"])[1]//a[@class="last"]/@href'):match('.-/page/(%d+)'))
+	PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('(//div[@class="wp-pagenavi"])[1]//a[@class="last"]/@href'):match('.-/page/(%d+)'))
 
 	return no_error
 end
@@ -54,11 +54,11 @@ end
 -- Get LINKS and NAMES from the manga list of the current website.
 function GetNameAndLink()
 	local x = nil
-	local u = MODULE.RootURL .. DirectoryPagination .. IncStr(URL)
+	local u = MODULE.RootURL .. DirectoryPagination .. (URL + 1)
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	x.XPathHREFAll('//div[@class="list clearfix"]//h3/a', LINKS, NAMES)
 
 	return no_error
@@ -71,7 +71,7 @@ function GetPageNumber()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	x.ParseHTML(GetBetween('var images = ["', '"];', x.XPathString('//script[contains(., "var images = ")]')):gsub('"', ''):gsub('\'', '"'))
 	x.XPathStringAll('//img/@src', TASK.PageLinks)
 

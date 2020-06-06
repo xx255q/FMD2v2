@@ -1,5 +1,3 @@
--- local LuaDebug   = require 'LuaDebugging'
-
 function getinfo()
 	local x = nil
 		local u = MaybeFillHost(MODULE.RootURL, URL)
@@ -7,7 +5,7 @@ function getinfo()
 		--debug URL manga info
 		if not HTTP.GET(u) then return net_problem end
 
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 		MANGAINFO.CoverLink	= MaybeFillHost(MODULE.RootURL, x.XPathString('//*[@class="img-fluid not-lazy"]/@src'))
 		MANGAINFO.Title     = x.XPathString('//h1[contains(@class, "title")]')
 		MANGAINFO.Genres    = x.XPathStringAll('//*[contains(@class, "genres")]/a')
@@ -19,7 +17,7 @@ function getinfo()
 		while p <= pages do
 			if p > 1 then
 				if HTTP.GET(MANGAINFO.URL .. '?page=' .. tostring(p)) then
-					x=TXQuery.Create(HTTP.Document)
+					x=CreateTXQuery(HTTP.Document)
 				else
 					break
 				end
@@ -45,7 +43,7 @@ function getpagenumber()
 	local x = nil
 	local u = MaybeFillHost(MODULE.RootURL, URL)
 	if not HTTP.GET(u) then return net_problem end
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	x.XPathStringAll('//*[contains(@class, "mb-3")]/img/@data-src', TASK.PageLinks)
 	if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[contains(@class, "img-fluid not-lazy")]/@data-src', TASK.PageLinks) end
 	return no_error
@@ -55,13 +53,13 @@ function getnameandlink()
 	local x = nil
 	local u = MODULE.RootURL .. '/comic/'
 	if not HTTP.GET(u) then return net_problem end
-	x = TXQuery.Create(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	local pages = 1
 		local p = 1
 		while p <= pages do
 			if p > 1 then
 				if HTTP.GET(u .. '?page=' .. tostring(p)) then
-					x=TXQuery.Create(HTTP.Document)
+					x=CreateTXQuery(HTTP.Document)
 				else
 					break
 				end

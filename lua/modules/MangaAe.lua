@@ -3,7 +3,7 @@ local dirurl='/manga'
 function GetDirectoryPageNumber()
 	PAGENUMBER=1
 	if HTTP.GET(MODULE.RootURL..dirurl) then
-		PAGENUMBER=TXQuery.Create(HTTP.Document).XPathCount('//div[@class="pagination"]/a')
+		PAGENUMBER=CreateTXQuery(HTTP.Document).XPathCount('//div[@class="pagination"]/a')
 		return no_error
 	else
 		return net_error
@@ -11,8 +11,8 @@ function GetDirectoryPageNumber()
 end
 
 function GetNameAndLink()
-	if HTTP.GET(MODULE.RootURL..dirurl..'/page:'..IncStr(URL)) then
-			TXQuery.Create(HTTP.Document).XPathHREFAll('//div[@id="mangadirectory"]/div[@class="mangacontainer"]/a[2]', LINKS, NAMES)
+	if HTTP.GET(MODULE.RootURL..dirurl..'/page:'..(URL + 1)) then
+			CreateTXQuery(HTTP.Document).XPathHREFAll('//div[@id="mangadirectory"]/div[@class="mangacontainer"]/a[2]', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem
@@ -22,7 +22,7 @@ end
 function GetInfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL,URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//h1[@class="EnglishName"]'):match('^%((.*)%)$')
 		MANGAINFO.CoverLink=x.XPathString('//img[@class="manga-cover"]/resolve-uri(@src)')
 		MANGAINFO.Authors=x.XPathString('//div[@class="manga-details-author"]/h4[1]')
@@ -43,7 +43,7 @@ function GetPageNumber()
 	if u:match('(%d+)$')=='1' then u=u:gsub('/1$','') end
 	u=u..'/0/full'
 	if HTTP.GET(u) then
-		TXQuery.Create(HTTP.Document).XPathStringAll('//*[@id="showchaptercontainer"]//img/resolve-uri(@src)', TASK.PageLinks)
+		CreateTXQuery(HTTP.Document).XPathStringAll('//*[@id="showchaptercontainer"]//img/resolve-uri(@src)', TASK.PageLinks)
 		return true
 	else
 		return false

@@ -4,7 +4,7 @@ local perpage = 60
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		if MANGAINFO.Title == '' then
 			MANGAINFO.Title = x.XPathString('//div[@class="folder-title"]/a[last()]')
 		end
@@ -23,7 +23,7 @@ end
 function getpagenumber()
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('//img[@class="doujin"]/@data-file', TASK.PageLinks)
 	else
 		return false
@@ -49,7 +49,7 @@ function getnameandlink()
 	local from = to - step + 1
 	if from < endDate then return no_error; end
 	if HTTP.XHR(MODULE.RootURL .. string.format('/folders?start=%d&end=%d', from, to)) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		local v = x.XPath('json(*).folders()')
 		for i = 1, v.Count do
 			local v1 = v.Get(i)

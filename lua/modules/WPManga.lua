@@ -2,7 +2,7 @@ function getinfo()
 	local s = ''
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//img[starts-with(@class,"cvr")]/@src'))
 		MANGAINFO.Title = x.XPathString('//*[@itemprop="itemreviewed"]')
 		MANGAINFO.Authors = x.XPathString('//*[contains(@class,"mng_det")]//*[self::p or self::li][starts-with(.,"Author")]/substring-after(normalize-space(.)," ")')
@@ -55,7 +55,7 @@ function getpagenumber()
 	HTTP.Cookies.Values['viewer'] = '1'
 	if HTTP.GET(AppendURLDelim(MaybeFillHost(MODULE.RootURL, URL)) .. '1') then
 		-- multi page
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 		s = x.XPathString('//script[contains(.,"imglist")]/substring-after(substring-before(.,"]"),"[")')
 		if s ~= '' then
 			s = '[' .. s .. ']'
@@ -104,8 +104,8 @@ end
 
 function getimageurl()
 	local s = ''
-	if HTTP.GET(AppendURLDelim(MaybeFillHost(MODULE.RootURL, URL)) .. IncStr(WORKID) .. '/') then
-		x = TXQuery.Create(HTTP.Document)
+	if HTTP.GET(AppendURLDelim(MaybeFillHost(MODULE.RootURL, URL)) .. (WORKID + 1) .. '/') then
+		x = CreateTXQuery(HTTP.Document)
 		if MODULE.Name == 'ReadHentaiManga' then
 			s = HTMLDecode(x.XPathString('//img[@id="main_img"]/@src'))
 		else
@@ -135,7 +135,7 @@ end
 
 function getdirectorypagenumber()
 	if HTTP.GET(AppendURLDelim(MODULE.RootURL) .. getdirurl(MODULE.Name)) then
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 		PAGENUMBER = tonumber(x.XPathString('//ul[@class="pgg"]/li[last()]/a/@href'):match('/(%d+)/')) or 1
 		return true
 	else
@@ -150,8 +150,8 @@ function getnameandlink()
 		['MangaDeep'] = true,
 		['Manga99'] = true
 	}
-	if HTTP.GET(AppendURLDelim(MODULE.RootURL) .. getdirurl(MODULE.Name) .. IncStr(URL) .. '/') then
-		x = TXQuery.Create(HTTP.Document)
+	if HTTP.GET(AppendURLDelim(MODULE.RootURL) .. getdirurl(MODULE.Name) .. (URL + 1) .. '/') then
+		x = CreateTXQuery(HTTP.Document)
 		if w[MODULE.Name] then
 			x.XPathHREFAll('//*[contains(@id,"content")]//*[@class="det"]/a', LINKS, NAMES)
 		elseif MODULE.Name == 'MangaOnlineToday' then

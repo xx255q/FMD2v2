@@ -4,7 +4,7 @@ function getinfo()
 
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 		MANGAINFO.CoverLink = x.XPathString('//figure[@class="image"][1]/img/@src')
 		MANGAINFO.Artists = x.XPathString('//table[@class="view-page-details"]//a[contains(@href, "=artist:")]/text()')
 		MANGAINFO.Title = '[' .. MANGAINFO.Artists .. '] ' .. x.XPathString('//h1[@class="title"]/text()') .. ' (' .. x.XPathString('//table[@class="view-page-details"]//a[contains(@href, "=publisher:")]/text()') .. ')'
@@ -24,7 +24,7 @@ function getpagenumber()
 	local x = nil
 
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('(//div[@class="box"])[2]/div/div/a/@href', TASK.PageContainerLinks)
 		TASK.PageNumber = TASK.PageContainerLinks.Count
 
@@ -38,7 +38,7 @@ function getimageurl()
 	local s = MaybeFillHost(MODULE.RootURL, TASK.PageContainerLinks[WORKID])
 
 	if HTTP.GET(s) then
-		TASK.PageLinks[WORKID] = TXQuery.Create(HTTP.Document).XPathString('//img[@id="currImage"]/@src')
+		TASK.PageLinks[WORKID] = CreateTXQuery(HTTP.Document).XPathString('//img[@id="currImage"]/@src')
 
 		return true
 	end
@@ -48,7 +48,7 @@ end
 -- Get last page number for manga directory:
 function getdirectorypagenumber()
 	if HTTP.GET(MODULE.RootURL) then
-		PAGENUMBER = tonumber(TXQuery.Create(HTTP.Document).XPathString('(//ul[@class="pagination-list"])[1]/li[last()]/a/text()'))
+		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('(//ul[@class="pagination-list"])[1]/li[last()]/a/text()'))
 
 		return no_error
 	end
@@ -59,8 +59,8 @@ end
 function getnameandlink()
 	local v, x = nil
 
-	if HTTP.GET(MODULE.RootURL .. '/page/' .. IncStr(URL)) then
-		x = TXQuery.Create(HTTP.Document)
+	if HTTP.GET(MODULE.RootURL .. '/page/' .. (URL + 1)) then
+		x = CreateTXQuery(HTTP.Document)
 		v = x.XPath('//div[@class="container"]/div/div/a[contains(@href, "/view/")]')
 		for i = 1, v.Count do
 			v1 = v.Get(i)

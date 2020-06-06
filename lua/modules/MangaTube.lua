@@ -12,7 +12,7 @@ end
 
 function GetDirectoryPageNumber()
 	if HTTP.GET(MODULE.RootURL .. '/series/?filter=alphabetic') then
-		PAGENUMBER = tonumber(TXQuery.Create(HTTP.Document).x.XPathString('//div[@id="series_list"]/@data-series-pages')) or 1
+		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).x.XPathString('//div[@id="series_list"]/@data-series-pages')) or 1
 		return no_error
 	else
 		return net_problem
@@ -20,9 +20,9 @@ function GetDirectoryPageNumber()
 end
 
 function GetNameAndLink()
-	local data = 'action=load_series_list_entries&parameter%5Bpage%5D=' .. IncStr(URL) .. '&parameter%5Bletter%5D=&parameter%5Bsortby%5D=alphabetic&parameter%5Border%5D=asc'
+	local data = 'action=load_series_list_entries&parameter%5Bpage%5D=' .. (URL + 1) .. '&parameter%5Bletter%5D=&parameter%5Bsortby%5D=alphabetic&parameter%5Border%5D=asc'
 	if HTTP.POST(MODULE.RootURL .. '/ajax', data) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('json(*).success().manga_title', NAMES)
 		local v for _,v in ipairs(x.XPathI('json(*).success().manga_slug')) do
 			LINKS.Add(MODULE.RootURL .. '/series/' .. v.ToString())
@@ -36,7 +36,7 @@ end
 function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//div[contains(@class, "cover")]//img/@data-original'))
 		MANGAINFO.Title     = x.XPathString('//h1[@class="series-title"]')
@@ -59,7 +59,7 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		local s = x.XPathString('//script[contains(., "img_path: ")]')
 		local img_path = s:match("img_path:%s*'(.-)'")
 		s = s:match('pages:%s*(%[.-%])')

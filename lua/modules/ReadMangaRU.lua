@@ -1,12 +1,4 @@
 ----------------------------------------------------------------------------------------------------
--- Scripting Parameters
-----------------------------------------------------------------------------------------------------
-
--- local LuaDebug            = require 'LuaDebugging'
--- LuaDebugging              = true   --> Override the global LuaDebugging variable by uncommenting this line.
--- LuaStatistics             = true   --> Override the global LuaStatistics variable by uncommenting this line.
-
-----------------------------------------------------------------------------------------------------
 -- Local Constants
 ----------------------------------------------------------------------------------------------------
 

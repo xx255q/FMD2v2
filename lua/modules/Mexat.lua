@@ -1,7 +1,7 @@
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		if MANGAINFO.Title == '' then
 			MANGAINFO.Title = x.XPathString('//h1[@class="page-title"]')
 		end
@@ -19,7 +19,7 @@ function getpagenumber()
 	TASK.PageContainerLinks.Clear()
 	TASK.PageNumber = 0
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('//select[@id="manga_pid"]/option/@value', TASK.PageContainerLinks)
 		TASK.PageNumber = TASK.PageContainerLinks.Count
 	else
@@ -30,7 +30,7 @@ end
 
 function getimageurl()
 	if HTTP.GET(AppendURLDelim(MaybeFillHost(MODULE.RootURL, URL)) .. '?pid=' .. TASK.PageContainerLinks[WORKID]) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		TASK.PageLinks[WORKID] = x.XPathString('//div[@class="pic"]/a/img/@src')
 		return true
 	else
@@ -40,7 +40,7 @@ end
 
 function getnameandlink()
 	if HTTP.GET(MODULE.RootURL .. '/%D9%82%D8%A7%D8%A6%D9%85%D8%A9-%D8%A7%D9%84%D9%85%D8%A7%D9%86%D8%AC%D8%A7/') then
-		TXQuery.Create(HTTP.Document).XPathHREFAll('//ul[@class="MangaList"]/li//div[@class="SeriesName"]/a', LINKS, NAMES)
+		CreateTXQuery(HTTP.Document).XPathHREFAll('//ul[@class="MangaList"]/li//div[@class="SeriesName"]/a', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem

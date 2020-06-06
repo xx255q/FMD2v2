@@ -12,7 +12,7 @@ end
 
 function GetInfo()
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.CoverLink = x.XPathString('//img[@class="thumbnail"]/@src')
 		MANGAINFO.Title     = Trim(x.XPathString('//title'):gsub('- Çevrimiçi Türkçe Manga', ''):gsub('- Çevrimiçi Türkçe Webtoon', ''):gsub('- Çevrimiçi Türkçe Novel', ''))
 		MANGAINFO.Authors   = x.XPathString('//table[2]/tbody/tr[2]/td[1]')
@@ -53,7 +53,7 @@ end
 
 function GetNameAndLink()
 	if HTTP.GET(MODULE.RootURL .. '/manga-list.html?listType=allABC') then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		x.XPathHREFAll('//*[@data-toggle="mangapop"]/b/a', LINKS, NAMES)
 		return no_error
 	else
@@ -64,7 +64,7 @@ end
 function GetPageNumber()
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('//img[@class="chapter-img"]/@src', TASK.PageLinks)
 		return true
 	else

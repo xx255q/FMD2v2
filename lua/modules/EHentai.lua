@@ -48,7 +48,7 @@ end
 function GetDirectoryPageNumber()
 	local dirURL = 'f_doujinshi=on&f_manga=on&f_western=on&f_apply=Apply+Filter'
 	if HTTP.GET(MODULE.RootURL .. '/?' .. dirURL) then
-		PAGENUMBER = tonumber(TXQuery.Create(HTTP.Document).x.XPathString('css("table.ptt>tbody>tr>td:nth-last-child(2)>a")')) or 1
+		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).x.XPathString('css("table.ptt>tbody>tr>td:nth-last-child(2)>a")')) or 1
 		return no_error
 	else
 		return net_problem
@@ -61,10 +61,10 @@ function GetNameAndLink()
 	if URL == '0' then
 		rurl = MODULE.RootURL .. '/?' .. dirURL
 	else
-		rurl = MODULE.RootURL .. '/?page=' .. IncStr(URL) .. '&' .. dirURL
+		rurl = MODULE.RootURL .. '/?page=' .. (URL + 1) .. '&' .. dirURL
 	end
 	if HTTP.GET(rurl) then
-		TXQuery.Create(HTTP.Document).XPathHREFAll('//table[@class="itg"]/tbody/tr/td/div/div/a', LINKS, NAMES)
+		CreateTXQuery(HTTP.Document).XPathHREFAll('//table[@class="itg"]/tbody/tr/td/div/div/a', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem
@@ -78,7 +78,7 @@ function GetInfo()
 	if HTTP.GET(MANGAINFO.URL) then
 		-- if there's only 1 line, it's a banned message
 		-- todo: identify the banned message
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 
 		MANGAINFO.CoverLink = x.XPathString('//*[@id="gd1"]/img/@src')
 		MANGAINFO.Title     = x.XPathString('//*[@id="gn"]')
@@ -111,7 +111,7 @@ function GetPageNumber()
 	URL = URL:gsub('/%?%w.*$', '/'):gsub('/*$', '') .. '/'
 	HTTP.Cookies.Values['nw'] = '1'
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		x = TXQuery.Create()
+		x = CreateTXQuery()
 		GetImageLink()
 		local p, i
 		p = tonumber(x.XPathString('//table[@class="ptt"]//td[last()-1]')) or 1
@@ -158,7 +158,7 @@ function DownloadImage()
 		end
 
 		local result = false
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		local rcount, nls, iurl = 0, '', ''
 		while (not result) and (not HTTP.Terminated) do
 			x.ParseHTML(HTTP.Document)

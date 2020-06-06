@@ -15,7 +15,7 @@ local dirurl = '/comics?sortType=TITLE&browse=ALL'
 
 function GetDirectoryPageNumber()
 	if HTTP.GET(MODULE.RootURL .. dirurl) then
-		PAGENUMBER = tonumber(TXQuery.Create(HTTP.Document).x.XPathString('//div[@class="global-pagination-wrap"]/a[last()-1]')) or 1
+		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).x.XPathString('//div[@class="global-pagination-wrap"]/a[last()-1]')) or 1
 		return no_error
 	else
 		return net_problem
@@ -25,10 +25,10 @@ end
 function GetNameAndLink()
 	local s = MODULE.RootURL .. dirurl
 	if URL ~= '0' then
-		s = s .. '&pageNumber=' .. IncStr(URL)
+		s = s .. '&pageNumber=' .. (URL + 1)
 	end
 	if HTTP.GET(s) then
-		TXQuery.Create(HTTP.Document).XPathHREFAll('//ul[contains(@class,"content-list-wrap")]//li//a[@class="preferred title"]', LINKS, NAMES)
+		CreateTXQuery(HTTP.Document).XPathHREFAll('//ul[contains(@class,"content-list-wrap")]//li//a[@class="preferred title"]', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem
@@ -38,7 +38,7 @@ end
 function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 
 		MANGAINFO.CoverLink = x.XPathString('//a[@id="series-thumb"]/img/@src')
 		if MANGAINFO.CoverLink == '' then
@@ -66,7 +66,7 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		for _, v in ipairs(TXQuery.Create(HTTP.Document).XPathI('//img[@class="art-image"]/@src')) do
+		for _, v in ipairs(CreateTXQuery(HTTP.Document).XPathI('//img[@class="art-image"]/@src')) do
 			TASK.PageLinks.Add(v.ToString():gsub('[%?%&]type=%w%d+', ''))
 		end
 		return true

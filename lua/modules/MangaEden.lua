@@ -4,7 +4,7 @@ local dirit = '/en/it-directory/?order=-0'
 function GetInfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		if MANGAINFO.Title == '' then
 			MANGAINFO.Title = x.XPathString('//*[@class="manga-title"]')
 		end
@@ -31,7 +31,7 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		local s = x.XPathString('//script[contains(., "var pages")]')
 		s = GetBetween('=', ';', s)
 		x.ParseHTML(s)
@@ -57,7 +57,7 @@ end
 
 function GetDirectoryPageNumber()
 	if HTTP.GET(AppendURLDelim(MODULE.RootURL)..GetDirUrl(MODULE.Name)) then
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 		PAGENUMBER = tonumber(x.XPathString('//*[@class="pagination pagination_bottom"]/a[last()-1]')) or 1
 		return true
 	else
@@ -66,8 +66,8 @@ function GetDirectoryPageNumber()
 end
 
 function GetNameAndLink()
-	if HTTP.GET(MODULE.RootURL..GetDirUrl(MODULE.Name).."&page="..IncStr(URL)) then
-		x=TXQuery.Create(HTTP.Document)
+	if HTTP.GET(MODULE.RootURL..GetDirUrl(MODULE.Name).."&page="..(URL + 1)) then
+		x=CreateTXQuery(HTTP.Document)
 		x.XPathHREFAll('//table[@id="mangaList"]//tr/td[1]/a', LINKS, NAMES)
 		return no_error
 	else

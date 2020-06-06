@@ -10,6 +10,7 @@ function ____WebsiteBypass(METHOD, URL)
 		bypass = require 'websitebypass.ddos-guard'
 	end
 	if bypass ~= nil then
+		LOGGER = require 'fmd.logger'
 		return bypass:bypass(METHOD, URL)
 	end
 	return false

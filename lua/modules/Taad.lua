@@ -8,9 +8,9 @@ function GetNameAndLink()
 		i = MODULE.CurrentDirectoryIndex + 1
 		s = alphalist:sub(i, i)
 	end
-	if HTTP.GET(MODULE.RootURL .. '/category/' .. s .. '_views_' .. IncStr(URL) .. '.html') then
+	if HTTP.GET(MODULE.RootURL .. '/category/' .. s .. '_views_' .. (URL + 1) .. '.html') then
 		i = 1
-		x = TXQuery.Create(HTTP.Document)
+		x = CreateTXQuery(HTTP.Document)
 		for _, v in ipairs(x.XPathI('//*[@class="clistChr"]//span[@class="pagetor"]//text()')) do
 			j = tonumber(v.ToString()) or 1
 			if j > i then i = j end
@@ -27,7 +27,7 @@ function GetInfo()
 	local s = MANGAINFO.URL
 	if not(s:find('waring=1')) then s = s .. '?waring=1' end
 	if HTTP.GET(s) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//table//td/a/img/@src'))
 		MANGAINFO.Title     = x.XPathString('//title/substring-before(.," - Read ")')
@@ -46,7 +46,7 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		TASK.PageNumber = tonumber(TXQuery.Create(HTTP.Document).XPathString('//select[@id="page"]/count(./option)')) or 0
+		TASK.PageNumber = tonumber(CreateTXQuery(HTTP.Document).XPathString('//select[@id="page"]/count(./option)')) or 0
 		return true
 	else
 		return false
@@ -54,8 +54,8 @@ function GetPageNumber()
 end
 
 function GetImageURL()
-	if HTTP.GET(AppendURLDelim(MaybeFillHost(MODULE.RootURL, URL)) .. 'page-' .. IncStr(WORKID)) then
-		TASK.PageLinks[WORKID] = TXQuery.Create(HTTP.Document).XPathString('//img[@id="comicpic"]/@src')
+	if HTTP.GET(AppendURLDelim(MaybeFillHost(MODULE.RootURL, URL)) .. 'page-' .. (WORKID + 1)) then
+		TASK.PageLinks[WORKID] = CreateTXQuery(HTTP.Document).XPathString('//img[@id="comicpic"]/@src')
 		return true
 	else
 		return false

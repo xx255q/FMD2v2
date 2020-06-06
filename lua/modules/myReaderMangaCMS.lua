@@ -13,7 +13,7 @@ function Modules.myReaderMangaCMS()
 	function myReaderMangaCMS:getinfo()
 		MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 		if HTTP.GET(MANGAINFO.URL) then
-			local x = TXQuery.Create(HTTP.Document)
+			local x = CreateTXQuery(HTTP.Document)
 			MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//div[@class="boxed"]/img/@src'))
 			if MANGAINFO.Title == '' then
 				MANGAINFO.Title = x.XPathString('//*[(self::h2 or self::h1) and contains(@class,"widget-title")]')
@@ -41,7 +41,7 @@ function Modules.myReaderMangaCMS()
 	function myReaderMangaCMS:getpagenumber()
 		local u = MaybeFillHost(MODULE.RootURL, URL)
 		if HTTP.GET(u) then
-			local x = TXQuery.Create(HTTP.Document)
+			local x = CreateTXQuery(HTTP.Document)
 			x.XPathStringAll('//div[@id="all"]/img/@data-src', TASK.PageLinks)
 			if TASK.PageLinks.Count == 0 then
 				x.XPathStringAll('//div[@id="all"]/img/@src', TASK.PageLinks)
@@ -54,7 +54,7 @@ function Modules.myReaderMangaCMS()
 
 	function myReaderMangaCMS:getnameandlink()
 		if HTTP.GET(MODULE.RootURL .. self.getdirurl()) then
-			local x = TXQuery.Create(HTTP.Document)
+			local x = CreateTXQuery(HTTP.Document)
 			x.XPathHREFAll('//li/a', LINKS, NAMES)
 			return no_error
 		end

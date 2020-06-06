@@ -1,7 +1,7 @@
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		if MANGAINFO.Title == '' then
 			MANGAINFO.Title = x.XPathString('//div[@class="info"]/h1')
 		end
@@ -24,7 +24,7 @@ end
 function getpagenumber()
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		if MODULE.Name == 'HentaiFox' then
 			local galleryId = x.XPathString('//a[@class="g_button"]/@href'):match('/.-/(%d+)/')
 			TASK.PageNumber = tonumber(x.XPathString('//span[@class="i_text pages" and contains(., "Pages")]/substring-after(.,": ")'))
@@ -47,7 +47,7 @@ end
 
 function getdirectorypagenumber()
 	if HTTP.GET(MODULE.RootURL) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		if MODULE.Name == 'HentaiFox' then
 			PAGENUMBER = tonumber(x.XPathString('(//*[@class="pagination"]/li/a)[last()-1]')) or 1
 		else
@@ -62,15 +62,15 @@ end
 function getimageurl()
 	local u = MaybeFillHost(MODULE.RootURL, TASK.PageContainerLinks[WORKID])
 	if HTTP.GET(u) then
-		TASK.PageLinks[WORKID] = TXQuery.Create(HTTP.Document).XPathString('//div[@class="full_image"]//img/@src')
+		TASK.PageLinks[WORKID] = CreateTXQuery(HTTP.Document).XPathString('//div[@class="full_image"]//img/@src')
 		return true
 	end
 	return false
 end
 
 function getnameandlink()
-	if HTTP.GET(MODULE.RootURL .. '/pag/' .. IncStr(URL) .. '/') then
-		local x = TXQuery.Create(HTTP.Document)
+	if HTTP.GET(MODULE.RootURL .. '/pag/' .. (URL + 1) .. '/') then
+		local x = CreateTXQuery(HTTP.Document)
 		if MODULE.Name == 'HentaiFox' then
 			x.XPathHREFAll('//*[@class="lc_galleries"]//*[@class="caption"]//a', LINKS, NAMES)
 		else

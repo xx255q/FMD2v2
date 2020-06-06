@@ -14,7 +14,7 @@ local dirurl = '/ajax/Search/AjaxLoadListManga?key=tatca&orderBy=1&p='
 
 function GetDirectoryPageNumber()
 	if HTTP.GET(MODULE.RootURL .. dirurl .. '1') then
-		PAGENUMBER = tonumber(TXQuery.Create(HTTP.Document).x.XPathString('//*[@class="paging"]/span[last()]/a/@href/substring-before(substring-after(.,"("),")")')) or 1
+		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).x.XPathString('//*[@class="paging"]/span[last()]/a/@href/substring-before(substring-after(.,"("),")")')) or 1
 		return no_error
 	else
 		return net_problem
@@ -22,8 +22,8 @@ function GetDirectoryPageNumber()
 end
 
 function GetNameAndLink()
-	if HTTP.GET(MODULE.RootURL .. dirurl .. IncStr(URL)) then
-		TXQuery.Create(HTTP.Document).XPathHREFAll('//*[@class="list"]//span/a', LINKS, NAMES)
+	if HTTP.GET(MODULE.RootURL .. dirurl .. (URL + 1)) then
+		CreateTXQuery(HTTP.Document).XPathHREFAll('//*[@class="list"]//span/a', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem
@@ -33,7 +33,7 @@ end
 function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 
 		MANGAINFO.CoverLink = x.XPathString('//*[@class="thumbnail"]/img/@src')
 		MANGAINFO.Title     = x.XPathString('//title/substring-before(.," | BlogTruyen")')
@@ -51,7 +51,7 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		TXQuery.Create(HTTP.Document).XPathStringAll('//article[@id="content"]/img[not(contains(@src,"credit"))]/@src', TASK.PageLinks)
+		CreateTXQuery(HTTP.Document).XPathStringAll('//article[@id="content"]/img[not(contains(@src,"credit"))]/@src', TASK.PageLinks)
 		local i, image for i = 0, TASK.PageLinks.Count - 1 do
 			image = DecodeURL(TASK.PageLinks[i])
 			image = image:gsub('^.-[%&%?]url=', '')

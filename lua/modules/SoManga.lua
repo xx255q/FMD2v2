@@ -1,7 +1,7 @@
 ﻿function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//h1')
 		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//div[contains(@class, "manga")]//img/@src'))
 		MANGAINFO.Authors=x.XPathStringAll('//div[contains(@class, "manga")]//h5[contains(*, "Autor")]/text()', '')
@@ -26,7 +26,7 @@ function getpagenumber()
 	TASK.PageLinks.Clear()
 	TASK.PageNumber=0
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('//img[contains(@class, "img-manga")]/@src', TASK.PageLinks)
 	else
 		return false
@@ -36,7 +36,7 @@ end
 
 function getnameandlink()
 	if HTTP.GET(MODULE.RootURL .. '/php/busca-mangas.php') then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		local v = x.XPath('//ul/li[@class="mangas"]/div/a', LINKS, NAMES)
 		for i=1,v.Count do
 			local v1=v.Get(i)

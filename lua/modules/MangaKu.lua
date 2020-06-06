@@ -1,7 +1,7 @@
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 
 		MANGAINFO.Title=x.XPathString('//title/text()')
 		:gsub('Baca', ''):gsub('Online Komik', ''):gsub('Komik -', ''):gsub('Komik', ''):gsub('KOMIK', '')
@@ -26,14 +26,14 @@ end
 function getpagenumber()
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('//div[@class="separator"]/a/img/@src', TASK.PageLinks)
 		if TASK.PageLinks.Count == 0 then
 			x.XPathStringAll('//img[./@*[starts-with(name(), "data-original")]]/@src', TASK.PageLinks)
 		end
 		if TASK.PageLinks.Count == 0 then
 			if HTTP.GET(MaybeFillHost('http://mangaku.co',URL)) then
-				x=TXQuery.Create(HTTP.Document)
+				x=CreateTXQuery(HTTP.Document)
 				x.XPathStringAll('//div[@class="separator"]/a/img/@src', TASK.PageLinks)
 				return true
 			else
@@ -49,7 +49,7 @@ end
 
 function getnameandlink()
 	if HTTP.GET(MODULE.RootURL..'/daftar-komik-bahasa-indonesia/') then
-		TXQuery.Create(HTTP.Document).XPathHREFAll('//a[@class="screenshot"]',LINKS,NAMES)
+		CreateTXQuery(HTTP.Document).XPathHREFAll('//a[@class="screenshot"]',LINKS,NAMES)
 		return no_error
 	else
 		return net_problem

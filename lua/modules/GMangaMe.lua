@@ -15,7 +15,7 @@ function getinfo()
 
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		local s = x.XPathString('//script[@type="application/json" and @class]')
 		x.ParseHTML(s)
 		local pageurl = x.XPathString('json(*).globals.pageUrl')
@@ -31,7 +31,7 @@ function getinfo()
 		MANGAINFO.Status=MangaInfoStatusIfPos(x.XPathString('json(*).mangaDataAction.mangaData.status'),'publish','finish')
 		MANGAINFO.Summary=x.XPathString('json(*).mangaDataAction.mangaData.summary')
 		if HTTP.XHR(MaybeFillHost(MODULE.RootURL, '/api/mangas/' .. id)) then
-			x = TXQuery.Create(HTTP.Document)
+			x = CreateTXQuery(HTTP.Document)
 			local v = x.XPath('json(*).mangaReleases()')
 			local t = {}
 			local data = {}
@@ -64,7 +64,7 @@ end
 function getpagenumber()
 	local js = require 'utils.jsunpack'
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
-		local x = TXQuery.Create(HTTP.Document);
+		local x = CreateTXQuery(HTTP.Document);
 		local s = x.XPathString('//script[@type="application/json" and @class]')
 		x.ParseHTML(s)
 	local mediakey = x.XPathString('json(*).globals.mediaKey')
@@ -81,7 +81,7 @@ end
 
 function getnameandlink()
 	if HTTP.GET(MODULE.RootURL..'/mangas') then
-		local x = TXQuery.Create(HTTP.Document);
+		local x = CreateTXQuery(HTTP.Document);
 		local s = HTMLDecode(x.XPathString('//*[@data-store-name="mangasIndexStore"]/@data-props'))
 		x.ParseHTML(s)
 		local v = x.XPath('json(*).mangas()')

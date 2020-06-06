@@ -1,7 +1,7 @@
 function GetInfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL,URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//title/substring-before(.," | ")')
 		MANGAINFO.CoverLink=x.XPathString('//meta[@property="og:image"]/@content')
 
@@ -22,7 +22,7 @@ end;
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('//*[@id="book_data_area"]/input[@data-key="imageCodes"]/@value', TASK.PageLinks)
 		TASK.PageContainerLinks.Add(URL:gsub('^/',''))
 		-- TASK.PageContainerLinks.Add(x.XPathString('//*[@id="book_data_area"]/input[@data-key="isbn"]/@value'))

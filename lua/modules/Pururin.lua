@@ -3,7 +3,7 @@ local domain = 'pururin.io'
 function GetInfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL,URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//*[@class="title"]/h1')
 		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//*[@class="cover-wrapper"]//v-lazy-image/@src'))
 		MANGAINFO.Artists = x.XPathStringAll('//table[contains(@class,"table-gallery-info")]//tr/td[contains(.,"Artist")]/following-sibling::td//a')
@@ -19,7 +19,7 @@ end
 function GetPageNumber()
 	local PATH = 'https://cdn.' .. domain .. '/assets/images/data'
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		local s = x.XPathString('//gallery-read/@gallery')
 		x.ParseHTML(s)
 		local ext = x.XPathString('json(*).image_extension')
@@ -35,8 +35,8 @@ function GetPageNumber()
 end
 
 function GetNameAndLink()
-	if HTTP.GET(MODULE.RootURL..'/browse/newest?page='..IncStr(URL)) then
-		local x=TXQuery.Create(HTTP.Document)
+	if HTTP.GET(MODULE.RootURL..'/browse/newest?page='..(URL + 1)) then
+		local x=CreateTXQuery(HTTP.Document)
 		local v=x.XPath('//*[@class="row-gallery"]/a')
 		for i=1,v.Count do
 			local v1 = v.Get(i)
@@ -51,7 +51,7 @@ end
 
 function getdirectorypagenumber()
 	if HTTP.GET(MODULE.RootURL) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		PAGENUMBER = tonumber(x.XPathString('//ul[contains(@class,"pagination")]/li[last()-1]')) or 1
 		return true
 	else

@@ -1,7 +1,7 @@
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x=TXQuery.Create(HTTP.Document)
+		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//h1')
 		MANGAINFO.CoverLink=x.XPathString('//*[@class="detail_info clearfix"]/img/@src')
 		MANGAINFO.Authors=x.XPathString('//*[@class="detail_info clearfix"]/ul/li[starts-with(.,"Author(s):")]/substring-after(.,":")')
@@ -24,7 +24,7 @@ end
 
 function getpagenumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
-		TASK.PageNumber=TXQuery.Create(HTTP.Document).XPathCount('(//select[not(@id)])[1]/option[not(contains(@value,"featured.html"))]')
+		TASK.PageNumber=CreateTXQuery(HTTP.Document).XPathCount('(//select[not(@id)])[1]/option[not(contains(@value,"featured.html"))]')
 		return true
 	else
 		return false
@@ -38,7 +38,7 @@ function getimageurl()
 	 s=AppendURLDelim(s)..(WORKID+1)..'.html'
 	end
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,s)) then
-		TASK.PageLinks[WORKID]=TXQuery.Create(HTTP.Document).XPathString('//*[@id="viewer"]//img[@alt]/@src')
+		TASK.PageLinks[WORKID]=CreateTXQuery(HTTP.Document).XPathString('//*[@id="viewer"]//img[@alt]/@src')
 		return true
 	end
 	return false
@@ -46,7 +46,7 @@ end
 
 function getdirectorypagenumber()
 	if HTTP.GET(MODULE.RootURL..'/directory/?name.az') then
-		PAGENUMBER=TXQuery.Create(HTTP.Document).XPathCount('(//select)[last()]/option')
+		PAGENUMBER=CreateTXQuery(HTTP.Document).XPathCount('(//select)[last()]/option')
 		return no_error
 	else
 		return net_problem
@@ -54,8 +54,8 @@ function getdirectorypagenumber()
 end
 
 function getnameandlink()
-	if HTTP.GET(MODULE.RootURL..'/directory/'..IncStr(URL)..'.htm?name.az') then
-		TXQuery.Create(HTTP.Document).XPathHREFTitleAll('//ul[@class="manga_pic_list"]/li/a',LINKS,NAMES)
+	if HTTP.GET(MODULE.RootURL..'/directory/'..(URL + 1)..'.htm?name.az') then
+		CreateTXQuery(HTTP.Document).XPathHREFTitleAll('//ul[@class="manga_pic_list"]/li/a',LINKS,NAMES)
 		return no_error
 	else
 		return net_problem

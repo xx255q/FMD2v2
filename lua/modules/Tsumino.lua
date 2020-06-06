@@ -16,7 +16,7 @@ local dirurldataend = '&Text=&Sort=Newest&List=0&Length=0&MinimumRating=0&Exclud
 
 function GetDirectoryPageNumber()
 	if HTTP.POST(MODULE.RootURL .. dirurl, dirurldata .. '1' .. dirurldataend) then
-		PAGENUMBER = tonumber(TXQuery.Create(HTTP.Document).x.XPathString('json(*)("PageCount")')) or 1
+		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).x.XPathString('json(*)("PageCount")')) or 1
 		return no_error
 	else
 		return net_problem
@@ -24,8 +24,8 @@ function GetDirectoryPageNumber()
 end
 
 function GetNameAndLink()
-	if HTTP.POST(MODULE.RootURL .. dirurl, dirurldata .. IncStr(URL) .. dirurldataend) then
-		local v for _,v in ipairs(TXQuery.Create(HTTP.Document).XPathI('json(*)("Data")().Entry')) do
+	if HTTP.POST(MODULE.RootURL .. dirurl, dirurldata .. (URL + 1) .. dirurldataend) then
+		local v for _,v in ipairs(CreateTXQuery(HTTP.Document).XPathI('json(*)("Data")().Entry')) do
 			NAMES.Add(v.GetProperty('Title').ToString())
 			LINKS.Add(MODULE.RootURL .. '/Book/Info/' .. v.GetProperty('Id').ToString())
 		end
@@ -38,7 +38,7 @@ end
 function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//img[@class="book-page-image img-responsive"]/@src'))
 		MANGAINFO.Title     = x.XPathString('//div[@class="book-line"][starts-with(.,"Title")]/div[@class="book-data"]')
@@ -60,7 +60,7 @@ function GetPageNumber()
 	if bookid == nil then return false end
 	HTTP.Headers.Values['Referer'] = ' ' .. MODULE.RootURL .. 'Read/View' .. bookid
 	if HTTP.POST(MODULE.RootURL .. '/Read/Load', 'q=' .. bookid) then
-		local v for _, v in ipairs(TXQuery.Create(HTTP.Document).XPathI('json(*).reader_page_urls()')) do
+		local v for _, v in ipairs(CreateTXQuery(HTTP.Document).XPathI('json(*).reader_page_urls()')) do
 			TASK.PageLinks.Add(MODULE.RootURL .. '/Image/Object?name=' .. EncodeURLElement(v.ToString()))
 		end
 		return true

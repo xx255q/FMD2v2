@@ -1,7 +1,7 @@
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		if MODULE.Name == '11Toon' then
 		MANGAINFO.Title=x.XPathString('//*[@class="title"]')
 		MANGAINFO.CoverLink=x.XPathString('//*[@class="banner"]/@src')
@@ -12,7 +12,7 @@ function getinfo()
 
 			if p > 1 then
 			if HTTP.GET(MANGAINFO.URL .. '&sord=&type=&page=' .. tostring(p)) then
-				x=TXQuery.Create(HTTP.Document)
+				x=CreateTXQuery(HTTP.Document)
 			else
 				break
 			end
@@ -54,7 +54,7 @@ function getpagenumber()
 	TASK.PageNumber = 0
 	local imghost = 'https://img.ironmancdn.xyz'
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		local s=x.XPathString('//script[contains(., "img_list")]')
 		s = GetBetween('var img_list =', ';', s)
 		x.ParseHTML(s)
@@ -76,8 +76,8 @@ end
 
 function getnameandlink()
 	if MODULE.Name == '11Toon' then
-		if HTTP.GET(MODULE.RootURL .. '/bbs/board.php?bo_table=toon_c&is=&sord=&type=upd&page=' .. IncStr(URL)) then
-		local x = TXQuery.Create(HTTP.Document)
+		if HTTP.GET(MODULE.RootURL .. '/bbs/board.php?bo_table=toon_c&is=&sord=&type=upd&page=' .. (URL + 1)) then
+		local x = CreateTXQuery(HTTP.Document)
 		local v = x.XPath('//ul[@id="free-genre-list"]//li/a')
 		for i = 1, v.Count do
 			local v1 = v.Get(i)
@@ -88,8 +88,8 @@ function getnameandlink()
 		return net_problem
 		end
 	else
-		if HTTP.GET(MODULE.RootURL .. '/bbs/page.php?hid=manga_list&page=' .. IncStr(URL)) then
-		local x = TXQuery.Create(HTTP.Document)
+		if HTTP.GET(MODULE.RootURL .. '/bbs/page.php?hid=manga_list&page=' .. (URL + 1)) then
+		local x = CreateTXQuery(HTTP.Document)
 		x.XPathHREFAll('css("div.manga-list-gallery div.manga-subject > a")', LINKS, NAMES)
 		return no_error
 		else
@@ -101,7 +101,7 @@ end
 function getdirectorypagenumber()
 	if MODULE.Name == '11Toon' then
 		if HTTP.GET(MODULE.RootURL .. '/bbs/board.php?bo_table=toon_c&is=&sord=&type=upd&page=1') then
-			local x = TXQuery.Create(HTTP.Document)
+			local x = CreateTXQuery(HTTP.Document)
 			PAGENUMBER = tonumber(x.XPathString('//a[contains(@class, "pg_end")]/substring-after(@href, "&page=")')) or 1
 			return true
 		else
@@ -109,7 +109,7 @@ function getdirectorypagenumber()
 		end
 	else
 		if HTTP.GET(MODULE.RootURL .. '/bbs/page.php?hid=manga_list') then
-			local x = TXQuery.Create(HTTP.Document)
+			local x = CreateTXQuery(HTTP.Document)
 			PAGENUMBER = tonumber(x.XPathString('//ul[@class="pagination"]/li[last()]/a/@href'):match('%((%d+)%)$')) or 1
 			return true
 		else

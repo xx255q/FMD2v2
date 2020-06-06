@@ -1,7 +1,7 @@
 function GetInfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL,URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('css("div#info > h1")')
 		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//div[@id="cover"]//v-lazy-image/@src'))
 		MANGAINFO.Artists = x.XPathStringAll('//section[@id="tags"]/div[contains(text(), "Artist")]//a')
@@ -18,7 +18,7 @@ function GetPageNumber()
 	local id = URL:match('g/(%d+)')
 	HTTP.MimeType = 'application/json'
 	if HTTP.POST(MODULE.RootURL..'/api/getBookByID', string.format('{"id":%s}', id)) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		local srv=x.XPathString('json(*).results.image_server')
 		local pages=tonumber(x.XPathString('json(*).results.total_page'))
 		for i = 1, pages do
@@ -35,7 +35,7 @@ query = '{"search":{"text":"","page":%s,"sort":0,"pages":{"range":[0,10000]},"ta
 function GetNameAndLink()
 	HTTP.MimeType = 'application/json'
 	if HTTP.POST(MODULE.RootURL..'/api/getBook', string.format(query, URL)) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		local v = x.XPath('json(*).results()')
 		for i = 1, v.Count do
 			local v1 = v.Get(i)
@@ -51,7 +51,7 @@ end
 function getdirectorypagenumber()
 	HTTP.MimeType = 'application/json'
 	if HTTP.POST(MODULE.RootURL..'/api/getBook', string.format(query, '0')) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		PAGENUMBER = tonumber(x.XPathString('json(*).total_count')) or 1
 		return true
 	else

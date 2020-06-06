@@ -2,7 +2,7 @@ local dirurl = '/c/-/albums/frontpage/0/t/manga/sorted/new/page/'
 
 function GetDirectoryPageNumber()
 	if HTTP.GET(MODULE.RootURL .. dirurl .. '1/') then
-		PAGENUMBER = tonumber(TXQuery.Create(HTTP.Document).XPathString('//*[@class="pagination"]/*[@class="last"]/a/@href'):match('/(%d+)/*$')) or 1
+		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//*[@class="pagination"]/*[@class="last"]/a/@href'):match('/(%d+)/*$')) or 1
 		return no_error
 	else
 		return net_problem
@@ -10,8 +10,8 @@ function GetDirectoryPageNumber()
 end
 
 function GetNameAndLink()
-	if HTTP.GET(MODULE.RootURL .. dirurl .. IncStr(URL) .. '/') then
-		TXQuery.Create(HTTP.Document).XPathHREFTitleAll('//*[@id="albums_wrapper"]//*[@class="item_cover"]/a', LINKS, NAMES)
+	if HTTP.GET(MODULE.RootURL .. dirurl .. (URL + 1) .. '/') then
+		CreateTXQuery(HTTP.Document).XPathHREFTitleAll('//*[@id="albums_wrapper"]//*[@class="item_cover"]/a', LINKS, NAMES)
 	else
 		return net_problem
 	end
@@ -20,7 +20,7 @@ end
 function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//*[@class="album_cover_item"]//img/@src'))
 		MANGAINFO.Title     = x.XPathString('//*[@class="album_cover"]/h2')
@@ -37,7 +37,7 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		TXQuery.Create(HTTP.Document).XPathStringAll('//*[@class="picture_page"]//img/@data-src', TASK.PageLinks)
+		CreateTXQuery(HTTP.Document).XPathStringAll('//*[@class="picture_page"]//img/@data-src', TASK.PageLinks)
 		return true
 	else
 		return false

@@ -1,10 +1,10 @@
 ﻿function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
-	if Pos('/element-list', MANGAINFO.URL) > 0 then
+	if string.find(MANGAINFO.URL, '/element-list', 1, true) then
 		MANGAINFO.URL = MANGAINFO.URL:gsub('/element%-list$', '')
 	end
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//*[@class="wrapper__heading"]/h1')
 		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//div[@class="make__cover"]/img/@src'))
 		MANGAINFO.Authors=x.XPathStringAll('//table[@class="make__table-info"]//tr[contains(td, "Автор")]/td/a')
@@ -35,7 +35,7 @@ function getpagenumber()
 	local id, chapter = URL:match('read/([^/]+)/([^/]+)/')
 	local data = 'dataRun=api-manga&dataRequest=' .. id
 	if HTTP.POST(MODULE.RootURL .. '/take/api-manga/request/shakai', data) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		local v = x.XPath('json(*).data()[data-first="' .. chapter .. '"].data-second()')
 		for i = 1, v.Count do
 			local v1 = v.Get(i)
@@ -60,9 +60,9 @@ end
 
 function getnameandlink()
 	if tonumber(URL) < 0 then return no_error end
-	if HTTP.POST(MODULE.RootURL .. cataloguri, getquery(IncStr(URL))) then
-		local s = StreamToString(HTTP.Document):gsub('&quot;', '\\"')
-		local x = TXQuery.Create(s)
+	if HTTP.POST(MODULE.RootURL .. cataloguri, getquery((URL + 1))) then
+		local s = HTTP.Document.ToString():gsub('&quot;', '\\"')
+		local x = CreateTXQuery(s)
 		local v = x.XPath('json(*).result()')
 		for i = 1, v.Count do
 			local v1 = v.Get(i)
@@ -77,8 +77,8 @@ end
 
 function getdirectorypagenumber()
 	if HTTP.POST(MODULE.RootURL .. cataloguri, getquery('1')) then
-		local s = StreamToString(HTTP.Document):gsub('&quot;', '\\"')
-		local x = TXQuery.Create(s)
+		local s = HTTP.Document.ToString():gsub('&quot;', '\\"')
+		local x = CreateTXQuery(s)
 		PAGENUMBER = tonumber(x.XPathString('json(*).Create')) or 1
 		return no_error
 	else

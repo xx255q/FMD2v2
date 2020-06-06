@@ -3,7 +3,7 @@ local ALPHA_LIST = '#abcdefghijklmnopqrstuvwxyz'
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//div[@class="content"]//h5')
 		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//div[@class="content"]//img/@src'))
 		MANGAINFO.Authors=x.XPathStringAll('//dl[@class="dl-horizontal"]/dt[starts-with(.,"Author")]/following-sibling::dd[1]/a')
@@ -28,9 +28,9 @@ function getpagenumber()
 	TASK.PageLinks.Clear()
 	TASK.PageNumber=0
 	local s = MaybeFillHost(MODULE.RootURL, URL)
-	if Pos('/all-pages', s) == 0 then s = s .. '/all-pages' end
+	if string.find(s, '/all-pages', 1, true) == nil then s = s .. '/all-pages' end
 	if HTTP.GET(s) then
-		local x=TXQuery.Create(HTTP.Document)
+		local x=CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('//div[contains(@class,"content-inner")]//img/@src', TASK.PageLinks)
 	else
 		return false
@@ -46,7 +46,7 @@ function getnameandlink()
 	local dirurl = '/manga-list'
 	if MODULE.Name == 'MangaDoom' then dirurl = '/manga-directory' end
 	if HTTP.GET(MODULE.RootURL .. dirurl .. s) then
-		local x = TXQuery.Create(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		x.XPathHREFAll('//div[@class="content"]/div/div[@class="row"]//li/a', LINKS, NAMES)
 		return no_error
 	else
