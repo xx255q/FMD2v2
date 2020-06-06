@@ -169,11 +169,6 @@ begin
 end;
 
 const
-  constructs: packed array [0..2] of luaL_Reg = (
-    (name: 'New'; func: @strings_create),
-    (name: 'Create'; func: @strings_create),
-    (name: nil; func: nil)
-    );
   methods: packed array [0..14] of luaL_Reg = (
     (name: 'LoadFromFile'; func: @strings_loadfromfile),
     (name: 'LoadFromStream'; func: @strings_loadfromstream),
