@@ -51,9 +51,10 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
+		local crypto = require 'fmd.crypto'
 		CreateTXQuery(HTTP.Document).XPathStringAll('//article[@id="content"]/img[not(contains(@src,"credit"))]/@src', TASK.PageLinks)
 		local i, image for i = 0, TASK.PageLinks.Count - 1 do
-			image = DecodeURL(TASK.PageLinks[i])
+			image = crypto.DecodeURL(TASK.PageLinks[i])
 			image = image:gsub('^.-[%&%?]url=', '')
 			-- todo:
 			TASK.PageLinks[i] = image

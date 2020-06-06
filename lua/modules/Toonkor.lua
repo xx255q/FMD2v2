@@ -22,9 +22,10 @@ end
 function getpagenumber()
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
+		local crypto = require 'fmd.crypto'
 		local x=CreateTXQuery(HTTP.Document)
 		local s = x.XPathString('//script[contains(., "toon_img")]')
-		x.ParseHTML(DecodeBase64(GetBetween("toon_img = '", "';", s)))
+		x.ParseHTML(crypto.DecodeBase64(GetBetween("toon_img = '", "';", s)))
 		local v = x.XPath('//img/@src')
 		for i = 1, v.Count do
 			TASK.PageLinks.Add(MaybeFillHost(MODULE.RootURL, v.Get(i).ToString()))

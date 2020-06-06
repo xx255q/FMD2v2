@@ -25,6 +25,7 @@ function GetPageNumber()
 	TASK.PageNumber = 0
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local duktape = require 'fmd.duktape'
+		local crypto = require 'fmd.crypto'
 		local x=CreateTXQuery(HTTP.Document)
 		local isExt = (x.XPathString('//script[contains(@src, "rext.js")]/@src') ~= '')
 		local title=x.XPathString('//title')
@@ -37,7 +38,7 @@ function GetPageNumber()
 		local data=string.format('info[manga]=%s&info[chapter]=%s&info[ch_sub]=%s&info[title]=%s', m, ch, chs, title)
 		if isExt then data = data .. '&info[external]=1' end
 		HTTP.Reset()
-		if HTTP.POST(MaybeFillHost(MODULE.RootURL, '/reader/c_i'), EncodeURL(data)) then
+		if HTTP.POST(MaybeFillHost(MODULE.RootURL, '/reader/c_i'), crypto.EncodeURL(data)) then
 			x.ParseHTML(duktape.ExecJS(HTTP.Document.ToString()))
 			local PATH = x.XPathString('json(*)()[3]')
 			local v=x.XPath('json(*)()[2]()')

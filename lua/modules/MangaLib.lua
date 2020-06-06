@@ -26,9 +26,10 @@ function getpagenumber()
 	TASK.PageNumber=0
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
+		local crypto = require 'fmd.crypto'
 		local x=CreateTXQuery(HTTP.Document)
 		local imgbaseurl=buildimageurl(CreateTXQuery(string.match(x.XPathString('//script[contains(., "window.__info")]/text()'), 'window.__info =(.*);')))
-		local p=CreateTXQuery(DecodeBase64(HTTP.Document.ToString():match('<span class="pp"><!%-%-(.-)%-%-></span>'):gsub('^%s*(.-)%s*$', '%1')))
+		local p=CreateTXQuery(crypto.DecodeBase64(HTTP.Document.ToString():match('<span class="pp"><!%-%-(.-)%-%-></span>'):gsub('^%s*(.-)%s*$', '%1')))
 		local v=p.XPath('json(*)()')
 		for i=1,v.Count do
 			local v1=v.Get(i)

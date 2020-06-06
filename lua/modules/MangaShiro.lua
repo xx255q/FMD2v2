@@ -187,10 +187,11 @@ function getpagenumber()
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
 		if MODULE.Name == 'BacaManga' then
+			local crypto = require 'fmd.crypto'
 			local x = CreateTXQuery(HTTP.Document)
 			local s = x.XPathString('*')
-						x.ParseHTML(DecodeBase64(GetBetween('](atob(', ')),', s)))
-						x.XPathStringAll('json(*)()', TASK.PageLinks)
+			x.ParseHTML(crypto.DecodeBase64(GetBetween('](atob(', ')),', s)))
+			x.XPathStringAll('json(*)()', TASK.PageLinks)
 		elseif MODULE.Name == 'MangaShiro' then
 			local x = CreateTXQuery(HTTP.Document)
 			local v=x.XPath('//*[@id="readerarea"]//a')

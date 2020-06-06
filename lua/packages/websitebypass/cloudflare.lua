@@ -33,7 +33,7 @@ function _m.IUAMChallengeAnswer(self, body, url)
             }
         };
     ]], subVars, SplitURL(url)):gsub('%s+', ' ') .. js
-	local answer = require('fmd.duktape').ExecJS(challenge)
+	local answer = duktape.ExecJS(challenge)
 	-- LOGGER.Send('answer = "'..tostring(answer)..'"')
 	if (answer == 'NaN') or (answer == '') then
 		-- LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to solve the javscript challenge ' .. url .. '\r\n' .. body)
@@ -81,7 +81,7 @@ function _m.solveIUAMChallenge(self, body, url)
 
 	local rawdata = ''
 	for k, v in pairs(payload) do
-		rawdata = rawdata .. k .. '=' .. EncodeURLElement(payload[k]) .. '&'
+		rawdata = rawdata .. k .. '=' .. crypto.EncodeURLElement(payload[k]) .. '&'
 	end
 	rawdata = rawdata:gsub('&$', '')
 
@@ -134,6 +134,9 @@ function _m.solveChallenge(self, url)
 end
 
 function _m.bypass(self, METHOD, URL)
+	duktape = require 'fmd.duktape'
+	crypto = require 'fmd.crypto'
+	
 	local result = false
 	local counter = 0
 	local maxretry = HTTP.RetryCount;

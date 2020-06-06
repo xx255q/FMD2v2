@@ -81,8 +81,9 @@ end
 
 function getnameandlink()
 	if HTTP.GET(MODULE.RootURL..'/mangas') then
+		local crypto = require 'fmd.crypto'
 		local x = CreateTXQuery(HTTP.Document);
-		local s = HTMLDecode(x.XPathString('//*[@data-store-name="mangasIndexStore"]/@data-props'))
+		local s = crypto.HTMLDecode(x.XPathString('//*[@data-store-name="mangasIndexStore"]/@data-props'))
 		x.ParseHTML(s)
 		local v = x.XPath('json(*).mangas()')
 		for i = 1, v.Count do

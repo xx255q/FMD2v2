@@ -5,7 +5,8 @@ function getinfo()
 	if id == nil then id = URL:match('manga/(%d+)'); end
 	delay()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, '/api/manga/' .. id)) then
-		local resp = HTMLEncode(HTTP.Document.ToString())
+		local crypto = require 'fmd.crypto'
+		local resp = crypto.HTMLEncode(HTTP.Document.ToString())
 		local x = CreateTXQuery(resp)
 
 		local info = x.XPath('json(*)')
@@ -312,18 +313,18 @@ function getnameandlink()
 end
 
 function delay()
-	local interval = tonumber(MODULE.GetOption('luainterval'))
-	local delay = tonumber(MODULE.GetOption('luadelay')) -- * MODULE.ActiveConnectionCount
+	local luainterval = tonumber(MODULE.GetOption('luainterval'))
+	local luadelay = tonumber(MODULE.GetOption('luadelay')) -- * MODULE.ActiveConnectionCount
 
-	if (interval == nil) or (interval < 0) then interval = 1000; end
-	if (delay == nil) or (delay < 0) then delay = 1000; end
+	if (luainterval == nil) or (luainterval < 0) then luainterval = 1000; end
+	if (luadelay == nil) or (luadelay < 0) then luadelay = 1000; end
 
 	local lastDelay = MODULE.Storage['lastDelay']
 	if lastDelay ~= '' then
 		lastDelay = tonumber(lastDelay)
-		if GetCurrentTime() - lastDelay < interval then
-		print(GetCurrentTime() - lastDelay)
-			sleep(delay)
+		if GetCurrentTime() - lastDelay < luainterval then
+			print(GetCurrentTime() - lastDelay)
+			sleep(luadelay)
 		end
 	end
 

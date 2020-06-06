@@ -26,9 +26,10 @@ end
 function ExHentaiLogin()
 	local exhentaiurllogin = 'https://forums.e-hentai.org/index.php?act=Login&CODE=01'
 	if MODULE.Account.Enabled == false then return false end
+	local crypto = require 'fmd.crypto'
 	local s = 'returntype=8&CookieDate=1&b=d&bt=pone' ..
-		'&UserName=' .. EncodeURLElement(MODULE.Account.Username) ..
-		'&PassWord=' .. EncodeURLElement(MODULE.Account.Password) ..
+		'&UserName=' .. crypto.EncodeURLElement(MODULE.Account.Username) ..
+		'&PassWord=' .. crypto.EncodeURLElement(MODULE.Account.Password) ..
 		'&ipb_login_submit=Login%21'
 	MODULE.Account.Status = asChecking
 	if HTTP.POST(exhentaiurllogin, s) then
@@ -96,22 +97,23 @@ function GetInfo()
 	end
 end
 
-function GetImageLink()
-	x.ParseHTML(HTTP.Document)
-	local v for _, v in ipairs(x.XPathI('//div[@id="gdt"]//a')) do
-		TASK.PageContainerLinks.Add(v.GetAttribute('href'))
-		TASK.FileNames.Add(ExtractFileNameOnly(SeparateRight(x.XPathString('img/@title', v), ':')))
-	end
-	while TASK.PageLinks.Count < TASK.PageContainerLinks.Count do
-		TASK.PageLinks.Add('G')
-	end
-end
-
 function GetPageNumber()
 	URL = URL:gsub('/%?%w.*$', '/'):gsub('/*$', '') .. '/'
 	HTTP.Cookies.Values['nw'] = '1'
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		x = CreateTXQuery()
+		local fileutil = require 'fmd.fileutil'
+		local x = CreateTXQuery()
+		local function GetImageLink()
+			x.ParseHTML(HTTP.Document)
+			local v for _, v in ipairs(x.XPathI('//div[@id="gdt"]//a')) do
+				TASK.PageContainerLinks.Add(v.GetAttribute('href'))
+				TASK.FileNames.Add(fileutil.ExtractFileNameOnly(SeparateRight(x.XPathString('img/@title', v), ':')))
+			end
+			while TASK.PageLinks.Count < TASK.PageContainerLinks.Count do
+				TASK.PageLinks.Add('G')
+			end
+		end
+
 		GetImageLink()
 		local p, i
 		p = tonumber(x.XPathString('//table[@class="ptt"]//td[last()-1]')) or 1
@@ -124,7 +126,8 @@ function GetPageNumber()
 			end
 		end
 		-- check the max length of filenames, serialize the filenames if it's exceds available space
-		SerializeAndMaintainNames(TASK.FileNames)
+		local fileutil = require 'fmd.fileutil'
+		fileutil.SerializeAndMaintainNames(TASK.FileNames)
 		local p, i, j = 0
 		for i = 0, TASK.FileNames.Count - 1 do
 			j = TASK.FileNames[i]:len()

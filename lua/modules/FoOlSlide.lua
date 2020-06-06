@@ -118,6 +118,7 @@ end
 function getpagenumber()
 	local result = false
 	if getWithCookie(MaybeFillHost(MODULE.RootURL, URL)) then
+		local crypto = require 'fmd.crypto'
 		x = CreateTXQuery(HTTP.Document)
 		TASK.PageNumber = x.XPath('//div[@class="topbar_right"]//ul[@class="dropdown"]/li').Count
 		s = x.XPathString('//script[contains(.,"var pages")]')
@@ -125,7 +126,7 @@ function getpagenumber()
 			s = GetBetween('var pages = ', ';', s)
 			if string.find(s, 'atob("', 1, true) then
 				 s = GetBetween('atob("', '")', s)
-				 s = DecodeBase64(s)
+				 s = crypto.DecodeBase64(s)
 			end
 			x.ParseHTML(s)
 			v = x.XPath('json(*)()("URL")')

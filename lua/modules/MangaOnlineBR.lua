@@ -38,7 +38,8 @@ end
 function GetPageNumber()
 	local a, c = URL:match('/([^/]+)/capitulo/(%d+)')
 	if a and c then
-		if HTTP.GET(MODULE.RootURL .. '/capitulo.php?act=getImg&anime=' .. EncodeURLElement(a) .. '&capitulo=' .. c .. '&src=1&view=2') then
+		local crypto = require 'fmd.crypto'
+		if HTTP.GET(MODULE.RootURL .. '/capitulo.php?act=getImg&anime=' .. crypto.EncodeURLElement(a) .. '&capitulo=' .. c .. '&src=1&view=2') then
 			local x = CreateTXQuery(HTTP.Document)
 			local v, i = x.XPath('//*[@id="imgAvancadoVisualizacao"]/img')
 			for i = 1, v.Count do

@@ -41,7 +41,8 @@ function DownloadImage()
 	end
 
 	if HTTP.POST(MODULE.RootURL..'/imgDeliver?jan_cd='..TASK.PageContainerLinks[0],'base64=1&vsid='..TASK.PageContainerLinks[1]..'&trgCode='..TASK.PageLinks[WORKID]) then
-		return Base64Decode(HTTP.Document)
+		local crypto = require 'fmd.crypto'
+		return crypto.DecodeBase64(HTTP.Document.ToString())
 	else
 		return false
 	end

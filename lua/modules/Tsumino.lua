@@ -60,8 +60,9 @@ function GetPageNumber()
 	if bookid == nil then return false end
 	HTTP.Headers.Values['Referer'] = ' ' .. MODULE.RootURL .. 'Read/View' .. bookid
 	if HTTP.POST(MODULE.RootURL .. '/Read/Load', 'q=' .. bookid) then
+		local crypto = require 'fmd.crypto'
 		local v for _, v in ipairs(CreateTXQuery(HTTP.Document).XPathI('json(*).reader_page_urls()')) do
-			TASK.PageLinks.Add(MODULE.RootURL .. '/Image/Object?name=' .. EncodeURLElement(v.ToString()))
+			TASK.PageLinks.Add(MODULE.RootURL .. '/Image/Object?name=' .. crypto.EncodeURLElement(v.ToString()))
 		end
 		return true
 	else

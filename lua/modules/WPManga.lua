@@ -54,6 +54,7 @@ function getpagenumber()
 	local allnum = false
 	HTTP.Cookies.Values['viewer'] = '1'
 	if HTTP.GET(AppendURLDelim(MaybeFillHost(MODULE.RootURL, URL)) .. '1') then
+		local crypto = require 'fmd.crypto'
 		-- multi page
 		x = CreateTXQuery(HTTP.Document)
 		s = x.XPathString('//script[contains(.,"imglist")]/substring-after(substring-before(.,"]"),"[")')
@@ -62,7 +63,7 @@ function getpagenumber()
 		else
 			s = x.XPathString('//script[contains(.,"img_lst")]/substring-after(substring-before(.,"\')"),"(\'")')
 			if s ~= '' then
-				s = DecodeURL(s)
+				s = crypto.DecodeURL(s)
 			end
 		end
 		x.ParseHTML(s)
@@ -105,9 +106,10 @@ end
 function getimageurl()
 	local s = ''
 	if HTTP.GET(AppendURLDelim(MaybeFillHost(MODULE.RootURL, URL)) .. (WORKID + 1) .. '/') then
+		local crypto = require 'fmd.crypto'
 		x = CreateTXQuery(HTTP.Document)
 		if MODULE.Name == 'ReadHentaiManga' then
-			s = HTMLDecode(x.XPathString('//img[@id="main_img"]/@src'))
+			s = crypto.HTMLDecode(x.XPathString('//img[@id="main_img"]/@src'))
 		else
 			s = x.XPathString('//*[contains(@class,"mng_rdr")]//img/@src')
 		end
