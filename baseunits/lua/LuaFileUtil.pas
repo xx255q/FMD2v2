@@ -40,7 +40,7 @@ const
 
 function luaopen_fileutil(L: Plua_State): Integer; cdecl;
 begin
-  luaNewLib(L, methods);
+  luaNewLibTable(L, methods);
   Result := 1;
 end;
 
