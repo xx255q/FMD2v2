@@ -7,8 +7,9 @@ interface
 uses
   Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif}, XQueryEngineHTML, xquery;
 
+procedure luaXQueryRegister(const L: Plua_State); inline;
 procedure luaXQueryAddMetaTable(const L: Plua_State; const Obj: Pointer;
-  const MetaTable, UserData: Integer);
+  const MetaTable, UserData: Integer); inline;
 
 implementation
 
@@ -186,11 +187,6 @@ begin
 end;
 
 const
-  constructs: packed array [0..2] of luaL_Reg = (
-    (name: 'New'; func: @xquery_create),
-    (name: 'Create'; func: @xquery_create),
-    (name: nil; func: nil)
-    );
   methods: packed array [0..8] of luaL_Reg = (
     (name: 'ParseHTML'; func: @xquery_parsehtml),
     (name: 'XPath'; func: @xquery_xpath),
@@ -211,7 +207,7 @@ end;
 
 procedure luaXQueryRegister(const L: Plua_State);
 begin
-  luaClassNewLib(L, 'TXQuery', constructs);
+  luaPushFunctionGlobal(L, 'CreateTXQuery', @xquery_create);
 end;
 
 initialization

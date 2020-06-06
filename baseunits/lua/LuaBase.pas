@@ -7,7 +7,9 @@ interface
 uses
   Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif};
 
-procedure LuaBaseRegister(const L: Plua_State);
+procedure LuaBaseRegisterBasic(const L: Plua_State); inline;
+procedure LuaBaseRegisterCreateObject(const L: Plua_State); inline;
+procedure LuaBaseRegisterAll(const L: Plua_State);
 
 function LuaDoFile(const AFileName: String; const AFuncName: String = ''): Plua_State;
 function LuaNewBaseState: Plua_State;
@@ -33,9 +35,10 @@ uses
   LuaPackage, LuaClass, LuaUtils,
   LuaCriticalSection, LuaMemoryStream,
   LuaBaseUnit, LuaSynaUtil, LuaSynaCode,
-  // -- in lua package
-  LuaFMD, LuaPCRE2, LuaDuktape, LuaCrypto, LuaStrings, LuaImagePuzzle, LuaMangaFox, LuaLogger;
-  // --
+  // -- lua object create
+  LuaStrings, LuaXQuery,
+  // -- in lua 'require "name"'
+  LuaFMD, LuaPCRE2, LuaDuktape, LuaCrypto, LuaImagePuzzle, LuaMangaFox, LuaLogger;
 
 function luabase_print(L: Plua_State): Integer; cdecl;
 var
@@ -57,16 +60,27 @@ begin
   Sleep(lua_tointeger(L, 1));
 end;
 
-procedure LuaBaseRegister(const L: Plua_State);
+procedure LuaBaseRegisterBasic(const L: Plua_State);
 begin
   luaPushFunctionGlobal(L, 'print', @luabase_print);
   luaPushFunctionGlobal(L, 'sleep', @luabase_sleep);
+end;
+
+procedure LuaBaseRegisterCreateObject(const L: Plua_State);
+begin
+  luaStringsRegister(L);
+  luaXQueryRegister(L);
+end;
+
+procedure LuaBaseRegisterAll(const L: Plua_State);
+begin
+  LuaBaseRegisterBasic(L);
+  LuaBaseRegisterCreateObject(L);
+  //luaClassRegisterAll(L); // empty right now
 
   luaBaseUnitRegister(L);
   luaSynaUtilRegister(L);
   luaSynaCodeRegister(L);
-
-  luaClassRegisterAll(L);
 end;
 
 function LuaDoFile(const AFileName: String; const AFuncName: String
@@ -79,7 +93,7 @@ begin
   Result := luaL_newstate;
   try
     luaL_openlibs(Result);
-    LuaBaseRegister(Result);
+    LuaBaseRegisterAll(Result);
     r := luaL_loadfile(Result, PAnsiChar(AFileName));
     if r = 0 then
       r := lua_pcall(Result, 0, LUA_MULTRET, 0);
@@ -98,7 +112,7 @@ begin
   Result := luaL_newstate;
   try
     luaL_openlibs(Result);
-    LuaBaseRegister(Result);
+    LuaBaseRegisterAll(Result);
     LuaPackage.RegisterLoader(Result);
   except
     Logger.SendError(lua_tostring(Result, -1));

@@ -7,6 +7,7 @@ interface
 uses
   Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif};
 
+procedure luaStringsRegister(const L: Plua_State); inline;
 procedure luaStringsAddMetaTable(const L: Plua_State; const Obj: Pointer;
   const MetaTable, UserData: Integer);
 
@@ -214,13 +215,9 @@ begin
   luaClassAddDefaultArrayProperty(L, MetaTable, UserData, @strings_get, @strings_set);
 end;
 
-function luaopen_strings(L: Plua_State): Integer; cdecl;
+procedure luaStringsRegister(const L: Plua_State);
 begin
-  luaClassNewLib(L, '', constructs);
-  Result := 1;
+  luaPushFunctionGlobal(L, 'CreateTStrings', @strings_create);
 end;
-
-initialization
-  LuaPackage.AddLib('strings', @luaopen_strings);
 
 end.
