@@ -27,12 +27,12 @@ type
   TOnBeforeUpdateList = function(const Module: TModuleContainer): Boolean;
   TOnAfterUpdateList = function(const Module: TModuleContainer): Boolean;
   TOnGetDirectoryPageNumber = function(const MangaInfo: TMangaInformation;
-    var Page: Integer; const WorkPtr: Integer; const Module: TModuleContainer): Integer;
+    var Page: Integer; const WorkPtr: Integer; const Module: TModuleContainer): Byte;
   TOnGetNameAndLink = function(const MangaInfo: TMangaInformation;
     const ANames, ALinks: TStringList; const AURL: String;
-    const Module: TModuleContainer): Integer;
+    const Module: TModuleContainer): Byte;
   TOnGetInfo = function(const MangaInfo: TMangaInformation; const AURL: String;
-    const Module: TModuleContainer): Integer;
+    const Module: TModuleContainer): Byte;
 
   TOnTaskStart = function(const Task: TTaskContainer; const Module: TModuleContainer): Boolean;
   TOnGetPageNumber = function(const Task: TTaskContainer;

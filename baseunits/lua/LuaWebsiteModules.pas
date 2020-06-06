@@ -44,7 +44,10 @@ type
     procedure AddOptionSpinEdit(const AName, ACaption: String; const ADefault: Integer);
     procedure AddOptionComboBox(const AName, ACaption, AItems: String; const ADefault: Integer);
 
-    procedure LuaPushMe(const L: Plua_State);
+    procedure LuaPushMe(const L: Plua_State); inline;
+    procedure LuaPushNetStatus(const L: Plua_State);
+    procedure LuaPushAccountStatus(const L: Plua_State);
+
     procedure LuaDoMe(const L: Plua_State); inline;
   end;
 
@@ -184,7 +187,7 @@ begin
 end;
 
 function DoGetDirectoryPageNumber(const MangaInfo: TMangaInformation;
-  var Page: Integer; const WorkPtr: Integer; const Module: TModuleContainer): Integer;
+  var Page: Integer; const WorkPtr: Integer; const Module: TModuleContainer): Byte;
 var
   L: TLuaWebsiteModuleHandler;
 begin
@@ -193,6 +196,7 @@ begin
   begin
     L := GetLuaWebsiteModuleHandler(Module);
     try
+      LuaPushNetStatus(L.Handle);
       L.LoadObject('HTTP', MangaInfo.HTTP, @luaHTTPSendThreadAddMetaTable);
       L.LoadObject('UPDATELIST', updateList, @luaUpdateListManagerAddMetaTable);
       luaPushIntegerGlobal(L.Handle, 'PAGENUMBER', Page);
@@ -212,7 +216,7 @@ end;
 
 function DoGetNameAndLink(const MangaInfo: TMangaInformation;
   const ANames, ALinks: TStringList; const AURL: String;
-  const Module: TModuleContainer): Integer;
+  const Module: TModuleContainer): Byte;
 var
   L: TLuaWebsiteModuleHandler;
 begin
@@ -221,6 +225,7 @@ begin
   begin
     L := GetLuaWebsiteModuleHandler(Module);
     try
+      LuaPushNetStatus(L.Handle);
       L.LoadObject('HTTP', MangaInfo.HTTP, @luaHTTPSendThreadAddMetaTable);
       L.LoadObject('NAMES', ANames, @luaStringsAddMetaTable);
       L.LoadObject('LINKS', ALinks, @luaStringsAddMetaTable);
@@ -237,7 +242,7 @@ begin
 end;
 
 function DoGetInfo(const MangaInfo: TMangaInformation; const AURL: String;
-  const Module: TModuleContainer): Integer;
+  const Module: TModuleContainer): Byte;
 var
   L: TLuaWebsiteModuleHandler;
 begin
@@ -246,6 +251,7 @@ begin
   begin
     L := GetLuaWebsiteModuleHandler(Module);
     try
+      LuaPushNetStatus(L.Handle);
       L.LoadObject('MANGAINFO', MangaInfo.MangaInfo, @luaMangaInfoAddMetaTable);
       L.LoadObject('HTTP', MangaInfo.HTTP, @luaHTTPSendThreadAddMetaTable);
       luaPushStringGlobal(L.Handle, 'URL', AURL);
@@ -426,6 +432,7 @@ begin
   begin
     L := GetLuaWebsiteModuleHandler(Module);
     try
+      LuaPushAccountStatus(L.Handle);
       L.LoadObject('HTTP', AHTTP, @luaHTTPSendThreadAddMetaTable);
 
       L.CallFunction(OnLogin);
@@ -779,11 +786,17 @@ end;
 procedure TLuaWebsiteModule.LuaPushMe(const L: Plua_State);
 begin
   luaPushObjectGlobal(L, Self, 'MODULE', @luaWebsiteModuleAddMetaTable);
+end;
+
+procedure TLuaWebsiteModule.LuaPushNetStatus(const L: Plua_State);
+begin
   luaPushIntegerGlobal(L, 'no_error', NO_ERROR);
   luaPushIntegerGlobal(L, 'net_problem', NET_PROBLEM);
   luaPushIntegerGlobal(L, 'information_not_found', INFORMATION_NOT_FOUND);
+end;
 
-  // account status
+procedure TLuaWebsiteModule.LuaPushAccountStatus(const L: Plua_State);
+begin
   luaPushIntegerGlobal(L, 'asUnknown', Integer(asUnknown));
   luaPushIntegerGlobal(L, 'asChecking', Integer(asChecking));
   luaPushIntegerGlobal(L, 'asValid', Integer(asValid));
