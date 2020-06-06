@@ -88,7 +88,7 @@ function GetPageNumber()
 	local aurl = MaybeFillHost(MODULE.RootURL, URL):gsub('1%.html$', '')
 	local lurl = aurl .. '1.html'
 	if HTTP.GET(lurl) then
-		local duktape = require 'duktape'
+		local duktape = require 'fmd.duktape'
 		local x = CreateTXQuery(HTTP.Document)
 		local key = duktape.ExecJS('var $=function(){return{val:function(){}}},newImgs,guidkey;' .. x.XPathString('//script[contains(., "eval")]') .. ';newImgs||guidkey;')
 		if key:len() > 16 then
