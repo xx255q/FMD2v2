@@ -10,7 +10,7 @@ uses
 implementation
 
 uses
-  MultiLog, LuaClass, LuaUtils, LuaPackage;
+  MultiLog, LuaUtils, LuaPackage;
 
 function logger_send(L: Plua_State): Integer; cdecl;
 begin
@@ -40,7 +40,7 @@ const
 
 function luaopen_logger(L: Plua_State): Integer; cdecl;
 begin
-  luaClassNewLib(L, '', methods);
+  luaNewLibTable(L, methods);
   Result := 1;
 end;
 

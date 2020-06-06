@@ -88,7 +88,7 @@ end;
 
 function luaopen_imagepuzzle(L: Plua_State): Integer; cdecl;
 begin
-  luaClassNewLib(L, '', constructs);
+  luaNewLibTable(L, constructs);
   Result := 1;
 end;
 

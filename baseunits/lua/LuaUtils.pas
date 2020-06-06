@@ -7,6 +7,9 @@ interface
 uses
   Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif}, LuaClass;
 
+function luaNewLibTable(const L: Plua_State; const lr: PluaL_Reg; const Table: Integer = -1): Integer; overload; inline;
+function luaNewLibTable(const L: Plua_State; const alr: array of PluaL_Reg): Integer; overload; inline;
+
 function luaNewTable(const L: Plua_State): Integer; inline;
 procedure luaAddCFunctionToTable(const L: Plua_State; const Table: Integer;
   const Name: String; const Func: lua_CFunction); inline;
@@ -44,6 +47,31 @@ procedure luaL_register(const L: Plua_State; const Name: String; const lr: PluaL
 implementation
 
 uses MultiLog;
+
+function luaNewLibTable(const L: Plua_State; const lr: PluaL_Reg; const Table: Integer): Integer;
+var
+  p: PluaL_Reg;
+begin
+  if Table = -1 then
+    Result := luaNewTable(L)
+  else
+    Result := Table;
+  p := lr;
+  while p^.name <> nil do
+  begin
+    luaAddCFunctionToTable(L, Result, p^.name, p^.func);
+    Inc(p);
+  end;
+end;
+
+function luaNewLibTable(const L: Plua_State; const alr: array of PluaL_Reg): Integer;
+var
+  i: PluaL_Reg;
+begin
+  Result := luaNewTable(L);
+  for i in alr do
+    luaNewLibTable(L, i, Result);
+end;
 
 function luaNewTable(const L: Plua_State): Integer;
 begin

@@ -34,7 +34,7 @@ uses
   MultiLog,
   LuaPackage, LuaClass, LuaUtils,
   LuaCriticalSection, LuaMemoryStream,
-  LuaBaseUnit, LuaSynaUtil, LuaSynaCode,
+  LuaBaseUnit, LuaSynaUtil,
   // -- lua object create
   LuaStrings, LuaXQuery,
   // -- in lua 'require "name"'
@@ -80,7 +80,6 @@ begin
 
   luaBaseUnitRegister(L);
   luaSynaUtilRegister(L);
-  luaSynaCodeRegister(L);
 end;
 
 function LuaDoFile(const AFileName: String; const AFuncName: String

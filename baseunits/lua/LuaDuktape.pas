@@ -17,12 +17,15 @@ begin
   Result := 1;
 end;
 
+const
+  methods: packed array [0..1] of luaL_Reg = (
+    (name: 'ExecJs'; func: @lua_execjs),
+    (name: nil; func: nil)
+    );
+
 function luaopen_duktape(L: Plua_State): Integer; cdecl;
-var
-  t: Integer;
 begin
-  t := luaNewTable(L);
-  luaAddCFunctionToTable(L, t, 'ExecJS', @lua_execjs);
+  luaNewLibTable(L, methods);
   Result := 1;
 end;
 

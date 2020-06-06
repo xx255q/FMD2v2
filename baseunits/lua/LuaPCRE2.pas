@@ -10,7 +10,7 @@ uses
 implementation
 
 uses
-  pcre2, pcre2lib, MultiLog, LuaClass, LuaUtils, LuaPackage;
+  pcre2, pcre2lib, MultiLog, LuaUtils, LuaPackage;
 
 {/* directly pass the pointer by lua stack to pcre2 lib to save memory /*}
 
@@ -238,7 +238,7 @@ const
 
 function luaopen_pcre2(L: Plua_State): Integer; cdecl;
 begin
-  luaClassNewLib(L, '', methods);
+  luaNewLibTable(L, methods);
   Result := 1;
 end;
 

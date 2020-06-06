@@ -117,12 +117,6 @@ begin
   Result := 1;
 end;
 
-function lua_urldecode(L: Plua_State): Integer; cdecl;
-begin
-  lua_pushstring(L, URLDecode(luaGetString(L, 1)));
-  Result := 1;
-end;
-
 function lua_spliturl(L: Plua_State): Integer; cdecl;
 var
   t: Integer;
@@ -143,35 +137,6 @@ begin
   Result := 2;
 end;
 
-function lua_streamtostring(L: Plua_State): Integer; cdecl;
-begin
-  if lua_isuserdata(L, 1) then
-  begin
-    lua_pushstring(L, StreamToString(TStream(luaGetUserData(L,1))));
-    Result := 1;
-  end
-  else
-    Result := 0;
-end;
-
-function lua_stringtostream(L: Plua_State): Integer; cdecl;
-begin
-  Result := 0;
-  StringToStream(luaGetString(L, 1), TStream(luaGetUserData(L, 2)));
-end;
-
-function lua_round(L: Plua_State): Integer; cdecl;
-begin
-  lua_pushinteger(L, round(lua_tonumber(L, 1)));
-  Result := 1;
-end;
-
-function lua_trimstrings(L: Plua_State): Integer; cdecl;
-begin
-  Result := 0;
-  TrimStrings(TStrings(luaGetUserData(L, 1)));
-end;
-
 function lua_getcurrenttime(L: Plua_State): Integer; cdecl;
 begin
   lua_pushinteger(L, MilliSecondsBetween(Now, 0));
@@ -188,50 +153,6 @@ function lua_decryptstring(L: Plua_State): Integer; cdecl;
 begin
   lua_pushstring(L, DecryptString(luaGetString(L, 1)));
   Result := 1;
-end;
-
-function lua_Base64Encode(L: Plua_State): Integer; cdecl;
-var
-  obj: TObject;
-begin
-  Result := 0;
-  if lua_isstring(L, 1) then
-  begin
-    lua_pushstring(L, Base64Encode(String(luaGetString(L, 1))));
-    Result := 1;
-  end
-  else
-  if lua_isuserdata(L, 1) then
-  begin
-    obj := TObject(luaGetUserData(L, 1));
-    if obj is TStream then
-    begin
-       lua_pushboolean(L, Base64Encode(TStream(obj)));
-       Result := 1;
-    end;
-  end;
-end;
-
-function lua_Base64Decode(L: Plua_State): Integer; cdecl;
-var
-  obj: TObject;
-begin
-  Result := 0;
-  if lua_isstring(L, 1) then
-  begin
-    lua_pushstring(L, Base64Decode(String(luaGetString(L, 1))));
-    Result := 1;
-  end
-  else
-  if lua_isuserdata(L, 1) then
-  begin
-    obj := TObject(luaGetUserData(L, 1));
-    if obj is TStream then
-    begin
-       lua_pushboolean(L, Base64Decode(TStream(obj)));
-       Result := 1;
-    end;
-  end;
 end;
 
 function lua_SerializeAndMaintainNames(L: Plua_State): Integer; cdecl;
@@ -259,16 +180,9 @@ begin
   luaPushFunctionGlobal(L, 'RemoveURLDelimLeft', @lua_removeurldelimleft);
   luaPushFunctionGlobal(L, 'HTMLDecode', @lua_htmldecode);
   luaPushFunctionGlobal(L, 'HTMLEncode', @lua_htmlencode);
-  luaPushFunctionGlobal(L, 'URLDecode', @lua_urldecode);
-  luaPushFunctionGlobal(L, 'StreamToString', @lua_streamtostring);
-  luaPushFunctionGlobal(L, 'StringToStream', @lua_stringtostream);
-  luaPushFunctionGlobal(L, 'Round', @lua_round);
-  luaPushFunctionGlobal(L, 'TrimStrings', @lua_trimstrings);
   luaPushFunctionGlobal(L, 'GetCurrentTime', @lua_getcurrenttime);
   luaPushFunctionGlobal(L, 'EncryptString', @lua_encryptstring);
   luaPushFunctionGlobal(L, 'DecryptString', @lua_decryptstring);
-  luaPushFunctionGlobal(L, 'Base64Encode', @lua_Base64Encode);
-  luaPushFunctionGlobal(L, 'Base64Decode', @lua_Base64Decode);
 
   luaPushFunctionGlobal(L, 'SerializeAndMaintainNames', @lua_SerializeAndMaintainNames);
 end;

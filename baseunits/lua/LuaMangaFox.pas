@@ -29,13 +29,16 @@ begin
   Result := 1;
 end;
 
+const
+  methods: packed array [0..2] of luaL_Reg = (
+    (name: 'LoadTemplate'; func: @mf_loadtemplate),
+    (name: 'RemoveWatermark'; func: @mf_removewatermark),
+    (name: nil; func: nil)
+    );
+
 function luaopen_mangafoxwatermark(L: Plua_State): Integer; cdecl;
-var
-  t: Integer;
 begin
-  t := luaNewTable(L);
-  luaAddCFunctionToTable(L, t, 'LoadTemplate', @mf_loadtemplate);
-  luaAddCFunctionToTable(L, t, 'RemoveWatermark', @mf_removewatermark);
+  luaNewLibTable(L, methods);
   Result := 1;
 end;
 
