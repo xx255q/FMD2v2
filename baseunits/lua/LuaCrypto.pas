@@ -10,7 +10,7 @@ uses
 implementation
 
 uses
-  LuaUtils, LuaPackage, BaseCrypto, synacode;
+  LuaUtils, LuaPackage, BaseCrypto, synacode, uBaseUnit;
 
 function crypto_hextostr(L: Plua_State): Integer; cdecl;
 begin
@@ -39,6 +39,18 @@ end;
 function crypto_AESDecryptCBCSHA256Base64Pkcs7(L: Plua_State): Integer; cdecl;
 begin
   lua_pushstring(L, AESDecryptCBCSHA256Base64Pkcs7(luaGetString(L, 1), luaGetString(L, 2), luaGetString(L, 3)));
+  Result := 1;
+end;
+
+function lua_encryptstring(L: Plua_State): Integer; cdecl;
+begin
+  lua_pushstring(L, EncryptString(luaGetString(L, 1)));
+  Result := 1;
+end;
+
+function lua_decryptstring(L: Plua_State): Integer; cdecl;
+begin
+  lua_pushstring(L, DecryptString(luaGetString(L, 1)));
   Result := 1;
 end;
 
@@ -140,28 +152,10 @@ begin
   Result := 1;
 end;
 
-procedure luaSynaCodeRegister(L: Plua_State);
-begin
-  luaPushFunctionGlobal(L, 'DecodeURL', @lua_decodeurl);
-  luaPushFunctionGlobal(L, 'EncodeURL', @lua_encodeurl);
-  luaPushFunctionGlobal(L, 'DecodeUU', @lua_decodeuu);
-  luaPushFunctionGlobal(L, 'EncodeUU', @lua_encodeuu);
-  luaPushFunctionGlobal(L, 'EncodeURLElement', @lua_encodeurlelement);
-  luaPushFunctionGlobal(L, 'DecodeBase64', @lua_decodebase64);
-  luaPushFunctionGlobal(L, 'EncodeBase64', @lua_encodebase64);
-  luaPushFunctionGlobal(L, 'CRC16', @lua_crc16);
-  luaPushFunctionGlobal(L, 'CRC32', @lua_crc32);
-  luaPushFunctionGlobal(L, 'MD4', @lua_md4);
-  luaPushFunctionGlobal(L, 'MD5', @lua_md5);
-  luaPushFunctionGlobal(L, 'HMAC_MD5', @lua_hmac_md5);
-  luaPushFunctionGlobal(L, 'MD5LongHash', @lua_md5longhash);
-  luaPushFunctionGlobal(L, 'SHA1', @lua_sha1);
-  luaPushFunctionGlobal(L, 'HMAC_SHA1', @lua_hmac_sha1);
-  luaPushFunctionGlobal(L, 'SHA1LongHash', @lua_sha1longhash);
-end;
-
 const
-  cryptomethods: packed array [0..5] of luaL_Reg = (
+  cryptomethods: packed array [0..7] of luaL_Reg = (
+    (name: 'EncryptString'; func: @lua_encryptstring),
+    (name: 'DecryptString'; func: @lua_decryptstring),
     (name: 'HexToStr'; func: @crypto_hextostr),
     (name: 'StrToHexStr'; func: @crypto_strtohexstr),
     (name: 'MD5Hex'; func: @crypto_md5hex),

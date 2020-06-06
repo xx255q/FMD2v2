@@ -143,18 +143,6 @@ begin
   Result := 1;
 end;
 
-function lua_encryptstring(L: Plua_State): Integer; cdecl;
-begin
-  lua_pushstring(L, EncryptString(luaGetString(L, 1)));
-  Result := 1;
-end;
-
-function lua_decryptstring(L: Plua_State): Integer; cdecl;
-begin
-  lua_pushstring(L, DecryptString(luaGetString(L, 1)));
-  Result := 1;
-end;
-
 function lua_SerializeAndMaintainNames(L: Plua_State): Integer; cdecl;
 begin
   if lua_isuserdata(L, 1) then
@@ -181,8 +169,6 @@ begin
   luaPushFunctionGlobal(L, 'HTMLDecode', @lua_htmldecode);
   luaPushFunctionGlobal(L, 'HTMLEncode', @lua_htmlencode);
   luaPushFunctionGlobal(L, 'GetCurrentTime', @lua_getcurrenttime);
-  luaPushFunctionGlobal(L, 'EncryptString', @lua_encryptstring);
-  luaPushFunctionGlobal(L, 'DecryptString', @lua_decryptstring);
 
   luaPushFunctionGlobal(L, 'SerializeAndMaintainNames', @lua_SerializeAndMaintainNames);
 end;
