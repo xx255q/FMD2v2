@@ -7,6 +7,7 @@ interface
 uses
   Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif}, LuaClass;
 
+procedure luaNewLib(const L: Plua_State; const lr: PluaL_Reg); inline;
 function luaNewLibTable(const L: Plua_State; const lr: PluaL_Reg; const Table: Integer = -1): Integer; overload; inline;
 function luaNewLibTable(const L: Plua_State; const alr: array of PluaL_Reg): Integer; overload; inline;
 
@@ -47,6 +48,18 @@ procedure luaL_register(const L: Plua_State; const Name: String; const lr: PluaL
 implementation
 
 uses MultiLog;
+
+procedure luaNewLib(const L: Plua_State; const lr: PluaL_Reg);
+var
+  p: PluaL_Reg;
+begin
+  p := lr;
+  while p^.name <> nil do
+  begin
+    luaPushFunctionGlobal(L, P^.name, p^.func);
+    Inc(p);
+  end;
+end;
 
 function luaNewLibTable(const L: Plua_State; const lr: PluaL_Reg; const Table: Integer): Integer;
 var

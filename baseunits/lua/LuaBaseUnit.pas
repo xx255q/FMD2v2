@@ -5,14 +5,14 @@ unit LuaBaseUnit;
 interface
 
 uses
-  Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif}, uBaseUnit;
+  Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif};
 
-procedure luaBaseUnitRegister(L: Plua_State);
+procedure luaBaseUnitRegister(L: Plua_State); inline;
 
 implementation
 
 uses
-  LuaUtils, httpsendthread, LazFileUtils, MultiLog, htmlelements, dateutils;
+  LuaUtils, uBaseUnit, httpsendthread, LazFileUtils, dateutils;
 
 function lua_trim(L: Plua_State): Integer; cdecl;
 begin
@@ -20,18 +20,6 @@ begin
     lua_pushstring(L, luaGetString(L, 1).Trim(luaGetString(L, 2).ToCharArray))
   else
     lua_pushstring(L, Trim(luaGetString(L, 1)));
-  Result := 1;
-end;
-
-function lua_extractfilename(L: Plua_State): Integer; cdecl;
-begin
-  lua_pushstring(L, ExtractFileName(luaGetString(L, 1)));
-  Result := 1;
-end;
-
-function lua_extractfilenameonly(L: Plua_State): Integer; cdecl;
-begin
-  lua_pushstring(L, ExtractFileNameOnly(luaGetString(L, 1)));
   Result := 1;
 end;
 
@@ -105,18 +93,6 @@ begin
   Result := 1;
 end;
 
-function lua_htmldecode(L: Plua_State): Integer; cdecl;
-begin
-  lua_pushstring(L, HTMLDecode(luaGetString(L, 1)));
-  Result := 1;
-end;
-
-function lua_htmlencode(L: Plua_State): Integer; cdecl;
-begin
-  lua_pushstring(L, EscapeHTML(luaGetString(L, 1)));
-  Result := 1;
-end;
-
 function lua_spliturl(L: Plua_State): Integer; cdecl;
 var
   t: Integer;
@@ -143,34 +119,27 @@ begin
   Result := 1;
 end;
 
-function lua_SerializeAndMaintainNames(L: Plua_State): Integer; cdecl;
-begin
-  if lua_isuserdata(L, 1) then
-    SerializeAndMaintainNames(TStrings(luaGetUserData(L, 1)));
-  Result := 0;
-end;
+const
+  methods: packed array [0..13] of luaL_Reg = (
+    (name: 'Trim'; func: @lua_trim),
+    (name: 'MaybeFillHost'; func: @lua_maybefillhost),
+    (name: 'FillHost'; func: @lua_fillhost),
+    (name: 'GetHostURL'; func: @lua_gethosturl),
+    (name: 'RemoveHostFromURL'; func: @lua_removehostfromurl),
+    (name: 'SplitURL'; func: @lua_spliturl),
+    (name: 'InvertStrings'; func: @lua_invertstrings),
+    (name: 'MangaInfoStatusIfPos'; func: @lua_mangainfostatusifpos),
+    (name: 'AppendURLDelim'; func: @lua_appendurldelim),
+    (name: 'AppendURLDelimleft'; func: @lua_appendurldelimleft),
+    (name: 'RemoveURLDelim'; func: @lua_removeurldelim),
+    (name: 'RemoveURLDelimLeft'; func: @lua_removeurldelimleft),
+    (name: 'GetCurrentTime'; func: @lua_getcurrenttime),
+    (name: nil; func: nil)
+    );
 
 procedure luaBaseUnitRegister(L: Plua_State);
 begin
-  luaPushFunctionGlobal(L, 'Trim', @lua_trim);
-  luaPushFunctionGlobal(L, 'ExtractFileName', @lua_extractfilename);
-  luaPushFunctionGlobal(L, 'ExtractFileNameOnly', @lua_extractfilenameonly);
-  luaPushFunctionGlobal(L, 'MaybeFillHost', @lua_maybefillhost);
-  luaPushFunctionGlobal(L, 'FillHost', @lua_fillhost);
-  luaPushFunctionGlobal(L, 'GetHostURL', @lua_gethosturl);
-  luaPushFunctionGlobal(L, 'RemoveHostFromURL', @lua_removehostfromurl);
-  luaPushFunctionGlobal(L, 'SplitURL', @lua_spliturl);
-  luaPushFunctionGlobal(L, 'InvertStrings', @lua_invertstrings);
-  luaPushFunctionGlobal(L, 'MangaInfoStatusIfPos', @lua_mangainfostatusifpos);
-  luaPushFunctionGlobal(L, 'AppendURLDelim', @lua_appendurldelim);
-  luaPushFunctionGlobal(L, 'AppendURLDelimleft', @lua_appendurldelimleft);
-  luaPushFunctionGlobal(L, 'RemoveURLDelim', @lua_removeurldelim);
-  luaPushFunctionGlobal(L, 'RemoveURLDelimLeft', @lua_removeurldelimleft);
-  luaPushFunctionGlobal(L, 'HTMLDecode', @lua_htmldecode);
-  luaPushFunctionGlobal(L, 'HTMLEncode', @lua_htmlencode);
-  luaPushFunctionGlobal(L, 'GetCurrentTime', @lua_getcurrenttime);
-
-  luaPushFunctionGlobal(L, 'SerializeAndMaintainNames', @lua_SerializeAndMaintainNames);
+  luaNewLib(L, methods);
 end;
 
 end.

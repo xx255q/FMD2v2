@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif}, synautil;
 
-procedure luaSynaUtilRegister(L: Plua_State);
+procedure luaSynaUtilRegister(L: Plua_State); inline;
 
 implementation
 
@@ -32,12 +32,6 @@ begin
   Result := 1;
 end;
 
-function lua_replacestring(L: Plua_State): Integer; cdecl;
-begin
-  lua_pushstring(L, ReplaceString(luaGetString(L, 1), luaGetString(L, 2), luaGetString(L, 3)));
-  Result := 1;
-end;
-
 function lua_parseurl(L: Plua_State): Integer; cdecl;
 var
   prot, user, pass, host, port, path, para, s: string;
@@ -54,13 +48,18 @@ begin
   Result := 8;
 end;
 
+const
+  methods: packed array [0..4] of luaL_Reg = (
+    (name: 'GetBetween'; func: @lua_getbetween),
+    (name: 'SeparateLeft'; func: @lua_separateleft),
+    (name: 'SeparateRight'; func: @lua_separateright),
+    (name: 'ParseURL'; func: @lua_parseurl),
+    (name: nil; func: nil)
+    );
+
 procedure luaSynaUtilRegister(L: Plua_State);
 begin
-  luaPushFunctionGlobal(L, 'GetBetween', @lua_getbetween);
-  luaPushFunctionGlobal(L, 'SeparateLeft', @lua_separateleft);
-  luaPushFunctionGlobal(L, 'SeparateRight', @lua_separateright);
-  luaPushFunctionGlobal(L, 'ReplaceString', @lua_replacestring);
-  luaPushFunctionGlobal(L, 'ParseURL', @lua_parseurl);
+  luaNewLib(L, methods);
 end;
 
 end.

@@ -10,7 +10,7 @@ uses
 implementation
 
 uses
-  LuaUtils, LuaPackage, BaseCrypto, synacode, uBaseUnit;
+  LuaUtils, LuaPackage, BaseCrypto, synacode, uBaseUnit, htmlelements;
 
 function crypto_hextostr(L: Plua_State): Integer; cdecl;
 begin
@@ -51,6 +51,18 @@ end;
 function lua_decryptstring(L: Plua_State): Integer; cdecl;
 begin
   lua_pushstring(L, DecryptString(luaGetString(L, 1)));
+  Result := 1;
+end;
+
+function lua_htmldecode(L: Plua_State): Integer; cdecl;
+begin
+  lua_pushstring(L, HTMLDecode(luaGetString(L, 1)));
+  Result := 1;
+end;
+
+function lua_htmlencode(L: Plua_State): Integer; cdecl;
+begin
+  lua_pushstring(L, EscapeHTML(luaGetString(L, 1)));
   Result := 1;
 end;
 
@@ -153,9 +165,11 @@ begin
 end;
 
 const
-  cryptomethods: packed array [0..7] of luaL_Reg = (
+  cryptomethods: packed array [0..9] of luaL_Reg = (
     (name: 'EncryptString'; func: @lua_encryptstring),
     (name: 'DecryptString'; func: @lua_decryptstring),
+    (name: 'HTMLDecode'; func: @lua_htmldecode),
+    (name: 'HTMLEncode'; func: @lua_htmlencode),
     (name: 'HexToStr'; func: @crypto_hextostr),
     (name: 'StrToHexStr'; func: @crypto_strtohexstr),
     (name: 'MD5Hex'; func: @crypto_md5hex),
