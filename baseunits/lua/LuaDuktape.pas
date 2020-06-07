@@ -19,7 +19,7 @@ end;
 
 const
   methods: packed array [0..1] of luaL_Reg = (
-    (name: 'ExecJs'; func: @lua_execjs),
+    (name: 'ExecJS'; func: @lua_execjs),
     (name: nil; func: nil)
     );
 
