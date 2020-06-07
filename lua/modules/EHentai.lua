@@ -184,7 +184,7 @@ function DownloadImage()
 				end
 				s = ''
 				if (base_url ~= '') and (startkey ~= '') and (gid ~= '') and (startpage ~= '') then
-					iurl = RemoveURLDelim(base_url) .. '/s/' .. startkey .. '/' .. gid .. '-' .. startpage
+					iurl = base_url::gsub('/+$', '') .. '/s/' .. startkey .. '/' .. gid .. '-' .. startpage
 				else
 					iurl = MaybeFillHost(MODULE.RootURL, URL)
 				end

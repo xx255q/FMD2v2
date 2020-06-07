@@ -37,7 +37,7 @@ function GetInfo()
 end
 
 function GetPageNumber()
-	if HTTP.GET(RemoveURLDelim(MaybeFillHost(MODULE.RootURL, URL))) then
+	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL):gsub('/+$', '')) then
 		CreateTXQuery(HTTP.Document).XPathStringAll('//div[@id="all"]/img/@data-src', TASK.PageLinks)
 		return true
 	else

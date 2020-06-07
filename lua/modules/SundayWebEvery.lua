@@ -19,7 +19,7 @@ function GetNameAndLink()
 end
 
 function GetInfo()
-	MANGAINFO.URL = AppendURLDelim(MaybeFillHost(MODULE.RootURL, URL))
+	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL):gsub('/+$', '') .. '/'
 	if HTTP.GET(MANGAINFO.URL) then
 		local x = CreateTXQuery(HTTP.Document)
 
@@ -45,7 +45,7 @@ function GetInfo()
 end
 
 function GetPageNumber()
-	if HTTP.GET(AppendURLDelim(MaybeFillHost(Module.RootURL, URL))) then
+	if HTTP.GET(MaybeFillHost(Module.RootURL, URL):gsub('/+$', '') .. '/') then
 		local key = HTTP.Document.ToString():match('.-key:%s*.-["\'](.-)["\']')
 		if (key ~= nil) or (key ~= '') then
 			key = MODULE.RootURL .. '/assets/episodes/' .. key .. '/'

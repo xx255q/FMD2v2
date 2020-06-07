@@ -35,7 +35,7 @@ end
 function getimageurl()
 	local s=URL
 	if WORKID>0 then
-	 s=AppendURLDelim(s)..(WORKID+1)..'.html'
+	 s=s:gsub('/+$', '') .. '/'..(WORKID+1)..'.html'
 	end
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,s)) then
 		TASK.PageLinks[WORKID]=CreateTXQuery(HTTP.Document).XPathString('//*[@id="viewer"]//img[@alt]/@src')

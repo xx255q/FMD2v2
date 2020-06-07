@@ -1,6 +1,3 @@
-local diren = '/en/en-directory/?order=-0'
-local dirit = '/en/it-directory/?order=-0'
-
 function GetInfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
@@ -47,16 +44,18 @@ function GetPageNumber()
 	end
 end
 
-function GetDirUrl(website)
-	if MODULE.Name == 'MangaEden_IT' or MODULE.Name == 'PervEden_IT' then
-		return dirit
+function GetDirUrl(id)
+	if (id == '8aafeb82bfda4aeda5c1b6cd8e96016a') -- MangaEden_IT
+		or (id == '11351449c7a2468db9e7ac6528573698') -- PervEden_IT
+	then
+		return '/en/it-directory/?order=-0'
 	else
-		return diren
+		return '/en/en-directory/?order=-0'
 	end
 end
 
 function GetDirectoryPageNumber()
-	if HTTP.GET(AppendURLDelim(MODULE.RootURL)..GetDirUrl(MODULE.Name)) then
+	if HTTP.GET(MODULE.RootURL..GetDirUrl(MODULE.ID)) then
 		x = CreateTXQuery(HTTP.Document)
 		PAGENUMBER = tonumber(x.XPathString('//*[@class="pagination pagination_bottom"]/a[last()-1]')) or 1
 		return true

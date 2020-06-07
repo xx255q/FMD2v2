@@ -1,7 +1,7 @@
 -- Get info and chapter list for current manga.
 function GetInfo()
 	local pages, x, v = nil
-	local u = AppendURLDelim(MaybeFillHost(MODULE.RootURL, URL))
+	local u = MaybeFillHost(MODULE.RootURL, URL):gsub('/+$', '') .. '/'
 	local p = 1
 
 	if not HTTP.GET(u) then return net_problem end
@@ -38,7 +38,7 @@ end
 -- Get the page count for the current chapter.
 function GetPageNumber()
 	local x = nil
-	local u = AppendURLDelim(MaybeFillHost(MODULE.RootURL, URL))
+	local u = MaybeFillHost(MODULE.RootURL, URL):gsub('/+$', '') .. '/'
 
 	if not HTTP.GET(u) then return net_problem end
 

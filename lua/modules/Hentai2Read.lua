@@ -81,7 +81,7 @@ end
 
 function GetImageURL()
 	local s = MaybeFillHost(MODULE.RootURL, URL)
-	if WORKID > 0 then s = AppendURLDelim(s) .. (WORKID + 1) .. '/' end
+	if WORKID > 0 then s = s:gsub('/+$', '') .. '/' .. (WORKID + 1) .. '/' end
 	if HTTP.GET(s) then
 		TASK.PageLinks[WORKID] = MaybeFillHost(cdnurl, CreateTXQuery(HTTP.Document).XPathString('//img[@id="arf-reader"]/@src'):gsub('^/*', ''))
 		return true

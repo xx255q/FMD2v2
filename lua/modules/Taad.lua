@@ -54,7 +54,7 @@ function GetPageNumber()
 end
 
 function GetImageURL()
-	if HTTP.GET(AppendURLDelim(MaybeFillHost(MODULE.RootURL, URL)) .. 'page-' .. (WORKID + 1)) then
+	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL):gsub('/+$', '') .. '/page-' .. (WORKID + 1)) then
 		TASK.PageLinks[WORKID] = CreateTXQuery(HTTP.Document).XPathString('//img[@id="comicpic"]/@src')
 		return true
 	else

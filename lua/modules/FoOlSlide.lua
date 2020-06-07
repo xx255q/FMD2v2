@@ -143,7 +143,7 @@ function getimageurl()
 	local result = false
 	local s = URL
 	if WORKID > 0 then
-		s = AppendURLDelim(s) .. 'page/' .. (WORKID + 1)
+		s = s:gsub('/+$', '') .. '/page/' .. (WORKID + 1)
 	end
 	if getWithCookie(MaybeFillHost(MODULE.RootURL, s)) then
 		x = CreateTXQuery(HTTP.Document)

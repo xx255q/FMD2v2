@@ -35,18 +35,6 @@ begin
   Result := 1;
 end;
 
-function lua_gethosturl(L: Plua_State): Integer; cdecl;
-begin
-  lua_pushstring(L, GetHostURL(luaGetString(L, 1)));
-  Result := 1;
-end;
-
-function lua_removehostfromurl(L: Plua_State): Integer; cdecl;
-begin
-  lua_pushstring(L, RemoveHostFromURL(luaGetString(L, 1)));
-  Result := 1;
-end;
-
 function lua_invertstrings(L: Plua_State): Integer; cdecl;
 var
   i: Integer;
@@ -69,27 +57,9 @@ begin
   Result := 1;
 end;
 
-function lua_appendurldelim(L: Plua_State): Integer; cdecl;
-begin
-  lua_pushstring(L, AppendURLDelim(luaGetString(L, 1)));
-  Result := 1;
-end;
-
 function lua_removeurldelim(L: Plua_State): Integer; cdecl;
 begin
   lua_pushstring(L, RemoveURLDelim(luaGetString(L, 1)));
-  Result := 1;
-end;
-
-function lua_appendurldelimleft(L: Plua_State): Integer; cdecl;
-begin
-  lua_pushstring(L, AppendURLDelimLeft(luaGetString(L, 1)));
-  Result := 1;
-end;
-
-function lua_removeurldelimleft(L: Plua_State): Integer; cdecl;
-begin
-  lua_pushstring(L, RemoveURLDelimLeft(luaGetString(L, 1)));
   Result := 1;
 end;
 
@@ -114,19 +84,13 @@ begin
 end;
 
 const
-  methods: packed array [0..12] of luaL_Reg = (
+  methods: packed array [0..6] of luaL_Reg = (
     (name: 'Trim'; func: @lua_trim),
     (name: 'MaybeFillHost'; func: @lua_maybefillhost),
     (name: 'FillHost'; func: @lua_fillhost),
-    (name: 'GetHostURL'; func: @lua_gethosturl),
-    (name: 'RemoveHostFromURL'; func: @lua_removehostfromurl),
     (name: 'SplitURL'; func: @lua_spliturl),
     (name: 'InvertStrings'; func: @lua_invertstrings),
     (name: 'MangaInfoStatusIfPos'; func: @lua_mangainfostatusifpos),
-    (name: 'AppendURLDelim'; func: @lua_appendurldelim),
-    (name: 'AppendURLDelimleft'; func: @lua_appendurldelimleft),
-    (name: 'RemoveURLDelim'; func: @lua_removeurldelim),
-    (name: 'RemoveURLDelimLeft'; func: @lua_removeurldelimleft),
     (name: nil; func: nil)
     );
 

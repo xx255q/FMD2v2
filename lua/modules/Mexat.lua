@@ -29,7 +29,7 @@ function getpagenumber()
 end
 
 function getimageurl()
-	if HTTP.GET(AppendURLDelim(MaybeFillHost(MODULE.RootURL, URL)) .. '?pid=' .. TASK.PageContainerLinks[WORKID]) then
+	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL):gsub('/+$', '') .. '/?pid=' .. TASK.PageContainerLinks[WORKID]) then
 		local x = CreateTXQuery(HTTP.Document)
 		TASK.PageLinks[WORKID] = x.XPathString('//div[@class="pic"]/a/img/@src')
 		return true

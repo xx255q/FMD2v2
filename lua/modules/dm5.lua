@@ -66,7 +66,7 @@ function getpagenumber()
 
 		while (cnt < total) and (dm5page <= total) do
 			local xhrurl = string.format('%s/chapterfun.ashx?cid=%s&page=%d&key=%s&language=1&gtk=6&_cid=%s&_mid=%s&_dt=%s&_sign=%s',
-				RemoveURLDelim(u), dm5cid, dm5page, dm5key, dm5cid, dm5mid, urlencode(dm5viewsigndt), dm5viewsign)
+				u:gsub('/+$', ''), dm5cid, dm5page, dm5key, dm5cid, dm5mid, urlencode(dm5viewsigndt), dm5viewsign)
 			if HTTP.Terminated then break end
 			HTTP.Reset()
 			HTTP.Headers.Values['Referer'] = u

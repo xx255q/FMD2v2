@@ -8,7 +8,7 @@ function GetNameAndLink()
 end
 
 function GetInfo()
-	MANGAINFO.URL=AppendURLDelim(MaybeFillHost(MODULE.RootURL,URL))
+	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL,URL):gsub('/+$', '') .. '/'
 	if HTTP.GET(MANGAINFO.URL) then
 		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//strong')

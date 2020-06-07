@@ -53,7 +53,7 @@ function getpagenumber()
 	local s = ''
 	local allnum = false
 	HTTP.Cookies.Values['viewer'] = '1'
-	if HTTP.GET(AppendURLDelim(MaybeFillHost(MODULE.RootURL, URL)) .. '1') then
+	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL):gsub('/+$', '') .. '/1') then
 		local crypto = require 'fmd.crypto'
 		-- multi page
 		x = CreateTXQuery(HTTP.Document)
@@ -105,7 +105,7 @@ end
 
 function getimageurl()
 	local s = ''
-	if HTTP.GET(AppendURLDelim(MaybeFillHost(MODULE.RootURL, URL)) .. (WORKID + 1) .. '/') then
+	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL):gsub('/+$', '') .. '/' .. (WORKID + 1) .. '/') then
 		local crypto = require 'fmd.crypto'
 		x = CreateTXQuery(HTTP.Document)
 		if MODULE.Name == 'ReadHentaiManga' then
@@ -123,11 +123,11 @@ function getimageurl()
 	end
 end
 
-function getdirurl(website)
+function getdirurl(id)
 	local result = ''
-	if (website == 'MangaSpy') or (website == 'MangaIce') then
+	if (id == 'MangaSpy') or (id == 'MangaIce') then
 		result = 'manga_list'
-	elseif (website == 'ReadHentaiManga') then
+	elseif (id == 'ReadHentaiManga') then
 		result = 'hentai-manga-list'
 	else
 		result = 'manga-list'
@@ -136,7 +136,7 @@ function getdirurl(website)
 end
 
 function getdirectorypagenumber()
-	if HTTP.GET(AppendURLDelim(MODULE.RootURL) .. getdirurl(MODULE.Name)) then
+	if HTTP.GET(MODULE.RootURL .. '/manga-list/') then
 		x = CreateTXQuery(HTTP.Document)
 		PAGENUMBER = tonumber(x.XPathString('//ul[@class="pgg"]/li[last()]/a/@href'):match('/(%d+)/')) or 1
 		return true
@@ -146,21 +146,8 @@ function getdirectorypagenumber()
 end
 
 function getnameandlink()
-	local w = {
-		['MangaSpy'] = true,
-		['MangaIce'] = true,
-		['MangaDeep'] = true,
-		['Manga99'] = true
-	}
-	if HTTP.GET(AppendURLDelim(MODULE.RootURL) .. getdirurl(MODULE.Name) .. (URL + 1) .. '/') then
-		x = CreateTXQuery(HTTP.Document)
-		if w[MODULE.Name] then
-			x.XPathHREFAll('//*[contains(@id,"content")]//*[@class="det"]/a', LINKS, NAMES)
-		elseif MODULE.Name == 'MangaOnlineToday' then
-			x.XPathHREFAll('//*[contains(@id,"content")]//div[@class="box"]/ul/li/a', LINKS, NAMES)
-		else
-			x.XPathHREFTitleAll('//*[contains(@id,"content")]//a[./img]', LINKS, NAMES);
-		end
+	if HTTP.GET(MODULE.RootURL .. '/manga-list/' .. (URL + 1) .. '/') then
+		CreateTXQuery(HTTP.Document).XPathHREFTitleAll('//*[contains(@id,"content")]//a[./img]', LINKS, NAMES);
 		return no_error
 	else
 		return net_problem

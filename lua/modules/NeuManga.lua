@@ -33,7 +33,7 @@ function GetPageNumber()
 	TASK.PageLinks.Clear()
 	TASK.PageNumber = 0
 	HTTP.Cookies.Values['age_confirmed'] = '1'
-	local u = AppendURLDelim(MaybeFillHost(MODULE.RootURL,URL)) .. '_/1'
+	local u = MaybeFillHost(MODULE.RootURL,URL):gsub('/+$', '') .. '/_/1'
 	if HTTP.GET(u) then
 		local x=CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('//img[@class="imagechap"]/@data-src', TASK.PageLinks)

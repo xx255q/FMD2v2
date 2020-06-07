@@ -46,7 +46,7 @@ function GetInfo()
 end
 
 function GetPageNumber()
-	if HTTP.GET(RemoveURLDelim(MaybeFillHost(MODULE.RootURL, URL))) then
+	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL):gsub('/+$', '')) then
 		local x = CreateTXQuery(HTTP.Document)
 		local v, s
 		for _, v in ipairs(x.XPathI('//*[@class="gallery"]/a[@href!="" and not(./div[@class="image-title"])]/div/img/@data-src')) do
