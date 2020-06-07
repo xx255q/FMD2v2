@@ -312,38 +312,20 @@ function getnameandlink()
 	end
 end
 
+
+
 function delay()
-	local luainterval = tonumber(MODULE.GetOption('luainterval'))
-	local luadelay = tonumber(MODULE.GetOption('luadelay')) -- * MODULE.ActiveConnectionCount
-
-	if (luainterval == nil) or (luainterval < 0) then luainterval = 1000; end
-	if (luadelay == nil) or (luadelay < 0) then luadelay = 1000; end
-
+	local currentTime = os.time()
 	local lastDelay = MODULE.Storage['lastDelay']
+	local mdx_interval = tonumber(MODULE.GetOption('mdx_interval')) or 1
+	local mdx_delay = tonumber(MODULE.GetOption('mdx_delay')) or 1 -- * MODULE.ActiveConnectionCount
 	if lastDelay ~= '' then
 		lastDelay = tonumber(lastDelay)
-		if GetCurrentTime() - lastDelay < luainterval then
-			print(GetCurrentTime() - lastDelay)
-			sleep(luadelay)
+		if (currentTime - lastDelay) < mdx_interval then
+			sleep(mdx_delay)
 		end
 	end
-
-	MODULE.Storage['lastDelay'] = tostring(GetCurrentTime())
-end
-
-function getFormData(formData)
-	local t=tostring(os.time())
-	local b=string.rep('-',39-t:len())..t
-	local crlf=string.char(13)..string.char(10)
-	local r=''
-	for k,v in pairs(formData) do
-		r=r..'--'..b..crlf..
-			'Content-Disposition: form-data; name="'..k..'"'..crlf..
-			crlf..
-			v..crlf
-	end
-	r=r..'--'..b..'--'..crlf
-	return 'multipart/form-data; boundary='..b,r
+	MODULE.Storage['lastDelay'] = currentTime
 end
 
 function Login()
@@ -367,6 +349,20 @@ function Login()
 	HTTP.Headers.Values['Accept']=' */*'
 	HTTP.Headers.Values['X-Requested-With']=' XMLHttpRequest'
 
+	function getFormData(formData)
+		local t=tostring(os.time())
+		local b=string.rep('-',39-t:len())..t
+		local crlf=string.char(13)..string.char(10)
+		local r=''
+		for k,v in pairs(formData) do
+			r=r..'--'..b..crlf..
+				'Content-Disposition: form-data; name="'..k..'"'..crlf..
+				crlf..
+				v..crlf
+		end
+		r=r..'--'..b..'--'..crlf
+		return 'multipart/form-data; boundary='..b,r
+	end
 	local post_data
 	HTTP.MimeType,post_data=getFormData({
 		login_username=MODULE.Account.Username,
@@ -402,8 +398,8 @@ function Init()
 	m.AccountSupport           = true
 	m.OnLogin                  = 'Login'
 
-	m.AddOptionSpinEdit('luainterval', 'Min. interval between requests (ms)', 1000)
-	m.AddOptionSpinEdit('luadelay', 'Delay (ms)', 1000)
+	m.AddOptionSpinEdit('mdx_interval', 'Min. interval between requests (s)', 1)
+	m.AddOptionSpinEdit('mdx_delay', 'Delay (s)', 1)
 	m.AddOptionCheckBox('luashowscangroup', 'Show scanlation group', false)
 
 	local items = 'All'

@@ -113,14 +113,8 @@ begin
   Result := 2;
 end;
 
-function lua_getcurrenttime(L: Plua_State): Integer; cdecl;
-begin
-  lua_pushinteger(L, MilliSecondsBetween(Now, 0));
-  Result := 1;
-end;
-
 const
-  methods: packed array [0..13] of luaL_Reg = (
+  methods: packed array [0..12] of luaL_Reg = (
     (name: 'Trim'; func: @lua_trim),
     (name: 'MaybeFillHost'; func: @lua_maybefillhost),
     (name: 'FillHost'; func: @lua_fillhost),
@@ -133,7 +127,6 @@ const
     (name: 'AppendURLDelimleft'; func: @lua_appendurldelimleft),
     (name: 'RemoveURLDelim'; func: @lua_removeurldelim),
     (name: 'RemoveURLDelimLeft'; func: @lua_removeurldelimleft),
-    (name: 'GetCurrentTime'; func: @lua_getcurrenttime),
     (name: nil; func: nil)
     );
 
