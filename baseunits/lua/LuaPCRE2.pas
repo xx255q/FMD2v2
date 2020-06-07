@@ -171,6 +171,11 @@ begin
   if Result = 0 then RE.Free;
 end;
 
+function internalgmatchnil(L: Plua_State): Integer; cdecl;
+begin
+  Result := 0;
+end;
+
 function re_gmatch(L: Plua_State): Integer; cdecl;
 var
   RE: TLuaPCRE2Engine;
@@ -183,7 +188,10 @@ begin
     Result := 2;
   end
   else
-    Result := 0;
+  begin
+    lua_pushcfunction(L, @internalgmatchnil);
+    Result := 1;
+  end;
 end;
 
 const
