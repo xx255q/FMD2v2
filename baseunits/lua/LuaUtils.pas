@@ -224,7 +224,7 @@ begin
       LUA_TNONE          : Result := 'none';
       LUA_TNIL           : Result := 'nil';
       LUA_TBOOLEAN       : Result := 'boolean'#32#9 + BoolToStr(lua_toboolean(L, idx), True);
-      LUA_TLIGHTUSERDATA : Result := 'lingsuserdata'#32#9 + HexStr(lua_topointer(L, idx));
+      LUA_TLIGHTUSERDATA : Result := 'lightsuserdata'#32#9 + HexStr(lua_topointer(L, idx));
       LUA_TNUMBER        : Result := 'number'#32#9 + FloatToStr(lua_tonumber(L, idx));
       LUA_TSTRING        : Result := 'string'#32#9 + AnsiQuotedStr(lua_tostring(L, idx),'"');
       LUA_TTABLE         : Result := 'table'#32#9 + HexStr(lua_topointer(L, idx));
