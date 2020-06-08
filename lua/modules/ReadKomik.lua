@@ -23,7 +23,7 @@ function GetInfo()
 	MANGAINFO.Genres    = x.XPathString('//td[contains(., "Genre")]/following-sibling::td')
 	MANGAINFO.Summary   = x.XPathString('//div[@class="isi-sinopsis"]')
 
-	for _, v in ipairs(x.XPathI('//*[@dir="ltr" or @class="tabel-chapter"]/a')) do
+	for v in x.XPath('//*[@dir="ltr" or @class="tabel-chapter"]/a').Get() do
 		MANGAINFO.ChapterNames.Add(x.XPathString('span', v))
 		MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
 	end

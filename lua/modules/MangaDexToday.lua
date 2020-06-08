@@ -29,7 +29,7 @@ function GetNameAndLink()
 	end
 	if HTTP.GET(s) then
 		local x = CreateTXQuery(HTTP.Document)
-		local v for _,v in ipairs(x.XPathI('//li/div/div[@class="left"]/a')) do
+		local v for v in x.XPath('//li/div/div[@class="left"]/a').Get() do
 			LINKS.Add(v.GetAttribute('href'))
 			NAMES.Add(x.XPathString('./h2', v))
 		end

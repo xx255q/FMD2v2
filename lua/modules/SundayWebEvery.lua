@@ -50,7 +50,7 @@ function GetPageNumber()
 		if (key ~= nil) or (key ~= '') then
 			key = MODULE.RootURL .. '/assets/episodes/' .. key .. '/'
 			if HTTP.GET(key .. 'episode.json') then
-				local v for _, v in ipairs(CreateTXQuery(HTTP.Document).XPathI('json(*).pages()/files/h1536.jpeg')) do
+				local v for v in CreateTXQuery(HTTP.Document).XPath('json(*).pages()/files/h1536.jpeg').Get() do
 					TASK.PageLinks.Add(key .. v.ToString())
 				end
 			end

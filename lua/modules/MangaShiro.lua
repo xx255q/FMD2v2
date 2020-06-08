@@ -234,7 +234,7 @@ function getpagenumber()
 				if HTTP.GET(link) then
 					x=CreateTXQuery(HTTP.Document)
 					x.ParseHTML(HTTP.Document)
-			for _, v in ipairs(x.XPathI('json(*).chapter.images()("text")')) do
+			for v in x.XPath('json(*).chapter.images()("text")').Get() do
 						TASK.PageLinks.Add(v.ToString():gsub('^//', 'https://'))
 					end
 				else

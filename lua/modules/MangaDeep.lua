@@ -25,7 +25,7 @@ function GetInfo()
 	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//dd[@class="about-book"]//span[starts-with(.,"Status")]/following-sibling::a'));
 	MANGAINFO.Summary   = x.XPathString('//dd[@class="short-info"]//span')
 
-	for _, v in ipairs(x.XPathI('//ul[@class="chapter-box"]/li//a')) do
+	for v in x.XPath('//ul[@class="chapter-box"]/li//a').Get() do
 		MANGAINFO.ChapterNames.Add(x.XPathString('text()[not(parent::span/@class="new_up")]', v))
 		MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
 	end
@@ -43,7 +43,7 @@ function GetNameAndLink()
 
 	x = CreateTXQuery(HTTP.Document)
 	if x.XPath('//dd[@class="book-list"]/a[not(@class="follow")]').Count == 0 then return no_error end
-	for _, v in ipairs(x.XPathI('//dd[@class="book-list"]/a[not(@class="follow")]')) do
+	for v in x.XPath('//dd[@class="book-list"]/a[not(@class="follow")]').Get() do
 		LINKS.Add(v.GetAttribute('href'))
 		NAMES.Add(x.XPathString('b', v))
 	end

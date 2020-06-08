@@ -31,7 +31,7 @@ function GetInfo()
 		MANGAINFO.Summary   = Trim(SeparateRight(x.XPathString('//*[@class="row"][starts-with(.,"Description")]'),':'))
 		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//*[@class="row"][starts-with(.,"Status")]'))
 
-		local s,v for _,v in ipairs(x.XPathI('//div[@class="list chapter-list"]//a')) do
+		local s,v for v in x.XPath('//div[@class="list chapter-list"]//a').Get() do
 			s = v.GetAttribute('href')
 			if s:find('%-page%-1') then
 				s = s:gsub('%-page%-1','')

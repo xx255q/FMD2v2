@@ -65,7 +65,7 @@ function GetPageNumber()
 		x.XPathStringAll('//div[@class="single-post"]//dl[@class="gallery-item"]/dt/a/@href', TASK.PageContainerLinks)
 		x.XPathStringAll('//div[@class="single-post"]/p//a[./img[not(data-lazy-src)]]/@href', TASK.PageContainerLinks)
 		if TASK.PageContainerLinks.Count == 0 then
-			local v for _,v in ipairs(x.XPathI('//div[@class="single-post"]/p//img[not(@data-lazy-src)]/@src')) do
+			local v for v in x.XPath('//div[@class="single-post"]/p//img[not(@data-lazy-src)]/@src').Get() do
 				TASK.PageLinks.Add(MaybeFillHost(MODULE.RootURL, v.ToString()))
 			end
 		else

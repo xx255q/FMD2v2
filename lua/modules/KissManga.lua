@@ -59,7 +59,7 @@ function GetInfo()
 		MANGAINFO.Summary   = x.XPathString('//div[@class="barContent"]/div/p[starts-with(.,"Summary:")]//following-sibling::p[1]')
 		MANGAINFO.Genres    = x.XPathStringAll('//div[@class="barContent"]//span[starts-with(., "Genre")]/parent::*/a')
 		MANGAINFO.Status    = MangaInfoStatusIfPos((x.XPathString('//div[@class="barContent"]/div/p[starts-with(.,"Status:")]')))
-		local v, s; for _, v in ipairs(x.XPathI('//table[@class="listing"]/tbody/tr/td/a')) do
+		local v, s; for v in x.XPath('//table[@class="listing"]/tbody/tr/td/a').Get() do
 			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
 			s = v.GetAttribute('title'):match('^Read (.+) online$')
 			MANGAINFO.ChapterNames.Add(s)

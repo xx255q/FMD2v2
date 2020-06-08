@@ -24,7 +24,7 @@ function GetNameAndLink()
 	if HTTP.POST(MODULE.RootURL .. '/ajax', data) then
 		local x = CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('json(*).success().manga_title', NAMES)
-		local v for _,v in ipairs(x.XPathI('json(*).success().manga_slug')) do
+		local v for v in x.XPath('json(*).success().manga_slug').Get() do
 			LINKS.Add(MODULE.RootURL .. '/series/' .. v.ToString())
 		end
 		return no_error
@@ -46,7 +46,7 @@ function GetInfo()
 		MANGAINFO.Summary   = x.XPathString('//h4[text()="Beschreibung"]/following-sibling::text()[1]')
 		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//ul[contains(@class, "series-details")]/li[contains(., "Status (Offiziell):")]/text()'), 'laufend', 'abgeschlossen')
 
-		local v for _,v in ipairs(x.XPathI('//ul[contains(@class, "chapter-list")]/li/a[contains(@href, "read/")]')) do
+		local v for v in x.XPath('//ul[contains(@class, "chapter-list")]/li/a[contains(@href, "read/")]').Get() do
 			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
 			MANGAINFO.ChapterNames.Add(x.XPathString('concat(b, " ", span[1])',v))
 		end
@@ -65,7 +65,7 @@ function GetPageNumber()
 		s = s:match('pages:%s*(%[.-%])')
 		if img_path and s then
 			x.ParseHTML(s)
-			local v for _,v in ipairs(x.XPathI('json(*)().file_name')) do
+			local v for v in x.XPath('json(*)().file_name').Get() do
 				TASK.PageLinks.Add(img_path .. v.ToString())
 			end
 		end

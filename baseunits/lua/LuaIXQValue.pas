@@ -89,8 +89,10 @@ var
 begin
   u := TUserData(lua_touserdata(L, 1));
   Inc(u.Current);
+  if u.Current > u.FIXQValue.Count then Exit(0);
   v := u.FIXQValue.get(u.Current);
-  if v.kind = pvkUndefined then Exit(0);
+  writeln('get ',u.Current);
+  //if v.kind = pvkUndefined then Exit(0);
   luaIXQValuePush(L, v);
   Result := 1;
 end;

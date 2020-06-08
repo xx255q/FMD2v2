@@ -17,7 +17,7 @@ function GetInfo()
 	pages = tonumber(x.XPathString('//div[@class="pagination"]//a[contains(@class, "page-numbers")][last()]/substring-after(@href, "/page-")'))
 	if pages == nil then pages = 1 end
 	while true do
-		for _, v in ipairs(x.XPathI('//div[contains(@class, "chapters-wrapper")]//h2[@class="chap"]/a')) do
+		for v in x.XPath('//div[contains(@class, "chapters-wrapper")]//h2[@class="chap"]/a').Get() do
 			MANGAINFO.ChapterNames.Add(x.XPathString('text()', v))
 			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
 		end

@@ -22,7 +22,7 @@ function GetInfo()
 		end
 		-- multi
 		local v, n
-		for _, v in ipairs(x.XPathI('//*[@class="gallery"]/a[@href!="" and ./div[@class="image-title"]]')) do
+		for v in x.XPath('//*[@class="gallery"]/a[@href!="" and ./div[@class="image-title"]]').Get() do
 			n = v.ToString()
 			if (MANGAINFO.Title ~= '') and n:find('[iI][sS][sS][uU][eE]') then
 				n = MANGAINFO.Title .. '-' .. n
@@ -49,11 +49,11 @@ function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL):gsub('/+$', '')) then
 		local x = CreateTXQuery(HTTP.Document)
 		local v, s
-		for _, v in ipairs(x.XPathI('//*[@class="gallery"]/a[@href!="" and not(./div[@class="image-title"])]/div/img/@data-src')) do
+		for v in x.XPath('//*[@class="gallery"]/a[@href!="" and not(./div[@class="image-title"])]/div/img/@data-src').Get() do
 			TASK.PageLinks.Add(MaybeFillHost(MODULE.RootURL, v.ToString():gsub('/th/', '/fm/')):gsub('^//', 'https://'))
 		end
 		if TASK.PageLinks.Count == 0 then
-			for _, v in ipairs(x.XPathI('//*[@class="gallery"]/a[@href!=""]/@href')) do
+			for v in x.XPath('//*[@class="gallery"]/a[@href!=""]/@href').Get() do
 				TASK.PageContainerLinks.Add(v.ToString())
 			end
 			TASK.PageNumber = TASK.PageContainerLinks.Count

@@ -21,7 +21,7 @@ function GetInfo()
 	MANGAINFO.Authors   = x.XPathString('//div[@class="manga-thumbnail"]/a[@class="author"]')
 	MANGAINFO.Genres    = x.XPathStringAll('//div[@class="information"]/div[@class="manga-tags"]/a')
 
-	for _, v in ipairs(x.XPathI('//div[@class="chapter-list"]//a')) do
+	for v in x.XPath('//div[@class="chapter-list"]//a').Get() do
 		MANGAINFO.ChapterNames.Add(x.XPathString('div/text()', v))
 		MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
 	end

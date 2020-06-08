@@ -55,7 +55,7 @@ function getpagenumber()
 		local md5 = x.XPathString('json(*).sl.md5')
 		local PATH = x.XPathString('json(*).PATH')
 		local srv = servers[math.random(#servers)]
-	local v for _, v in ipairs(x.XPathI('json(*).files()')) do
+	local v for v in x.XPath('json(*).files()').Get() do
 		TASK.PageLinks.Add(srv .. PATH .. v.ToString() .. '?cid=' .. cid .. '&md5=' .. md5)
 	end
 		return true

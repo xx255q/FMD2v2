@@ -10,7 +10,7 @@ function GetNameAndLink()
 			UPDATELIST.CurrentDirectoryPageNumber = x.XPathString('json(*).last_page') or 0
 		end
 		local v
-		for _, v in ipairs(x.XPathI('json(*).data()')) do
+		for v in x.XPath('json(*).data()').Get() do
 			LINKS.Add(MODULE.RootURL .. '/m/' .. v.GetProperty('slug').ToString())
 			NAMES.Add(v.GetProperty('name').ToString())
 		end

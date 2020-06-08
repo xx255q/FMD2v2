@@ -21,9 +21,9 @@ function GetInfo()
 		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//*[@class="texto-left"]/ul/li[starts-with(.,"Status")]'), 'Em Publicação', '')
 
 		local v, w, s
-		for _, v in ipairs(x.XPathI('//*[@id="volumes-capitulos"]//*[@class="texto"]')) do
+		for v in x.XPath('//*[@id="volumes-capitulos"]//*[@class="texto"]').Get() do
 			s = x.XPathString('p[1]', v)
-			for _, w in ipairs(x.XPathI('p[2]//a', v)) do
+			for w in x.XPath('p[2]//a', v).Get() do
 				MANGAINFO.ChapterLinks.Add(w.GetAttribute('href'))
 				MANGAINFO.ChapterNames.Add(s .. ' Capitulo ' .. w.ToString())
 			end

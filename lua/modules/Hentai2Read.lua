@@ -30,7 +30,7 @@ function GetNameAndLink()
 		s = s .. '/' .. (URL + 1) .. '/'
 	end
 	if HTTP.GET(s) then
-		local v for _, v in ipairs(CreateTXQuery(HTTP.Document).XPathI('//*[@class="img-overlay text-center"]/a')) do
+		local v for v in CreateTXQuery(HTTP.Document).XPath('//*[@class="img-overlay text-center"]/a').Get() do
 			LINKS.Add(v.GetAttribute('href'))
 			NAMES.Add(x.XPathString('h2/@data-title', v))
 		end
@@ -53,7 +53,7 @@ function GetInfo()
 		MANGAINFO.Summary   = x.XPathString('//ul[contains(@class,"list-simple-mini")]/li[starts-with(.,"Storyline")]/*[position()>1]')
 		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//ul[contains(@class,"list-simple-mini")]/li[starts-with(.,"Status")]'))
 
-		local v for _,v in ipairs(x.XPathI('//ul[contains(@class,"nav-chapters")]/li/div/a')) do
+		local v for v in x.XPath('//ul[contains(@class,"nav-chapters")]/li/div/a').Get() do
 			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
 			MANGAINFO.ChapterNames.Add(x.XPathString('string-join(text()," ")', v))
 		end
@@ -67,7 +67,7 @@ end
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local x = CreateTXQuery(HTTP.Document)
-		for _, v in ipairs(x.XPathI('json(//script[contains(.,"images\' :")]/substring-before(substring-after(.,"images\' : "),"]")||"]")()')) do
+		for v in x.XPath('json(//script[contains(.,"images\' :")]/substring-before(substring-after(.,"images\' : "),"]")||"]")()').Get() do
 			TASK.PageLinks.Add(cdnurl .. v.ToString())
 		end
 		if TASK.PageLinks.Count == 0 then

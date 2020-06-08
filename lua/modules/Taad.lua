@@ -11,7 +11,7 @@ function GetNameAndLink()
 	if HTTP.GET(MODULE.RootURL .. '/category/' .. s .. '_views_' .. (URL + 1) .. '.html') then
 		i = 1
 		x = CreateTXQuery(HTTP.Document)
-		for _, v in ipairs(x.XPathI('//*[@class="clistChr"]//span[@class="pagetor"]//text()')) do
+		for v in x.XPath('//*[@class="clistChr"]//span[@class="pagetor"]//text()').Get() do
 			j = tonumber(v.ToString()) or 1
 			if j > i then i = j end
 		end

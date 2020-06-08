@@ -40,7 +40,7 @@ function GetInfo()
 
 		MANGAINFO.CoverLink = x.XPathString('//img[@class="detail-cover"]/@src')
 		MANGAINFO.Title     = x.XPathString('//div[@class="manga-detail"]/h1')
-		local v, s for _, v in ipairs(x.XPathI('//div[@class="manga-detail"]//p')) do
+		local v, s for v in x.XPath('//div[@class="manga-detail"]//p').Get() do
 			s = v.ToString()
 			if s:find('Author%(s%):') then MANGAINFO.Authors = s:match('.-:(.*)$')
 			elseif s:find('Artist%(s%):') then MANGAINFO.Artists = s:match('.-:(.*)$')

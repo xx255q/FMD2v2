@@ -105,7 +105,7 @@ function GetPageNumber()
 		local x = CreateTXQuery()
 		local function GetImageLink()
 			x.ParseHTML(HTTP.Document)
-			local v for _, v in ipairs(x.XPathI('//div[@id="gdt"]//a')) do
+			local v for v in x.XPath('//div[@id="gdt"]//a').Get() do
 				TASK.PageContainerLinks.Add(v.GetAttribute('href'))
 				TASK.FileNames.Add(fileutil.ExtractFileNameOnly(SeparateRight(x.XPathString('img/@title', v), ':')))
 			end

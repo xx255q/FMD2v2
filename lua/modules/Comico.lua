@@ -20,7 +20,7 @@ end
 function GetNameAndLink()
 	if HTTP.GET(MODULE.RootURL .. dirurl .. '/' .. dirpages[MODULE.CurrentDirectoryIndex + 1]) then
 		local x, v = CreateTXQuery(HTTP.Document)
-		for _, v in ipairs(x.XPathI('//ul[contains(@class, "resizeTitleList")]/li/a')) do
+		for v in x.XPath('//ul[contains(@class, "resizeTitleList")]/li/a').Get() do
 			LINKS.Add(v.GetAttribute('href'))
 			NAMES.Add(x.XPathString('div/p[1]/text()', v))
 		end
@@ -46,7 +46,7 @@ function GetInfo()
 		HTTP.Reset()
 		if HTTP.POST(getChaptersApiUrl, s) then
 			x.ParseHTML(HTTP.Document)
-			for _, v in ipairs(x.XPathI('json(*).result.list()')) do
+			for v in x.XPath('json(*).result.list()').Get() do
 				MANGAINFO.ChapterLinks.Add(v.GetProperty('articleDetailUrl').ToString())
 				s = v.GetProperty('freeFlg').ToString()
 				if s == 'N' then

@@ -110,7 +110,7 @@ function getpagenumber()
 			local s = HTTP.Document.ToString():match('(%[.-%])')
 			if s then
 				x.ParseHTML(s)
-				local image={},v for _,v in ipairs(x.XPathI('json(*)()')) do
+				local image={},v for v in x.XPath('json(*)()').Get() do
 					image.hash    = x.XPathString('./hash',v)
 					image.haswebp = x.XPathString('./haswebp',v)=='1'
 					image.name    = x.XPathString('./name',v)

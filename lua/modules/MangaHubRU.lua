@@ -42,7 +42,7 @@ function GetPageNumber()
 		local s = x.XPathString('//div[@data-js-scans]/@data-js-scans')
 		if s ~= '' then
 			x.ParseHTML(s)
-			for _, v in ipairs(x.XPathI('json(*)()("src")')) do
+			for v in x.XPath('json(*)()("src")').Get() do
 				TASK.PageLinks.Add(MaybeFillHost(MODULE.RootURL, v.ToString():gsub('^//', 'https://')))
 			end
 		end

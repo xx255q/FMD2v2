@@ -25,7 +25,7 @@ end
 
 function GetNameAndLink()
 	if HTTP.POST(MODULE.RootURL .. dirurl, dirurldata .. (URL + 1) .. dirurldataend) then
-		local v for _,v in ipairs(CreateTXQuery(HTTP.Document).XPathI('json(*)("Data")().Entry')) do
+		local v for v in CreateTXQuery(HTTP.Document).XPath('json(*)("Data")().Entry').Get() do
 			NAMES.Add(v.GetProperty('Title').ToString())
 			LINKS.Add(MODULE.RootURL .. '/Book/Info/' .. v.GetProperty('Id').ToString())
 		end
@@ -61,7 +61,7 @@ function GetPageNumber()
 	HTTP.Headers.Values['Referer'] = ' ' .. MODULE.RootURL .. 'Read/View' .. bookid
 	if HTTP.POST(MODULE.RootURL .. '/Read/Load', 'q=' .. bookid) then
 		local crypto = require 'fmd.crypto'
-		local v for _, v in ipairs(CreateTXQuery(HTTP.Document).XPathI('json(*).reader_page_urls()')) do
+		local v for v in CreateTXQuery(HTTP.Document).XPath('json(*).reader_page_urls()').Get() do
 			TASK.PageLinks.Add(MODULE.RootURL .. '/Image/Object?name=' .. crypto.EncodeURLElement(v.ToString()))
 		end
 		return true

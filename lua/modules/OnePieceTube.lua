@@ -18,7 +18,7 @@ function GetInfo()
 	MANGAINFO.Title     = x.XPathString('//div[@id="breadcrumbs"]/substring-before(substring-after(., "Start"), "|")'):gsub('^%s*(.-)%s*$', '%1')
 	MANGAINFO.Summary   = x.XPathString('//table[@class="infobox"]//tr[6]//td[2]')
 
-	local v for _,v in ipairs(x.XPathI('//table[@class="list"]//tr[./td/@onclick|./td[2]]')) do
+	local v for v in x.XPath('//table[@class="list"]//tr[./td/@onclick|./td[2]]').Get() do
 		MANGAINFO.ChapterNames.Add(x.XPathString('string-join((td[1],td[2])," ")', v))
 		if MANGAINFO.Title == "Kapitel" then
 			-- remove last /1 for quick getimageurl later

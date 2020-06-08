@@ -50,7 +50,7 @@ function GetInfo()
 		MANGAINFO.Summary   = x.XPathString('//span[@id="series-desc-body"]'):gsub('  ', ' ')
 
 		local locked = ''
-		local v for _,v in ipairs(x.XPathI('json(//script[contains(.,"var _data")]/concat(substring-before(substring-after(.,"episodeList :"),"]"),"]"))()')) do
+		local v for v in x.XPath('json(//script[contains(.,"var _data")]/concat(substring-before(substring-after(.,"episodeList :"),"]"),"]"))()').Get() do
 			MANGAINFO.ChapterLinks.Add(MODULE.RootURL .. '/episode/' .. x.XPathString('./id', v))
 			locked = ''
 			if x.XPathString('./locked', v) == 'true' then
@@ -66,7 +66,7 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		for _, v in ipairs(CreateTXQuery(HTTP.Document).XPathI('//img[@class="art-image"]/@src')) do
+		for v in CreateTXQuery(HTTP.Document).XPath('//img[@class="art-image"]/@src').Get() do
 			TASK.PageLinks.Add(v.ToString():gsub('[%?%&]type=%w%d+', ''))
 		end
 		return true
