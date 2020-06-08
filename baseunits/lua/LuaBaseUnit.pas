@@ -57,38 +57,11 @@ begin
   Result := 1;
 end;
 
-function lua_removeurldelim(L: Plua_State): Integer; cdecl;
-begin
-  lua_pushstring(L, RemoveURLDelim(luaGetString(L, 1)));
-  Result := 1;
-end;
-
-function lua_spliturl(L: Plua_State): Integer; cdecl;
-var
-  t: Integer;
-  host: string = '';
-  path: string = '';
-  includeprotocol: Boolean = true;
-  includeport: Boolean = true;
-begin
-  t:=lua_gettop(L);
-  if t>2 then
-    includeport := lua_toboolean(L,3);
-  if t>1 then
-    includeprotocol := lua_toboolean(L,2);
-  SplitURL(luaGetString(L, 1), @host, @path, includeprotocol, includeport);
-
-  lua_pushstring(L, host);
-  lua_pushstring(L, path);
-  Result := 2;
-end;
-
 const
-  methods: packed array [0..6] of luaL_Reg = (
+  methods: packed array [0..5] of luaL_Reg = (
     (name: 'Trim'; func: @lua_trim),
     (name: 'MaybeFillHost'; func: @lua_maybefillhost),
     (name: 'FillHost'; func: @lua_fillhost),
-    (name: 'SplitURL'; func: @lua_spliturl),
     (name: 'InvertStrings'; func: @lua_invertstrings),
     (name: 'MangaInfoStatusIfPos'; func: @lua_mangainfostatusifpos),
     (name: nil; func: nil)

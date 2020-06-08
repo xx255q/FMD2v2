@@ -9,7 +9,7 @@ function _m.getDDoSGuardCookie(self, url)
 		if HTTP.Request('POST', 'https://check.ddos-guard.net/check.js') then
 			local headers = HTTP.Headers.Text
 			if headers:find('Set%-Cookie:[^\r\n]*__ddg') then
-				local domain = SplitURL(url, false)
+				local domain = url:match('https?://([^/]+)') or ''
 				headers = headers:gsub('check%.ddos%-guard%.net', domain)
 				HTTP.Headers.Text = headers
 				HTTP.ParseServerCookies()

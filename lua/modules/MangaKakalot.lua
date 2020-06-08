@@ -45,7 +45,8 @@ function GetPageNumber()
 	if HTTP.GET(u) then
 		local s = string.match(HTTP.Document.ToString(), 'window%.location%.assign%([\'"]([^\'"]+)')
 		if s ~= nil then
-			local h, p = SplitURL(s), SplitURL(u)
+			local function splitURL(url) return url:match('(https://[^/]+)') or '' end
+			local h, p = splitURL(s), splitURL(u)
 			if not HTTP.GET(h .. p) then return false end
 		end
 		local x = CreateTXQuery(HTTP.Document)

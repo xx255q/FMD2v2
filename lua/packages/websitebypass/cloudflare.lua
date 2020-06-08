@@ -1,45 +1,64 @@
 local _m = {}
 
 function _m.IUAMChallengeAnswer(self, body, url)
-	local js = body:match('setTimeout%(function%(%){%s+(.+a%.value%s*=%s*%S+)')
+	local script = body:match('<script.->(.-)</script')
 
-	if js == nil then
+	if script == nil then
 		LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to parse the javascript\r\n' .. url)
 		return nil
 	end
 
-	local subVars = ''
-	local k = body:match('k%s*=%s*[\'"](.-)[\'"];')
-	if k ~= nil then
-		k = k:gsub('-', '%%-')
-		local i, jsi = '', ''
-		for i, jsi in body:gmatch('<div id="' .. k .. '(%d+)">%s*([^<>]*)</div>') do
-			subVars = subVars .. string.format('\n\t\t%s%s: %s,\n', k, i, jsi)
+	local rooturl = url:match('(https?://[^/]+)') or ''
+
+	local challenge = string.format([[
+var $$e = {}, window = {}, document = {}, navigator = {}, location = { hash: "" },
+    setTimeout = function (f, t) { $$e.timeout = t; f(); },
+    setInterval = function (f, t) { f(); };
+
+window.addEventListener = function () {};
+window.navigator = { userAgent: '%s' };
+
+navigator.cookieEnabled = true;
+
+document.addEventListener = function (e, b, c) { b(); };
+document.body = { appendChild: function () {} };
+
+document.getElementById = function (id) {
+    if (!$$e[id]) $$e[id] = { style: {}, action: "", submit: function () {} };
+    return $$e[id];
+};
+
+document.createElement = function (tag) {
+    return { firstChild: { href: "%s" }, setAttribute: function () {} };
+};
+
+String.prototype.big = function () { return "<big>" + this + "</big>"; };
+String.prototype.small = function () { return "<small>" + this + "</small>"; };
+String.prototype.bold = function () { return "<b>" + this + "</b>"; };
+String.prototype.italics = function () { return "<i>" + this + "</i>"; };
+String.prototype.fixed = function () { return "<tt>" + this + "</tt>"; };
+String.prototype.strike = function () { return "<strike>" + this + "</strike>"; };
+String.prototype.sub = function () { return "<sub>" + this + "</sub>"; };
+String.prototype.sup = function () { return "<sup>" + this + "</sup>"; };
+]], HTTP.UserAgent, rooturl)
+	local i, v; for i, v in body:gmatch('<div%s*id="(%w+%d+)">(.-)</div') do
+		if v:find('[]', 1, true) then
+			challenge = challenge .. string.format('$$e["%s"] = { innerHTML: "%s" };\r\n', i, v:gsub('"', '\"'))
 		end
-		subVars = subVars:gsub(',\n$', '')
 	end
+	challenge = challenge .. script .. '\r\nJSON.stringify($$e);'
 
-	-- cleanup js
-	js = js:gsub('%(setInterval%(.-%),(.-)%);', '%1;')
+	local answer, timeout
+	answer = duktape.ExecJS(challenge)
 
-	local challenge = string.format([[String.prototype.italics=function(str) {return "<i>" + this + "</i>";};
-        var subVars= {%s};
-        var document = {
-            createElement: function () {
-                return { firstChild: { href: "%s/" } }
-            },
-            getElementById: function (str) {
-                return {"innerHTML": subVars[str]};
-            }
-        };
-    ]], subVars, SplitURL(url)):gsub('%s+', ' ') .. js
-	local answer = duktape.ExecJS(challenge)
-	-- LOGGER.Send('answer = "'..tostring(answer)..'"')
 	if (answer == 'NaN') or (answer == '') then
 		-- LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to solve the javscript challenge ' .. url .. '\r\n' .. body)
 		LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to solve the javscript challenge ' .. url .. '\r\n' .. challenge)
 	end
-	return answer
+
+	timeout = tonumber(answer:match('"timeout":(%d+)')) or 4000
+	answer = answer:match('"jschl%-answer":.-"value":"(.-)"')
+	return timeout, answer
 end
 
 function _m.sleepOrBreak(self, delay)
@@ -52,7 +71,7 @@ function _m.sleepOrBreak(self, delay)
 end
 
 function _m.solveIUAMChallenge(self, body, url)
-	local answer = self:IUAMChallengeAnswer(body, url)
+	local timeout, answer = self:IUAMChallengeAnswer(body, url)
 	if (answer == nil) or (answer == 'NaN') or (answer == '') then
 		return false
 	end
@@ -63,6 +82,9 @@ function _m.solveIUAMChallenge(self, body, url)
 		return false
 	end
 	challengeUUID = challengeUUID:gsub('&amp;', '&')
+
+	-- cloudflare requires a delay
+	self:sleepOrBreak(timeout)
 
 	local payload = {}
 	local k, n, v = '', '', ''
@@ -85,23 +107,18 @@ function _m.solveIUAMChallenge(self, body, url)
 	end
 	rawdata = rawdata:gsub('&$', '')
 
-	local domain = SplitURL(url)
+	local rooturl = url:match('(https?://[^/]+)') or ''
 
 	-- no need to redirect if it success
 	HTTP.FollowRedirection = false
 	HTTP.Reset()
-	HTTP.Headers.Values['Origin'] = ' ' .. domain
+	HTTP.Headers.Values['Origin'] = ' ' .. rooturl
 	HTTP.Headers.Values['Referer'] = ' ' .. url
 	HTTP.MimeType = "application/x-www-form-urlencoded"
 	HTTP.Document.WriteString(rawdata)
 	HTTP.FollowRedirection = true
 
-	-- cloudflare requires a delay
-	local delay = tonumber(body:match('submit%(%);\r?\n%s*},%s*(%d%d%d%d+)')) or 5000
-	-- if delay < 6000 then delay = 6000 end
-	self:sleepOrBreak(delay)
-
-	HTTP.Request('POST', domain .. challengeUUID)
+	HTTP.Request('POST', rooturl .. challengeUUID)
 	return HTTP.Cookies.Values["cf_clearance"] ~= ""
 end
 
@@ -136,7 +153,7 @@ end
 function _m.bypass(self, METHOD, URL)
 	duktape = require 'fmd.duktape'
 	crypto = require 'fmd.crypto'
-	
+
 	local result = false
 	local counter = 0
 	local maxretry = HTTP.RetryCount;
