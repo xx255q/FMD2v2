@@ -10,7 +10,7 @@ function getinfo()
 		MANGAINFO.Status    = MangaInfoStatusIfPos(getStatus(x))
 		MANGAINFO.Summary   = getSummary(x)
 		getMangas(x)
-		InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_problem

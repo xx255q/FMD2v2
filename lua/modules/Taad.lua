@@ -37,7 +37,7 @@ function GetInfo()
 		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//table//table//td[starts-with(.,"Status:")]/a'), 'Updated', 'Completed')
 
 		x.XPathHREFAll('//*[@class="chapter_list"]/table//tr/td[1]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-		InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_problem

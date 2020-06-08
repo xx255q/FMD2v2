@@ -20,7 +20,7 @@ function GetInfo()
 			MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//div[@class="bookmessgae"]//dd[contains(span/text(), "Перевод")]/a'), 'ongoing', 'finished')
 		end
 		x.XPathHREFAll('//div[@class="chapterlist"]/table//td[@class="col1"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-		InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_error

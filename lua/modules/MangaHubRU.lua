@@ -29,7 +29,7 @@ function GetInfo()
 		MANGAINFO.Summary   = x.XPathString('//div[@itemprop="description"]')
 
 		x.XPathHREFAll('//div[@class="card-header" and .="Содержание"]/following-sibling::div//a[contains(@class,"text-truncate")]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-		InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_problem

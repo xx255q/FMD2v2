@@ -84,7 +84,7 @@ function getinfo()
 				MANGAINFO.ChapterNames.Add(v1.ToString())
 			end
 		end
-		InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		result = no_error
 	end
 	return result
@@ -102,7 +102,7 @@ function getinfo_ths()
 		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//ul[@class="series_left_data"]/li[contains(span, "Status")]/span[@class="value"]'))
 		MANGAINFO.Summary   = x.XPathString('//div[@id="series_des"]')
 		x.XPathHREFTitleAll('//div[@id="staff"]/div/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-		InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_problem

@@ -19,7 +19,7 @@ function getinfo()
 		if s~='' then x.ParseHTML(lz.decompressFromBase64(s)) end
 	end
 	x.XPathHREFTitleAll('//*[contains(@id,"chapter-list")]/ul/li/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-		InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_problem

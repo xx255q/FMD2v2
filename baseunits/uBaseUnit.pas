@@ -500,8 +500,6 @@ function BracketStr(const S: String): String; inline;
 function RandomString(SLength: Integer; ONumber: Boolean = False;
   OSymbol: Boolean = False; OSpace: Boolean = False): String;
 function GetValuesFromString(Str: String; Sepr: Char): String;
-procedure InvertStrings(const St: TStringList); overload;
-procedure InvertStrings(const Sts: array of TStringList); overload;
 procedure TrimStrings(TheStrings: TStrings);
 procedure RemoveDuplicateStrings(Strs: array of TStringList; RemIndex: Integer = 0);
 function MergeCaseInsensitive(Strs: array of String): String; overload;
@@ -1321,15 +1319,6 @@ begin
   end;
 end;
 
-procedure InvertStrings(const St: TStringList);
-var
-  i: Integer;
-begin
-  if St.Count > 1 then
-    for i := 0 to ((St.Count - 1) div 2) do
-      St.Exchange(i, St.Count - 1 - i);
-end;
-
 function FixHTMLTagQuote(const s: String): String;
 begin
   Result := s;
@@ -1478,14 +1467,6 @@ begin
       Delete(Result, i, 1)
     else
       Inc(i);
-end;
-
-procedure InvertStrings(const Sts: array of TStringList);
-var
-  i: Integer;
-begin
-  for i := Low(Sts) to High(Sts) do
-    InvertStrings(Sts[i]);
 end;
 
 procedure TrimStrings(TheStrings: TStrings);

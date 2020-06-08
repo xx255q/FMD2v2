@@ -32,7 +32,7 @@ function getinfo()
 				MANGAINFO.ChapterNames.Add(MANGAINFO.Title .. ' ' .. scan)
 			end
 		end
-		InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_problem

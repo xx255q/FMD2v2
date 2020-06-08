@@ -31,7 +31,7 @@ function GetInfo()
 					'مستمرة',
 					'مكتملة')
 		x.XPathHREFAll('//ul[@class="new-manga-chapters"]/li/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-		InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_problem

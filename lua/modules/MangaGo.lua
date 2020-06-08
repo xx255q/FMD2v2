@@ -9,7 +9,7 @@ function getinfo()
 		MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//div[@class="manga_right"]//td/label[.="Status:"]/following-sibling::*/text()'))
 		MANGAINFO.Summary=x.XPathString('//div[@class="manga_summary"]/string-join(text(),codepoints-to-string(10))')
 		x.XPathHREFAll('//table[@id="chapter_table"]//td//a[not(@style)]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-		InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		HTTP.Reset()
 		HTTP.Headers.Values['Referer'] = MANGAINFO.URL
 		return no_error

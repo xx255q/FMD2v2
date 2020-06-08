@@ -19,7 +19,7 @@ function GetInfo()
 		for i = 0, MANGAINFO.ChapterNames.Count-1 do
 			MANGAINFO.ChapterNames[i] = MANGAINFO.ChapterNames[i]:gsub("Chapter", " ")
 		end
-		InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_problem

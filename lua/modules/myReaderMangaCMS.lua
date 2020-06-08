@@ -32,7 +32,7 @@ function Modules.myReaderMangaCMS()
 				MANGAINFO.ChapterLinks.Add(x.XPathString('a/@href', v2))
 				MANGAINFO.ChapterNames.Add(x.XPathString('normalize-space(.)', v2))
 			end
-			InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+			MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 			return no_error
 		end
 		return net_problem

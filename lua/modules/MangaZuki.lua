@@ -29,7 +29,7 @@ function GetInfo()
 		MANGAINFO.Summary   = x.XPathString('//h5[text()="Summary"]/following-sibling::*')
 
 		x.XPathHREFAll('//ul[@class="chapters"]/li/h3/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-		InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_problem

@@ -20,7 +20,7 @@ function GetInfo()
 			MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//ul[@class="manga-info-text"]/li[contains(., "Status")]'))
 			MANGAINFO.Summary   = x.XPathStringAll('//div[@id="noidungm"]/text()', '')
 			x.XPathHREFAll('//div[@class="chapter-list"]/div[@class="row"]/span/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-			InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
+			MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		else
 			MANGAINFO.Title     = x.XPathString('//span[@class="info-image"]/img/@alt')
 			MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//span[@class="info-image"]/img/@src'))
@@ -29,7 +29,7 @@ function GetInfo()
 			MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//td[contains(., "Status")]/following-sibling::td'))
 			MANGAINFO.Summary   = x.XPathStringAll('//div[@class="panel-story-info-description"]/text()', '')
 			x.XPathHREFAll('//ul[@class="row-content-chapter"]/li/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-			InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
+			MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		end
 		return no_error
 	else

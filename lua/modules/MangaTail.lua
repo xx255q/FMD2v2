@@ -8,7 +8,7 @@
 		end
 		MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//*[contains(@class,"field-status")]'))
 		x.XPathHREFAll('//table[contains(@class,"chlist")]//tr/td[1]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-		InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
 		local s = x.XPathString('//script[contains(., "jQuery.extend(Drupal")]')
 		s = GetBetween('settings,', ');', s)

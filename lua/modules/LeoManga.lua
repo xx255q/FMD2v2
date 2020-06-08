@@ -29,7 +29,7 @@ function GetInfo()
 	MANGAINFO.Summary   = x.XPathString('normalize-space(//div[@class="content-wrapper"]//span[contains(b, "Resumen")])'):gsub('Resumen Resumen: ', '')
 
 	x.XPathHREFAll('//table[contains(@class, "table")]//a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-	InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
 	return no_error
 end

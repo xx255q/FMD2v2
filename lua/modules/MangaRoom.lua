@@ -12,7 +12,7 @@ function getinfo()
 		MANGAINFO.Genres=x.XPathStringAll('//table[contains(@class, "info_list")]//tr[contains(td, "Genres")]/td[2]/a')
 		MANGAINFO.Summary=x.XPathString('//div[contains(@class, "summary")]/p')
 		x.XPathHREFAll('//table[contains(@class,"chapter-list")]//tr/td[1]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-		InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_problem

@@ -29,7 +29,7 @@ function _M.GetInfo()
   MANGAINFO.Summary   = MangaInfoStatusIfPos(x.XPathString('//div[@class="attr-item" and contains(b, "Status")]/span'))
 
   x.XPathHREFAll('//div[contains(@class, "chapter-list")]/div[@class="main"]/div/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-  InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+  MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
   return no_error
 end

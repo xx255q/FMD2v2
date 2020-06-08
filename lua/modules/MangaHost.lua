@@ -35,7 +35,7 @@ function GetInfo()
 	else
 		x.XPathHREFAll('//a[@class="capitulo"]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 	end
-	InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
 	return no_error
 end

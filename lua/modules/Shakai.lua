@@ -19,7 +19,7 @@
 				MANGAINFO.ChapterLinks.Add(x.XPathString('div[@class="post-element__action"]/a/@href', v1))
 				MANGAINFO.ChapterNames.Add(x.XPathString('div[@class="post-element__meta"]', v1))
 			end
-			InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
+			MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 			return no_error
 		else
 			return net_problem

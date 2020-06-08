@@ -13,7 +13,7 @@ function getinfo()
 				MANGAINFO.ChapterNames.Add(Trim(x.XPathString('.//div[contains(@class, "wr-subject")]/a', v1)))
 				MANGAINFO.ChapterLinks.Add(x.XPathString('.//div[contains(@class, "wr-subject")]//a/@href', v1));
 			end
-			InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
+			MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 			return no_error
 		else
 			return net_problem

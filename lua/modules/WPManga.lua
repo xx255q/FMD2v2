@@ -41,7 +41,7 @@ function getinfo()
 					break
 				end
 			end
-			InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+			MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		end
 		return no_error
 	else

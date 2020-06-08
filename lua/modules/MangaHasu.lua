@@ -10,7 +10,7 @@ function getinfo()
 		MANGAINFO.Status=MangaInfoStatusIfPos(x.XPathString('//div[contains(b, "Status")]/span/a'))
 		MANGAINFO.Summary=x.XPathString('//h3[contains(.,"Summary")]/following-sibling::*')
 		x.XPathHREFAll('//div[@class="list-chapter"]/table//td[@class="name"]/a',MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
-		InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_problem

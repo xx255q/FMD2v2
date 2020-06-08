@@ -35,7 +35,7 @@ function _M.GetInfo()
   if s ~= nil and s ~= '' then MANGAINFO.Title = s end
 
   x.XPathHREFAll('//div[@class="chapterbox"]//li/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-  InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+  MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
   return no_error
 end

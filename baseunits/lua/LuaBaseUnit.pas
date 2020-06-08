@@ -35,15 +35,6 @@ begin
   Result := 1;
 end;
 
-function lua_invertstrings(L: Plua_State): Integer; cdecl;
-var
-  i: Integer;
-begin
-  Result := 0;
-  for i := 1 to lua_gettop(L) do
-    InvertStrings(TStringList(luaGetUserData(L, i)));
-end;
-
 function lua_mangainfostatusifpos(L: Plua_State): Integer; cdecl;
 begin
   case lua_gettop(L) of
@@ -58,11 +49,10 @@ begin
 end;
 
 const
-  methods: packed array [0..5] of luaL_Reg = (
+  methods: packed array [0..4] of luaL_Reg = (
     (name: 'Trim'; func: @lua_trim),
     (name: 'MaybeFillHost'; func: @lua_maybefillhost),
     (name: 'FillHost'; func: @lua_fillhost),
-    (name: 'InvertStrings'; func: @lua_invertstrings),
     (name: 'MangaInfoStatusIfPos'; func: @lua_mangainfostatusifpos),
     (name: nil; func: nil)
     );

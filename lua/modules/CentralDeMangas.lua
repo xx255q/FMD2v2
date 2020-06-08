@@ -10,7 +10,7 @@ function GetInfo()
 		MANGAINFO.Genres = x.XPathStringAll('//div[@id="main"]//div[@class="content" and contains(div[@class="header"], "Gênero")]/div[@class="description"]/a')
 		MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//div[@id="main"]//div[@class="content" and contains(div[@class="header"], "Status")]/div[@class="description"]/a'), 'Em publicação', 'Completo')
 		x.XPathHREFAll('//table/tbody/tr/td/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-		InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_problem

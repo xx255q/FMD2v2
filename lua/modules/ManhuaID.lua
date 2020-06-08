@@ -23,7 +23,7 @@ function GetInfo()
 	MANGAINFO.Genres    = x.XPathStringAll('//span[contains(@class, "badge badge-info mr-1 mb-1")]')
 	MANGAINFO.Summary   = x.XPathString('//div[contains(@class, "mb-4")]//p[2]')
 	x.XPathHREFAll('//table[contains(@class,"table-striped")]//tr/td[1]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-	InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
 	return no_error
 end

@@ -12,7 +12,7 @@ function getinfo()
 		MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//span[@class="list-group-item" and contains(., "Estado")]'))
 		MANGAINFO.Summary = x.XPathStringAll('//span[@class="list-group-item" and contains(., "Resumen")]/text()', '')
 		x.XPathHREFAll('//table//tr/td[1]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-		InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		HTTP.Reset()
 		HTTP.Headers.Values['Referer'] = MANGAINFO.URL
 		return no_error

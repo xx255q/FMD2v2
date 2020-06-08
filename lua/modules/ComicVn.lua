@@ -10,7 +10,7 @@
 		MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//div[@class="manga-info"]/div[contains(@class, "manga-detail")]//ul/li[contains(span, "Trạng thái")]'), 'Đang thực hiện', 'Đã hoàn thành')
 		MANGAINFO.Summary=x.XPathString('//div[contains(@class, "manga-summary")]')
 		x.XPathHREFAll('//div[contains(@class,"manga-chapter")]//ul/li/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-		InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_problem

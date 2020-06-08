@@ -70,11 +70,11 @@ function GetInfo()
 		MANGAINFO.Genres    = x.XPathStringAll('//p[@class="detail-info-right-tag-list"]/a')
 		MANGAINFO.Summary   = x.XPathString('//p[@class="fullcontent"]')
 		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//span[@class="detail-info-right-title-tip"]'))
-	for v in x.XPath('//ul[@class="detail-main-list"]/li/a').Get() do
+		for v in x.XPath('//ul[@class="detail-main-list"]/li/a').Get() do
 			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'):gsub('1%.html$', ''))
 			MANGAINFO.ChapterNames.Add(x.XPathString('./div/p[@class="title3"]', v))
 		end
-		InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_problem

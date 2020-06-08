@@ -10,7 +10,7 @@
 		MANGAINFO.Genres = x.XPathStringAll('//div[@id="manga_detail"]/ul/li[contains(b, "Thể loại")]/a')
 		MANGAINFO.Summary = x.XPathString('//p[@class="desc"]')
 		x.XPathHREFAll('//ul[@id="manga-info-list"]/li[not(contains(@style, "none"))]/a[1]', MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
-		InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_problem

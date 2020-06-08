@@ -9,7 +9,7 @@ function getinfo()
 		MANGAINFO.Summary=x.XPathString('//div[@id="LayerContenido"]/div[@id][2]//tr[1]/td[1]')
 		x.XPathStringAll('//div[@id="tomo"]//a/@href',MANGAINFO.ChapterLinks)
 		x.XPathStringAll('//div[@id="tomo"]//a/string-join((../b,.)," ")',MANGAINFO.ChapterNames)
-		InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_problem

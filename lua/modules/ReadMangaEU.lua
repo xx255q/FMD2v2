@@ -9,7 +9,7 @@
 		MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//table[@class="details_table"]/tbody/tr[contains(td, "Status")]/td[2]'))
 		MANGAINFO.Summary=x.XPathString('//*[@class="ebook_description"]')
 		x.XPathHREFAll('//div[contains(@class,"chapters")]/span[not(@id="show_all")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-		InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_problem

@@ -24,7 +24,7 @@ function GetInfo()
 	MANGAINFO.Summary   = x.XPathString('//meta[@property="og:description"]/@content')
 
 	x.XPathHREFAll('//div[@class="table-scroll"]/table/tbody/tr/td[1]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-	InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
 	return no_error
 end

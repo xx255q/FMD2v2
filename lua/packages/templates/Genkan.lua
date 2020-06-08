@@ -32,7 +32,7 @@ function _M.GetInfo()
     MANGAINFO.ChapterNames.Add('Chapter ' .. n.Get(i).ToString() .. ' - ' .. v.Get(i).ToString())
     MANGAINFO.ChapterLinks.Add(v.Get(i).GetAttribute('href'))
   end
-  InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+  MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
   return no_error
 end

@@ -22,7 +22,7 @@ function GetInfo()
 	MANGAINFO.Summary   = x.XPathString('//div[contains(@class, "card-body")]/p')
 
 	x.XPathHREFAll('//div[@class="text-center"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-	InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
 	return no_error
 end

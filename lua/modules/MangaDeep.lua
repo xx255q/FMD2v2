@@ -29,7 +29,7 @@ function GetInfo()
 		MANGAINFO.ChapterNames.Add(x.XPathString('text()[not(parent::span/@class="new_up")]', v))
 		MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
 	end
-	InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
 	return no_error
 end

@@ -39,7 +39,7 @@ function _M.GetInfo()
     MANGAINFO.ChapterLinks.Add(x.XPathString('a/@href', v.Get(i)))
     MANGAINFO.ChapterNames.Add(x.XPathString('normalize-space(.)', v.Get(i)))
   end
-  InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+  MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
   return no_error
 end

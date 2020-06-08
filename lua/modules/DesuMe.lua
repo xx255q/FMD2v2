@@ -8,7 +8,7 @@ function getinfo()
 		MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//span[contains(@class, "status_tag")]'), 'выходит', 'издано')
 		MANGAINFO.Summary=x.XPathString('//div[@itemprop="description"]')
 		x.XPathHREFAll('//ul[@class="chlist"]/li/h4/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-		InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_problem

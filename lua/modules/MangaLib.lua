@@ -15,7 +15,7 @@ function getinfo()
 		MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//div[@class="info-list__row"][starts-with(.,"Перевод")]'), 'продолжается', 'завершен')
 		MANGAINFO.Summary=x.XPathStringAll('//div[contains(@class, "info-desc__content")]/text()', '')
 		x.XPathHREFAll('//div[@class="chapters-list"]/div/div[@class="chapter-item__name"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-		InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_problem

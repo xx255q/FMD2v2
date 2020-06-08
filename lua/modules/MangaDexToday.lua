@@ -54,7 +54,7 @@ function GetInfo()
 			MANGAINFO.ChapterLinks.Add(x.XPathString('a/@href',chapters.Get(i)))
 			MANGAINFO.ChapterNames.Add(x.XPathString('.',chapters.Get(i)))
 		end
-		InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_problem

@@ -44,7 +44,7 @@ function GetInfo()
 			x.XPathHREFAll('//tr/td[1]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			p = p + 1
 		end
-		InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_problem

@@ -16,7 +16,7 @@ function getinfo()
 			MANGAINFO.ChapterLinks.Add(v1.GetAttribute('href'))
 			MANGAINFO.ChapterNames.Add(x.XPathString('div[@class="ListCard-content"]/h3', v1) .. ' (' .. x.XPathString('div[@class="ListCard-info-nodot"]', v1) .. ')')
 		end
-		InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
 		return no_error
 	end

@@ -168,8 +168,41 @@ begin
   Result := 1;
 end;
 
+function strings_reverse(L: Plua_State): Integer; cdecl;
+var
+  u: TUserData;
+  i: Integer;
+
+  Procedure _exchange(Index1, Index2: Integer);
+  Var
+    Obj : TObject;  Str : String;
+  begin
+    with u do
+    begin
+      Obj:=Objects[Index1];
+      Str:=Strings[Index1];
+      Objects[Index1]:=Objects[Index2];
+      Strings[Index1]:=Strings[Index2];
+      Objects[Index2]:=Obj;
+      Strings[Index2]:=Str;
+    end;
+  end;
+
+begin
+  Result := 0;
+  u := TUserData(luaClassGetObject(L));
+  if u.Count > 1 then
+    try
+      u.BeginUpdate;
+      for i := 0 to ((u.Count - 1) div 2) do
+        _exchange(i, u.Count - 1 - i);
+    finally
+      u.EndUpdate;
+    end;
+end;
+
 const
-  methods: packed array [0..14] of luaL_Reg = (
+  methods: packed array [0..15] of luaL_Reg = (
     (name: 'LoadFromFile'; func: @strings_loadfromfile),
     (name: 'LoadFromStream'; func: @strings_loadfromstream),
     (name: 'SetText'; func: @strings_settext),
@@ -184,6 +217,7 @@ const
     (name: 'Delete'; func: @strings_delete),
     (name: 'IndexOf'; func: @strings_indexof),
     (name: 'IndexOfName'; func: @strings_indexofname),
+    (name: 'Reverse'; func: @strings_reverse),
     (name: nil; func: nil)
     );
   props: packed array[0..6] of lual_Reg_prop = (

@@ -85,7 +85,7 @@ function Modules.Madara()
 						x.XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 				end
 			end
-			InvertStrings(MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
+			MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 			return no_error
 		end
 		return net_problem

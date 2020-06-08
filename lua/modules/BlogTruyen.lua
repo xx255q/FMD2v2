@@ -42,7 +42,7 @@ function GetInfo()
 		MANGAINFO.Summary   = x.XPathString('//*[@class="detail"]/*[@class="content"]')
 
 		x.XPathHREFAll('//*[@id="list-chapters"]//span[@class="title"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-		InvertStrings(MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_problem
