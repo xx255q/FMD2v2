@@ -7,7 +7,6 @@ interface
 uses
   Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif};
 
-procedure luaStringsRegister(const L: Plua_State); inline;
 procedure luaStringsAddMetaTable(const L: Plua_State; const Obj: Pointer;
   const MetaTable, UserData: Integer);
 
@@ -202,6 +201,12 @@ begin
 end;
 
 const
+  constructs: packed array [0..2] of luaL_Reg = (
+    (name: 'New'; func: @strings_create),
+    (name: 'Create'; func: @strings_create),
+    (name: nil; func: nil)
+    );
+
   methods: packed array [0..15] of luaL_Reg = (
     (name: 'LoadFromFile'; func: @strings_loadfromfile),
     (name: 'LoadFromStream'; func: @strings_loadfromstream),
@@ -244,9 +249,13 @@ begin
   luaClassAddDefaultArrayProperty(L, MetaTable, UserData, @strings_get, @strings_set);
 end;
 
-procedure luaStringsRegister(const L: Plua_State);
+function luaopen_strings(L: Plua_State): Integer; cdecl;
 begin
-  luaPushFunctionGlobal(L, 'CreateTStrings', @strings_create);
+  luaNewLibTable(L, constructs);
+  Result := 1;
 end;
+
+initialization
+  LuaPackage.AddLib('strings', @luaopen_strings);
 
 end.

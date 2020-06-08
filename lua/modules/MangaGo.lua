@@ -132,7 +132,7 @@ function getpagenumber()
 				TASK.PageLinks.Add(SeparateRight(a[i], '//'))
 			end
 			function filldict(script)
-				local dict = CreateTStrings()
+				local dict =  require('fmd.strings').Create()
 				dict.Text = MODULE.Storage['dict']
 				local dkvar = 'deskeys'
 				local function fill(p)
@@ -168,7 +168,7 @@ function downloadimage()
 	if HTTP.GET(URL) then
 		if string.find(URL:lower(), 'mangapicgallery.com/r/cspiclink', 1, true) then
 			local ik = MODULE.Storage['ik']
-			local dict = CreateTStrings()
+			local dict = require('fmd.strings').Create()
 			dict.Text = MODULE.Storage['dict']
 			local js = require 'utils.jsunpack'
 			for i = 0,dict.Count-1 do
@@ -226,7 +226,7 @@ end
 
 function Init()
 	function filldef(m)
-		local dict = CreateTStrings()
+		local dict =  require('fmd.strings').Create()
 		dict.Values['60a2b0ed56cd458c4633d04b1b76b7e9'] = '18a72a69a64a13a1a43a3aa42a23a66a26a19a51a54a78a34a17a31a35a15a58a29a61a48a73a74a44a52a60a24a63a20a32a7a45a53a75a55a62a59a41a76a68a2a36a21a10a38a33a71a40a67a22a4a50a80a65a27a37a47a70a14a28a16a6a56a30a57a5a11a79a9a77a46a39a25a49a8a12'
 		dict.Values['400df5e8817565e28b2e141c533ed7db'] = '61a74a10a45a3a37a72a22a57a39a25a56a52a29a70a60a67a41a63a55a27a28a43a18a5a9a8a40a17a48a44a79a38a47a32a73a4a6a13a34a33a49a2a42a50a76a54a36a35a14a58a7a69a46a16a30a21a11aa51a53a77a26a31a1a19a20a80a24a62a68a59a66a75a12a64a78a71a15a65a23'
 		dict.Values['84ba0d8098f405b14f4dbbcc04c93bac'] = '61a26a35a16a55a10a72a37a2a60a66a65a33a44a7a28a70a62a32a56a30a40a58a15a74a47aa36a78a75a11a6a77a67a39a23a9a31a64a59a13a24a80a14a38a45a21a63a19a51a17a34a50a46a5a29a73a8a57a69a48a68a49a71a41a12a52a18a79a76a54a42a22a4a1a3a53a20a25a43a27'

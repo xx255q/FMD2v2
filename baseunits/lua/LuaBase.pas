@@ -36,10 +36,10 @@ uses
   LuaCriticalSection, LuaMemoryStream,
   LuaBaseUnit, LuaSynaUtil,
   // -- lua object create
-  LuaStrings, LuaXQuery,
+  LuaXQuery,
   // -- in lua 'require "name"'
   LuaFMD, LuaPCRE2, LuaDuktape, LuaCrypto, LuaFileUtil,
-  LuaImagePuzzle, LuaMangaFox, LuaLogger;
+  LuaStrings, LuaImagePuzzle, LuaMangaFox, LuaLogger;
 
 function luabase_print(L: Plua_State): Integer; cdecl;
 var
@@ -69,7 +69,6 @@ end;
 
 procedure LuaBaseRegisterCreateObject(const L: Plua_State);
 begin
-  luaStringsRegister(L);
   luaXQueryRegister(L);
 end;
 
