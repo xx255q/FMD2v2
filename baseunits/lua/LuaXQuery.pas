@@ -69,27 +69,6 @@ begin
   Result := 1;
 end;
 
-function xquery_xpathi(L: Plua_State): Integer; cdecl;
-var
-  u: TUserData;
-  x: IXQValue;
-  t, i: Integer;
-begin
-  u := TUserData(luaClassGetObject(L));
-  if lua_gettop(L) = 2 then
-    x := u.XPath(luaGetString(L, 1), TLuaIXQValue(luaGetUserData(L, 2)).FIXQValue)
-  else
-    x := u.XPath(luaGetString(L, 1));
-  lua_newtable(L);
-  t := lua_gettop(L);
-  for i := 1 to x.Count do
-  begin
-    luaIXQValuePush(L, x.get(i));
-    lua_rawseti(L, t, i);
-  end;
-  Result := 1;
-end;
-
 function xquery_xpathstring(L: Plua_State): Integer; cdecl;
 var
   u: TUserData;
@@ -187,10 +166,9 @@ begin
 end;
 
 const
-  methods: packed array [0..8] of luaL_Reg = (
+  methods: packed array [0..7] of luaL_Reg = (
     (name: 'ParseHTML'; func: @xquery_parsehtml),
     (name: 'XPath'; func: @xquery_xpath),
-    (name: 'XPathI'; func: @xquery_xpathi),
     (name: 'XPathString'; func: @xquery_xpathstring),
     (name: 'XPathStringAll'; func: @xquery_xpathstringall),
     (name: 'XPathHREFAll'; func: @xquery_xpathhrefall),

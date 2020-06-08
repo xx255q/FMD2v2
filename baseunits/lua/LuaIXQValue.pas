@@ -12,6 +12,7 @@ type
 
   TLuaIXQValue = class
   public
+    Current: Cardinal;
     FIXQValue: IXQValue;
     constructor Create(const AIX: IXQValue);
   end;
@@ -76,8 +77,43 @@ begin
   Result := 1;
 end;
 
-function ixqvalue_get(L: Plua_State): Integer; cdecl;
+function ixqvalue_getnil(L: Plua_State): Integer; cdecl;
 begin
+  Result := 0;
+end;
+
+function ixqvalue_geti(L: Plua_State): Integer; cdecl;
+var
+  u: TUserData;
+  v: IXQValue;
+begin
+  u := TUserData(lua_touserdata(L, 1));
+  Inc(u.Current);
+  v := u.FIXQValue.get(u.Current);
+  if v.kind = pvkUndefined then Exit(0);
+  luaIXQValuePush(L, v);
+  Result := 1;
+end;
+
+function ixqvalue_get(L: Plua_State): Integer; cdecl;
+var
+  u: TUserData;
+begin
+  if lua_gettop(L) = 0 then // return iterator
+  begin
+     u := TUserData(luaClassGetObject(L));
+     if u.FIXQValue.Count = 0 then
+     begin
+       lua_pushcfunction(L, @ixqvalue_getnil);
+       Exit(1);
+     end
+     else
+     begin
+       lua_pushcfunction(L, @ixqvalue_geti);
+       lua_pushlightuserdata(L, u);
+       Exit(2);
+     end;
+  end;
   luaIXQValuePush(L, TUserData(luaClassGetObject(L)).FIXQValue.get(lua_tointeger(L, 1)));
   Result := 1;
 end;
