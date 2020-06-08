@@ -29,12 +29,6 @@ begin
   Result := 1;
 end;
 
-function lua_fillhost(L: Plua_State): Integer; cdecl;
-begin
-  lua_pushstring(L, FillHost(luaGetString(L, 1), luaGetString(L, 2)));
-  Result := 1;
-end;
-
 function lua_mangainfostatusifpos(L: Plua_State): Integer; cdecl;
 begin
   case lua_gettop(L) of
@@ -49,10 +43,9 @@ begin
 end;
 
 const
-  methods: packed array [0..4] of luaL_Reg = (
+  methods: packed array [0..3] of luaL_Reg = (
     (name: 'Trim'; func: @lua_trim),
     (name: 'MaybeFillHost'; func: @lua_maybefillhost),
-    (name: 'FillHost'; func: @lua_fillhost),
     (name: 'MangaInfoStatusIfPos'; func: @lua_mangainfostatusifpos),
     (name: nil; func: nil)
     );

@@ -24,7 +24,7 @@ function GetInfo()
 end
 
 function GetPageNumber()
-	if HTTP.GET(FillHost('http://viewer.tonarinoyj.jp',URL)) then
+	if HTTP.GET('http://viewer.tonarinoyj.jp/', URL:gsub('https?://[^/]+/')) then
 		CreateTXQuery(HTTP.Document).XPathStringAll('//img[@class="js-page-image"]/@src', TASK.PageLinks)
 		return true
 	else
