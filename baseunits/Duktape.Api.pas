@@ -1,6 +1,13 @@
+{$IFDEF FPC}
+  {$H+}
+  {$MODE DELPHI}
+{$ENDIF}
 unit Duktape.Api;
 
 interface
+{$IFDEF FPC}
+type MarshaledAString = PAnsiChar;
+{$ENDIF}
 
 const
   {$IF Defined(WIN32)}
@@ -84,8 +91,6 @@ const
  *      - Generic
  *
  *)
-
-type MarshaledAString = ^AnsiChar;
 
 type
   TDukUInt8 = UInt8;
