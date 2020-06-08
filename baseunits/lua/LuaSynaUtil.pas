@@ -32,28 +32,11 @@ begin
   Result := 1;
 end;
 
-function lua_parseurl(L: Plua_State): Integer; cdecl;
-var
-  prot, user, pass, host, port, path, para, s: string;
-begin
-  s := ParseURL(luaGetString(L, 1), prot, user, pass, host, port, path, para);
-  lua_pushstring(L, prot);
-  lua_pushstring(L, user);
-  lua_pushstring(L, pass);
-  lua_pushstring(L, host);
-  lua_pushstring(L, port);
-  lua_pushstring(L, path);
-  lua_pushstring(L, para);
-  lua_pushstring(L, s);
-  Result := 8;
-end;
-
 const
-  methods: packed array [0..4] of luaL_Reg = (
+  methods: packed array [0..3] of luaL_Reg = (
     (name: 'GetBetween'; func: @lua_getbetween),
     (name: 'SeparateLeft'; func: @lua_separateleft),
     (name: 'SeparateRight'; func: @lua_separateright),
-    (name: 'ParseURL'; func: @lua_parseurl),
     (name: nil; func: nil)
     );
 
