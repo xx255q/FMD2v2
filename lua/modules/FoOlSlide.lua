@@ -37,7 +37,7 @@ function getdirurl(website)
 		['RavensScans']        = dirurllector,
 		['NoraNoFansub']       = dirurllector,
 		['AntisenseScans']     = dirurlonline,
-	['SenseScans']         = dirurlreader,
+		['SenseScans']         = dirurlreader,
 		['MangaichiScan']      = dirurlfsdir,
 		['Riceballicious']     = dirurlreaderlist,
 		['Yuri-ism']           = dirurlslide,
@@ -118,20 +118,33 @@ end
 function getpagenumber()
 	local result = false
 	if getWithCookie(MaybeFillHost(MODULE.RootURL, URL)) then
-		local crypto = require 'fmd.crypto'
 		x = CreateTXQuery(HTTP.Document)
 		TASK.PageNumber = x.XPath('//div[@class="topbar_right"]//ul[@class="dropdown"]/li').Count
-		s = x.XPathString('//script[contains(.,"var pages")]')
+		s = x.XPathString('//script[contains(.,"var pages = ")]')
 		if s ~= '' then
+			local crypto = require 'fmd.crypto'
 			s = GetBetween('var pages = ', ';', s)
 			if string.find(s, 'atob("', 1, true) then
 				 s = GetBetween('atob("', '")', s)
 				 s = crypto.DecodeBase64(s)
 			end
 			x.ParseHTML(s)
-			v = x.XPath('json(*)()("URL")')
-			for i = 1, v.Count do
-				TASK.PageLinks.Add(v.Get(i).ToString())
+			x.XPathStringAll('json(*)()("url")', TASK.PageLinks)
+			if TASK.PageLinks.Count == 0 then
+				x.XPathStringAll('json(*)()("URL")', TASK.PageLinks)
+			end
+		end
+		if TASK.PageLinks.Count == 0 then
+			local duktape = require 'fmd.duktape'
+			local body = HTTP.Document.ToString()
+			s = body:match('\n%s*(var%s*[%S]-%s*=%s*%[\'fromCharCode\'[^\r\n]+;)')
+			if s ~= '' then
+				s = duktape.ExecJS(s .. '\r\nJSON.stringify(pages)')
+				x.ParseHTML(s)
+				x.XPathStringAll('json(*)()("url")', TASK.PageLinks)
+				if TASK.PageLinks.Count == 0 then
+					x.XPathStringAll('json(*)()("URL")', TASK.PageLinks)
+				end
 			end
 		end
 		result = true
@@ -147,7 +160,7 @@ function getimageurl()
 	end
 	if getWithCookie(MaybeFillHost(MODULE.RootURL, s)) then
 		x = CreateTXQuery(HTTP.Document)
-		TASK.PageLinks.Set(WORKID, x.XPathString('//div[@id="page"]//img/@src'))
+		TASK.PageLinks[WORKID] = x.XPathString('//div[@id="page"]//img/@src')
 	end
 	return result
 end
