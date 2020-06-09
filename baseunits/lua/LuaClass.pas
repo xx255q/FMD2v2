@@ -172,7 +172,7 @@ function __indexarray(L: Plua_State): Integer; cdecl;
 begin
   Result := 1;
 
-  if luaGetString(L, 2) = '__get' then
+  if luaToString(L, 2) = '__get' then
   begin
     lua_pushvalue(L, 1);
     Exit;
@@ -188,7 +188,7 @@ function __newindexarray(L: Plua_State): Integer; cdecl;
 begin
   Result := 1;
 
-  if luaGetString(L, 2) = '__set' then
+  if luaToString(L, 2) = '__set' then
   begin
     lua_pushvalue(L, 1);
     Exit;
@@ -470,7 +470,7 @@ end;
 function luaclass_string_set(L: Plua_State): Integer; cdecl;
 begin
   Result := 0;
-  String(luaClassGetClosure(L)^) := luaGetString(L, -1);
+  String(luaClassGetClosure(L)^) := luaToString(L, -1);
 end;
 
 function luaclass_int_get(L: Plua_State): Integer; cdecl;

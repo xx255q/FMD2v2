@@ -15,19 +15,19 @@ uses
 function logger_send(L: Plua_State): Integer; cdecl;
 begin
   Result := 0;
-  Logger.Send(luaGetString(L, 1));
+  Logger.Send(luaToString(L, 1));
 end;
 
 function logger_sendwarning(L: Plua_State): Integer; cdecl;
 begin
   Result := 0;
-  Logger.SendWarning(luaGetString(L, 1));
+  Logger.SendWarning(luaToString(L, 1));
 end;
 
 function logger_senderror(L: Plua_State): Integer; cdecl;
 begin
   Result := 0;
-  Logger.SendError(luaGetString(L, 1));
+  Logger.SendError(luaToString(L, 1));
 end;
 
 const

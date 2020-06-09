@@ -60,7 +60,7 @@ var
   c: TCachedPackage;
 begin
   Result := 0;
-  if Packages.Find(luaGetString(L, 1), i) then
+  if Packages.Find(luaToString(L, 1), i) then
   begin
     if Packages.Objects[i] is TLuaLib then
     begin

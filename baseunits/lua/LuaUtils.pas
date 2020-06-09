@@ -32,8 +32,8 @@ procedure luaPushObjectGlobal(const L: Plua_State; const AObj: TObject; const AN
 
 procedure luaPushUserData(const L: Plua_State; const Value: Pointer); overload; inline;
 procedure luaPushUserData(const L: Plua_State; const Value: Pointer; var UIndex: Integer); overload; inline;
-function luaGetUserData(const L: Plua_State; const idx: Integer): Pointer; inline;
-function luaGetString(const L: Plua_State; const idx: Integer): String; inline;
+function luaToUserData(const L: Plua_State; const idx: Integer): Pointer; inline;
+function luaToString(const L: Plua_State; const idx: Integer): String; inline;
 
 function LuaToTypeString(const L: Plua_State; const idx: Integer): String;
 function LuaStackToString(const L: Plua_State): String;
@@ -198,12 +198,12 @@ begin
   UIndex := lua_gettop(L);
 end;
 
-function luaGetUserData(const L: Plua_State; const idx: Integer): Pointer;
+function luaToUserData(const L: Plua_State; const idx: Integer): Pointer;
 begin
   Result := PPointer(lua_touserdata(L, idx))^;
 end;
 
-function luaGetString(const L: Plua_State; const idx: Integer): String;
+function luaToString(const L: Plua_State; const idx: Integer): String;
 var
   slen: size_t;
 begin

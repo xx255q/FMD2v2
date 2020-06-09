@@ -51,7 +51,7 @@ begin
       LUA_TBOOLEAN:
         Logger.Send(BoolToStr(lua_toboolean(L, i), 'true', 'false'));
       else
-        Logger.Send(luaGetString(L, i));
+        Logger.Send(luaToString(L, i));
     end;
 end;
 
@@ -171,7 +171,7 @@ begin
       Result := LuaDumpFileToStream(L, AFileName);
     except
       on E: Exception do
-        Logger.SendError(E.Message + ': ' + luaGetString(L, -1));
+        Logger.SendError(E.Message + ': ' + luaToString(L, -1));
     end;
   finally
     lua_close(L);
@@ -194,7 +194,7 @@ begin
     begin
       Result.Free;
       Result := nil;
-      Logger.SendError(luaGetString(L, -1));
+      Logger.SendError(luaToString(L, -1));
     end;
   end;
 end;
@@ -221,14 +221,9 @@ var
 begin
   r := LuaLoadFromStreamOrFile(L, AStream, AFileName);
   if r = 0 then
-    try
-      r := lua_pcall(L, 0, NResult, 0);
-    except
-      on E: Exception do
-        Logger.SendException('LuaExecute.pcall.Error',E);
-    end;
+    r := lua_pcall(L, 0, NResult, 0);
   if r <> 0 then
-    raise Exception.Create('LuaExecute.Error '+LuaGetReturnString(r));
+    raise Exception.Create('LuaExecute '+LuaGetReturnString(r)+': '+luaToString(L,-1));
 end;
 
 end.

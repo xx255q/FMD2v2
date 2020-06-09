@@ -43,13 +43,13 @@ end;
 function ixqvalue_getattribute(L: Plua_State): Integer; cdecl;
 begin
   lua_pushstring(L, TUserData(luaClassGetObject(L)).FIXQValue.toNode.getAttribute(
-    luaGetString(L, 1)));
+    luaToString(L, 1)));
   Result := 1;
 end;
 
 function ixqvalue_getproperty(L: Plua_State): Integer; cdecl;
 begin
-  luaIXQValuePush(L, TUserData(luaClassGetObject(L)).FIXQValue.getProperty(luaGetString(L, 1)));
+  luaIXQValuePush(L, TUserData(luaClassGetObject(L)).FIXQValue.getProperty(luaToString(L, 1)));
   Result := 1;
 end;
 

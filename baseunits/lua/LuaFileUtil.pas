@@ -13,20 +13,20 @@ uses LuaUtils, LuaPackage, LazFileUtils, uBaseUnit;
 
 function lua_extractfilename(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, ExtractFileName(luaGetString(L, 1)));
+  lua_pushstring(L, ExtractFileName(luaToString(L, 1)));
   Result := 1;
 end;
 
 function lua_extractfilenameonly(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, ExtractFileNameOnly(luaGetString(L, 1)));
+  lua_pushstring(L, ExtractFileNameOnly(luaToString(L, 1)));
   Result := 1;
 end;
 
 function lua_SerializeAndMaintainNames(L: Plua_State): Integer; cdecl;
 begin
   if lua_isuserdata(L, 1) then
-    SerializeAndMaintainNames(TStrings(luaGetUserData(L, 1)));
+    SerializeAndMaintainNames(TStrings(luaToUserData(L, 1)));
   Result := 0;
 end;
 

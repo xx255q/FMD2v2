@@ -14,55 +14,55 @@ uses
 
 function crypto_hextostr(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, HexToStr(luaGetString(L, 1)));
+  lua_pushstring(L, HexToStr(luaToString(L, 1)));
   Result := 1;
 end;
 
 function crypto_strtohexstr(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, StrToHexStr(luaGetString(L, 1)));
+  lua_pushstring(L, StrToHexStr(luaToString(L, 1)));
   Result := 1;
 end;
 
 function crypto_md5hex(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, MD5Hex(luaGetString(L, 1)));
+  lua_pushstring(L, MD5Hex(luaToString(L, 1)));
   Result := 1;
 end;
 
 function crypto_aesdecryptcbc(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, AESDecryptCBC(luaGetString(L, 1), luaGetString(L, 2), luaGetString(L, 3)));
+  lua_pushstring(L, AESDecryptCBC(luaToString(L, 1), luaToString(L, 2), luaToString(L, 3)));
   Result := 1;
 end;
 
 function crypto_AESDecryptCBCSHA256Base64Pkcs7(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, AESDecryptCBCSHA256Base64Pkcs7(luaGetString(L, 1), luaGetString(L, 2), luaGetString(L, 3)));
+  lua_pushstring(L, AESDecryptCBCSHA256Base64Pkcs7(luaToString(L, 1), luaToString(L, 2), luaToString(L, 3)));
   Result := 1;
 end;
 
 function lua_encryptstring(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, EncryptString(luaGetString(L, 1)));
+  lua_pushstring(L, EncryptString(luaToString(L, 1)));
   Result := 1;
 end;
 
 function lua_decryptstring(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, DecryptString(luaGetString(L, 1)));
+  lua_pushstring(L, DecryptString(luaToString(L, 1)));
   Result := 1;
 end;
 
 function lua_htmldecode(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, HTMLDecode(luaGetString(L, 1)));
+  lua_pushstring(L, HTMLDecode(luaToString(L, 1)));
   Result := 1;
 end;
 
 function lua_htmlencode(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, EscapeHTML(luaGetString(L, 1)));
+  lua_pushstring(L, EscapeHTML(luaToString(L, 1)));
   Result := 1;
 end;
 
@@ -70,97 +70,97 @@ end;
 
 function lua_decodeurl(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, DecodeURL(luaGetString(L, 1)));
+  lua_pushstring(L, DecodeURL(luaToString(L, 1)));
   Result := 1;
 end;
 
 function lua_encodeurl(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, EncodeURL(luaGetString(L, 1)));
+  lua_pushstring(L, EncodeURL(luaToString(L, 1)));
   Result := 1;
 end;
 
 function lua_decodeuu(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, DecodeUU(luaGetString(L, 1)));
+  lua_pushstring(L, DecodeUU(luaToString(L, 1)));
   Result := 1;
 end;
 
 function lua_encodeuu(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, EncodeUU(luaGetString(L, 1)));
+  lua_pushstring(L, EncodeUU(luaToString(L, 1)));
   Result := 1;
 end;
 
 function lua_encodeurlelement(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, EncodeURLElement(luaGetString(L, 1)));
+  lua_pushstring(L, EncodeURLElement(luaToString(L, 1)));
   Result := 1;
 end;
 
 function lua_decodebase64(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, DecodeBase64(luaGetString(L, 1)));
+  lua_pushstring(L, DecodeBase64(luaToString(L, 1)));
   Result := 1;
 end;
 
 function lua_encodebase64(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, EncodeBase64(luaGetString(L, 1)));
+  lua_pushstring(L, EncodeBase64(luaToString(L, 1)));
   Result := 1;
 end;
 
 function lua_crc16(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushinteger(L, Crc16(luaGetString(L, 1)));
+  lua_pushinteger(L, Crc16(luaToString(L, 1)));
   Result := 1;
 end;
 
 function lua_crc32(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushinteger(L, Crc32(luaGetString(L, 1)));
+  lua_pushinteger(L, Crc32(luaToString(L, 1)));
   Result := 1;
 end;
 
 function lua_md4(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, MD4(luaGetString(L, 1)));
+  lua_pushstring(L, MD4(luaToString(L, 1)));
   Result := 1;
 end;
 
 function lua_md5(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, MD5(luaGetString(L, 1)));
+  lua_pushstring(L, MD5(luaToString(L, 1)));
   Result := 1;
 end;
 
 function lua_hmac_md5(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, HMAC_MD5(luaGetString(L, 1), luaGetString(L, 2)));
+  lua_pushstring(L, HMAC_MD5(luaToString(L, 1), luaToString(L, 2)));
   Result := 1;
 end;
 
 function lua_md5longhash(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, MD5LongHash(luaGetString(L, 1), lua_tointeger(L, 2)));
+  lua_pushstring(L, MD5LongHash(luaToString(L, 1), lua_tointeger(L, 2)));
   Result := 1;
 end;
 
 function lua_sha1(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, SHA1(luaGetString(L, 1)));
+  lua_pushstring(L, SHA1(luaToString(L, 1)));
   Result := 1;
 end;
 
 function lua_hmac_sha1(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, HMAC_SHA1(luaGetString(L, 1), luaGetString(L, 2)));
+  lua_pushstring(L, HMAC_SHA1(luaToString(L, 1), luaToString(L, 2)));
   Result := 1;
 end;
 
 function lua_sha1longhash(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, SHA1LongHash(luaGetString(L, 1), lua_tointeger(L, 2)));
+  lua_pushstring(L, SHA1LongHash(luaToString(L, 1), lua_tointeger(L, 2)));
   Result := 1;
 end;
 

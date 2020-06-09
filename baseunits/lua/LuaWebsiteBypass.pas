@@ -91,7 +91,7 @@ begin
     luaClassPushUserData(checkantibot_state, AHTTP, '', False, @luaHTTPSendThreadAddMetaTable);
     r := lua_pcall(checkantibot_state, 1, LUA_MULTRET, 0);
     if r <> 0 then
-      raise Exception.Create(LuaGetReturnString(r)+': '+luaGetString(checkantibot_state, -1));
+      raise Exception.Create(LuaGetReturnString(r)+': '+luaToString(checkantibot_state, -1));
     if lua_gettop(checkantibot_state) > 0 then
       Result := lua_toboolean(checkantibot_state, 1);
     lua_settop(checkantibot_state, 0);
@@ -117,7 +117,7 @@ begin
 
     r := lua_pcall(L.Handle, 2, LUA_MULTRET, 0); // call with all params
     if r <> 0 then
-      raise Exception.Create(LuaGetReturnString(r)+': '+luaGetString(L.Handle, -1));
+      raise Exception.Create(LuaGetReturnString(r)+': '+luaToString(L.Handle, -1));
     Result := lua_toboolean(L.Handle, 1);
   except
     on E: Exception do

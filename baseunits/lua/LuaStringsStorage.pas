@@ -111,20 +111,20 @@ end;
 
 function strings_getvalue(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, TUserData(luaClassGetObject(L)).GetValues(luaGetString(L, 1)));
+  lua_pushstring(L, TUserData(luaClassGetObject(L)).GetValues(luaToString(L, 1)));
   Result := 1;
 end;
 
 function strings_setvalue(L: Plua_State): Integer; cdecl;
 begin
   Result := 0;
-  TUserData(luaClassGetObject(L)).SetValues(luaGetString(L, 1), luaGetString(L, 2));
+  TUserData(luaClassGetObject(L)).SetValues(luaToString(L, 1), luaToString(L, 2));
 end;
 
 function strings_remove(L: Plua_State): Integer; cdecl;
 begin
   Result := 0;
-  TUserData(luaClassGetObject(L)).Remove(luaGetString(L, 1));
+  TUserData(luaClassGetObject(L)).Remove(luaToString(L, 1));
 end;
 
 function strings_gettext(L: Plua_State): Integer; cdecl;
@@ -136,7 +136,7 @@ end;
 function strings_settext(L: Plua_State): Integer; cdecl;
 begin
   Result := 0;
-  TUserData(luaClassGetObject(L)).Text := luaGetString(L, 1);
+  TUserData(luaClassGetObject(L)).Text := luaToString(L, 1);
 end;
 
 const

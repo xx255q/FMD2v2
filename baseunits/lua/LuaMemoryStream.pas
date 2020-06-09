@@ -37,13 +37,13 @@ end;
 function mem_loadFromFile(L: Plua_State): Integer; cdecl;
 begin
   Result := 0;
-  TUserData(luaClassGetObject(L)).LoadFromFile(luaGetString(L, 1));
+  TUserData(luaClassGetObject(L)).LoadFromFile(luaToString(L, 1));
 end;
 
 function mem_saveToFile(L: Plua_State): Integer; cdecl;
 begin
   Result := 0;
-  TUserData(luaClassGetObject(L)).SaveToFile(luaGetString(L, 1));
+  TUserData(luaClassGetObject(L)).SaveToFile(luaToString(L, 1));
 end;
 
 function mem_getSize(L: Plua_State): Integer; cdecl;

@@ -14,7 +14,7 @@ uses
 
 function mf_loadtemplate(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushinteger(L, MangaFoxWatermark.LoadTemplate(luaGetString(L, 1)));
+  lua_pushinteger(L, MangaFoxWatermark.LoadTemplate(luaToString(L, 1)));
   Result := 1;
 end;
 
@@ -25,7 +25,7 @@ begin
   ASaveAsPNG := False;
   if lua_gettop(L) = 2 then
     ASaveAsPNG := lua_toboolean(L, 2);
-  lua_pushboolean(L, MangaFoxWatermark.RemoveWatermark(luaGetString(L, 1), ASaveAsPNG));
+  lua_pushboolean(L, MangaFoxWatermark.RemoveWatermark(luaToString(L, 1), ASaveAsPNG));
   Result := 1;
 end;
 

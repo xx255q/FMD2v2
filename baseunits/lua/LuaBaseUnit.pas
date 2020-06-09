@@ -17,25 +17,25 @@ uses
 function lua_trim(L: Plua_State): Integer; cdecl;
 begin
   if lua_gettop(L) > 1 then
-    lua_pushstring(L, luaGetString(L, 1).Trim(luaGetString(L, 2).ToCharArray))
+    lua_pushstring(L, luaToString(L, 1).Trim(luaToString(L, 2).ToCharArray))
   else
-    lua_pushstring(L, Trim(luaGetString(L, 1)));
+    lua_pushstring(L, Trim(luaToString(L, 1)));
   Result := 1;
 end;
 
 function lua_maybefillhost(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, MaybeFillHost(luaGetString(L, 1), luaGetString(L, 2)));
+  lua_pushstring(L, MaybeFillHost(luaToString(L, 1), luaToString(L, 2)));
   Result := 1;
 end;
 
 function lua_mangainfostatusifpos(L: Plua_State): Integer; cdecl;
 begin
   case lua_gettop(L) of
-    3: lua_pushstring(L, MangaInfoStatusIfPos(luaGetString(L, 1),
-        luaGetString(L, 2), luaGetString(L, 3)));
-    2: lua_pushstring(L, MangaInfoStatusIfPos(luaGetString(L, 1), luaGetString(L, 2)));
-    1: lua_pushstring(L, MangaInfoStatusIfPos(luaGetString(L, 1)));
+    3: lua_pushstring(L, MangaInfoStatusIfPos(luaToString(L, 1),
+        luaToString(L, 2), luaToString(L, 3)));
+    2: lua_pushstring(L, MangaInfoStatusIfPos(luaToString(L, 1), luaToString(L, 2)));
+    1: lua_pushstring(L, MangaInfoStatusIfPos(luaToString(L, 1)));
     else
       Exit(0);
   end;

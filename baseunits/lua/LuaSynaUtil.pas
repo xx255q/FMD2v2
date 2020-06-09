@@ -16,19 +16,19 @@ uses
 
 function lua_getbetween(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, GetBetween(luaGetString(L, 1), luaGetString(L, 2), luaGetString(L, 3)));
+  lua_pushstring(L, GetBetween(luaToString(L, 1), luaToString(L, 2), luaToString(L, 3)));
   Result := 1;
 end;
 
 function lua_separateleft(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, SeparateLeft(luaGetString(L, 1), luaGetString(L, 2)));
+  lua_pushstring(L, SeparateLeft(luaToString(L, 1), luaToString(L, 2)));
   Result := 1;
 end;
 
 function lua_separateright(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, SeparateRight(luaGetString(L, 1), luaGetString(L, 2)));
+  lua_pushstring(L, SeparateRight(luaToString(L, 1), luaToString(L, 2)));
   Result := 1;
 end;
 

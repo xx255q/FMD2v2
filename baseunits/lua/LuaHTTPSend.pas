@@ -20,32 +20,32 @@ type
 
 function http_request(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushboolean(L, TUserData(luaClassGetObject(L)).HTTPRequest(luaGetString(L, 1), luaGetString(L, 2)));
+  lua_pushboolean(L, TUserData(luaClassGetObject(L)).HTTPRequest(luaToString(L, 1), luaToString(L, 2)));
   Result := 1;
 end;
 
 function http_get(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushboolean(L, TUserData(luaClassGetObject(L)).GET(luaGetString(L, 1)));
+  lua_pushboolean(L, TUserData(luaClassGetObject(L)).GET(luaToString(L, 1)));
   Result := 1;
 end;
 
 function http_post(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushboolean(L, TUserData(luaClassGetObject(L)).POST(luaGetString(L, 1),
-    luaGetString(L, 2)));
+  lua_pushboolean(L, TUserData(luaClassGetObject(L)).POST(luaToString(L, 1),
+    luaToString(L, 2)));
   Result := 1;
 end;
 
 function http_head(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushboolean(L, TUserData(luaClassGetObject(L)).head(luaGetString(L, 1)));
+  lua_pushboolean(L, TUserData(luaClassGetObject(L)).head(luaToString(L, 1)));
   Result := 1;
 end;
 
 function http_xhr(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushboolean(L, TUserData(luaClassGetObject(L)).XHR(luaGetString(L, 1)));
+  lua_pushboolean(L, TUserData(luaClassGetObject(L)).XHR(luaToString(L, 1)));
   Result := 1;
 end;
 
@@ -70,7 +70,7 @@ end;
 function http_addservercookie(L: Plua_State): Integer; cdecl;
 begin
   Result := 0;
-  TUserData(luaClassGetObject(L)).AddServerCookie(luaGetString(L, 1), luaGetString(L, 2), Now);
+  TUserData(luaClassGetObject(L)).AddServerCookie(luaToString(L, 1), luaToString(L, 2), Now);
 end;
 
 function http_parseservercookies(L: Plua_State): Integer; cdecl;
@@ -82,8 +82,8 @@ end;
 function http_setproxy(L: Plua_State): Integer; cdecl;
 begin
   Result := 0;
-  TUserData(luaClassGetObject(L)).SetProxy(luaGetString(L, 1), luaGetString(L, 2),
-    luaGetString(L, 3), luaGetString(L, 4), luaGetString(L, 5));
+  TUserData(luaClassGetObject(L)).SetProxy(luaToString(L, 1), luaToString(L, 2),
+    luaToString(L, 3), luaToString(L, 4), luaToString(L, 5));
 end;
 
 function http_getcookies(L: Plua_State): Integer; cdecl;

@@ -29,8 +29,8 @@ function imagepuzzle_descramble(L: Plua_State): Integer; cdecl;
 begin
   Result := 0;
   TUserData(luaClassGetObject(L)).DeScramble(
-    TStream(luaGetUserData(L, 1)),
-    TStream(luaGetUserData(L, 2)));
+    TStream(luaToUserData(L, 1)),
+    TStream(luaToUserData(L, 2)));
 end;
 
 function imagepuzzle_matrixget(L: Plua_State): Integer; cdecl;
