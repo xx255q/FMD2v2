@@ -15,7 +15,7 @@ uses base64, MultiLog;
 
 function NativePrint(AContext: PDukContext): TDukRet; cdecl;
 var
-  S: UTF8String;
+  S: String;
 begin
   { Join all arguments together with spaces between them. }
   duk_push_string(AContext, ' ');
@@ -23,7 +23,7 @@ begin
   duk_join(AContext, duk_get_top(AContext) - 1);
 
   { Get result and output to console }
-  S := UTF8String(duk_safe_to_string(AContext, -1));
+  S := duk_safe_to_string(AContext, -1);
   Logger.Send(S);
 
   { "print" function does not return a value. }
@@ -36,7 +36,7 @@ var
   strsize: Cardinal;
   Outstream : TStringStream;
   Encoder   : TBase64EncodingStream;
-  outstr: UTF8String;
+  outstr: String;
 begin
   Result:=0;
   str:=duk_to_buffer(ctx,0,@strsize);
@@ -60,13 +60,13 @@ end;
 
 function duk_atob(ctx: PDukContext): TDukRet; cdecl;
 var
-  SD , outstr: UTF8String;
+  SD , outstr: String;
   Instream,
   Outstream : TStringStream;
   Decoder   : TBase64DecodingStream;
 begin
   Result:=0;
-  SD:=UTF8String(duk_safe_to_string(ctx, 0));
+  SD:=String(duk_safe_to_string(ctx, 0));
   if Length(SD)=0 then Exit;
   while Length(Sd) mod 4 > 0 do
     SD := SD + '=';
@@ -102,7 +102,7 @@ function ExecJS(const text: String): String;
 var
   ctx: PDukContext;
   r: TDukInt;
-  s: UTF8String;
+  s: String;
 begin
   Result := '';
   ctx := duk_create_heap_default;
@@ -117,7 +117,7 @@ begin
 
     duk_push_string(ctx, PAnsiChar(text));
     r := duk_peval(ctx);
-    s := UTF8String(duk_safe_to_string(ctx, -1));
+    s := duk_safe_to_string(ctx, -1);
     if r <> 0 then Logger.SendError('Duktape error: ' + s)
     else Result := s;
   finally
