@@ -139,7 +139,8 @@ function getpagenumber()
 			local body = HTTP.Document.ToString()
 			s = body:match('\n%s*(var%s*[%S]-%s*=%s*%[\'fromCharCode\'[^\r\n]+;)')
 			if s ~= '' then
-				s = duktape.ExecJS(s .. '\r\nJSON.stringify(pages)')
+				s = "function atob(s){return new TextDecoder().decode(Duktape.dec('base64',s));};" .. s .. '\r\nJSON.stringify(pages)'
+				s = duktape.ExecJS(s)
 				x.ParseHTML(s)
 				x.XPathStringAll('json(*)()("url")', TASK.PageLinks)
 				if TASK.PageLinks.Count == 0 then
