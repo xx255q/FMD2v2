@@ -9,7 +9,7 @@ uses
 
 implementation
 
-uses JSUtils, LuaUtils, LuaPackage;
+uses Duktape, LuaUtils, LuaPackage;
 
 function lua_execjs(L: Plua_State): Integer; cdecl;
 begin
