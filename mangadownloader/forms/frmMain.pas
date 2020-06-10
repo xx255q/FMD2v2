@@ -972,7 +972,7 @@ uses
   {$endif}
   frmImportFavorites, frmShutdownCounter, frmSelectDirectory,
   frmWebsiteSettings, WebsiteModules, FMDVars, RegExpr, sqlite3dyn, Clipbrd,
-  ssl_openssl_lib, LazFileUtils, LazUTF8, UTF8Process, webp, DBUpdater, pcre2, pcre2lib,
+  ssl_openssl_lib, LazFileUtils, LazUTF8, UTF8Process, webp, DBUpdater, pcre2, pcre2lib, dynlibs,
   LuaWebsiteModules, LuaBase, uBackupSettings;
 
 var
@@ -2299,6 +2299,8 @@ end;
 procedure TMainForm.LoadAbout;
 var
   fs: TFileStreamUTF8;
+  s: String;
+  _OpenSSSL_version: function(t: integer): PAnsiChar; cdecl;
 begin
   // load readme.rtf
   if FileExistsUTF8(README_FILE) then begin
@@ -2321,7 +2323,22 @@ begin
   AddToAboutStatus('Build Time', GetBuildTime);
   if SQLiteLibraryHandle = 0 then InitializeSqlite();
   if SQLiteLibraryHandle <> 0 then try AddToAboutStatus('SQLite Version', sqlite3_version()); except end;
-  AddToAboutStatus('OpenSSL Version', SSLeayversion(0));
+
+  if IsSSLloaded then
+  begin
+    s := SSLeayversion(0);
+    if s = '' then
+    begin
+      Pointer(_OpenSSSL_version) := GetProcAddress(SSLUtilHandle, 'OpenSSL_version');
+      if _OpenSSSL_version <> nil then
+      begin
+        s := PAnsiChar(_OpenSSSL_version(0));
+        _OpenSSSL_version := nil;
+      end;
+    end;
+    AddToAboutStatus('OpenSSL Version', s);
+  end;
+
   if WebPLibHandle = 0 then InitWebPModule;
   if WebPLibHandle <> 0 then try AddToAboutStatus('WebP Version', WebPGetVersion); except end;
   AddToAboutStatus('PCRE Version', pcre2.Version);
