@@ -11,6 +11,9 @@ function _m.IUAMChallengeAnswer(self, body, url)
 	local rooturl = url:match('(https?://[^/]+)') or ''
 
 	local challenge = string.format([[
+function btoa(s) {return Duktape.enc('base64', s);};
+function atob(s) {return new TextDecoder().decode(Duktape.dec('base64', s));};
+
 var $$e = {}, window = {}, document = {}, navigator = {}, location = { hash: "" },
     setTimeout = function (f, t) { $$e.timeout = t; f(); },
     setInterval = function (f, t) { f(); };
