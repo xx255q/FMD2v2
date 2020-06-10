@@ -629,7 +629,7 @@ var
   cpu_count: LongWord;
 begin
   LuaWebsiteBypass.doInitialization;
-  LuaPackage.ScanAndLoadPackages(LUA_PACKAGES_FOLDER);
+  LuaPackage.LuaLibDir := LUA_REPO_FOLDER;
 
   FindAllFiles(FFileList, LUA_WEBSITEMODULE_FOLDER, '*.lua;*.luac', False, faAnyFile);
   if FFileList.Count = 0 then Exit;
@@ -641,6 +641,7 @@ begin
   while FThreadCount <> 0 do
     Sleep(250);
 
+  LuaPackage.ClearCache;
   Modules.Sort;
 end;
 

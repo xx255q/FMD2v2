@@ -8,12 +8,16 @@ uses
   Classes, SysUtils, {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif}, LuaBase;
 
 procedure RegisterLoader(const L: Plua_State);
-procedure ScanAndLoadPackages(const APath: String);
 procedure AddLib(const AName: String; const ARegLib: lua_CFunction);
+
+procedure ClearCache;
+
+var
+  LuaLibDir: String = 'lua\';
 
 implementation
 
-uses FileUtil, LazFileUtils, MultiLog, LuaUtils;
+uses FileCache, FileUtil, LazFileUtils, MultiLog, LuaUtils;
 
 const
   LIBPREFIX = 'fmd.';
@@ -35,7 +39,8 @@ type
   end;
 
 var
-  Packages: TStringList;
+  HostPackage,
+  Package: TFileCache;
 
 { TCacheItem }
 
@@ -57,26 +62,30 @@ end;
 function _findpackage(L: Plua_State): Integer; cdecl;
 var
   i: Integer;
+  o: TLuaLib;
   c: TCachedPackage;
+  p: String;
 begin
-  Result := 0;
-  if Packages.Find(luaToString(L, 1), i) then
+  p := luaToString(L, 1);
+  o := TLuaLib(HostPackage.Find(p));
+  if o <> nil then
   begin
-    if Packages.Objects[i] is TLuaLib then
+    lua_pushcfunction(L, o.RegLib);
+    Exit(1);
+  end
+  else
+  begin
+    c := TCachedPackage(Package.Find(p));
+    if c <> nil then
     begin
-      lua_pushcfunction(L, TLuaLib(Packages.Objects[i]).RegLib);
-      Result := 1;
-    end
-    else
-    begin
-      c := TCachedPackage(Packages.Objects[i]);
       i := LuaLoadFromStreamOrFile(L, c.Stream, c.FileName);
       if i = 0 then
-        Result := 1
+        Exit(1)
       else
-        Logger.SendError('require '+lua_tostring(L,1)+' '+LuaGetReturnString(i)+': '+lua_tostring(L,-1));
+        Logger.SendError('require '+QuotedStr(p)+' '+LuaGetReturnString(i)+': '+lua_tostring(L,-1));
     end;
   end;
+  Result := 0;
 end;
 
 procedure RegisterLoader(const L: Plua_State);
@@ -103,29 +112,20 @@ begin
   lua_settop(L,top);
 end;
 
-procedure ScanAndLoadPackages(const APath: String);
+function LoadLuaFile(const AFileName: String): TObject;
 var
-  files: TStringList;
-  f, s: String;
+  f: String;
   m: TMemoryStream;
 begin
-  if not DirectoryExists(APath) then Exit;
-  Packages.Sorted := False;
-  files := TStringList.Create;
-    try
-      FindAllFiles(files, APath, '*.lua', True, faAnyFile);
-      for f in files do
-      begin
-        s := ExtractFileNameWithoutExt(f.Replace(APath, '', [])).Replace(PathDelim, '.', [rfReplaceAll]);
-        m := nil;
-        m := LuaDumpFileToStream(f);
-        if Assigned(m) then
-          Packages.AddObject(s, TCachedPackage.Create(f, m));
-      end;
-    finally
-      files.Free;
-    end;
-  Packages.Sorted := True;
+  f := LuaLibDir + AFileName.Replace('.', DirectorySeparator) + '.lua';
+  if FileExists(f) then
+  begin
+    m := LuaDumpFileToStream(f);
+    if m <> nil then
+      Result := TCachedPackage.Create(f, m);
+  end
+  else
+    Result := nil;
 end;
 
 procedure AddLib(const AName: String; const ARegLib: lua_CFunction);
@@ -134,14 +134,21 @@ var
 begin
   lib := TLuaLib.Create;
   lib.RegLib := ARegLib;
-  Packages.AddObject(LIBPREFIX + AName, lib);
+  HostPackage.Add(LIBPREFIX + AName, TObject(lib));
+end;
+
+procedure ClearCache;
+begin
+  Package.Clear;
 end;
 
 initialization
-  Packages := TStringList.Create;
-  Packages.OwnsObjects := True;
+  Package:=TFileCache.Create;
+  Package.OnLoadFile := @LoadLuaFile;
+  HostPackage:=TFileCache.Create;
 
 finalization
-  Packages.Free;
+  Package.Free;
+  HostPackage.Free;
 
 end.
