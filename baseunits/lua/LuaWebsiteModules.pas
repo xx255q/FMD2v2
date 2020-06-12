@@ -56,12 +56,15 @@ type
   { TLuaWebsiteModulesContainer }
 
   TLuaWebsiteModulesContainer = class
+  private
+    FGuardian: TRTLCriticalSection;
+    FByteCode: TMemoryStream;
   public
     Modules: TLuaWebsiteModules;
     FileName: String;
-    ByteCode: TMemoryStream;
     constructor Create;
     destructor Destroy; override;
+    function ByteCode: TMemoryStream;
   end;
 
   TLuaWebsiteModulesContainers = specialize TFPGList<TLuaWebsiteModulesContainer>;
@@ -450,7 +453,7 @@ begin
   Result := 1;
 end;
 
-function DoInit(const AFileName: String; var AStream: TMemoryStream): Boolean;
+function DoInit(const AFileName: String): Boolean;
 var
   L: Plua_State;
   i: Integer;
@@ -458,8 +461,10 @@ begin
   Result := False;
   L := LuaNewBaseState;
   try
-    AStream := LuaDumpFileToStream(L, AFileName);
-    if AStream <> nil then
+    i := luaL_loadfile(L, PAnsiChar(AFileName));
+    if i <> 0 then
+      raise Exception.Create(LuaGetReturnString(i))
+    else
     begin
       i := lua_pcall(L, 0, 0, 0);
       if i = 0 then
@@ -501,14 +506,10 @@ procedure TLuaWebsiteModulesLoaderThread.LoadLuaWebsiteModule(
   const AFileName: String);
 var
   c: TLuaWebsiteModulesContainer;
-  m: TMemoryStream;
   i: Integer;
-  //s: String;
   md: TModuleContainer;
 begin
-  //Logger.Send('Load lua website module', AFilename);
-  m := nil;
-  DoInit(AFileName, m);
+  DoInit(AFileName);
 
   // remove modules without id or name. it's used in ui without validation (EAccessViolation)
   for i := TempModules.Count-1 downto 0 do
@@ -526,9 +527,6 @@ begin
     begin
       c := TLuaWebsiteModulesContainer.Create;
       c.FileName := AFileName;
-      c.ByteCode := m;
-      m := nil;
-      //s := '';
       FOwner.FMainGuardian.Enter;
       try
         LuaWebsiteModulesManager.Containers.Add(c);
@@ -539,7 +537,6 @@ begin
         with TempModules[i] do
         begin
           Modules.AddModule(Module);
-          //s += Module.ID + ', ';
           c.Modules.Add(TempModules[i]);
           Container := c;
           Module.RootURL := LowerCase(Module.RootURL);
@@ -571,12 +568,7 @@ begin
             Module.OnLogin := @DoLogin;
         end;
       TempModules.Clear;
-      //SetLength(s, Length(s) - 2);
-      //Logger.Send('Loaded modules from ' + ExtractFileName(AFilename), s);
-      //s := '';
     end;
-  if m <> nil then
-    m.Free;
 end;
 
 procedure TLuaWebsiteModulesLoaderThread.Execute;
@@ -683,20 +675,44 @@ end;
 
 constructor TLuaWebsiteModulesContainer.Create;
 begin
+  InitCriticalSection(FGuardian);
   Modules := TLuaWebsiteModules.Create;
-  ByteCode := nil;
 end;
 
 destructor TLuaWebsiteModulesContainer.Destroy;
 var
   i: Integer;
 begin
-  if Assigned(ByteCode) then
-    ByteCode.Free;
   for i := 0 to Modules.Count - 1 do
     Modules[i].Free;
   Modules.Free;
+  if FByteCode<>nil then
+    FByteCode.Free;
+  DoneCriticalSection(FGuardian);
   inherited Destroy;
+end;
+
+function TLuaWebsiteModulesContainer.ByteCode: TMemoryStream;
+begin
+  if FByteCode <> nil then Exit(FByteCode);
+
+  if TryEnterCriticalSection(FGuardian) <> 0 then
+  begin
+    try
+      FByteCode := LuaDumpFileToStream(FileName);
+    finally
+      LeaveCriticalSection(FGuardian);
+    end
+  end
+  else
+  begin
+    EnterCriticalSection(FGuardian);
+    try
+      Result := FByteCode;
+    finally
+      LeaveCriticalSection(FGuardian);
+    end;
+  end;
 end;
 
 
