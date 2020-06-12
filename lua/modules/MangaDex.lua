@@ -271,10 +271,9 @@ function getpagenumber()
 		x.ParseHTML(HTTP.Document.ToString():gsub('<', ''):gsub('>', ''):gsub('&quot;', ''))
 		local hash = x.XPathString('json(*).hash')
 		local srv = x.XPathString('json(*).server')
-		local v = x.XPath('json(*).page_array()')
-		for i = 1, v.Count do
-			local v1 = v.Get(i)
-			local s = MaybeFillHost(MODULE.RootURL, srv .. '/' .. hash .. '/' .. v1.ToString())
+		if srv:sub(-1) ~= '/' then srv = srv .. '/' end
+		local v for v in x.XPath('json(*).page_array()').Get() do
+			local s = MaybeFillHost(MODULE.RootURL, srv .. hash .. '/' .. v.ToString())
 			TASK.PageLinks.Add(s)
 		end
 		return true
