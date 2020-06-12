@@ -1,4 +1,15 @@
-function getinfo()
+function Init()
+	local m = NewWebsiteModule()
+	m.ID                         = '06436a82f5994b889e8d63f76fc5c69a'
+	m.Name                       = 'MerakiScans'
+	m.RootURL                    = 'https://merakiscans.com'
+	m.Category                   = 'English-Scanlation'
+	m.OnGetInfo                  = 'GetInfo'
+	m.OnGetPageNumber            = 'GetPageNumber'
+	m.OnGetNameAndLink           = 'GetNameAndLink'
+end
+
+function GetInfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
 		local x=CreateTXQuery(HTTP.Document)
@@ -24,7 +35,7 @@ function getinfo()
 	end
 end
 
-function getpagenumber()
+function GetPageNumber()
 	TASK.PageLinks.Clear()
 	TASK.PageNumber = 0
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
@@ -32,14 +43,15 @@ function getpagenumber()
 		local curCh = x.XPathString('//select[@id="chapter_select"]/option[@selected]/@value')
 		local s = x.XPathString('//script[contains(., "images")]')
 		local slug = Trim(GetBetween("var manga_slug =", ";", s):gsub('"', ''))
-	local chapter = Trim(GetBetween("var viewschapter =", ";", s):gsub('"', ''))
+		local chapter = Trim(GetBetween("var viewschapter =", ";", s):gsub('"', ''))
 		s = GetBetween("var images =", ";", s)
 		x.ParseHTML(s)
 		local v = x.XPath('json(*)()')
 		for i = 1, v.Count do
 			s = string.format("/manga/%s/%s/%s/%s", slug, chapter, curCh, v.Get(i).ToString())
-		s = string.gsub(s, '//', '/')
-		s = string.gsub(s, '///', '/')
+			s = string.gsub(s, '//', '/')
+			s = string.gsub(s, '///', '/')
+			s = string.gsub(s, '/ ', '/')
 			TASK.PageLinks.Add(MaybeFillHost(MODULE.RootURL, s))
 		end
 	else
@@ -48,7 +60,7 @@ function getpagenumber()
 	return true
 end
 
-function getnameandlink()
+function GetNameAndLink()
 	if HTTP.GET(MODULE.RootURL .. '/manga/') then
 		local x = CreateTXQuery(HTTP.Document)
 		local v = x.XPath('//div[@id="all"]/div[@id="listitem"]/a')
@@ -61,15 +73,4 @@ function getnameandlink()
 	else
 		return net_problem
 	end
-end
-
-function Init()
-	local m = NewWebsiteModule()
-	m.ID = '06436a82f5994b889e8d63f76fc5c69a'
-	m.Name = 'MerakiScans'
-	m.RootURL = 'https://merakiscans.com'
-	m.Category = 'English-Scanlation'
-	m.OnGetInfo='getinfo'
-	m.OnGetPageNumber='getpagenumber'
-	m.OnGetNameAndLink='getnameandlink'
 end
