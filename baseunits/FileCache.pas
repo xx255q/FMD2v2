@@ -19,7 +19,7 @@ type
     FCachedFiles: TStringList;
   public
     OnLoadFile: TOnLoadFile;
-    constructor Create;
+    constructor Create(const AOnLoadFile: TOnLoadFile = nil);
     destructor Destroy; override;
     procedure Add(const AName: String; var AObject: TObject);
     function Find(const AName: String): TObject;
@@ -31,13 +31,15 @@ implementation
 
 { TFileCache }
 
-constructor TFileCache.Create;
+constructor TFileCache.Create(const AOnLoadFile: TOnLoadFile);
 begin
   InitCriticalSection(FGuardian);
   FCachedFiles := TStringList.Create;
   FCachedFiles.OwnsObjects := True;
   FCachedFiles.Sorted := True;
   FCachedFiles.Duplicates := dupIgnore;
+  if AOnLoadFile<>nil then
+    OnLoadFile := AOnLoadFile;
 end;
 
 destructor TFileCache.Destroy;

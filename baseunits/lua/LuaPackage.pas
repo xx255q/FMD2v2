@@ -13,7 +13,7 @@ procedure AddLib(const AName: String; const ARegLib: lua_CFunction);
 procedure ClearCache;
 
 var
-  LuaLibDir: String = 'lua\';
+  LuaLibDir: String = 'lua' + DirectorySeparator;
 
 implementation
 
@@ -67,23 +67,25 @@ var
   p: String;
 begin
   p := luaToString(L, 1);
-  o := TLuaLib(HostPackage.Find(p));
-  if o <> nil then
+
+  if p.StartsWith(LIBPREFIX) then
   begin
-    lua_pushcfunction(L, o.RegLib);
-    Exit(1);
-  end
-  else
-  begin
-    c := TCachedPackage(Package.Find(p));
-    if c <> nil then
+    o := TLuaLib(HostPackage.Find(p));
+    if o <> nil then
     begin
-      i := LuaLoadFromStreamOrFile(L, c.Stream, c.FileName);
-      if i = 0 then
-        Exit(1)
-      else
-        Logger.SendError('require '+QuotedStr(p)+' '+LuaGetReturnString(i)+': '+lua_tostring(L,-1));
-    end;
+      lua_pushcfunction(L, o.RegLib);
+      Exit(1);
+    end
+  end;
+
+  c := TCachedPackage(Package.Find(p));
+  if c <> nil then
+  begin
+    i := LuaLoadFromStreamOrFile(L, c.Stream, c.FileName);
+    if i = 0 then
+      Exit(1)
+    else
+      Logger.SendError('require '+QuotedStr(p)+' '+LuaGetReturnString(i)+': '+lua_tostring(L,-1));
   end;
   Result := 0;
 end;
@@ -143,8 +145,7 @@ begin
 end;
 
 initialization
-  Package:=TFileCache.Create;
-  Package.OnLoadFile := @LoadLuaFile;
+  Package:=TFileCache.Create(@LoadLuaFile);
   HostPackage:=TFileCache.Create;
 
 finalization
