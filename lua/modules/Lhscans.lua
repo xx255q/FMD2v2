@@ -12,7 +12,7 @@ function Init()
 		m.OnBeforeDownloadImage      = 'BeforeDownloadImage'
 	end
 	local cat = 'Raw'
-	AddWebsiteModule('9e96846a035646988e1b2eb0f356d795', 'Lhscans', 'https://loveheaven.net', cat)
+	AddWebsiteModule('9e96846a035646988e1b2eb0f356d795', 'LoveHeaven', 'https://loveheaven.net', cat)
 	AddWebsiteModule('4c089029492f43c98d9f27a23403247b', 'HanaScan', 'https://hanascan.com', cat)
 	AddWebsiteModule('010777f53bf2414fad039b9567c8a9ce', 'MangaHato', 'https://mangahato.com', cat)
 	AddWebsiteModule('794187d0e92e4933bf63812438d69017', 'Manhwa18', 'https://manhwa18.com', cat)
