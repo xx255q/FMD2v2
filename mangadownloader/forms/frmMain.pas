@@ -5139,6 +5139,7 @@ procedure TMainForm.SaveOptions(const AShowDialog: Boolean);
 var
   s: String;
   i: Integer;
+  m: TModuleContainer;
 begin
   with settingsfile do
     try
@@ -5147,7 +5148,11 @@ begin
       begin
         s := '';
         for i := 0 to cbSelectManga.Items.Count-1 do
-          s += TModuleContainer(cbSelectManga.Items.Objects[i]).ID + ',';
+        begin
+          m := TModuleContainer(cbSelectManga.Items.Objects[i]);
+          if m <> nil then
+            s += m.ID + ',';
+        end;
         s := s.TrimRight([',']);
         WriteString('general', 'MangaListSelect', s);
       end;
