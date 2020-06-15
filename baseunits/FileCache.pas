@@ -23,7 +23,8 @@ type
     destructor Destroy; override;
     procedure Add(const AName: String; var AObject: TObject);
     function Find(const AName: String): TObject;
-    procedure Clear;
+    procedure Clear; inline;
+    function Count: Integer; inline;
   end;
 
 implementation
@@ -67,6 +68,7 @@ function TFileCache.Find(const AName: String): TObject;
 var
   i: Integer;
 begin
+  Result := nil;
   if FCachedFiles.Find(AName, i) then
     Result := FCachedFiles.Objects[i]
   else
@@ -80,14 +82,17 @@ begin
     finally
       LeaveCriticalSection(FGuardian);
     end;
-  end
-  else
-    Result := nil;
+  end;
 end;
 
 procedure TFileCache.Clear;
 begin
   FCachedFiles.Clear;
+end;
+
+function TFileCache.Count: Integer;
+begin
+  Result := FCachedFiles.Count;
 end;
 
 end.
