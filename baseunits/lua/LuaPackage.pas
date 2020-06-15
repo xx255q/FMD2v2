@@ -119,15 +119,14 @@ var
   f: String;
   m: TMemoryStream;
 begin
+  Result := nil;
   f := LuaLibDir + AFileName.Replace('.', DirectorySeparator) + '.lua';
   if FileExists(f) then
   begin
     m := LuaDumpFileToStream(f);
     if m <> nil then
       Result := TCachedPackage.Create(f, m);
-  end
-  else
-    Result := nil;
+  end;
 end;
 
 procedure AddLib(const AName: String; const ARegLib: lua_CFunction);
