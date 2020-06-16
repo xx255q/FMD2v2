@@ -706,13 +706,11 @@ begin
   end
   else
   begin
+    // wait for dumfiletostream
     EnterCriticalSection(FGuardian);
-    try
-      Result := FByteCode;
-    finally
-      LeaveCriticalSection(FGuardian);
-    end;
+    LeaveCriticalSection(FGuardian);
   end;
+  Result := FByteCode;
 end;
 
 
