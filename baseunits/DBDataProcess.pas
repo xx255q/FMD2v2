@@ -199,7 +199,7 @@ end;
 
 function DBDataFileExist(const AModuleID: String): Boolean;
 begin
-  Result := FileExistsUTF8(DATA_FOLDER + AModuleID + DBDATA_EXT);
+  Result := FileExists(DATA_FOLDER + AModuleID + DBDATA_EXT);
 end;
 
 procedure CopyDBDataProcess(const AWebsite, NWebsite: String);
@@ -223,27 +223,27 @@ function DeleteDBDataProcess(const AWebsite: String): Boolean;
 var
   tryc: Integer;
 begin
-  Result := not FileExistsUTF8(DATA_FOLDER + AWebsite + DBDATA_EXT);
+  Result := not FileExists(DATA_FOLDER + AWebsite + DBDATA_EXT);
   if Result = False then
   begin
     tryc := 0;
-    while not DeleteFileUTF8(DATA_FOLDER + AWebsite + DBDATA_EXT) do
+    while not DeleteFile(DATA_FOLDER + AWebsite + DBDATA_EXT) do
     begin
       if tryc > 3 then
         Break;
       Inc(tryc);
       Sleep(250);
     end;
-    Result := not FileExistsUTF8(DATA_FOLDER + AWebsite + DBDATA_EXT);
+    Result := not FileExists(DATA_FOLDER + AWebsite + DBDATA_EXT);
   end;
 end;
 
 procedure OverwriteDBDataProcess(const AWebsite, NWebsite: String);
 begin
-  if FileExistsUTF8(DATA_FOLDER + NWebsite + DBDATA_EXT) then
+  if FileExists(DATA_FOLDER + NWebsite + DBDATA_EXT) then
   begin
     if DeleteDBDataProcess(AWebsite) then
-      RenameFileUTF8(DATA_FOLDER + NWebsite + DBDATA_EXT,
+      RenameFile(DATA_FOLDER + NWebsite + DBDATA_EXT,
         DATA_FOLDER + AWebsite + DBDATA_EXT);
   end;
 end;
@@ -471,7 +471,7 @@ begin
       // use custom build attached database with max 125
       // if FAttachedSites.Count=7 then Break;
       m := TModuleContainer(FSitesList.Objects[i]);
-      if (FAttachedSites.IndexOf(m.ID) = -1) and (FileExistsUTF8(DBDataFilePath(m.ID))) then
+      if (FAttachedSites.IndexOf(m.ID) = -1) and (FileExists(DBDataFilePath(m.ID))) then
       begin
         FConn.ExecuteDirect('ATTACH ' + QuotedStr(DBDataFilePath(m.ID)) + ' AS "' + m.ID + '"');
         FAttachedSites.AddObject(m.ID, m);
@@ -532,7 +532,7 @@ begin
   begin
     FModule := Modules.LocateModule(AWebsite);
     AFilePath := DATA_FOLDER + FWebsite + DBDATA_EXT;
-    Result := FileExistsUTF8(AFilePath);
+    Result := FileExists(AFilePath);
   end
   else
   begin
@@ -1053,8 +1053,8 @@ var
 begin
   Close;
   if CheckWebsiteAndFilePath(AWebsite, filepath) then
-    DeleteFileUTF8(filepath);
-  if ForceDirectoriesUTF8(DATA_FOLDER) then
+    DeleteFile(filepath);
+  if ForceDirectories(DATA_FOLDER) then
   begin
     InternalOpen(filepath);
     CreateTable;

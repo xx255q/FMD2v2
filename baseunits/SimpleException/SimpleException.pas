@@ -36,7 +36,7 @@ unit SimpleException;
 interface
 
 uses
-  Classes, SysUtils, LazFileUtils, LazUTF8, Forms, Controls, SimpleExceptionForm
+  Classes, SysUtils, LazFileUtils, Forms, Controls, SimpleExceptionForm
   {$IFDEF WINDOWS}
   , Windows, win32proc
   {$ENDIF}
@@ -389,7 +389,7 @@ begin
   // always check for log file in case something changed at runtime (permission/disk removed)
   FLogFileName := AValue;
   AssignFile(FLogFileHandle, FLogFileName);
-  fe := FileExistsUTF8(FLogFileName);
+  fe := FileExists(FLogFileName);
   if fe then
   {$I-}
     Append(FLogFileHandle)
@@ -550,7 +550,7 @@ var
   ir: Word;
 begin
   if FLogFileName = '' then Exit;
-  if FileExistsUTF8(FLogFileName) then
+  if FileExists(FLogFileName) then
   {$I-}
     Append(FLogFileHandle)
   else
@@ -645,7 +645,7 @@ begin
   FMaxStackCount := 20;
   with TFileVersionInfo.Create(nil) do
     try
-      FileName := ParamStrUTF8(0);
+      FileName := ParamStr(0);
       if FileName = '' then
         FileName := Application.ExeName;
       try
@@ -675,7 +675,7 @@ begin
     'WidgetSet         : ' + GetWidgetSetName + LineEnding +
     'Target CPU-OS     : ' + GetTargetCPU_OS + LineEnding +
     'Build Time        : ' + GetBuildTime + LineEnding +
-    'Path              : ' + ParamStrUTF8(0) + LineEnding +
+    'Path              : ' + ParamStr(0) + LineEnding +
     'Process ID        : ' + IntToStr(GetProcessID) + LineEnding +
     'MainThread ID     : ' + IntToStr(MainThreadID);
   if Assigned(Application) then

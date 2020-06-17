@@ -34,7 +34,7 @@ unit Img2Pdf;
 interface
 
 uses
-  Classes, SysUtils, LazFileUtils, LazUTF8Classes, FPimage, ImgInfos, MemBitmap,
+  Classes, SysUtils, LazFileUtils, FPimage, ImgInfos, MemBitmap,
   FPReadJPEG, FPWriteJPEG, FPReadPNG, JPEGLib, JdAPImin, JDataSrc, Jerror,
   zstream, AnimatedGif, MultiLog;
 
@@ -58,7 +58,7 @@ type
     BitsPerComponent: Integer;
     ColorSpace: String;
     Filter: String;
-    Stream: TMemoryStreamUTF8;
+    Stream: TMemoryStream;
   public
     procedure GetImageInfos;
     procedure LoadImageData;
@@ -166,12 +166,12 @@ end;
 
 procedure JPEGToPageInfo(const PageInfo: TPageInfo);
 var
-  AFS: TFileStreamUTF8;
+  AFS: TFileStream;
   JDS: jpeg_decompress_struct;
 begin
   PageInfo.Filter := 'DCTDecode';
   try
-    AFS := TFileStreamUTF8.Create(PageInfo.FileName, fmOpenRead or fmShareDenyWrite);
+    AFS := TFileStream.Create(PageInfo.FileName, fmOpenRead or fmShareDenyWrite);
     FillChar(JDS{%H-}, SizeOf(JDS), 0);
     JDS.err := @JPEGError;
     jpeg_CreateDecompress(@JDS, JPEG_LIB_VERSION, SizeOf(JDS));
@@ -198,7 +198,7 @@ procedure JPEGCompressToPageInfo(const PageInfo: TPageInfo);
 var
   IMG: TFPMemoryImage;
   RDR: TFPCustomImageReader;
-  AFS: TFileStreamUTF8;
+  AFS: TFileStream;
   WRT: TFPWriterJPEG;
 begin
   PageInfo.Filter := 'DCTDecode';
@@ -206,7 +206,7 @@ begin
   try
     try
       RDR := GetImageExtReaderClass(PageInfo.Ext).Create;
-      AFS := TFileStreamUTF8.Create(PageInfo.FileName, fmOpenRead or fmShareDenyWrite);
+      AFS := TFileStream.Create(PageInfo.FileName, fmOpenRead or fmShareDenyWrite);
       IMG.LoadFromStream(AFS, RDR);
       if (RDR is TFPReaderJPEG) and TFPReaderJPEG(RDR).GrayScale then
         PageInfo.ColorSpace := 'DeviceGray'
@@ -236,7 +236,7 @@ var
   AFS: TStream;
   IMG: TFPCustomImage;
   RDR: TFPReaderPNGInfo;
-  AMS: TMemoryStreamUTF8;
+  AMS: TMemoryStream;
   X, Y: Integer;
   CLW, C: TFPColor;
   isGrayScale: Boolean;
@@ -245,7 +245,7 @@ begin
   try
     try
       if AStream = nil then
-        AFS := TFileStreamUTF8.Create(PageInfo.FileName, fmOpenRead or fmShareDenyWrite)
+        AFS := TFileStream.Create(PageInfo.FileName, fmOpenRead or fmShareDenyWrite)
       else
         AFS := AStream;
       RDR := TFPReaderPNGInfo.Create;
@@ -263,7 +263,7 @@ begin
       PageInfo.Filter := 'FlateDecode';
       PageInfo.BitsPerComponent := 8;
 
-      AMS := TMemoryStreamUTF8.Create;
+      AMS := TMemoryStream.Create;
       try
         case RDR.Header.ColorType of
           0, 4:
@@ -347,11 +347,11 @@ end;
 
 procedure WEBPToPageInfo(const PageInfo: TPageInfo);
 var
-  AMS: TMemoryStreamUTF8;
+  AMS: TMemoryStream;
   MBM: TMemBitmap;
   WRT: TFPWriterPNG;
 begin
-  AMS := TMemoryStreamUTF8.Create;
+  AMS := TMemoryStream.Create;
   try
     AMS.LoadFromFile(PageInfo.FileName);
     MBM := nil;
@@ -381,11 +381,11 @@ end;
 
 { procedure GIFToPageInfo(const PageInfo: TPageInfo); }
 { var }
-  { AMS: TMemoryStreamUTF8; }
+  { AMS: TMemoryStream; }
   { MBM: TAnimatedGif; }
   { WRT: TFPWriterPNG; }
 { begin }
-  { AMS := TMemoryStreamUTF8.Create; }
+  { AMS := TMemoryStream.Create; }
   { try }
     { MBM := TAnimatedGif.Create(PageInfo.FileName); }
     { MBM.CurrentImage := 0; }
@@ -413,8 +413,8 @@ procedure ImageToPageInfo(const PageInfo: TPageInfo);
 var
   IMG: TFPCustomImage;
   RDR: TFPCustomImageReader;
-  AFS: TFileStreamUTF8;
-  AMS: TMemoryStreamUTF8;
+  AFS: TFileStream;
+  AMS: TMemoryStream;
   CLW, C: TFPColor;
   X, Y: Integer;
 begin
@@ -424,13 +424,13 @@ begin
   try
     try
       RDR := GetImageExtReaderClass(PageInfo.Ext).Create;
-      AFS := TFileStreamUTF8.Create(PageInfo.FileName, fmOpenRead or fmShareDenyWrite);
+      AFS := TFileStream.Create(PageInfo.FileName, fmOpenRead or fmShareDenyWrite);
       IMG.LoadFromStream(AFS, RDR);
     finally
       RDR.Free;
       AFS.Free;
     end;
-    AMS := TMemoryStreamUTF8.Create;
+    AMS := TMemoryStream.Create;
     try
       FillChar(CLW{%H-}, SizeOf(CLW), $FF);
       for Y := 0 to IMG.Height - 1 do
@@ -463,7 +463,7 @@ procedure TPageInfo.LoadImageData;
 begin
   if Assigned(Stream) then Exit;
   if Ext = '' then Exit;
-  Stream := TMemoryStreamUTF8.Create;
+  Stream := TMemoryStream.Create;
   try
     if (Ext = 'jpg') and (Owner.CompressionQuality >= 75) then
       JPEGToPageInfo(Self)
@@ -525,7 +525,7 @@ var
   P: TPageInfo;
 begin
   Result := -1;
-  if not FileExistsUTF8(AFileName) then Exit;
+  if not FileExists(AFileName) then Exit;
   P := TPageInfo.Create(Self);
   P.FileName := AFileName;
   P.GetImageInfos;
@@ -716,10 +716,10 @@ end;
 
 procedure TImg2PDF.SaveToFile(const AFileName: String);
 var
-  fs: TFileStreamUTF8;
+  fs: TFileStream;
 begin
   if FPageInfos.Count = 0 then Exit;
-  fs := TFileStreamUTF8.Create(AFileName, fmCreate);
+  fs := TFileStream.Create(AFileName, fmCreate);
   try
     SaveToStream(fs);
   finally

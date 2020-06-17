@@ -35,7 +35,7 @@ unit MangaFoxWatermark;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, LazFileUtils, LazUTF8Classes, Math, FPimage, FPReadJPEG, FPWriteJPEG,
+  Classes, SysUtils, FileUtil, LazFileUtils, Math, FPimage, FPReadJPEG, FPWriteJPEG,
   FPWritePNG, ImgInfos;
 
 procedure SetTemplateDirectory(const ADirectory: String);
@@ -246,7 +246,7 @@ end;
 
 function TWatermarkRemover.AddFileToTemplates(const FileName: String): Boolean;
 var
-  FS: TFileStreamUTF8;
+  FS: TFileStream;
   IMG: TFPCustomImage;
   H: TFPCustomImageReaderClass;
   R: TFPCustomImageReader;
@@ -259,7 +259,7 @@ begin
   try
     try
       R := H.Create;
-      FS := TFileStreamUTF8.Create(FileName, fmOpenRead or fmShareDenyWrite);
+      FS := TFileStream.Create(FileName, fmOpenRead or fmShareDenyWrite);
       IMG.LoadFromStream(FS, R);
     finally
       R.Free;
@@ -302,7 +302,7 @@ begin
     FTemplateDirectory := ADirectory;
   if FTemplateDirectory = '' then Exit;
   D := CleanAndExpandDirectory(FTemplateDirectory);
-  if not DirectoryExistsUTF8(D) then Exit;
+  if not DirectoryExists(D) then Exit;
   if TryEnterCriticalsection(FCS_Templates) <> 0 then
     try
       Files := TStringList.Create;
@@ -362,7 +362,7 @@ var
   Reader: TFPCustomImageReader;
   Writer: TFPCustomImageWriter;
   Image, ImageTemp: TFPCustomImage;
-  FileStream: TFileStreamUTF8;
+  FileStream: TFileStream;
   BestIndex, I, L, T, R, B: Integer;
   BestValue, PSNR: Single;
   TIMG: TOneBitImage;
@@ -387,7 +387,7 @@ begin
       GrayScale := False;
       try
         Reader := Handler.ReaderClass.Create;
-        FileStream := TFileStreamUTF8.Create(AFileName, fmOpenRead or fmShareDenyWrite);
+        FileStream := TFileStream.Create(AFileName, fmOpenRead or fmShareDenyWrite);
         Image.LoadFromStream(FileStream, Reader);
         if Reader is TFPReaderJPEG then
           GrayScale := TFPReaderJPEG(Reader).GrayScale;
@@ -451,15 +451,15 @@ begin
             Handler.WExt := 'png';
           end;
           NewFileName := ExtractFileNameWithoutExt(AFileName) + '.' + Handler.WExt;
-          if FileExistsUTF8(AFileName) then
-            DeleteFileUTF8(AFileName);
-          if FileExistsUTF8(NewFileName) then
-            DeleteFileUTF8(NewFileName);
-          if not FileExistsUTF8(NewFileName) then
+          if FileExists(AFileName) then
+            DeleteFile(AFileName);
+          if FileExists(NewFileName) then
+            DeleteFile(NewFileName);
+          if not FileExists(NewFileName) then
           begin
             try
               Writer := Handler.WriterClass.Create;
-              FileStream := TFileStreamUTF8.Create(NewFileName, fmCreate);
+              FileStream := TFileStream.Create(NewFileName, fmCreate);
               {$IF (FPC_FULLVERSION >= 30101)}
               if Writer is TFPWriterJPEG then
                 TFPWriterJPEG(Writer).GrayScale := GrayScale
@@ -475,7 +475,7 @@ begin
               Writer.Free;
               FileStream.Free;
             end;
-            Result := FileExistsUTF8(NewFileName);
+            Result := FileExists(NewFileName);
           end;
         finally
           ImageTemp.Free;

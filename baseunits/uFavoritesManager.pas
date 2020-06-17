@@ -11,7 +11,7 @@ unit uFavoritesManager;
 interface
 
 uses
-  Classes, SysUtils, fgl, Dialogs, ExtCtrls, lazutf8classes,
+  Classes, SysUtils, fgl, Dialogs, ExtCtrls,
   LazFileUtils, uBaseUnit, uData, uDownloadsManager, WebsiteModules, FMDOptions,
   httpsendthread, FavoritesDB, BaseThread, SimpleException, VirtualTrees;
 
@@ -670,7 +670,7 @@ end;
 constructor TFavoriteManager.Create;
 begin
   inherited Create;
-  ForceDirectoriesUTF8(USERDATA_FOLDER);
+  ForceDirectories(USERDATA_FOLDER);
   InitCriticalSection(CS_Favorites);
   isRunning := False;
   Items := TFavoriteContainers.Create;;

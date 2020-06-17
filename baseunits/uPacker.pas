@@ -11,7 +11,7 @@ unit uPacker;
 interface
 
 uses
-  Classes, Zipper, zstream, SysUtils, uBaseUnit, Img2Pdf, FileUtil, lazutf8classes,
+  Classes, Zipper, zstream, SysUtils, uBaseUnit, Img2Pdf, FileUtil,
   LazFileUtils, SimpleException, uEpub;
 
 type
@@ -79,7 +79,7 @@ procedure TPacker.DoPdf;
 var
   pdf: TImg2Pdf;
   i: Cardinal;
-  fstream: TFileStreamUTF8;
+  fstream: TFileStream;
 begin
   try
     pdf := TImg2Pdf.Create;
@@ -95,7 +95,7 @@ begin
         end;
       end;
 
-      fstream := TFileStreamUTF8.Create(FSavedFileName, fmCreate);
+      fstream := TFileStream.Create(FSavedFileName, fmCreate);
       try
         pdf.SaveToStream(fstream);
       finally
@@ -117,7 +117,7 @@ procedure TPacker.DoEpub;
 var
   epub: TEpubBuilder;
   i: Integer;
-  fstream: TFileStreamUTF8;
+  fstream: TFileStream;
 begin
   try
     epub := TEpubBuilder.Create;
@@ -131,7 +131,7 @@ begin
         end;
       end;
 
-      fstream := TFileStreamUTF8.Create(FSavedFileName, fmCreate);
+      fstream := TFileStream.Create(FSavedFileName, fmCreate);
       try
         epub.SaveToStream(fstream);
       finally
@@ -158,7 +158,7 @@ begin
 
   if FFileList.Count = 0 then
   begin
-    if DirectoryExistsUTF8(Path) = False then Exit;
+    if DirectoryExists(Path) = False then Exit;
     with TFileSearcher.Create do
       try
         OnFileFound := FileFound;
@@ -181,21 +181,21 @@ begin
     FSavedFileName := FileName + FExt
   else
     FSavedFileName := TrimAndExpandFilename(Path) + FExt;
-  if FileExistsUTF8(FSavedFileName) then
-    if DeleteFileUTF8(FSavedFileName) = False then
+  if FileExists(FSavedFileName) then
+    if DeleteFile(FSavedFileName) = False then
       Exit;
   case Format of
     pfZIP, pfCBZ: DoZipCbz;
     pfPDF: DoPdf;
     pfEPUB: DoEpub;
   end;
-  Result := FileExistsUTF8(FSavedFileName);
+  Result := FileExists(FSavedFileName);
   if Result then
   begin
     for i := 0 to FFileList.Count - 1 do
-      DeleteFileUTF8(FFileList[i]);
+      DeleteFile(FFileList[i]);
     if IsDirectoryEmpty(Path) then
-      RemoveDirUTF8(Path);
+      RemoveDir(Path);
   end;
 end;
 

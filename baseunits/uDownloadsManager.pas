@@ -585,7 +585,7 @@ begin
   Result := True;
 
   // check download path
-  if not ForceDirectoriesUTF8(Task.CurrentWorkingDir) then
+  if not ForceDirectories(Task.CurrentWorkingDir) then
   begin
     Task.StatusFailedToCreateDir;
     Result := False;
@@ -640,7 +640,7 @@ begin
   end;
 
   if Result then
-    Result := FileExistsUTF8(savedFilename);
+    Result := FileExists(savedFilename);
 
   if Terminated then Exit(False);
   if Result then
@@ -899,7 +899,7 @@ begin
           Container.ChapterNames[Container.CurrentDownloadChapterPtr]
       else
         CurrentWorkingDir := Container.DownloadInfo.SaveTo;
-      if not ForceDirectoriesUTF8(CurrentWorkingDir) then
+      if not ForceDirectories(CurrentWorkingDir) then
       begin
         StatusFailedToCreateDir;
         ShowBalloonHint;
@@ -1300,7 +1300,7 @@ begin
   inherited Create;
   InitCriticalSection(CS_Task);
   InitCriticalSection(CS_ItemsActiveTask);
-  ForceDirectoriesUTF8(USERDATA_FOLDER);
+  ForceDirectories(USERDATA_FOLDER);
   DownloadedChapters := TDownloadedChaptersDB.Create;
   DownloadedChapters.Filename := DOWNLOADEDCHAPTERSDB_FILE;
   DownloadedChapters.OnError := @MainForm.ExceptionHandler;

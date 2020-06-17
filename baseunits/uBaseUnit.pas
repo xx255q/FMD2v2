@@ -18,7 +18,7 @@ uses
   {$else}
   UTF8Process,
   {$endif}
-  SysUtils, Classes, Graphics, lazutf8classes, LazFileUtils, LConvEncoding,
+  SysUtils, Classes, Graphics, LazFileUtils, LConvEncoding,
   strutils, dateutils, variants, base64, fpjson, jsonparser, jsonscanner,
   fgl, RegExpr, synautil, httpsend, blcksock,
   synacode, MultiLog, FPimage, GZIPUtils, uMisc, httpsendthread, FMDOptions,
@@ -895,12 +895,12 @@ var
   searchRec: TSearchRec;
 begin
   try
-    Result := (FindFirstUTF8(CorrectPathSys(ADir) + '*.*',
+    Result := (FindFirst(CorrectPathSys(ADir) + '*.*',
       faAnyFile{$ifdef unix} or faSymLink{$endif unix}, searchRec) = 0) and
-      (FindNextUTF8(searchRec) = 0) and
-      (FindNextUTF8(searchRec) <> 0);
+      (FindNext(searchRec) = 0) and
+      (FindNext(searchRec) <> 0);
   finally
-    FindCloseUTF8(searchRec);
+    FindClose(searchRec);
   end;
 end;
 
@@ -961,7 +961,7 @@ begin
           Break;
         Inc(j);
       until wS[j] = '/';
-      if not DirectoryExistsUTF8(lcS2 + lcS) then
+      if not DirectoryExists(lcS2 + lcS) then
       begin
         CreateDirUTF8(lcS2 + lcS);
       end;
@@ -3131,13 +3131,13 @@ end;
 function SaveImageStreamToFile(Stream: TMemoryStream; Path, FileName: String; Age: LongInt): String;
 var
   p, f: String;
-  fs: TFileStreamUTF8;
+  fs: TFileStream;
 begin
   Result := '';
   if Stream = nil then Exit;
   if Stream.Size = 0 then Exit;
   p := CorrectPathSys(Path);
-  if ForceDirectoriesUTF8(p) then begin
+  if ForceDirectories(p) then begin
     f := GetImageStreamExt(Stream);
     if f = 'png' then
     begin
@@ -3155,9 +3155,9 @@ begin
 
     if f = '' then Exit;
     f := p + FileName + '.' + f;
-    if FileExistsUTF8(f) then DeleteFileUTF8(f);
+    if FileExists(f) then DeleteFile(f);
     try
-      fs := TFileStreamUTF8.Create(f, fmCreate);
+      fs := TFileStream.Create(f, fmCreate);
       try
         Stream.Position := 0;
         fs.CopyFrom(Stream, Stream.Size);
@@ -3168,7 +3168,7 @@ begin
       on E: Exception do
         Logger.SendException('SaveImageStreamToFile.WriteToFile Failed! ' + f, E);
     end;
-    if FileExistsUTF8(f) then
+    if FileExists(f) then
     begin
       Result := f;
       if Age > 0 then
@@ -3249,7 +3249,7 @@ begin
   for i in ImageHandlerMgr.List do
   begin
     s := AFileName + '.' + i.Ext;
-    if FileExistsUTF8(s) then
+    if FileExists(s) then
       Exit(s);
   end;
   Result := '';
@@ -3257,16 +3257,16 @@ end;
 
 function LoadImageFromFileUTF8(const FileName: String; var Image: TFPCustomImage): Boolean;
 var
-  fs: TFileStreamUTF8;
+  fs: TFileStream;
   h: TFPCustomImageReaderClass;
   r: TFPCustomImageReader;
 begin
   Result := False;
-  if not FileExistsUTF8(FileName) then Exit;
+  if not FileExists(FileName) then Exit;
   h := GetImageFileReaderClass(FileName);
   if h = nil then Exit;
   r := h.Create;
-  fs := TFileStreamUTF8.Create(FileName, fmOpenRead or fmShareDenyWrite);
+  fs := TFileStream.Create(FileName, fmOpenRead or fmShareDenyWrite);
   try
     Image.LoadFromStream(fs, r);
     Result := True;
@@ -3301,14 +3301,14 @@ var
   newHeigth: LongInt;
   h: TFPCustomImageWriterClass;
   w: TFPCustomImageWriter;
-  fs: TFileStreamUTF8;
+  fs: TFileStream;
 begin
   Result := False;
-  if not DirectoryExistsUTF8(Directory) then Exit;
+  if not DirectoryExists(Directory) then Exit;
   D := CorrectPathSys(Directory);
   AImgName1 := D + ImgName1;
   AImgName2 := D + ImgName2;
-  if not (FileExistsUTF8(AImgName1) and FileExistsUTF8(AImgName2)) then Exit;
+  if not (FileExists(AImgName1) and FileExists(AImgName2)) then Exit;
   Img1 := TFPMemoryImage.create(0,0);
   Img2 := TFPMemoryImage.create(0,0);
   try
@@ -3332,15 +3332,15 @@ begin
       else
         CopyImageRect(Img2, ImgNew, 0, Img1.Height + 1, Rect(0, 0, Img2.Width, Img2.Height));
       AFinalName := D + FinalName;
-      if FileExistsUTF8(AFinalName) then
-        DeleteFileUTF8(AFinalName);
-      if not FileExistsUTF8(AFinalName) then
+      if FileExists(AFinalName) then
+        DeleteFile(AFinalName);
+      if not FileExists(AFinalName) then
       begin
         h := {%H-}GetImageFileWriterClass(AImgName1);
         if h = nil then Exit;
         try
           w := h.Create;
-          fs := TFileStreamUTF8.Create(AFinalName, fmCreate);
+          fs := TFileStream.Create(AFinalName, fmCreate);
           ImgNew.SaveToStream(fs, w);
           Result := True;
         finally
@@ -3349,8 +3349,8 @@ begin
         end;
         if Result then
         begin
-          DeleteFileUTF8(AImgName1);
-          DeleteFileUTF8(AImgName2);
+          DeleteFile(AImgName1);
+          DeleteFile(AImgName2);
         end;
       end;
     finally

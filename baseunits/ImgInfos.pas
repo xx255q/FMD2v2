@@ -34,7 +34,7 @@ unit ImgInfos;
 interface
 
 uses
-  Classes, SysUtils, LazUTF8Classes, LazFileUtils, FPimage,
+  Classes, SysUtils, LazFileUtils, FPimage,
   FPReadJPEG, FPReadPNG, FPReadGif, FPReadBMP, FPReadTiff,
   FPWriteJPEG, FPWritePNG, FPWriteBMP, FPWriteTiff;
 
@@ -241,12 +241,12 @@ end;
 
 function TimageHandlerMgr.GetImageHandlerByFile(const FileName: String): PImageHandlerRec;
 var
-  FS: TFileStreamUTF8;
+  FS: TFileStream;
 begin
   Result := @FEmptyHandlerRec;
-  if not FileExistsUTF8(FileName) then Exit;
+  if not FileExists(FileName) then Exit;
   try
-    FS := TFileStreamUTF8.Create(FileName, fmOpenRead or fmShareDenyWrite);
+    FS := TFileStream.Create(FileName, fmOpenRead or fmShareDenyWrite);
     Result := GetImageHandlerByStream(FS);
   finally
     FS.Free;
@@ -292,14 +292,14 @@ end;
 function TimageHandlerMgr.GetImageFileSize(const FileName: String; out Width,
   Height: Integer): String;
 var
-  FS: TFileStreamUTF8;
+  FS: TFileStream;
 begin
   Result := '';
   Width := 0;
   Height := 0;
-  if not FileExistsUTF8(FileName) then Exit;
+  if not FileExists(FileName) then Exit;
   try
-    FS := TFileStreamUTF8.Create(FileName, fmOpenRead or fmShareDenyWrite);
+    FS := TFileStream.Create(FileName, fmOpenRead or fmShareDenyWrite);
     Result := GetImageStreamSize(FS, Width, Height);
   finally
     FS.Free;

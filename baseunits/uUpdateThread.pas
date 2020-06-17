@@ -262,25 +262,25 @@ var
   Sza, datapath, filepath: String;
 begin
   Sza := FMD_DIRECTORY + ZIP_EXE;
-  if not FileExistsUTF8(Sza) then Exit;
+  if not FileExists(Sza) then Exit;
 
   datapath := DATA_FOLDER;
   filepath := datapath + website;
-  if FileExistsUTF8(filepath + '.7z') then
+  if FileExists(filepath + '.7z') then
      filepath += '.7z'
   else
-  if FileExistsUTF8(filepath + '.zip') then
+  if FileExists(filepath + '.zip') then
     filepath += '.zip';
 
-  if FileExistsUTF8(filepath) then
+  if FileExists(filepath) then
   begin
-    if FileExistsUTF8(datapath + website + DBDATA_EXT) then
-      DeleteFileUTF8(datapath + website + DBDATA_EXT);
-    if FileExistsUTF8(datapath + website + DATA_EXT) then
-      DeleteFileUTF8(datapath + website + DATA_EXT);
+    if FileExists(datapath + website + DBDATA_EXT) then
+      DeleteFile(datapath + website + DBDATA_EXT);
+    if FileExists(datapath + website + DATA_EXT) then
+      DeleteFile(datapath + website + DATA_EXT);
     RunExternalProcess(Sza, ['x', filepath, '-o' +
       AnsiQuotedStr(datapath, '"'), '-aoa'], False, True);
-    DeleteFileUTF8(filepath);
+    DeleteFile(filepath);
   end
 end;
 

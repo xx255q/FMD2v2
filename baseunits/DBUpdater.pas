@@ -126,7 +126,7 @@ begin
       begin
         cont := True;
         // save to data folder
-        ForceDirectoriesUTF8(DATA_FOLDER);
+        ForceDirectories(DATA_FOLDER);
         currentfilename := DATA_FOLDER + FModule.ID + DBDATA_SERVER_EXT;
         if FileExists(currentfilename) then
           DeleteFile(currentfilename);

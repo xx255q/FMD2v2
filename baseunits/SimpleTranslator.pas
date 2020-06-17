@@ -25,7 +25,7 @@ unit SimpleTranslator;
 interface
 
 uses
-  Classes, SysUtils, strutils, gettext, LazFileUtils, LazUTF8, LCLTranslator,
+  Classes, SysUtils, strutils, gettext, LazFileUtils, LCLTranslator,
   Translations, LResources, Forms, LCLVersion;
 
 type
@@ -521,9 +521,9 @@ procedure CollectLanguagesFiles(const appname: string; const dir: string;
     lname := LowerCase(aname);
     if RightStr(ldir, 1) <> PathDelim then
       ldir := ldir + PathDelim;
-    if DirectoryExistsUTF8(ldir) then
+    if DirectoryExists(ldir) then
     begin
-      if FindFirstUTF8(ldir + '*', faAnyFile, SR) = 0 then
+      if FindFirst(ldir + '*', faAnyFile, SR) = 0 then
         repeat
           s := LowerCase(SR.Name);
           if (Pos(lname + '.', s) = 1) and
@@ -539,8 +539,8 @@ procedure CollectLanguagesFiles(const appname: string; const dir: string;
                 AvailableLanguages.Values[id] := GetLangName(id, useNativeName);
             end;
           end;
-          until FindNextUTF8(SR) <> 0;
-        FindCloseUTF8(SR);
+          until FindNext(SR) <> 0;
+        FindClose(SR);
     end;
   end;
 
@@ -566,7 +566,7 @@ begin
     if LangAppName <> '' then
       tappname := LangAppName
     else
-      tappname := ExtractFileNameOnly(ParamStrUTF8(0));
+      tappname := ExtractFileNameOnly(ParamStr(0));
   end;
   AvailableLanguages.Clear;
 
@@ -655,9 +655,9 @@ var
       if RightStr(lcllangdir, 1) <> PathDelim then
         lcllangdir := lcllangdir + PathDelim;
       s := lcllangdir + 'lclstrconsts.' + lcllang;
-      if FileExistsUTF8(s + '.po') then
+      if FileExists(s + '.po') then
         lcllangpath := s + '.po'
-      else if FileExistsUTF8(s + '.mo') then
+      else if FileExists(s + '.mo') then
       begin
         lcllangpath := s + '.mo';
         mofile := True;
@@ -670,12 +670,12 @@ var
       begin
         lcllangdir := l + ldir[i];
         s := lcllangdir + 'lclstrconsts.' + lcllang;
-        if FileExistsUTF8(s + '.po') then
+        if FileExists(s + '.po') then
         begin
           lcllangpath := s + '.po';
           Break;
         end
-        else if FileExistsUTF8(s + '.mo') then
+        else if FileExists(s + '.mo') then
         begin
           lcllangpath := s + '.mo';
           mofile := True;
@@ -723,18 +723,18 @@ begin
       if LangAppName <> '' then
         appname := LangAppName
       else
-        appname := ExtractFileNameOnly(ParamStrUTF8(0));
+        appname := ExtractFileNameOnly(ParamStr(0));
     end;
     lfile := LangDir + PathDelim + appname + '.' + lang;
 
-    if FileExistsUTF8(lfile + '.po') then //po file
+    if FileExists(lfile + '.po') then //po file
     begin
       lfile := lfile + '.po';
       Translations.TranslateResourceStrings(lfile);
       ltrans := TPOTranslator.Create(lfile);
     end
     else
-    if FileExistsUTF8(lfile + '.mo') then //mo file
+    if FileExists(lfile + '.mo') then //mo file
     begin
       lfile := lfile + '.mo';
       gettext.TranslateResourceStrings(lfile);

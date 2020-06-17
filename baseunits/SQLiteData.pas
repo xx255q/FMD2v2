@@ -338,7 +338,7 @@ function TSQliteData.Open(const AOpenTable: Boolean;
 begin
   Result := False;
   if (FFileName = '') or (FCreateParams = '') then Exit;
-  if FileExistsUTF8(FFileName) then
+  if FileExists(FFileName) then
     Result := OpenDB
   else
     Result := CreateDB;

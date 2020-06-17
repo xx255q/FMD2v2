@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, fileinfo, jsonini, FileUtil, Forms, Graphics,
-  LazFileUtils, LazUTF8;
+  LazFileUtils;
 
 type
 
@@ -217,7 +217,7 @@ end;
 
 procedure ReadConfigFile;
 begin
-  if not FileExistsUTF8(CONFIG_FILE) then Exit;
+  if not FileExists(CONFIG_FILE) then Exit;
   with TJSONIniFile.Create(CONFIG_FILE) do
     try
       DEFAULT_SELECTED_WEBSITES:=ReadString('config','default_selected_websites',DEFAULT_SELECTED_WEBSITES);
