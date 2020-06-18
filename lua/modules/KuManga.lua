@@ -11,12 +11,10 @@ local DirectoryParameters = 'contentType=manga&retrieveCategories=true&retrieveA
 
 -- Get info and chapter list for current manga.
 function GetInfo()
-	local c, x = nil
 	local u = MaybeFillHost(MODULE.RootURL, URL)
-
 	if not HTTP.GET(u) then return net_problem end
 
-	x = CreateTXQuery(HTTP.Document)
+	local x = CreateTXQuery(HTTP.Document)
 	MANGAINFO.URL       = x.XPathString('//meta[@property="og:URL"]/@content')
 	MANGAINFO.Title     = x.XPathString('//meta[@property="og:title"]/@content')
 	MANGAINFO.CoverLink = x.XPathString('//meta[@property="og:image"]/@content')
@@ -27,7 +25,14 @@ function GetInfo()
 	MANGAINFO.Summary   = x.XPathString('//meta[@property="og:description"]/@content')
 
 	x.XPathHREFAll('//table[contains(@class, "table")]//h4[@class="title"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-	c = GetPageChapterListPageCount(x.XPathString('//script[contains(., "php_pagination")]'))
+
+	-- Get count of chapter list pages.
+	local function GetPageChapterListPageCount(s)
+		local s = GetBetween('php_pagination(', ');', s)
+		return math.ceil(tonumber(s:match('.-,.-,.-,.-,(.-),.-,.-')) / tonumber(s:match('.-,.-,.-,.-,.-,(.-),.-')))
+	end
+
+	local c = GetPageChapterListPageCount(x.XPathString('//script[contains(., "php_pagination")]'))
 
 	if c > 1 then
 		for i = 2, c do
@@ -79,29 +84,21 @@ function GetPageNumber()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = CreateTXQuery(HTTP.Document)
-	c = tonumber(x.XPathString('//script[contains(., "konekomangareader")]'):match('\'pages\':(.-),'))
-	p = x.XPathString('//script[contains(., "konekomangareader")]'):match('\'pageFormat\':\'(.-)\',')
-
-	for i = 1, c do
-		TASK.PageLinks.Add(p:gsub('{pnumber}', tostring(i)))
+	local body = HTTP.Document.ToString()
+	local base = body:match('<base href="(.-)"')
+	if base == nil then base = MODULE.RootURL end
+	local s = body:match('var%s+pUrl%s*=%s*(.-);')
+	local i; for i in s:gmatch('imgURL":"(.-)"') do
+		TASK.PageLinks.Add(base .. i:gsub('\\',''))
 	end
-
 	return no_error
 end
 
-----------------------------------------------------------------------------------------------------
--- Helper Functions
-----------------------------------------------------------------------------------------------------
-
--- Get count of chapter list pages.
-function GetPageChapterListPageCount(s)
-	local count = 1
-
-	s = GetBetween('php_pagination(', ');', s)
-	count = math.ceil(tonumber(s:match('.-,.-,.-,.-,(.-),.-,.-')) / tonumber(s:match('.-,.-,.-,.-,.-,(.-),.-')))
-
-	return count
+function BeforeDownloadImage()
+	if TASK.CurrentDownloadChapterPtr < TASK.ChapterLinks.Count then
+		HTTP.Headers.Values['Referer'] = ' ' .. MaybeFillHost(MODULE.RootURL, TASK.ChapterLinks[TASK.CurrentDownloadChapterPtr])
+	end
+	return true
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -112,10 +109,11 @@ function Init()
 	local m = NewWebsiteModule()
 	m.ID                       = '6138f1a985cd47c3b60a65cf6b1fe03d'
 	m.Name                     = 'KuManga'
-	m.RootURL                  = 'http://www.kumanga.com'
+	m.RootURL                  = 'https://www.kumanga.com'
 	m.Category                 = 'Spanish'
 	m.OnGetInfo                = 'GetInfo'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
 	m.OnGetPageNumber          = 'GetPageNumber'
 	m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
+	m.OnBeforeDownloadImage    = 'BeforeDownloadImage'
 end
