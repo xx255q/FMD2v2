@@ -68,8 +68,15 @@ function GetPageNumber()
 					TASK.PageLinks.Add(s)
 				end
 			end
-		elseif MODULE.Name == 'Lhscans' then
-			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-src', TASK.PageLinks)
+		elseif MODULE.Name == 'LoveHeaven' then
+			local crypto = require 'fmd.crypto'
+			local v = x.XPath('//img[contains(@class, "chapter-img")]/@data-src')
+			for i = 1, v.Count do
+				local s = v.Get(i).ToString()
+				if string.find(s, "LoveHeaven") == nil then
+					TASK.PageLinks.Add(crypto.DecodeBase64(s))
+				end
+			end
 		else
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@src', TASK.PageLinks)
 		end
