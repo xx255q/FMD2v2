@@ -766,9 +766,8 @@ begin
   if FConLimit < 1 then
     FConLimit := numberOfThreads;
 
-  if module.GetMaxConnectionLimit > 0 then
-    while (not Terminated) and (module.ActiveConnectionCount >= FConLimit) do
-      Sleep(SOCKHEARTBEATRATE)
+  while (not Terminated) and (not module.CanCreateConnection) do
+    Sleep(SOCKHEARTBEATRATE)
 end;
 
 procedure TUpdateListManagerThread.CreateNewDownloadThread;
