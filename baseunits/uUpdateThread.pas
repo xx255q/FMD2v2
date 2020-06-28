@@ -23,14 +23,15 @@ type
   TUpdateListThread = class(TBaseThread)
   private
     FModule: TModuleContainer;
+    info: TMangaInformation;
   protected
     procedure Execute; override;
+    procedure GetDirectoryPage;
+    procedure GetNamesAndLinks;
+    procedure GetInfo;
   public
-    info: TMangaInformation;
-    checkStyle: TCheckStyleType;
-    manager: TUpdateListManagerThread;
     workPtr: Integer;
-    title, link: String;
+    manager: TUpdateListManagerThread;
     constructor Create(const AModule: TModuleContainer);
     destructor Destroy; override;
   end;
@@ -43,8 +44,7 @@ type
     FThreadAborted,
     FThreadEndNormally,
     FIsPreListAvailable: Boolean;
-    FCurrentGetInfoLimit: Integer;
-    FCS_CurrentGetInfoLimit: TRTLCriticalSection;
+    FCurrentGetInfoLimitGuardian: TRTLCriticalSection;
 
     FStatusBar: TPanel;
     FButtonCancel: TSpeedButton;
@@ -57,11 +57,16 @@ type
     FStatusTextRect: TRect;
     FStatusText: String;
 
-    FWorkPtr,
-    FTotalPtr: Integer;
 
     FTimerRepaint: TTimer;
     FNeedRepaint: Boolean;
+
+    FGetWorkPtrGuardian: TRTLCriticalSection;
+    FWorkPtr: Integer;
+    FTotalPtr: Integer;
+    FCurrentGetInfoLimit: Integer;
+    FCurrentCS: TCheckStyleType;
+    FConLimit: Integer;
   protected
     procedure SyncCreate;
     procedure SyncDestroy;
@@ -77,13 +82,17 @@ type
     procedure ExtractFile;
     procedure RefreshList;
     procedure DlgReport;
-    procedure GetInfo(const limit: Integer; const cs: TCheckStyleType);
+    procedure GetInfo(const alimit: Integer; const acs: TCheckStyleType);
     procedure DoTerminate; override;
     procedure Execute; override;
+  protected
+    procedure GetCurrentLimit;
+    procedure CreateNewDownloadThread;
+    function GetWorkPtr: Integer;
   public
-    CS_Threads,
-    CS_AddInfoToData,
-    CS_AddNamesAndLinks: TRTLCriticalSection;
+    ThreadsGuardian,
+    AddInfoToDataGuardian,
+    AddNamesAndLinksGuardian: TRTLCriticalSection;
     isFinishSearchingForNewManga, isDoneUpdateNecessary: Boolean;
     mainDataProcess: TDBDataProcess;
     tempDataProcess: TDBDataProcess;
@@ -138,12 +147,11 @@ end;
 
 destructor TUpdateListThread.Destroy;
 begin
-  manager.module.DecActiveConnectionCount;
-  EnterCriticalsection(manager.CS_Threads);
+  EnterCriticalsection(manager.ThreadsGuardian);
   try
     manager.Threads.Remove(Self);
   finally
-    LeaveCriticalsection(manager.CS_Threads);
+    LeaveCriticalsection(manager.ThreadsGuardian);
   end;
   if Assigned(info) then
     info.Free;
@@ -151,95 +159,127 @@ begin
 end;
 
 procedure TUpdateListThread.Execute;
-var
-  names, links: TStringList;
-  i: Integer;
 begin
   try
-    if checkStyle = CS_INFO then
+    if manager.FCurrentCS = CS_INFO then
       info := TMangaInformation.Create(Self, True)
     else
       info := TMangaInformation.Create(Self, False);
     info.isGetByUpdater := True;
     info.Module := FModule;
 
-    case CheckStyle of
-      CS_DIRECTORY_COUNT:
-          info.GetDirectoryPage(manager.module.TotalDirectoryPage[workPtr]);
-
-      //get names and links
-      CS_DIRECTORY_PAGE:
-      begin
-        names := TStringList.Create;
-        links := TStringList.Create;
-        try
-          if BROWSER_INVERT then
-            workPtr := manager.module.TotalDirectoryPage[manager.module.CurrentDirectoryIndex] - workPtr -1;
-          info.GetNameAndLink(names, links, IntToStr(workPtr));
-
-          //if website has sorted list by latest added
-          //we will stop at first found against current db
-          if links.Count > 0 then
-          begin
-            EnterCriticalSection(manager.CS_AddNamesAndLinks);
-            try
-              if manager.FIsPreListAvailable then begin
-                for i:=0 to links.Count-1 do begin
-                  if manager.mainDataProcess.AddData(names[i],links[i],'','','','','',0,0) then
-                    manager.tempDataProcess.AddData(names[i],links[i],'','','','','',0,0)
-                  else if (manager.isFinishSearchingForNewManga=False) and manager.module.SortedList and (not BROWSER_INVERT) then
-                    manager.isFinishSearchingForNewManga:=True;
-                end;
-                manager.mainDataProcess.Rollback;
-              end
-              else
-                for i:=0 to links.Count-1 do
-                  manager.tempDataProcess.AddData(names[i],links[i],'','','','','',0,0);
-              manager.tempDataProcess.Commit;
-            finally
-              LeaveCriticalSection(manager.CS_AddNamesAndLinks);
-            end;
-          end;
-        finally
-          names.Free;
-          links.Free;
-        end;
-      end;
-
-      CS_INFO:
-      begin
-        info.MangaInfo.Title:=title;
-        info.MangaInfo.Link:=link;
-        if link<>'' then begin
-          info.GetInfoFromURL(link);
-          // status = '-1' mean it's not exist and shouldn't be saved to database
-          if (not Terminated) and (info.MangaInfo.Status <> '-1') then
-          begin
-            EnterCriticalSection(manager.CS_AddInfoToData);
-            try
-              info.AddInfoToData(title,link,manager.mainDataProcess);
-              manager.CheckCommit(manager.numberOfThreads);
-            finally
-              LeaveCriticalSection(manager.CS_AddInfoToData);
-            end;
-          end;
-        end;
-      end;
+    case manager.FCurrentCS of
+      CS_DIRECTORY_COUNT : GetDirectoryPage;
+      CS_DIRECTORY_PAGE  : GetNamesAndLinks;
+      CS_INFO            : GetInfo;
     end;
   except
     on E: Exception do
     begin
       E.Message := E.Message + LineEnding + LineEnding +
         '  Website : ' + manager.module.Name + LineEnding +
-        '  CS      : ' + GetEnumName(TypeInfo(TCheckStyleType), Integer(checkStyle)) + LineEnding;
-      if checkStyle = CS_INFO then
-      begin
-        E.Message := E.Message +
-        '  Title   : ' + title + LineEnding +
-        '  URL     : ' + link + LineEnding;
-      end;
+        '  CS      : ' + GetEnumName(TypeInfo(TCheckStyleType), Integer(manager.FCurrentCS)) + LineEnding;
       MainForm.ExceptionHandler(Self, E);
     end;
+  end;
+end;
+
+procedure TUpdateListThread.GetDirectoryPage;
+begin
+  workPtr := manager.GetWorkPtr;
+  while workPtr<>-1 do
+  begin
+    manager.module.IncActiveConnectionCount;
+    try
+      info.GetDirectoryPage(manager.module.TotalDirectoryPage[workPtr]);
+    finally
+      manager.module.DecActiveConnectionCount;
+    end;
+    workPtr := manager.GetWorkPtr;
+  end;
+end;
+
+procedure TUpdateListThread.GetNamesAndLinks;
+var
+  names, links: TStringList;
+  i: Integer;
+begin
+  workPtr := manager.GetWorkPtr;
+
+  names := TStringList.Create;
+  links := TStringList.Create;
+  try
+    while workPtr<>-1 do
+    begin
+      manager.module.IncActiveConnectionCount;
+      try
+        names.Clear;
+        links.Clear;
+        if BROWSER_INVERT then
+          workPtr := manager.module.TotalDirectoryPage[manager.module.CurrentDirectoryIndex] - workPtr -1;
+        info.GetNameAndLink(names, links, IntToStr(workPtr));
+
+        //if website has sorted list by latest added
+        //we will stop at first found against current db
+        if links.Count > 0 then
+        begin
+          EnterCriticalSection(manager.AddNamesAndLinksGuardian);
+          try
+            if manager.FIsPreListAvailable then begin
+              for i:=0 to links.Count-1 do begin
+                if manager.mainDataProcess.AddData(names[i],links[i],'','','','','',0,0) then
+                  manager.tempDataProcess.AddData(names[i],links[i],'','','','','',0,0)
+                else if (manager.isFinishSearchingForNewManga=False) and manager.module.SortedList and (not BROWSER_INVERT) then
+                  manager.isFinishSearchingForNewManga:=True;
+              end;
+              manager.mainDataProcess.Rollback;
+            end
+            else
+              for i:=0 to links.Count-1 do
+                manager.tempDataProcess.AddData(names[i],links[i],'','','','','',0,0);
+            manager.tempDataProcess.Commit;
+          finally
+            LeaveCriticalSection(manager.AddNamesAndLinksGuardian);
+          end;
+        end;
+      finally
+        manager.module.DecActiveConnectionCount;
+      end;
+      workPtr := manager.GetWorkPtr;
+    end;
+  finally
+    names.Free;
+    links.Free;
+  end;
+end;
+
+procedure TUpdateListThread.GetInfo;
+begin
+  workPtr := manager.GetWorkPtr;
+  while workPtr<>-1 do
+  begin
+    manager.module.IncActiveConnectionCount;
+    try
+      info.MangaInfo.Title:=manager.tempDataProcess.Value[workPtr,DATA_PARAM_TITLE];
+      info.MangaInfo.Link:=manager.tempDataProcess.Value[workPtr,DATA_PARAM_LINK];
+      if info.MangaInfo.Link<>'' then begin
+        info.GetInfoFromURL(info.MangaInfo.Link);
+        // status = '-1' mean it's not exist and shouldn't be saved to database
+        if (not Terminated) and (info.MangaInfo.Status <> '-1') then
+        begin
+          EnterCriticalSection(manager.AddInfoToDataGuardian);
+          try
+            info.AddInfoToData(info.MangaInfo.Link,info.MangaInfo.Link,manager.mainDataProcess);
+            manager.CheckCommit(manager.numberOfThreads);
+          finally
+            LeaveCriticalSection(manager.AddInfoToDataGuardian);
+          end;
+        end;
+      end;
+    finally
+      manager.module.DecActiveConnectionCount;
+    end;
+    workPtr := manager.GetWorkPtr;
   end;
 end;
 
@@ -289,10 +329,11 @@ begin
   inherited Create(True);
   FreeOnTerminate := True;
 
-  InitCriticalSection(CS_Threads);
-  InitCriticalSection(CS_AddInfoToData);
-  InitCriticalSection(CS_AddNamesAndLinks);
-  InitCriticalSection(FCS_CurrentGetInfoLimit);
+  InitCriticalSection(ThreadsGuardian);
+  InitCriticalSection(AddInfoToDataGuardian);
+  InitCriticalSection(AddNamesAndLinksGuardian);
+  InitCriticalSection(FCurrentGetInfoLimitGuardian);
+  InitCriticalSection(FGetWorkPtrGuardian);
 
   websites := TStringList.Create;
   mainDataProcess := TDBDataProcess.Create;
@@ -320,10 +361,11 @@ begin
   tempDataProcess.Free;
   Threads.Free;
   isUpdating := False;
-  DoneCriticalsection(FCS_CurrentGetInfoLimit);
-  DoneCriticalsection(CS_AddInfoToData);
-  DoneCriticalsection(CS_AddNamesAndLinks);
-  DoneCriticalsection(CS_Threads);
+  DoneCriticalsection(FGetWorkPtrGuardian);
+  DoneCriticalsection(FCurrentGetInfoLimitGuardian);
+  DoneCriticalsection(AddInfoToDataGuardian);
+  DoneCriticalsection(AddNamesAndLinksGuardian);
+  DoneCriticalsection(ThreadsGuardian);
   inherited Destroy;
 end;
 
@@ -372,128 +414,29 @@ begin
     mtInformation, [mbYes], 0);
 end;
 
-procedure TUpdateListManagerThread.GetInfo(const limit: Integer;
-  const cs: TCheckStyleType);
-
-  procedure WaitForThreads;
-  begin
-    while (not Terminated) and (Threads.Count > 0) do
-      Sleep(SOCKHEARTBEATRATE);
-  end;
-
-var
-  plimit, conlimit: Integer;
-  s: String;
-  t: TUpdateListThread;
+procedure TUpdateListManagerThread.GetInfo(const alimit: Integer; const acs: TCheckStyleType);
 begin
-  try
-    FCurrentGetInfoLimit := limit;
-    while workPtr < FCurrentGetInfoLimit do begin
-      if Terminated then Break;
-      if FTotalPtr <> FCurrentGetInfoLimit then
-        FTotalPtr := FCurrentGetInfoLimit;
-      if module.Settings.Enabled and (module.Settings.UpdateListNumberOfThread > 0) then
-        numberOfThreads := module.Settings.UpdateListNumberOfThread
-      else
-        numberOfThreads := OptionMaxThreads;
-      if numberOfThreads < 1 then
-        numberOfThreads := 1;  //default
+  FCurrentGetInfoLimit := alimit;
+  FCurrentCS := acs;
 
-      conlimit := module.GetMaxConnectionLimit;
-      if conlimit < 1 then
-        conlimit := numberOfThreads;
+  GetCurrentLimit;
+  CreateNewDownloadThread;
 
-      // Finish searching for new series
-      if (cs = CS_DIRECTORY_PAGE) and
-        (isFinishSearchingForNewManga) then
-      begin
-        WaitForThreads;
-        workPtr := FCurrentGetInfoLimit;
-        Exit;
-      end;
-
-      if module.GetMaxConnectionLimit > 0 then
-        while (not Terminated) and (module.ActiveConnectionCount >= conlimit) do
-          Sleep(SOCKHEARTBEATRATE)
-      else
-        while (not Terminated) and (Threads.Count >= numberOfThreads) do
-          Sleep(SOCKHEARTBEATRATE);
-
-      if Terminated then Break;
-      if Threads.Count < numberOfThreads then
-      begin
-        EnterCriticalsection(CS_Threads);
-        try
-          module.IncActiveConnectionCount;
-          t := TUpdateListThread.Create(module);
-          Threads.Add(t);
-          if cs=CS_INFO then begin
-            t.title:=tempDataProcess.Value[workPtr,DATA_PARAM_TITLE];
-            t.link:=tempDataProcess.Value[workPtr,DATA_PARAM_LINK];
-          end;
-          t.checkStyle:=cs;
-          t.manager:=Self;
-          t.workPtr:=Self.workPtr;
-          t.Start;
-          Inc(workPtr);
-          s := RS_UpdatingList + Format(' [%d/%d] %s | [T:%d] [%d/%d]',
-            [websitePtr, websites.Count, module.Name, Threads.Count, workPtr, FCurrentGetInfoLimit]);
-
-          case cs of
-            CS_DIRECTORY_COUNT:
-              begin
-                if FCurrentGetInfoLimit = 1 then
-                  s := RS_UpdatingList + Format(' [%d/%d] ', [websitePtr, websites.Count]) +
-                    module.Name + ' | ' + RS_GettingDirectory + '...'
-                else
-                  s := s + ' | ' + RS_GettingDirectory + '...';
-              end;
-            CS_DIRECTORY_PAGE:
-              begin
-                s += ' | ' + RS_LookingForNewTitle +
-                  Format(' %d/%d', [module.CurrentDirectoryIndex + 1, module.TotalDirectory]) +
-                  '...';
-              end;
-            CS_INFO:
-              s := Format('%s | %s "%s"', [s, RS_GettingInfo, tempDataProcess.Value[workPtr-1,DATA_PARAM_TITLE]]);
-          end;
-          UpdateStatusText(s);
-          FWorkPtr := workPtr + 1;
-        finally
-          LeaveCriticalsection(CS_Threads);
-        end;
-      end;
-      // wait for threads and new data
-      if workPtr >= FCurrentGetInfoLimit then
-      begin
-        plimit := FCurrentGetInfoLimit;
-        while Threads.Count > 0 do
-        begin
-          if Terminated then Break;
-          // if limit changed, break and continue the loop with new limit
-          if FCurrentGetInfoLimit <> plimit then Break;
-          Sleep(SOCKHEARTBEATRATE);
-        end;
-      end;
-    end;
-  except
-    on E: Exception do
-      MainForm.ExceptionHandler(Self, E);
-  end;
-  WaitForThreads;
+  while Threads.Count > 0 do
+    Sleep(SOCKHEARTBEATRATE);;
 end;
 
 procedure TUpdateListManagerThread.DoTerminate;
 var
   i: Integer;
 begin
-  EnterCriticalsection(CS_Threads);
+  EnterCriticalsection(ThreadsGuardian);
   try
     if Threads.Count > 0 then
       for i := 0 to Threads.Count - 1 do
         TUpdateListThread(Threads[i]).Terminate;
   finally
-    LeaveCriticalsection(CS_Threads);
+    LeaveCriticalsection(ThreadsGuardian);
   end;
     while Threads.Count > 0 do
       Sleep(SOCKHEARTBEATRATE);
@@ -504,10 +447,10 @@ procedure TUpdateListManagerThread.SetCurrentDirectoryPageNumber(AValue: Integer
 begin
   if AValue < FCurrentGetInfoLimit then Exit;
   try
-    EnterCriticalsection(FCS_CurrentGetInfoLimit);
+    EnterCriticalsection(FCurrentGetInfoLimitGuardian);
     FCurrentGetInfoLimit := AValue;
   finally
-    LeaveCriticalsection(FCS_CurrentGetInfoLimit);
+    LeaveCriticalsection(FCurrentGetInfoLimitGuardian);
   end;
 end;
 
@@ -806,6 +749,93 @@ begin
   end;
   FThreadEndNormally:=True;
   Synchronize(MainThreadEndGetting);
+end;
+
+procedure TUpdateListManagerThread.GetCurrentLimit;
+begin
+  if FTotalPtr <> FCurrentGetInfoLimit then
+    FTotalPtr := FCurrentGetInfoLimit;
+  if module.Settings.Enabled and (module.Settings.UpdateListNumberOfThread > 0) then
+    numberOfThreads := module.Settings.UpdateListNumberOfThread
+  else
+    numberOfThreads := OptionMaxThreads;
+  if numberOfThreads < 1 then
+    numberOfThreads := 1;  //default
+
+  FConLimit := module.GetMaxConnectionLimit;
+  if FConLimit < 1 then
+    FConLimit := numberOfThreads;
+
+  if module.GetMaxConnectionLimit > 0 then
+    while (not Terminated) and (module.ActiveConnectionCount >= FConLimit) do
+      Sleep(SOCKHEARTBEATRATE)
+end;
+
+procedure TUpdateListManagerThread.CreateNewDownloadThread;
+var
+  t: TUpdateListThread;
+begin
+  if Threads.Count >= numberOfThreads then Exit;
+  EnterCriticalsection(ThreadsGuardian);
+  try
+    t := TUpdateListThread.Create(module);
+    Threads.Add(t);
+    t.manager:=Self;
+    t.Start;
+  finally
+    LeaveCriticalsection(ThreadsGuardian);
+  end;
+end;
+
+function TUpdateListManagerThread.GetWorkPtr: Integer;
+var
+  s: String;
+begin
+  Result := -1;
+  if Terminated then Exit;
+  // Finish searching for new series in sorted mode
+  if (FCurrentCS = CS_DIRECTORY_PAGE) and (isFinishSearchingForNewManga) then Exit;
+
+  if workPtr >= FCurrentGetInfoLimit then Exit;
+
+  EnterCriticalSection(FGetWorkPtrGuardian);
+  try
+    GetCurrentLimit;
+    if Threads.Count > numberOfThreads then Exit;
+
+    Result := workPtr;
+    InterlockedIncrement(workPtr);
+
+    s := RS_UpdatingList + Format(' [%d/%d] %s | [T:%d] [%d/%d]',
+      [websitePtr, websites.Count, module.Name, Threads.Count, workPtr, FCurrentGetInfoLimit]);
+
+    case FCurrentCS of
+      CS_DIRECTORY_COUNT:
+        begin
+          if FCurrentGetInfoLimit = 1 then
+            s := RS_UpdatingList + Format(' [%d/%d] ', [websitePtr, websites.Count]) +
+              module.Name + ' | ' + RS_GettingDirectory + '...'
+          else
+            s := s + ' | ' + RS_GettingDirectory + '...';
+        end;
+      CS_DIRECTORY_PAGE:
+        begin
+          s += ' | ' + RS_LookingForNewTitle +
+            Format(' %d/%d', [module.CurrentDirectoryIndex + 1, module.TotalDirectory]) +
+            '...';
+        end;
+      CS_INFO:
+        s := Format('%s | %s "%s"', [s, RS_GettingInfo, tempDataProcess.Value[workPtr,DATA_PARAM_TITLE]]);
+    end;
+    UpdateStatusText(s);
+    FWorkPtr := workPtr + 1;
+
+    // spawn new worker thread
+    if (Threads.Count < numberOfThreads) and (workPtr < FCurrentGetInfoLimit) then
+      CreateNewDownloadThread;
+  finally
+    LeaveCriticalSection(FGetWorkPtrGuardian);
+  end;
 end;
 
 end.
