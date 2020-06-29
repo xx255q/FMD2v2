@@ -24,6 +24,7 @@ type
   private
     FModule: TModuleContainer;
     info: TMangaInformation;
+    manager: TUpdateListManagerThread;
   protected
     procedure Execute; override;
     procedure GetDirectoryPage;
@@ -31,8 +32,7 @@ type
     procedure GetInfo;
   public
     workPtr: Integer;
-    manager: TUpdateListManagerThread;
-    constructor Create(const AModule: TModuleContainer);
+    constructor Create(const AOwner: TUpdateListManagerThread; const AModule: TModuleContainer);
     destructor Destroy; override;
   end;
 
@@ -138,9 +138,11 @@ const
 
 { TUpdateListThread }
 
-constructor TUpdateListThread.Create(const AModule: TModuleContainer);
+constructor TUpdateListThread.Create(const AOwner: TUpdateListManagerThread;
+  const AModule: TModuleContainer);
 begin
-  inherited Create(True);
+  inherited Create(False);
+  manager := AOwner;
   FModule := AModule;
 end;
 
@@ -748,16 +750,10 @@ begin
 end;
 
 procedure TUpdateListManagerThread.CreateNewDownloadThread;
-var
-  t: TUpdateListThread;
 begin
-  if Threads.Count >= numberOfThreads then Exit;
   EnterCriticalsection(ThreadsGuardian);
   try
-    t := TUpdateListThread.Create(module);
-    Threads.Add(t);
-    t.manager:=Self;
-    t.Start;
+    Threads.Add(TUpdateListThread.Create(Self, module));
   finally
     LeaveCriticalsection(ThreadsGuardian);
   end;
