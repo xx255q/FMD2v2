@@ -47,14 +47,14 @@ type
   THTTPQueue = class
   private
     FGuardian: TRTLCriticalSection;
-    FActiveConnections: Integer;
+    FActiveConnections: Cardinal;
   public
-    MaxConnections: Integer;
+    MaxConnections: Cardinal;
     constructor Create;
     destructor Destroy; override;
     procedure AddConnection;
     procedure DoneConnection; inline;
-    property ActiveConnections: Integer read FActiveConnections;
+    property ActiveConnections: Cardinal read FActiveConnections;
   end;
 
   THTTPSendThread = class;
@@ -411,7 +411,7 @@ begin
   begin
     EnterCriticalSection(FGuardian);
     try
-      while FActiveConnections >= MaxConnections do
+      while (MaxConnections<>0) and (FActiveConnections >= MaxConnections) do
         Sleep(HeartBeatRate);
       InterlockedIncrement(FActiveConnections);
     finally
