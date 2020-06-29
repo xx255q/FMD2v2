@@ -420,7 +420,7 @@ begin
       cmaxthreads := OptionMaxThreads;
       // if current thread count > max Threads allowed we wait until thread count decreased
       while (not Terminated) and (Threads.Count >= cmaxthreads) do
-        Sleep(SOCKHEARTBEATRATE);
+        Sleep(HeartBeatRate);
       Checkout;
       // if there is concurent connection limit applied and no more possible item to check
       // we will wait until thread count decreased
@@ -428,16 +428,16 @@ begin
       cthread := Threads.Count;
       while (not Terminated) and (Threads.Count > 0) and (Threads.Count = cthread) and
         (cmaxthreads = OptionMaxThreads) do
-        Sleep(SOCKHEARTBEATRATE);
+        Sleep(HeartBeatRate);
       // if there is no more item need to be checked, but thread count still > 0 we will wait for it
       // we will also wait if there is new item pushed, so we will check it after it
       while (not Terminated) and (FPendingCount = 0) and (Threads.Count > 0) do
-        Sleep(SOCKHEARTBEATRATE);
+        Sleep(HeartBeatRate);
       if FPendingCount = 0 then Break;
     end;
 
     while (not Terminated) and (Threads.Count > 0) do
-      Sleep(SOCKHEARTBEATRATE);
+      Sleep(HeartBeatRate);
   except
     on E: Exception do
       ExceptionHandle(Self, E);

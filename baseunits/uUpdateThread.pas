@@ -81,7 +81,7 @@ type
     procedure ExtractFile;
     procedure RefreshList;
     procedure DlgReport;
-    procedure GetInfo(const alimit: Integer; const acs: TCheckStyleType);
+    procedure CheckOut(const alimit: Integer; const acs: TCheckStyleType);
     procedure DoTerminate; override;
     procedure Execute; override;
   protected
@@ -398,7 +398,7 @@ begin
     mtInformation, [mbYes], 0);
 end;
 
-procedure TUpdateListManagerThread.GetInfo(const alimit: Integer; const acs: TCheckStyleType);
+procedure TUpdateListManagerThread.CheckOut(const alimit: Integer; const acs: TCheckStyleType);
 begin
   FCurrentGetInfoLimit := alimit;
   FCurrentCS := acs;
@@ -407,7 +407,7 @@ begin
   CreateNewDownloadThread;
 
   while Threads.Count > 0 do
-    Sleep(SOCKHEARTBEATRATE);;
+    Sleep(HeartBeatRate);
 end;
 
 procedure TUpdateListManagerThread.DoTerminate;
@@ -423,7 +423,7 @@ begin
     LeaveCriticalsection(ThreadsGuardian);
   end;
     while Threads.Count > 0 do
-      Sleep(SOCKHEARTBEATRATE);
+      Sleep(HeartBeatRate);
   inherited DoTerminate;
 end;
 
@@ -636,7 +636,7 @@ begin
             module.OnAfterUpdateList(module);
           if Assigned(module.OnBeforeUpdateList) then
             module.OnBeforeUpdateList(module);
-          GetInfo(module.TotalDirectory, CS_DIRECTORY_COUNT);
+          CheckOut(module.TotalDirectory, CS_DIRECTORY_COUNT);
 
           if Terminated then
           begin
@@ -658,7 +658,7 @@ begin
             workPtr := 0;
             isFinishSearchingForNewManga := False;
             module.CurrentDirectoryIndex := j;
-            GetInfo(module.TotalDirectoryPage[j], CS_DIRECTORY_PAGE);
+            CheckOut(module.TotalDirectoryPage[j], CS_DIRECTORY_PAGE);
             Inc(j);
             if Terminated then Break;
           end;
@@ -699,7 +699,7 @@ begin
               end;
             end
             else
-              GetInfo(tempDataProcess.RecordCount, CS_INFO);
+              CheckOut(tempDataProcess.RecordCount, CS_INFO);
             mainDataProcess.Commit;
 
             if (workPtr > 0) and (not (Terminated and module.SortedList)) then

@@ -33,7 +33,6 @@ const
   ZIP_EXE = '7za.exe';
   RUN_EXE = '.run';
 
-  SOCKHEARTBEATRATE = 500;
   {$IFDEF WINDOWS}
   {$IFDEF WIN32}
   MAX_TASKLIMIT = 16;

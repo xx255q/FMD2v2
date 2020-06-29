@@ -603,6 +603,7 @@ var
   i, imax: Integer;
   m: TLuaModuleRepo;
   f: String;
+  SOCKHEARTBEATRATE: Cardinal;
 begin
   Synchronize(@SyncStartDownload);
 
@@ -633,7 +634,7 @@ begin
     else
     begin
       while FThreads.Count >= OptionMaxThreads do
-        Sleep(SOCKHEARTBEATRATE);
+        Sleep(HeartBeatRate);
       if Terminated then
         Break;
       TDownloadThread.Create(Self, FRepos[i]);
@@ -645,7 +646,7 @@ begin
   begin
     if Terminated then
       Break;
-    Sleep(SOCKHEARTBEATRATE);
+    Sleep(HeartBeatRate);
   end;
 
   EnterCriticalsection(FThreadsCS);
@@ -659,7 +660,7 @@ begin
   end;
 
   while FThreads.Count <> 0 do
-    Sleep(SOCKHEARTBEATRATE);
+    Sleep(HeartBeatRate);
   Synchronize(@SyncFinishDownload);
 end;
 

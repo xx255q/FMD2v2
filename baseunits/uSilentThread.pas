@@ -140,9 +140,9 @@ begin
   with manager do
     while (not Terminated) and (MetaDatas.Count > 0) do
     begin
-      Sleep(SOCKHEARTBEATRATE);
+      Sleep(HeartBeatRate);
       while (not Terminated) and (Threads.Count >= OptionMaxThreads) do
-        Sleep(SOCKHEARTBEATRATE);
+        Sleep(HeartBeatRate);
       Self.Checkout;
     end;
 end;
