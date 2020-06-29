@@ -98,12 +98,16 @@ type
     FIndex: Integer;
     FAccount: TWebsiteModuleAccount;
     FAccountSupport: Boolean;
+    FMaxConnectionsLimit: Integer;
     FSettings: TWebsiteModuleSettings;
     FTotalDirectory: Integer;
     FWebsiteBypass: TWebsiteBypass;
     FCookieManager: THTTPCookieManager;
+    FConnectionsQueue: THTTPQueue;
+    FMaxConnectionLimit: Integer;
     procedure SetAccountSupport(AValue: Boolean);
     procedure CheckWebsiteBypass(const AHTTP: THTTPSendThread);
+    procedure SetMaxConnectionsLimit(AValue: Integer);
     function WebsiteBypassHTTPRequest(const AHTTP: THTTPSendThread; const Method, URL: String; const Response: TObject = nil): Boolean;
     procedure SetTotalDirectory(AValue: Integer);
     procedure AddOption(const AOptionType: TWebsiteOptionType;
@@ -118,7 +122,6 @@ type
     RootURL: String;
     Category: String;
     ActiveTaskCount: Integer;
-    ActiveConnectionCount: Integer;
     SortedList: Boolean;
     InformationAvailable: Boolean;
     FavoriteAvailable: Boolean;
@@ -127,7 +130,6 @@ type
     CurrentDirectoryIndex: Integer;
     MaxTaskLimit: Integer;
     MaxThreadPerTaskLimit: Integer;
-    MaxConnectionLimit: Integer;
     OptionList: array of TWebsiteOptionItem;
     OnBeforeUpdateList: TOnBeforeUpdateList;
     OnAfterUpdateList: TOnAfterUpdateList;
@@ -159,20 +161,18 @@ type
 
     procedure IncActiveTaskCount; inline;
     procedure DecActiveTaskCount; inline;
-    procedure IncActiveConnectionCount; inline;
-    procedure DecActiveConnectionCount; inline;
 
-    function GetMaxConnectionLimit: Integer;
     function GetMaxTaskLimit: Integer;
     function GetMaxThreadPerTaskLimit: Integer;
 
-    function CanCreateConnection: Boolean;
     function CanCreateTask: Boolean;
 
     property Settings: TWebsiteModuleSettings read FSettings write FSettings;
     property AccountSupport: Boolean read FAccountSupport write SetAccountSupport;
     property Account: TWebsiteModuleAccount read FAccount write FAccount;
     property CookieManager: THTTPCookieManager read FCookieManager;
+    property ConnectionsQueue: THTTPQueue read FConnectionsQueue;
+    property MaxConnectionsLimit: Integer read FMaxConnectionsLimit write SetMaxConnectionsLimit;
   end;
 
   TModuleContainers = specialize TFPGList<TModuleContainer>;
@@ -275,6 +275,13 @@ begin
     AHTTP.OnHTTPRequest := @WebsiteBypassHTTPRequest;
 end;
 
+procedure TModuleContainer.SetMaxConnectionsLimit(AValue: Integer);
+begin
+  if FMaxConnectionsLimit = AValue then Exit;
+  FMaxConnectionsLimit := AValue;
+  ConnectionsQueue.MaxConnections := FMaxConnectionsLimit;
+end;
+
 function TModuleContainer.WebsiteBypassHTTPRequest(const AHTTP: THTTPSendThread;
   const Method, URL: String; const Response: TObject): Boolean;
 begin
@@ -296,10 +303,8 @@ end;
 constructor TModuleContainer.Create;
 begin
   Guardian := TCriticalSection.Create;
-  FSettings := TWebsiteModuleSettings.Create;
   FIndex := -1;
   ActiveTaskCount := 0;
-  ActiveConnectionCount := 0;
   AccountSupport := False;
   SortedList := False;
   InformationAvailable := True;
@@ -309,6 +314,9 @@ begin
   CurrentDirectoryIndex := 0;
   FWebsiteBypass := TWebsiteBypass.Create(self);
   FCookieManager := THTTPCookieManager.Create;
+  FConnectionsQueue := THTTPQueue.Create;
+  FSettings := TWebsiteModuleSettings.Create;
+  FSettings.ConnectionsQueue := FConnectionsQueue;
 end;
 
 destructor TModuleContainer.Destroy;
@@ -322,6 +330,7 @@ begin
   FSettings.Free;
   Guardian.Free;
   FCookieManager.Free;
+  FConnectionsQueue.Free;
   inherited Destroy;
 end;
 
@@ -354,6 +363,7 @@ var
   s: String;
 begin
   AHTTP.CookieManager := FCookieManager;
+  AHTTP.ConnectionsQueue := FConnectionsQueue;
   CheckWebsiteBypass(AHTTP);
 
   if not Settings.Enabled then exit;
@@ -388,24 +398,6 @@ begin
   InterLockedDecrement(ActiveTaskCount);
 end;
 
-procedure TModuleContainer.IncActiveConnectionCount;
-begin
-  InterLockedIncrement(ActiveConnectionCount);
-end;
-
-procedure TModuleContainer.DecActiveConnectionCount;
-begin
-  InterLockedDecrement(ActiveConnectionCount);
-end;
-
-function TModuleContainer.GetMaxConnectionLimit: Integer;
-begin
-  if (Settings.Enabled) and (Settings.MaxConnectionLimit <> 0)  then
-    Result:=Settings.MaxConnectionLimit
-  else
-    Result:=MaxConnectionLimit;
-end;
-
 function TModuleContainer.GetMaxTaskLimit: Integer;
 begin
   if (Settings.Enabled) and (Settings.MaxTaskLimit <> 0)  then
@@ -420,14 +412,6 @@ begin
     Result:=Settings.MaxThreadPerTaskLimit
   else
     Result:=MaxThreadPerTaskLimit;
-end;
-
-function TModuleContainer.CanCreateConnection: Boolean;
-begin
-  if GetMaxConnectionLimit > 0 then
-    Result := ActiveConnectionCount < GetMaxConnectionLimit
-  else
-    Result := True;
 end;
 
 function TModuleContainer.CanCreateTask: Boolean;

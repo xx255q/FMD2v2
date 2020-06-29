@@ -66,7 +66,6 @@ type
     FTotalPtr: Integer;
     FCurrentGetInfoLimit: Integer;
     FCurrentCS: TCheckStyleType;
-    FConLimit: Integer;
   protected
     procedure SyncCreate;
     procedure SyncDestroy;
@@ -189,12 +188,7 @@ begin
   workPtr := manager.GetWorkPtr;
   while workPtr<>-1 do
   begin
-    manager.module.IncActiveConnectionCount;
-    try
-      info.GetDirectoryPage(manager.module.TotalDirectoryPage[workPtr]);
-    finally
-      manager.module.DecActiveConnectionCount;
-    end;
+    info.GetDirectoryPage(manager.module.TotalDirectoryPage[workPtr]);;
     workPtr := manager.GetWorkPtr;
   end;
 end;
@@ -211,39 +205,34 @@ begin
   try
     while workPtr<>-1 do
     begin
-      manager.module.IncActiveConnectionCount;
-      try
-        names.Clear;
-        links.Clear;
-        if BROWSER_INVERT then
-          workPtr := manager.module.TotalDirectoryPage[manager.module.CurrentDirectoryIndex] - workPtr -1;
-        info.GetNameAndLink(names, links, IntToStr(workPtr));
+      names.Clear;
+      links.Clear;
+      if BROWSER_INVERT then
+        workPtr := manager.module.TotalDirectoryPage[manager.module.CurrentDirectoryIndex] - workPtr -1;
+      info.GetNameAndLink(names, links, IntToStr(workPtr));
 
-        //if website has sorted list by latest added
-        //we will stop at first found against current db
-        if links.Count > 0 then
-        begin
-          EnterCriticalSection(manager.AddNamesAndLinksGuardian);
-          try
-            if manager.FIsPreListAvailable then begin
-              for i:=0 to links.Count-1 do begin
-                if manager.mainDataProcess.AddData(names[i],links[i],'','','','','',0,0) then
-                  manager.tempDataProcess.AddData(names[i],links[i],'','','','','',0,0)
-                else if (manager.isFinishSearchingForNewManga=False) and manager.module.SortedList and (not BROWSER_INVERT) then
-                  manager.isFinishSearchingForNewManga:=True;
-              end;
-              manager.mainDataProcess.Rollback;
-            end
-            else
-              for i:=0 to links.Count-1 do
-                manager.tempDataProcess.AddData(names[i],links[i],'','','','','',0,0);
-            manager.tempDataProcess.Commit;
-          finally
-            LeaveCriticalSection(manager.AddNamesAndLinksGuardian);
-          end;
+      //if website has sorted list by latest added
+      //we will stop at first found against current db
+      if links.Count > 0 then
+      begin
+        EnterCriticalSection(manager.AddNamesAndLinksGuardian);
+        try
+          if manager.FIsPreListAvailable then begin
+            for i:=0 to links.Count-1 do begin
+              if manager.mainDataProcess.AddData(names[i],links[i],'','','','','',0,0) then
+                manager.tempDataProcess.AddData(names[i],links[i],'','','','','',0,0)
+              else if (manager.isFinishSearchingForNewManga=False) and manager.module.SortedList and (not BROWSER_INVERT) then
+                manager.isFinishSearchingForNewManga:=True;
+            end;
+            manager.mainDataProcess.Rollback;
+          end
+          else
+            for i:=0 to links.Count-1 do
+              manager.tempDataProcess.AddData(names[i],links[i],'','','','','',0,0);
+          manager.tempDataProcess.Commit;
+        finally
+          LeaveCriticalSection(manager.AddNamesAndLinksGuardian);
         end;
-      finally
-        manager.module.DecActiveConnectionCount;
       end;
       workPtr := manager.GetWorkPtr;
     end;
@@ -258,26 +247,21 @@ begin
   workPtr := manager.GetWorkPtr;
   while workPtr<>-1 do
   begin
-    manager.module.IncActiveConnectionCount;
-    try
-      info.MangaInfo.Title:=manager.tempDataProcess.Value[workPtr,DATA_PARAM_TITLE];
-      info.MangaInfo.Link:=manager.tempDataProcess.Value[workPtr,DATA_PARAM_LINK];
-      if info.MangaInfo.Link<>'' then begin
-        info.GetInfoFromURL(info.MangaInfo.Link);
-        // status = '-1' mean it's not exist and shouldn't be saved to database
-        if (not Terminated) and (info.MangaInfo.Status <> '-1') then
-        begin
-          EnterCriticalSection(manager.AddInfoToDataGuardian);
-          try
-            info.AddInfoToData(info.MangaInfo.Link,info.MangaInfo.Link,manager.mainDataProcess);
-            manager.CheckCommit(manager.numberOfThreads);
-          finally
-            LeaveCriticalSection(manager.AddInfoToDataGuardian);
-          end;
+    info.MangaInfo.Title:=manager.tempDataProcess.Value[workPtr,DATA_PARAM_TITLE];
+    info.MangaInfo.Link:=manager.tempDataProcess.Value[workPtr,DATA_PARAM_LINK];
+    if info.MangaInfo.Link<>'' then begin
+      info.GetInfoFromURL(info.MangaInfo.Link);
+      // status = '-1' mean it's not exist and shouldn't be saved to database
+      if (not Terminated) and (info.MangaInfo.Status <> '-1') then
+      begin
+        EnterCriticalSection(manager.AddInfoToDataGuardian);
+        try
+          info.AddInfoToData(info.MangaInfo.Link,info.MangaInfo.Link,manager.mainDataProcess);
+          manager.CheckCommit(manager.numberOfThreads);
+        finally
+          LeaveCriticalSection(manager.AddInfoToDataGuardian);
         end;
       end;
-    finally
-      manager.module.DecActiveConnectionCount;
     end;
     workPtr := manager.GetWorkPtr;
   end;
@@ -761,13 +745,6 @@ begin
     numberOfThreads := OptionMaxThreads;
   if numberOfThreads < 1 then
     numberOfThreads := 1;  //default
-
-  FConLimit := module.GetMaxConnectionLimit;
-  if FConLimit < 1 then
-    FConLimit := numberOfThreads;
-
-  while (not Terminated) and (not module.CanCreateConnection) do
-    Sleep(SOCKHEARTBEATRATE)
 end;
 
 procedure TUpdateListManagerThread.CreateNewDownloadThread;

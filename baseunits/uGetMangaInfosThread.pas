@@ -89,14 +89,6 @@ var
 
       infob := INFORMATION_NOT_FOUND;
 
-      //wait if there is concurrent connection limit
-      if m.MaxConnectionLimit > 0 then
-      begin
-        while not m.CanCreateConnection do
-          Sleep(SOCKHEARTBEATRATE);
-        m.IncActiveConnectionCount;
-      end;
-
       infob := FInfo.GetInfoFromURL(FLink);
 
       if Terminated or isExiting then Exit;
@@ -251,7 +243,6 @@ end;
 
 destructor TGetMangaInfosThread.Destroy;
 begin
-  TModuleContainer(FInfo.Module).DecActiveConnectionCount;
   GetInfosThread := nil;
   FCover := nil;
   FInfo.Free;

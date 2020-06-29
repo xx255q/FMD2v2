@@ -313,7 +313,6 @@ begin
 
   EnterCriticalsection(Task.CS_Threads);
   try
-    TModuleContainer(Container.FavoriteInfo.Module).DecActiveConnectionCount;
     Task.Threads.Remove(Self);
   finally
     LeaveCriticalsection(Task.CS_Threads);
@@ -387,12 +386,10 @@ begin
         if FavoriteInfo.Module = nil then
           Status := STATUS_IDLE
         else
-        if (Threads.Count < OptionMaxThreads) and
-          TModuleContainer(FavoriteInfo.Module).CanCreateConnection then
+        if (Threads.Count < OptionMaxThreads) then
         begin
           EnterCriticalsection(CS_Threads);
           try
-            TModuleContainer(FavoriteInfo.Module).IncActiveConnectionCount;
             Status := STATUS_CHECKING;
             Thread := TFavoriteThread.Create;
             Threads.Add(Thread);

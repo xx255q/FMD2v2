@@ -125,7 +125,7 @@ begin
     begin
       if Terminated then Break;
       with MetaDatas[i] do
-        if (Threads.Count < OptionMaxThreads) and Module.CanCreateConnection then
+        if (Threads.Count < OptionMaxThreads) then
           Manager.Checkout(i)
         else
           Inc(i);
@@ -201,7 +201,6 @@ var
 begin
   if (AIndex < 0) or (AIndex >= MetaDatas.Count) then Exit;
   m := MetaDatas[AIndex];
-  m.Module.IncActiveConnectionCount;
   EnterCriticalsection(FCS_THREADS);
   try
     t := nil;
@@ -437,7 +436,6 @@ destructor TSilentThread.Destroy;
 begin
   EnterCriticalsection(Manager.FCS_THREADS);
   try
-    Module.DecActiveConnectionCount;
     Manager.Threads.Remove(Self);
   finally
     LeaveCriticalsection(Manager.FCS_THREADS);

@@ -42,6 +42,21 @@ const
 
 type
 
+  { THTTPQueue }
+
+  THTTPQueue = class
+  private
+    FGuardian: TRTLCriticalSection;
+    FActiveConnections: Integer;
+  public
+    MaxConnections: Integer;
+    constructor Create;
+    destructor Destroy; override;
+    procedure AddConnection;
+    procedure DoneConnection; inline;
+    property ActiveConnections: Integer read FActiveConnections;
+  end;
+
   THTTPSendThread = class;
 
   THTTPMethodEvent = procedure(const AHTTP: THTTPSendThread; var Method, URL: String);
@@ -68,6 +83,7 @@ type
   protected
     procedure SetHTTPCookies;
     function InternalHTTPRequest(const Method, URL: String; const Response: TObject = nil): Boolean;
+    function DefaultHTTPRequest(const Method, URL: String; const Response: TObject = nil): Boolean;
   public
     constructor Create(AOwner: TBaseThread = nil);
     destructor Destroy; override;
@@ -108,6 +124,7 @@ type
     OnHTTPRequest: THTTPRequestEvent;
     OnRedirected: THTTPMethodRedirectEvent;
     CookieManager: THTTPCookieManager;
+    ConnectionsQueue: THTTPQueue;
     LuaHandler: Pointer;
   end;
 
@@ -130,6 +147,7 @@ const
   UserAgentSynapse   = 'Mozilla/4.0 (compatible; Synapse)';
   UserAgentCURL      = 'curl/7.70.0';
   UserAgentDefault   = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:77.0) Gecko/20100101 Firefox/77.0';
+  HeartBeatRate  = 500;
 
 var
   DefaultUserAgent: String = UserAgentDefault;
@@ -367,6 +385,46 @@ begin
     Result := EncodeURL(Result);
 end;
 
+{ THTTPQueue }
+
+constructor THTTPQueue.Create;
+begin
+  InitCriticalSection(FGuardian);
+  FActiveConnections := 0;
+  MaxConnections := 0;
+end;
+
+destructor THTTPQueue.Destroy;
+begin
+  DoneCriticalSection(FGuardian);
+  inherited Destroy;
+end;
+
+procedure THTTPQueue.AddConnection;
+begin
+  if MaxConnections=0 then
+  begin
+    InterlockedIncrement(FActiveConnections);
+    Exit;
+  end
+  else
+  begin
+    EnterCriticalSection(FGuardian);
+    try
+      while FActiveConnections >= MaxConnections do
+        Sleep(HeartBeatRate);
+      InterlockedIncrement(FActiveConnections);
+    finally
+      LeaveCriticalSection(FGuardian);
+    end;
+  end;
+end;
+
+procedure THTTPQueue.DoneConnection;
+begin
+  InterlockedDecrement(FActiveConnections);
+end;
+
 { THTTPSendThread }
 
 procedure THTTPSendThread.SetTimeout(AValue: Integer);
@@ -479,6 +537,21 @@ begin
 end;
 
 function THTTPSendThread.HTTPRequest(const Method, URL: String; const Response: TObject): Boolean;
+begin
+  if ConnectionsQueue<>nil then
+  begin
+    ConnectionsQueue.AddConnection;
+    try
+      Result := DefaultHTTPRequest(Method, URL, Response);
+    finally
+      ConnectionsQueue.DoneConnection;
+    end;
+  end
+  else
+    Result := DefaultHTTPRequest(Method, URL, Response);
+end;
+
+function THTTPSendThread.DefaultHTTPRequest(const Method, URL: String; const Response: TObject): Boolean;
 
   function CheckTerminate: Boolean;
   begin

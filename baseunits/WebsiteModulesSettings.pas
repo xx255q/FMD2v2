@@ -5,7 +5,7 @@ unit WebsiteModulesSettings;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils, httpsendthread;
 
 type
     TProxyType = (ptDefault, ptDirect, ptHTTP, ptSOCKS4, ptSOCKS5);
@@ -67,14 +67,18 @@ type
     FMaxThreadPerTaskLimit: Integer;
     FUpdateListDirectoryPageNumber: Integer;
     FUpdateListNumberOfThread: Integer;
+    FDefaultMaxConnectionsLimit: Integer;
+    procedure SetEnabled(AValue: Boolean);
+    procedure SetMaxConnectionLimit(AValue: Integer);
   public
+    ConnectionsQueue: THTTPQueue;
     constructor Create;
     destructor Destroy; override;
   published
-    property Enabled: Boolean read FEnabled write FEnabled default False;
+    property Enabled: Boolean read FEnabled write SetEnabled default False;
     property MaxTaskLimit: Integer read FMaxTaskLimit write FMaxTaskLimit default 0;
     property MaxThreadPerTaskLimit: Integer read FMaxThreadPerTaskLimit write FMaxThreadPerTaskLimit default 0;
-    property MaxConnectionLimit: Integer read FMaxConnectionLimit write FMaxConnectionLimit default 0;
+    property MaxConnectionLimit: Integer read FMaxConnectionLimit write SetMaxConnectionLimit default 0;
     property UpdateListNumberOfThread: Integer read FUpdateListNumberOfThread write FUpdateListNumberOfThread default 0;
     property UpdateListDirectoryPageNumber: Integer read FUpdateListDirectoryPageNumber write FUpdateListDirectoryPageNumber default 0;
     property HTTP: THTTPSettings read FHTTP write FHTTP;
@@ -109,6 +113,37 @@ begin
 end;
 
 { TWebsiteModuleSettings }
+
+procedure TWebsiteModuleSettings.SetEnabled(AValue: Boolean);
+begin
+  if FEnabled = AValue then Exit;
+  FEnabled := AValue;
+  if FEnabled then
+  begin
+    if FDefaultMaxConnectionsLimit <> ConnectionsQueue.MaxConnections then
+      FDefaultMaxConnectionsLimit := ConnectionsQueue.MaxConnections;
+    if ConnectionsQueue.MaxConnections <> MaxConnectionLimit then
+      ConnectionsQueue.MaxConnections := MaxConnectionLimit;
+  end
+  else
+  begin
+    if ConnectionsQueue.MaxConnections <> FDefaultMaxConnectionsLimit then
+      ConnectionsQueue.MaxConnections := FDefaultMaxConnectionsLimit;
+  end;
+end;
+
+procedure TWebsiteModuleSettings.SetMaxConnectionLimit(AValue: Integer);
+begin
+  if FMaxConnectionLimit = AValue then Exit;
+  FMaxConnectionLimit := AValue;
+  if FEnabled then
+  begin
+    if FDefaultMaxConnectionsLimit <> ConnectionsQueue.MaxConnections then
+      FDefaultMaxConnectionsLimit := ConnectionsQueue.MaxConnections;
+    if ConnectionsQueue.MaxConnections <> MaxConnectionLimit then
+      ConnectionsQueue.MaxConnections := MaxConnectionLimit;
+  end;
+end;
 
 constructor TWebsiteModuleSettings.Create;
 begin

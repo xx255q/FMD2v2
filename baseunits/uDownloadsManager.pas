@@ -73,7 +73,7 @@ type
     {$ENDIF}
     FCurrentCustomFileName: String;
     FIsForDelete: Boolean;
-    currentMaxThread, currentMaxConnections: Integer;
+    currentMaxThread: Integer;
     procedure SetCurrentWorkingDir(AValue: String);
     procedure SetIsForDelete(AValue: Boolean);
     procedure SyncShowBallonHint;
@@ -306,31 +306,26 @@ begin
   WorkId := Task.GetWorkId;
   while WorkId <> -1 do
   begin
-    TModuleContainer(Task.Container.DownloadInfo.Module).IncActiveConnectionCount;
-    try
-      if Task.Flag = CS_GETPAGELINK then
-      begin
-        Reslt := GetLinkPageFromURL(
-          Task.Container.ChapterLinks.Strings[
-          Task.Container.CurrentDownloadChapterPtr]);
-      end
-      // Download images.
-      else if Task.Flag = CS_DOWNLOAD then
-        Reslt := DownloadImage;
+    if Task.Flag = CS_GETPAGELINK then
+    begin
+      Reslt := GetLinkPageFromURL(
+        Task.Container.ChapterLinks.Strings[
+        Task.Container.CurrentDownloadChapterPtr]);
+    end
+    // Download images.
+    else if Task.Flag = CS_DOWNLOAD then
+      Reslt := DownloadImage;
 
-      if not Terminated and Reslt then
-      begin
-        EnterCriticalSection(Task.Container.CS_Container);
-        try
-          InterLockedIncrement(Task.Container.DownCounter);
-          Task.Container.DownloadInfo.Progress :=
-            Format('%d/%d', [Task.Container.DownCounter, Task.Container.PageNumber]);
-        finally
-          LeaveCriticalSection(Task.Container.CS_Container);
-        end;
+    if not Terminated and Reslt then
+    begin
+      EnterCriticalSection(Task.Container.CS_Container);
+      try
+        InterLockedIncrement(Task.Container.DownCounter);
+        Task.Container.DownloadInfo.Progress :=
+          Format('%d/%d', [Task.Container.DownCounter, Task.Container.PageNumber]);
+      finally
+        LeaveCriticalSection(Task.Container.CS_Container);
       end;
-    finally
-      TModuleContainer(Task.Container.DownloadInfo.Module).DecActiveConnectionCount;
     end;
     WorkId := Task.GetWorkId;
   end;
@@ -757,16 +752,9 @@ begin
       currentMaxThread := OptionMaxThreads;
     if currentMaxThread > OptionMaxThreads then
       currentMaxThread := OptionMaxThreads;
-
-    currentMaxConnections := TModuleContainer(Container.DownloadInfo.Module).MaxConnectionLimit;
-    if currentMaxConnections <= 0 then
-      currentMaxConnections := currentMaxThread;
   finally
     LeaveCriticalSection(FCS_CURRENTMAXTHREADS);
   end;
-
-  while (not Terminated) and (not TModuleContainer(Container.DownloadInfo.Module).CanCreateConnection) do
-    Sleep(SOCKHEARTBEATRATE)
 end;
 
 procedure TTaskThread.SockOnStatus(Sender: TObject; Reason: THookSocketReason; const Value: String);
@@ -784,7 +772,7 @@ begin
 
   EnterCriticalsection(FCS_THREADS);
   try
-    while (Threads.Count < currentMaxThread) and TModuleContainer(Container.DownloadInfo.Module).CanCreateConnection do
+    while (Threads.Count < currentMaxThread) do
       Threads.Add(TDownloadThread.Create(Self));
   finally
     LeaveCriticalsection(FCS_THREADS);
