@@ -6,12 +6,12 @@
 
 unit uUpdateThread;
 
-{$mode delphi}
+{$mode objfpc}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, typinfo, uData, LazFileUtils, uBaseUnit, uMisc,
+  Classes, SysUtils, typinfo, fgl, uData, LazFileUtils, uBaseUnit, uMisc,
   WebsiteModules, DBDataProcess, FMDOptions, httpsendthread,
   BaseThread, MultiLog, ExtCtrls, Forms, Controls, Buttons, Graphics;
 
@@ -35,6 +35,8 @@ type
     constructor Create(const AOwner: TUpdateListManagerThread; const AModule: TModuleContainer);
     destructor Destroy; override;
   end;
+
+  TUpdateListThreads = specialize TFPGList<TUpdateListThread>;
 
   { TUpdateListManagerThread }
 
@@ -82,10 +84,10 @@ type
     procedure RefreshList;
     procedure DlgReport;
     procedure CheckOut(const alimit: Integer; const acs: TCheckStyleType);
-    procedure DoTerminate; override;
     procedure Execute; override;
     procedure TerminateThreads;
     procedure WaitForThreads; inline;
+    procedure TerminateCurrent(Sender: TObject);
   protected
     procedure GetCurrentLimit;
     procedure CreateNewDownloadThread;
@@ -104,7 +106,7 @@ type
     workPtr,
     websitePtr,
     numberOfThreads: Integer;
-    Threads: TFPList;
+    Threads: TUpdateListThreads;
     constructor Create;
     destructor Destroy; override;
     procedure CheckCommit(const CommitCount: Integer = 32);
@@ -316,6 +318,7 @@ constructor TUpdateListManagerThread.Create;
 begin
   inherited Create(True);
   FreeOnTerminate := True;
+  OnCustomTerminate := @TerminateCurrent;
 
   InitCriticalSection(ThreadsGuardian);
   InitCriticalSection(AddInfoToDataGuardian);
@@ -326,18 +329,20 @@ begin
   websites := TStringList.Create;
   mainDataProcess := TDBDataProcess.Create;
   tempDataProcess := TDBDataProcess.Create;
-  Threads := TFPList.Create;
+  Threads := TUpdateListThreads.Create;
   FThreadEndNormally:=False;
   FThreadAborted:=False;
   FIsPreListAvailable:=False;
   FCurrentGetInfoLimit := 1;
 
-  Synchronize(SyncCreate);
+  Synchronize(@SyncCreate);
 end;
 
 destructor TUpdateListManagerThread.Destroy;
 begin
-  Synchronize(SyncDestroy);
+  TerminateThreads;
+  WaitForThreads;
+  Synchronize(@SyncDestroy);
   if FThreadAborted then Logger.SendWarning(Self.ClassName+', thread aborted by user?');
   if not FThreadEndNormally then Logger.SendWarning(Self.ClassName+', thread doesn''t end normally, ended by user?');
   websites.Free;
@@ -412,13 +417,6 @@ begin
   WaitForThreads;
 end;
 
-procedure TUpdateListManagerThread.DoTerminate;
-begin
-  TerminateThreads;
-  WaitForThreads;
-  inherited DoTerminate;
-end;
-
 procedure TUpdateListManagerThread.SetCurrentDirectoryPageNumber(AValue: Integer);
 begin
   if AValue < FCurrentGetInfoLimit then Exit;
@@ -450,9 +448,9 @@ begin
     BevelInner := bvNone;
     BorderStyle := bsNone;
     BorderSpacing.Top := FControlMargin;
-    OnPaint := StatusBarPaint;
-    OnResize := StatusBarRezise;
-    OnShowHint := StatusBarShowHint;
+    OnPaint := @StatusBarPaint;
+    OnResize := @StatusBarRezise;
+    OnShowHint := @StatusBarShowHint;
     Canvas.Brush.Style := bsSolid;
     Canvas.Pen.Style := psSolid;
     FResized := True;
@@ -475,7 +473,7 @@ begin
     AnchorSideBottom.Side := asrBottom;
     BorderSpacing.Bottom := FControlMargin;
     Width := Height;
-    OnClick := ButtonCancelClick;
+    OnClick := @ButtonCancelClick;
     Images := FormMain.IconList;
     ImageIndex := 24;
   end;
@@ -484,7 +482,7 @@ begin
 
   FTimerRepaint := TTimer.Create(FStatusBar);
   FTimerRepaint.Interval := 1000;
-  FTimerRepaint.OnTimer := TimerRepaintTimer;
+  FTimerRepaint.OnTimer := @TimerRepaintTimer;
   FTimerRepaint.Enabled := True;
   FNeedRepaint := True;
 end;
@@ -613,7 +611,7 @@ begin
           else
           begin
             if dataProcess.WebsiteLoaded(website) then
-              Synchronize(MainThreadRemoveFilter);
+              Synchronize(@MainThreadRemoveFilter);
             CopyDBDataProcess(website, twebsite);
           end;
 
@@ -700,7 +698,7 @@ begin
                 [websitePtr, websites.Count, Module.Name]) + ' | ' + RS_SavingData + '...');
               mainDataProcess.Sort;
               mainDataProcess.Close;
-              Synchronize(RefreshList);
+              Synchronize(@RefreshList);
             end;
           end;
         except
@@ -724,7 +722,7 @@ begin
       MainForm.ExceptionHandler(Self, E);
   end;
   FThreadEndNormally:=True;
-  Synchronize(MainThreadEndGetting);
+  Synchronize(@MainThreadEndGetting);
 end;
 
 procedure TUpdateListManagerThread.TerminateThreads;
@@ -744,6 +742,11 @@ procedure TUpdateListManagerThread.WaitForThreads;
 begin
   while Threads.Count > 0 do
     Sleep(HeartBeatRate);
+end;
+
+procedure TUpdateListManagerThread.TerminateCurrent(Sender: TObject);
+begin
+  TerminateThreads;
 end;
 
 procedure TUpdateListManagerThread.GetCurrentLimit;
