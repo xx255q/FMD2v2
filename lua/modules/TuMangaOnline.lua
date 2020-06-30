@@ -11,25 +11,21 @@ function getinfo()
 		MANGAINFO.Artists=Trim(x.XPathString('//span[@class="list-group-item" and contains(., "Artist")]/a'))
 		MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//span[contains(@class, "book-status")]'), 'public', 'final')
 		MANGAINFO.Summary = x.XPathStringAll('//*[@class="element-description"]/text()', '')
-		local v = x.XPath('//div[contains(@class, "chapters")]/ul//li')
-		for i = 1, v.Count do
-			local v1 = v.Get(i)
-			local name = x.XPathString('h4', v1)
-			local w = x.XPath('div//ul/li/div', v1)
-			for j = 1, w.Count do
-				local w1 = w.Get(j)
-				local scan = '[' .. x.XPathString('div[1]', w1) .. ']'
-				MANGAINFO.ChapterLinks.Add(x.XPathString('div[contains(@class, "text-right")]/a/@href', w1))
-				MANGAINFO.ChapterNames.Add(name .. ' ' .. scan)
-			end
-		end
-		if MANGAINFO.ChapterLinks.Count == 0 then
-			local w = x.XPath('//ul[contains(@class, "chapter-list")]/li/div')
-			for j = 1, w.Count do
-				local w1 = w.Get(j)
-				local scan = '[' .. x.XPathString('div[1]', w1) .. ']'
-				MANGAINFO.ChapterLinks.Add(x.XPathString('div[contains(@class, "text-right")]/a/@href', w1))
-				MANGAINFO.ChapterNames.Add(MANGAINFO.Title .. ' ' .. scan)
+
+		local EncodeURLElement = require "fmd.crypto".EncodeURLElement
+		local v, vi, vii, ctitle, scanname, viewerurl, formparams
+		for v in x.XPath('//div[contains(@class, "chapters")]/ul//li[./h4]').Get() do
+			ctitle = x.XPathString('h4', v)
+			for vi in x.XPath('div//ul/li/div', v).Get() do
+				scanname = ' [' .. x.XPathString('div[1]', vi) .. ']'
+				viewerurl = x.XPathString('div/form/@action', vi)
+				formparams = ''
+				for vii in x.XPath('div/form/input', vi).Get() do
+					formparams = formparams .. '&' .. vii.GetAttribute('name') .. '=' .. EncodeURLElement(vii.GetAttribute('value'))
+				end
+				viewerurl = viewerurl .. formparams:gsub('^&','?')
+				MANGAINFO.ChapterNames.Add(ctitle .. ' ' .. scanname)
+				MANGAINFO.ChapterLinks.Add(viewerurl)
 			end
 		end
 		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
@@ -40,29 +36,27 @@ function getinfo()
 end
 
 function getpagenumber()
-	HTTP.Headers.Values['Referer'] = MODULE.RootURL:gsub('http://', 'https://')
-	if not HTTP.GET(MaybeFillHost(MODULE.RootURL, URL):gsub('http://', 'https://')) then return false; end
+	HTTP.Headers.Values['Referer'] = ' ' .. MaybeFillHost(MODULE.RootURL, TASK.Link)
+	local url = MaybeFillHost(MODULE.RootURL, URL)
+	if not HTTP.GET(url) then return false; end
+	local rurl = HTTP.Headers.Values['location']
+	if rurl ~= '' then
+		HTTP.Headers.Values['Referer'] = ' ' .. url
+		if not HTTP.GET(rurl) then return false; end
+	end
+
 	local x = CreateTXQuery(HTTP.Document)
-	local u = x.XPathString('//meta[@property="og:URL"]/@content')
-	if string.match(u, 'cascade') then
-		u = string.gsub(u, '/cascade', '/paginated')
-		print(u)
-		if not HTTP.GET(MaybeFillHost(MODULE.RootURL, u):gsub('http://', 'https://')) then return false; end
-		x = CreateTXQuery(HTTP.Document)
-	end
-	TASK.PageNumber = tonumber(x.XPathString('(//select[@id="viewer-pages-select"])[1]/option[last()]/text()'))
-	for i = 1, TASK.PageNumber do
-		TASK.PageContainerLinks.Add(u..'/'..i)
-	end
+	TASK.PageNumber = tonumber(x.XPathString('count((//select[@id="viewer-pages-select"])[1]/option)')) or 1
+	TASK.PageContainerLinks.Add(HTTP.LastURL)
+	TASK.PageLinks.Add(x.XPathString('//img[contains(@class,"viewer-image")]/@src'))
 	return true
 end
 
 function getimageurl()
-	local s = MaybeFillHost(MODULE.RootURL, TASK.PageContainerLinks[WORKID]):gsub('http://', 'https://')
-	HTTP.Headers.Values['Referer'] = MODULE.RootURL:gsub('http://', 'https://')
-	if HTTP.GET(s) then
-		TASK.PageLinks[WORKID] = CreateTXQuery(HTTP.Document).XPathString('//img[@class="viewer-image"]/@src')
-
+	local s = MaybeFillHost(MODULE.RootURL, TASK.PageContainerLinks[0])
+	HTTP.Headers.Values['Referer'] = ' ' .. MaybeFillHost(s)
+	if HTTP.GET(s .. '/' .. tostring(WORKID+1)) then
+		TASK.PageLinks[WORKID] = CreateTXQuery(HTTP.Document).XPathString('//img[contains(@class,"viewer-image")]/@src')
 		return true
 	end
 	return false
@@ -93,7 +87,7 @@ function Init()
 	local m = NewWebsiteModule()
 	m.ID = '9185eb6c49324a849c7d7925a41ef3a3'
 	m.Name = 'Tumangaonline'
-	m.RootURL = 'http://tmofans.com' -- Don't set to https because TMO set http for Cloudflare!
+	m.RootURL = 'https://lectortmo.com'
 	m.Category = 'Spanish'
 	m.MaxTaskLimit = 1
 	m.MaxConnectionLimit = 1
