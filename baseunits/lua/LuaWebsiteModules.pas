@@ -950,7 +950,7 @@ begin
     luaClassAddStringProperty(L, MetaTable, 'Category', @Module.Category);
     luaClassAddIntegerProperty(L, MetaTable, 'MaxTaskLimit', @Module.MaxTaskLimit);
     luaClassAddIntegerProperty(L, MetaTable, 'MaxThreadPerTaskLimit', @Module.MaxThreadPerTaskLimit);
-    luaClassAddIntegerProperty(L, MetaTable, 'MaxConnectionLimit', @Module.MaxConnectionsLimit);
+    luaClassAddIntegerProperty(L, MetaTable, 'MaxConnectionLimit', @Module.ConnectionsQueue.MaxConnections);
     luaClassAddIntegerProperty(L, MetaTable, 'ActiveTaskCount', @Module.ActiveTaskCount);
     luaClassAddIntegerProperty(L, MetaTable, 'ActiveConnectionCount', @Module.ConnectionsQueue.ActiveConnections);
     luaClassAddBooleanProperty(L, MetaTable, 'SortedList', @Module.SortedList);

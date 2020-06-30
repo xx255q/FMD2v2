@@ -538,11 +538,13 @@ end;
 
 function THTTPSendThread.HTTPRequest(const Method, URL: String; const Response: TObject): Boolean;
 begin
+  Result := False;
   if ConnectionsQueue<>nil then
   begin
     ConnectionsQueue.AddConnection;
     try
-      Result := DefaultHTTPRequest(Method, URL, Response);
+      if not ThreadTerminated then
+        Result := DefaultHTTPRequest(Method, URL, Response);
     finally
       ConnectionsQueue.DoneConnection;
     end;

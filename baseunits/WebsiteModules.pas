@@ -98,16 +98,13 @@ type
     FIndex: Integer;
     FAccount: TWebsiteModuleAccount;
     FAccountSupport: Boolean;
-    FMaxConnectionsLimit: Integer;
     FSettings: TWebsiteModuleSettings;
     FTotalDirectory: Integer;
     FWebsiteBypass: TWebsiteBypass;
     FCookieManager: THTTPCookieManager;
     FConnectionsQueue: THTTPQueue;
-    FMaxConnectionLimit: Integer;
     procedure SetAccountSupport(AValue: Boolean);
     procedure CheckWebsiteBypass(const AHTTP: THTTPSendThread);
-    procedure SetMaxConnectionsLimit(AValue: Integer);
     function WebsiteBypassHTTPRequest(const AHTTP: THTTPSendThread; const Method, URL: String; const Response: TObject = nil): Boolean;
     procedure SetTotalDirectory(AValue: Integer);
     procedure AddOption(const AOptionType: TWebsiteOptionType;
@@ -172,7 +169,6 @@ type
     property Account: TWebsiteModuleAccount read FAccount write FAccount;
     property CookieManager: THTTPCookieManager read FCookieManager;
     property ConnectionsQueue: THTTPQueue read FConnectionsQueue;
-    property MaxConnectionsLimit: Integer read FMaxConnectionsLimit write SetMaxConnectionsLimit;
   end;
 
   TModuleContainers = specialize TFPGList<TModuleContainer>;
@@ -273,13 +269,6 @@ procedure TModuleContainer.CheckWebsiteBypass(const AHTTP: THTTPSendThread);
 begin
   if AHTTP.OnHTTPRequest <> @WebsiteBypassHTTPRequest then
     AHTTP.OnHTTPRequest := @WebsiteBypassHTTPRequest;
-end;
-
-procedure TModuleContainer.SetMaxConnectionsLimit(AValue: Integer);
-begin
-  if FMaxConnectionsLimit = AValue then Exit;
-  FMaxConnectionsLimit := AValue;
-  ConnectionsQueue.MaxConnections := FMaxConnectionsLimit;
 end;
 
 function TModuleContainer.WebsiteBypassHTTPRequest(const AHTTP: THTTPSendThread;

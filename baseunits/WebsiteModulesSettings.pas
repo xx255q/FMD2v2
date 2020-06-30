@@ -68,6 +68,8 @@ type
     FUpdateListDirectoryPageNumber: Integer;
     FUpdateListNumberOfThread: Integer;
     FDefaultMaxConnectionsLimit: Integer;
+    FDefaultStored: Boolean;
+    procedure StoreDefault;
     procedure SetEnabled(AValue: Boolean);
     procedure SetMaxConnectionLimit(AValue: Integer);
   public
@@ -114,14 +116,20 @@ end;
 
 { TWebsiteModuleSettings }
 
+procedure TWebsiteModuleSettings.StoreDefault;
+begin
+  if FDefaultStored then Exit;
+  FDefaultMaxConnectionsLimit := ConnectionsQueue.MaxConnections;
+  FDefaultStored := True;
+end;
+
 procedure TWebsiteModuleSettings.SetEnabled(AValue: Boolean);
 begin
   if FEnabled = AValue then Exit;
   FEnabled := AValue;
   if FEnabled then
   begin
-    if FDefaultMaxConnectionsLimit <> ConnectionsQueue.MaxConnections then
-      FDefaultMaxConnectionsLimit := ConnectionsQueue.MaxConnections;
+    StoreDefault;
     if ConnectionsQueue.MaxConnections <> MaxConnectionLimit then
       ConnectionsQueue.MaxConnections := MaxConnectionLimit;
   end
@@ -138,8 +146,7 @@ begin
   FMaxConnectionLimit := AValue;
   if FEnabled then
   begin
-    if FDefaultMaxConnectionsLimit <> ConnectionsQueue.MaxConnections then
-      FDefaultMaxConnectionsLimit := ConnectionsQueue.MaxConnections;
+    StoreDefault;
     if ConnectionsQueue.MaxConnections <> MaxConnectionLimit then
       ConnectionsQueue.MaxConnections := MaxConnectionLimit;
   end;
@@ -149,6 +156,8 @@ constructor TWebsiteModuleSettings.Create;
 begin
   HTTP:=THTTPSettings.Create;
   OverrideSettings:=TOverrideSettings.Create;
+  FEnabled := False;
+  FDefaultStored := False;
 end;
 
 destructor TWebsiteModuleSettings.Destroy;
