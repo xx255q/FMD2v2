@@ -48,6 +48,7 @@ type
     function DownloadImage: Boolean;
 
     procedure SockOnStatus(Sender: TObject; Reason: THookSocketReason; const Value: String);
+    procedure DoPageNumber;
     procedure DoPageLink;
     procedure DoDownload;
     procedure DoSuccess;
@@ -83,9 +84,6 @@ type
     procedure TerminateThreads;
     procedure WaitForThreads; inline;
   protected
-    function GetPageNumber: Boolean;
-    procedure SockOnStatus(Sender: TObject; Reason: THookSocketReason; const Value: String);
-  protected
     procedure CheckOut; inline;
     procedure Execute; override;
     function Compress: Boolean;
@@ -99,14 +97,14 @@ type
     function GetExceptionInfo: String;
   protected
     procedure GetCurrentLimit;
-    procedure CreateNewDownloadThread;
+    procedure CreateNewDownloadThread; inline;
+    procedure RemoveThread(const T: TDownloadThread); inline;
     function GetWorkId: Integer;
   private
     function InternalGetPageLinkWorkId: Integer;
     function InternalGetDownloadWorkId: Integer;
     procedure TerminateCurrent(Sender: TObject);
   public
-    HTTP: THTTPSendThread;
     Flag: TFlagType;
     // container (for storing information)
     Container: TTaskContainer;
@@ -299,12 +297,7 @@ end;
 
 destructor TDownloadThread.Destroy;
 begin
-  EnterCriticalsection(Task.ThreadsGuardian);
-  try
-    Task.Threads.Remove(Self);
-  finally
-    LeaveCriticalsection(Task.ThreadsGuardian);
-  end;
+  Task.RemoveThread(Self);
   HTTP.Free;
   inherited Destroy;
 end;
@@ -312,9 +305,9 @@ end;
 procedure TDownloadThread.Execute;
 begin
   case Task.Flag of
-    CS_GETPAGELINK : DoPageLink;
-    CS_DOWNLOAD    : DoDownload;
-    else Exit;
+    CS_GETPAGENUMBER : DoPageNumber;
+    CS_GETPAGELINK   : DoPageLink;
+    CS_DOWNLOAD      : DoDownload;
   end;
 end;
 
@@ -411,6 +404,38 @@ begin
     Task.Container.IncReadCount(StrToIntDef(Value, 0));
 end;
 
+procedure TDownloadThread.DoPageNumber;
+var
+  success: Boolean;
+begin
+  success := False;
+  // Get total number of images/pages per chapter
+  with Task do begin
+    Container.PageNumber := 0;
+    if Assigned(TModuleContainer(Container.DownloadInfo.Module).OnGetPageNumber) then
+    begin
+      success := TModuleContainer(Container.DownloadInfo.Module).OnGetPageNumber(
+        Self,
+        Container.ChapterLinks[Container.CurrentDownloadChapterPtr],
+        TModuleContainer(Container.DownloadInfo.Module));
+    end;
+    if Container.PageLinks.Count > 0 then
+      TrimStrings(Container.PageLinks);
+
+    // Prepare 'space' for storing image url.
+    if (not Terminated) and
+      (Container.PageNumber > 0) then
+    begin
+      while Container.PageLinks.Count < Container.PageNumber do
+        Container.PageLinks.Add('W');
+    end
+    else
+      success := False;
+  end;
+
+  if success then DoSuccess;
+end;
+
 procedure TDownloadThread.DoPageLink;
 begin
   WorkId := Task.GetWorkId;
@@ -505,8 +530,6 @@ begin
     end;
   end;
   Threads.Free;
-  if HTTP<>nil then
-    HTTP.Free;
   DoneCriticalsection(ThreadsGuardian);
   DoneCriticalSection(GetWorkIdGuardian);
   inherited Destroy;
@@ -687,38 +710,6 @@ begin
     Sleep(HeartBeatRate);
 end;
 
-function TTaskThread.GetPageNumber: Boolean;
-begin
-  // Get total number of images/pages per chapter
-  Container.PageNumber := 0;
-
-  if Assigned(TModuleContainer(Container.DownloadInfo.Module).OnGetPageNumber) then
-  begin
-    if HTTP = nil then
-    begin
-      HTTP := THTTPSendThread.Create(Self);
-      HTTP.Sock.OnStatus := @SockOnStatus;
-      TModuleContainer(Container.DownloadInfo.Module).PrepareHTTP(HTTP);
-    end;
-    Result := TModuleContainer(Container.DownloadInfo.Module).OnGetPageNumber(
-      Container,
-      Container.ChapterLinks.Strings[Container.CurrentDownloadChapterPtr],
-      TModuleContainer(Container.DownloadInfo.Module));
-  end;
-  if Container.PageLinks.Count > 0 then
-    TrimStrings(Container.PageLinks);
-
-  // Prepare 'space' for storing image url.
-  if (not Terminated) and
-    (Container.PageNumber > 0) then
-  begin
-    while Container.PageLinks.Count < Container.PageNumber do
-      Container.PageLinks.Add('W');
-  end
-  else
-    Result := False;
-end;
-
 procedure TTaskThread.GetCurrentLimit;
 begin
   if TModuleContainer(Container.DownloadInfo.Module).MaxThreadPerTaskLimit > 0 then
@@ -736,6 +727,16 @@ begin
     Threads.Add(TDownloadThread.Create(Self));
   finally
     LeaveCriticalsection(ThreadsGuardian);
+  end;
+end;
+
+procedure TTaskThread.RemoveThread(const T: TDownloadThread);
+begin
+  EnterCriticalSection(ThreadsGuardian);
+  try
+    Threads.Remove(T);
+  finally
+    LeaveCriticalSection(ThreadsGuardian);
   end;
 end;
 
@@ -803,12 +804,6 @@ end;
 procedure TTaskThread.TerminateCurrent(Sender: TObject);
 begin
   TerminateThreads;
-end;
-
-procedure TTaskThread.SockOnStatus(Sender: TObject; Reason: THookSocketReason; const Value: String);
-begin
-  if Reason = HR_ReadCount then
-    Container.IncReadCount(StrToIntDef(Value, 0));
 end;
 
 procedure TTaskThread.CheckOut;
@@ -957,9 +952,9 @@ begin
           Container.ChapterNames[Container.CurrentDownloadChapterPtr]]);
         Container.Status := STATUS_PREPARE;
 
-        GetPageNumber;
-
-        if Terminated then begin
+        CheckOut;
+        if Terminated then
+        begin
           Container.PageLinks.Clear;
           Container.PageNumber := 0;
           Exit;
