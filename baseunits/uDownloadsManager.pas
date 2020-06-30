@@ -345,11 +345,11 @@ begin
   if workURL = '' then
   begin
     Task.Container.PageLinks[WorkId] := 'W';
-    Exit(False);
+    Exit;
   end
   else
   if workURL = 'W' then
-    Exit(False)
+    Exit
   else
   if workURL = 'D' then
     Exit(True);
@@ -371,14 +371,11 @@ begin
   if Assigned(TModuleContainer(Task.Container.DownloadInfo.Module).OnBeforeDownloadImage) then
     Result := TModuleContainer(Task.Container.DownloadInfo.Module).OnBeforeDownloadImage(Self, workURL, TModuleContainer(Task.Container.DownloadInfo.Module));
 
-  if Result then
-  begin
-    // OnDownloadImage
-    if Assigned(TModuleContainer(Task.Container.DownloadInfo.Module).OnDownloadImage) then
-      Result := TModuleContainer(Task.Container.DownloadInfo.Module).OnDownloadImage(Self, workURL, TModuleContainer(Task.Container.DownloadInfo.Module))
-    else
-      Result := HTTP.GET(workURL);
-  end;
+  // OnDownloadImage
+  if Assigned(TModuleContainer(Task.Container.DownloadInfo.Module).OnDownloadImage) then
+    Result := TModuleContainer(Task.Container.DownloadInfo.Module).OnDownloadImage(Self, workURL, TModuleContainer(Task.Container.DownloadInfo.Module))
+  else
+    Result := HTTP.GET(workURL);
 
   if Result then
   begin
