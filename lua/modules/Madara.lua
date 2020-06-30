@@ -288,6 +288,7 @@ function Init()
 	AddWebsiteModule('a1b569bcec9147f4945383655c052676', 'RaiderScans', 'https://raiderscans.com', cat)
 	AddWebsiteModule('3524f691a195425897acd98909fcbb1f', 'WordExcerpt', 'https://wordexcerpt.com', cat)
 	AddWebsiteModule('4efbab5ca3364cd0bb63b776b895262e', 'ManhwaTime', 'https://manhwatime.xyz', cat)
+	AddWebsiteModule('7103ae6839ea46ec80cdfc2c4b37c803', 'AsuraScans', 'https://asurascans.com', cat)
 
 	cat = 'French'
 	AddWebsiteModule('41867fa36f2f49959df9fef8aa53ffb5', 'WakaScan', 'https://wakascan.com', cat)
