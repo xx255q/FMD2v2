@@ -87,14 +87,12 @@ var
   u: TUserData;
   v: IXQValue;
 begin
+  Result := 0;
   u := TUserData(lua_touserdata(L, 1));
   Inc(u.Current);
+  if u.Current > u.FIXQValue.Count then Exit;
   v := u.FIXQValue.get(u.Current);
-  if v.kind = pvkUndefined then
-  begin
-     lua_gc(L, LUA_GCRESTART, 0); // restart lua garbage collector
-     Exit(0);
-  end;
+  if v.kind = pvkUndefined then Exit;
   luaIXQValuePush(L, v);
   Result := 1;
 end;
@@ -113,8 +111,6 @@ begin
      end
      else
      begin
-       // stop lua garbage collector for iterator or lua will free the un-indexed initial ixqvalue
-       lua_gc(L, LUA_GCSTOP, 0);
        lua_pushcfunction(L, @ixqvalue_geti);
        lua_pushlightuserdata(L, u);
        Exit(2);

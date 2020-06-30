@@ -53,7 +53,7 @@ begin
     checkantibot_dump := LuaDumpFileToStream(checkantibot_state, checkantibot_file);
     if checkantibot_dump<>nil then
     begin
-      if lua_pcall(checkantibot_state, 0, 0, 0) = 0 then
+      if LuaPCall(checkantibot_state, 0, 0, 0) = 0 then
         InitCriticalSection(checkantibot_cs)
       else
       begin
@@ -89,7 +89,7 @@ begin
     lua_getglobal(checkantibot_state, '____CheckAntiBot');
     if lua_isnoneornil(checkantibot_state, -1) then Exit;
     luaClassPushUserData(checkantibot_state, AHTTP, '', False, @luaHTTPSendThreadAddMetaTable);
-    r := lua_pcall(checkantibot_state, 1, LUA_MULTRET, 0);
+    r := LuaPCall(checkantibot_state, 1, LUA_MULTRET, 0);
     if r <> 0 then
       raise Exception.Create(LuaGetReturnString(r)+': '+luaToString(checkantibot_state, -1));
     if lua_gettop(checkantibot_state) > 0 then
@@ -115,7 +115,7 @@ begin
     lua_pushstring(L.Handle, AMethod);
     lua_pushstring(L.Handle, AURL);
 
-    r := lua_pcall(L.Handle, 2, LUA_MULTRET, 0); // call with all params
+    r := LuaPCall(L.Handle, 2, LUA_MULTRET, 0); // call with all params
     if r <> 0 then
       raise Exception.Create(LuaGetReturnString(r)+': '+luaToString(L.Handle, -1));
     Result := lua_toboolean(L.Handle, 1);

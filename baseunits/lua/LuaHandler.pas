@@ -77,7 +77,7 @@ begin
   if Result = 0 then
   begin
     FLoadedChunks.AddObject(AName, AChunk);
-    Result := lua_pcall(FHandle, 0, LUA_MULTRET, 0);
+    Result := LuaPCall(FHandle, 0, LUA_MULTRET, 0);
   end;
 end;
 

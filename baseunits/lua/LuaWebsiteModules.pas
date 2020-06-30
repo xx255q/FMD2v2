@@ -466,14 +466,14 @@ begin
       raise Exception.Create(LuaGetReturnString(i))
     else
     begin
-      i := lua_pcall(L, 0, 0, 0);
+      i := LuaPCall(L, 0, 0, 0);
       if i = 0 then
       begin
         lua_getglobal(L, PAnsiChar('Init'));
         if lua_isfunction(L, -1) then
         begin
           luaPushFunctionGlobal(L, 'NewWebsiteModule', @_newwebsitemodule);
-          i := lua_pcall(L, 0, 0, 0);
+          i := LuaPCall(L, 0, 0, 0);
           if i = 0 then
             Result := True
           else
