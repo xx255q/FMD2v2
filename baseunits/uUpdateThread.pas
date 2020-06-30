@@ -405,7 +405,6 @@ begin
   FCurrentGetInfoLimit := alimit;
   FCurrentCS := acs;
 
-  GetCurrentLimit;
   CreateNewDownloadThread;
 
   while Threads.Count > 0 do
