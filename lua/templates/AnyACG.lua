@@ -47,16 +47,15 @@ end
 
 -- Get LINKS and NAMES from the manga list of the current website.
 function _M.GetNameAndLink()
-  local v, x = nil
   local u = MODULE.RootURL .. DirectoryPagination .. (URL + 1)
 
   if not HTTP.GET(u) then return net_problem end
 
+  local x, v
   x = CreateTXQuery(HTTP.Document)
-  v = x.XPath('//div[@id="series-list"]/div/div')
-  for i = 1, v.Count do
-    LINKS.Add(x.XPathString('a/@href', v.Get(i)))
-    NAMES.Add(x.XPathString('a', v.Get(i)) .. _M.GetLanguageCodeSuffix(x.XPathString('span[contains(@class, "flag")]/@class', v.Get(i))))
+  for v in x.XPath('//div[@id="series-list"]/div/div').Get() do
+    LINKS.Add(x.XPathString('a/@href', v))
+    NAMES.Add(x.XPathString('a', v) .. _M.GetLanguageCodeSuffix(x.XPathString('span[contains(@class, "flag")]/@class', v)))
   end
 
   return no_error
@@ -84,9 +83,9 @@ end
 function _M.GetLanguageCodeSuffix(s)
   local suffix = ' [EN]'
 
-  if s ~= '' then
+  if s and (s ~= '') then
     s = s:match('flag_(%w+)')
-    if s ~= 'united_kingdom' then suffix = ' [' .. string.upper(s) .. ']' end
+    if s and (s ~= 'united_kingdom') then suffix = ' [' .. string.upper(s) .. ']' end
   end
 
   return suffix
