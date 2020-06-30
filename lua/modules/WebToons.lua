@@ -51,6 +51,7 @@ function getpagenumber()
 	TASK.PageNumber=0
 	TASK.PageLinks.Clear()
 	URL = URL:gsub('(.*)&page=.*', '%1')
+	HTTP.Cookies.Values['ageGatePass'] = 'True'
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
 		CreateTXQuery(HTTP.Document).XPathStringAll('//div[@id="_imageList"]/img[@class="_images"]/@data-URL', TASK.PageLinks)
 		return true
