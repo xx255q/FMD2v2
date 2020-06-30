@@ -84,6 +84,8 @@ type
     procedure CheckOut(const alimit: Integer; const acs: TCheckStyleType);
     procedure DoTerminate; override;
     procedure Execute; override;
+    procedure TerminateThreads;
+    procedure WaitForThreads; inline;
   protected
     procedure GetCurrentLimit;
     procedure CreateNewDownloadThread;
@@ -407,24 +409,13 @@ begin
 
   CreateNewDownloadThread;
 
-  while Threads.Count > 0 do
-    Sleep(HeartBeatRate);
+  WaitForThreads;
 end;
 
 procedure TUpdateListManagerThread.DoTerminate;
-var
-  i: Integer;
 begin
-  EnterCriticalsection(ThreadsGuardian);
-  try
-    if Threads.Count > 0 then
-      for i := 0 to Threads.Count - 1 do
-        TUpdateListThread(Threads[i]).Terminate;
-  finally
-    LeaveCriticalsection(ThreadsGuardian);
-  end;
-    while Threads.Count > 0 do
-      Sleep(HeartBeatRate);
+  TerminateThreads;
+  WaitForThreads;
   inherited DoTerminate;
 end;
 
@@ -734,6 +725,25 @@ begin
   end;
   FThreadEndNormally:=True;
   Synchronize(MainThreadEndGetting);
+end;
+
+procedure TUpdateListManagerThread.TerminateThreads;
+var
+  t: TUpdateListThread;
+begin
+  EnterCriticalsection(ThreadsGuardian);
+  try
+    for t in Threads do
+      t.Terminate;
+  finally
+    LeaveCriticalsection(ThreadsGuardian);
+  end;
+end;
+
+procedure TUpdateListManagerThread.WaitForThreads;
+begin
+  while Threads.Count > 0 do
+    Sleep(HeartBeatRate);
 end;
 
 procedure TUpdateListManagerThread.GetCurrentLimit;

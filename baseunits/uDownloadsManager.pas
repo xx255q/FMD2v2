@@ -67,8 +67,7 @@ type
 
   TTaskThread = class(TBaseThread)
   private
-    FCS_CURRENTMAXTHREADS,
-    FCS_THREADS,
+    ThreadsGuardian,
     GetWorkIdGuardian: TRTLCriticalSection;
     FCheckAndActiveTaskFlag: Boolean;
     FCurrentWorkingDir: String;
@@ -81,6 +80,7 @@ type
     procedure SetCurrentWorkingDir(AValue: String);
     procedure SetIsForDelete(AValue: Boolean);
     procedure SyncShowBallonHint;
+    procedure TerminateThreads;
     procedure WaitForThreads; inline;
   protected
     function GetPageNumber: Boolean;
@@ -104,6 +104,7 @@ type
   private
     function InternalGetPageLinkWorkId: Integer;
     function InternalGetDownloadWorkId: Integer;
+    procedure TerminateCurrent(Sender: TObject);
   public
     HTTP: THTTPSendThread;
     Flag: TFlagType;
@@ -298,11 +299,11 @@ end;
 
 destructor TDownloadThread.Destroy;
 begin
-  EnterCriticalsection(Task.FCS_THREADS);
+  EnterCriticalsection(Task.ThreadsGuardian);
   try
     Task.Threads.Remove(Self);
   finally
-    LeaveCriticalsection(Task.FCS_THREADS);
+    LeaveCriticalsection(Task.ThreadsGuardian);
   end;
   HTTP.Free;
   inherited Destroy;
@@ -452,8 +453,7 @@ end;
 constructor TTaskThread.Create;
 begin
   inherited Create(True);
-  InitCriticalSection(FCS_CURRENTMAXTHREADS);
-  InitCriticalSection(FCS_THREADS);
+  InitCriticalSection(ThreadsGuardian);
   InitCriticalSection(GetWorkIdGuardian);
   Threads := TDownloadThreads.Create;
   FCheckAndActiveTaskFlag := True;
@@ -463,21 +463,14 @@ begin
   {$IFDEF WINDOWS}
   FCurrentMaxFileNameLength := 0;
   {$ENDIF}
+  OnCustomTerminate := @TerminateCurrent;
 end;
 
 destructor TTaskThread.Destroy;
-var
-  i: Integer;
 begin
   Container.DownloadInfo.DateLastDownloaded := Now;
-  EnterCriticalsection(FCS_THREADS);
-  try
-    if Threads.Count > 0 then
-      for i := 0 to Threads.Count - 1 do
-        Threads[i].Terminate;
-  finally
-    LeaveCriticalsection(FCS_THREADS);
-  end;
+
+  TerminateThreads;
   WaitForThreads;
 
   TModuleContainer(Container.DownloadInfo.Module).DecActiveTaskCount;
@@ -517,8 +510,7 @@ begin
   Threads.Free;
   if HTTP<>nil then
     HTTP.Free;
-  DoneCriticalsection(FCS_THREADS);
-  DoneCriticalSection(FCS_CURRENTMAXTHREADS);
+  DoneCriticalsection(ThreadsGuardian);
   DoneCriticalSection(GetWorkIdGuardian);
   inherited Destroy;
 end;
@@ -679,6 +671,19 @@ begin
   end;
 end;
 
+procedure TTaskThread.TerminateThreads;
+var
+  t: TDownloadThread;
+begin
+  EnterCriticalsection(ThreadsGuardian);
+  try
+    for t in Threads do
+      t.Terminate;
+  finally
+    LeaveCriticalsection(ThreadsGuardian);
+  end;
+end;
+
 procedure TTaskThread.WaitForThreads;
 begin
   while Threads.Count > 0 do
@@ -729,11 +734,11 @@ end;
 
 procedure TTaskThread.CreateNewDownloadThread;
 begin
-  EnterCriticalsection(FCS_THREADS);
+  EnterCriticalsection(ThreadsGuardian);
   try
     Threads.Add(TDownloadThread.Create(Self));
   finally
-    LeaveCriticalsection(FCS_THREADS);
+    LeaveCriticalsection(ThreadsGuardian);
   end;
 end;
 
@@ -796,6 +801,11 @@ begin
     InterlockedIncrement(Container.DownCounter);
     Container.DownloadInfo.Progress := Format('%d/%d', [Container.DownCounter, Container.PageNumber]);
   end;
+end;
+
+procedure TTaskThread.TerminateCurrent(Sender: TObject);
+begin
+  TerminateThreads;
 end;
 
 procedure TTaskThread.SockOnStatus(Sender: TObject; Reason: THookSocketReason; const Value: String);
