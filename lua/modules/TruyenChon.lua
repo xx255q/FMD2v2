@@ -35,7 +35,11 @@ function GetPageNumber()
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local x=CreateTXQuery(HTTP.Document)
-		x.XPathStringAll('//div[@class="page-chapter"]/img/@data-original', TASK.PageLinks)
+		if MODULE.ID == 'a964861afd0f410cb5122df5f50d3e1a' then
+			x.XPathStringAll('//*[@class="blocks-gallery-item"]//img/@data-src', TASK.PageLinks)
+		else
+			x.XPathStringAll('//div[@class="page-chapter"]/img/@data-original', TASK.PageLinks)
+		end
 	else
 		return false
 	end
@@ -88,4 +92,5 @@ function Init()
 
 	cat = 'English'
 	AddWebsiteModule('d2f24dec90e841b1aab4bea145ffb638', 'MangaNT', 'https://mangant.com', cat)
+	AddWebsiteModule('a964861afd0f410cb5122df5f50d3e1a', 'ManhuaPlus', 'https://manhuaplus.com', cat)
 end
