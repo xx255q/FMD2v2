@@ -16,29 +16,6 @@ function Init()
 	AddWebsiteModule('ed4175a390e74aedbe4b4f622f3767c6', 'MangaKakalots', 'https://mangakakalots.com')
 end
 
-function GetNameAndLink()
-	local id = MODULE.ID
-	if (id == '74674292e13c496699b8c5e4efd4b583')	-- mangakakalot
-		or (id == 'ed4175a390e74aedbe4b4f622f3767c6')	-- mangakakalots
-	then
-		if HTTP.GET(MODULE.RootURL .. '/manga_list?type=newest&category=all&state=all&page=' .. (URL + 1)) then
-			local x = CreateTXQuery(HTTP.Document)
-			x.XPathHREFAll('//div[@class="truyen-list"]/div[@class="list-truyen-item-wrap"]/h3/a', LINKS, NAMES)
-			return no_error
-		else
-			return net_problem
-		end
-	else
-		if HTTP.GET(MODULE.RootURL .. '/genre-all/' .. (URL + 1)) then
-			local x = CreateTXQuery(HTTP.Document)
-			x.XPathHREFAll('//div[@class="panel-content-genres"]//div[@class="genres-item-info"]/h3/a', LINKS, NAMES)
-			return no_error
-		else
-			return net_problem
-		end
-	end
-end
-
 function GetInfo()
 	local u = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(u) then
@@ -107,6 +84,11 @@ function GetPageNumber()
 	end
 end
 
+function BeforeDownloadImage()
+	HTTP.Headers.Values['Referer'] = ' ' .. MaybeFillHost(MODULE.RootURL, TASK.ChapterLinks[TASK.CurrentDownloadChapterPtr])
+	return true
+end
+
 function GetDirectoryPageNumber()
 	if (MODULE.ID == '74674292e13c496699b8c5e4efd4b583')	-- mangakakalot
 		or (MODULE.ID == 'ed4175a390e74aedbe4b4f622f3767c6')	-- mangakakalots
@@ -118,7 +100,7 @@ function GetDirectoryPageNumber()
 			return net_problem
 		end
 	else
-		if HTTP.GET(MODULE.RootURL .. '/genre-all/' .. '1') then
+		if HTTP.GET(MODULE.RootURL .. '/genre-all/') then
 			PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//a[contains(@class, "page-last")]/@href'):match('.-//.-/.-/(%d+)'))
 			return no_error
 		else
@@ -127,7 +109,27 @@ function GetDirectoryPageNumber()
 	end
 end
 
-function BeforeDownloadImage()
-	HTTP.Headers.Values['Referer'] = ' ' .. MaybeFillHost(MODULE.RootURL, TASK.ChapterLinks[TASK.CurrentDownloadChapterPtr])
-	return true
+function GetNameAndLink()
+	local id = MODULE.ID
+	if (id == '74674292e13c496699b8c5e4efd4b583')	-- mangakakalot
+		or (id == 'ed4175a390e74aedbe4b4f622f3767c6')	-- mangakakalots
+	then
+		if HTTP.GET(MODULE.RootURL .. '/manga_list?type=newest&category=all&state=all&page=' .. (URL + 1)) then
+			local x = CreateTXQuery(HTTP.Document)
+			x.XPathHREFAll('//div[@class="truyen-list"]/div[@class="list-truyen-item-wrap"]/h3/a', LINKS, NAMES)
+			return no_error
+		else
+			return net_problem
+		end
+	else
+		local url = MODULE.RootURL .. '/genre-all/'
+		if URL ~= '0' then url = url .. (URL + 1) end
+		if HTTP.GET(url) then
+			local x = CreateTXQuery(HTTP.Document)
+			x.XPathHREFAll('//div[@class="panel-content-genres"]//div[@class="genres-item-info"]/h3/a', LINKS, NAMES)
+			return no_error
+		else
+			return net_problem
+		end
+	end
 end
