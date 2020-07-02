@@ -164,7 +164,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError(E.Message + ': ' + luaToString(L.Handle, -1));
+        Logger.SendException(luaToString(L.Handle, -1), E);
     end;
   end;
 end;
@@ -184,7 +184,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError(E.Message + ': ' + luaToString(L.Handle, -1));
+        Logger.SendException(luaToString(L.Handle, -1), E);
     end;
   end;
 end;
@@ -212,7 +212,7 @@ begin
         Page := lua_tointeger(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError(E.Message + ': ' + luaToString(L.Handle, -1));
+        Logger.SendException(luaToString(L.Handle, -1), E);
     end;
   end;
 end;
@@ -239,7 +239,7 @@ begin
       Result := lua_tointeger(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError(E.Message + ': ' + luaToString(L.Handle, -1));
+        Logger.SendException(luaToString(L.Handle, -1), E);
     end;
   end;
 end;
@@ -263,7 +263,7 @@ begin
       Result := lua_tointeger(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError(E.Message + ': ' + luaToString(L.Handle, -1));
+        Logger.SendException(luaToString(L.Handle, -1), E);
     end;
   end;
 end;
@@ -283,7 +283,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError(E.Message + ': ' + luaToString(L.Handle, -1));
+        Logger.SendException(luaToString(L.Handle, -1), E);
     end;
   end;
 end;
@@ -306,7 +306,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError(E.Message + ': ' + luaToString(L.Handle, -1));
+        Logger.SendException(luaToString(L.Handle, -1), E);
     end;
   end;
 end;
@@ -330,7 +330,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError(E.Message + ': ' + luaToString(L.Handle, -1));
+        Logger.SendException(luaToString(L.Handle, -1), E);
     end;
   end;
 end;
@@ -354,7 +354,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError(E.Message + ': ' + luaToString(L.Handle, -1));
+        Logger.SendException(luaToString(L.Handle, -1), E);
     end;
   end;
 end;
@@ -378,7 +378,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError(E.Message + ': ' + luaToString(L.Handle, -1));
+        Logger.SendException(luaToString(L.Handle, -1), E);
     end;
   end;
 end;
@@ -401,7 +401,7 @@ begin
       Result := luaToString(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError(E.Message + ': ' + luaToString(L.Handle, -1));
+        Logger.SendException(luaToString(L.Handle, -1), E);
     end;
   end;
 end;
@@ -421,7 +421,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError(E.Message + ': ' + luaToString(L.Handle, -1));
+        Logger.SendException(luaToString(L.Handle, -1), E);
     end;
   end;
 end;
@@ -442,7 +442,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError(E.Message + ': ' + luaToString(L.Handle, -1));
+        Logger.SendException(luaToString(L.Handle, -1), E);
     end;
   end;
 end;
@@ -485,7 +485,7 @@ begin
     end;
   except
     on E: Exception do
-      Logger.SendError(E.Message + ': ' + luaToString(L, -1));
+      Logger.SendException(luaToString(L, -1), E);
   end;
   lua_close(L);
 end;

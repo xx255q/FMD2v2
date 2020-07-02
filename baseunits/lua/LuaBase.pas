@@ -115,7 +115,8 @@ begin
     LuaBaseRegisterAll(Result);
     LuaPackage.RegisterLoader(Result);
   except
-    Logger.SendError(lua_tostring(Result, -1));
+    on E: Exception do
+      Logger.SendException(luaToString(Result, -1), E);
   end;
 end;
 
@@ -172,7 +173,7 @@ begin
       Result := LuaDumpFileToStream(L, AFileName);
     except
       on E: Exception do
-        Logger.SendError(E.Message + ': ' + luaToString(L, -1));
+        Logger.SendException(luaToString(L, -1), E);
     end;
   finally
     lua_close(L);
@@ -195,7 +196,7 @@ begin
     begin
       Result.Free;
       Result := nil;
-      Logger.SendError(luaToString(L, -1));
+      Logger.SendException(luaToString(L, -1), E);
     end;
   end;
 end;
