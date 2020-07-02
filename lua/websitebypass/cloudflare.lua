@@ -139,14 +139,14 @@ function _m.solveChallenge(self, url)
 		LOGGER.SendError('WebsitBypass[clounflare]: detected reCapthca challenge, not supported right now. can be redirected to third party capthca solver in the future\r\n' .. url)
 		return false
 	end
+	-- IUAM challenge
+	if ((rc == 429) or (rc == 503)) and body:find('<form .-="challenge%-form" action="/.-__cf_chl_jschl_tk__=%S+"') then
+		return self:solveIUAMChallenge(body, url)
+	end
 	-- new IUAM challenge
 	if ((rc == 429) or (rc == 503)) and body:find('cpo.src%s*=%s*"/cdn%-cgi/challenge%-platform/orchestrate/jsch/v1"') then
 		LOGGER.SendError('WebsitBypass[clounflare]: detected the new Cloudflare challenge, not supported yet\r\n' .. url)
 		return false
-	end
-	-- IUAM challenge
-	if ((rc == 429) or (rc == 503)) and body:find('<form .-="challenge%-form" action="/.-__cf_chl_jschl_tk__=%S+"') then
-		return self:solveIUAMChallenge(body, url)
 	end
 
 	LOGGER.SendWarning('WebsitBypass[clounflare]: no Cloudflare solution found!\r\n' .. url)
