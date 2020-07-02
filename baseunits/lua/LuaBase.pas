@@ -98,12 +98,12 @@ begin
     if r = 0 then
       r := LuaPCall(Result, 0, LUA_MULTRET, 0);
     if r <> 0 then
-      raise Exception.Create(LuaGetReturnString(r)+': '+lua_tostring(Result, -1));
+      raise Exception.Create(LuaGetReturnString(r) + ': ' + luaToString(Result, -1));
     if AFuncName <> '' then
       LuaCallFunction(Result, AFuncName);
   except
     on E: Exception do
-      Logger.SendException('LuaDoFile.Error', E);
+      Logger.SendException(Format('LuaDoFile(%s)', [AFileName]), E);
   end;
 end;
 
@@ -116,7 +116,7 @@ begin
     LuaPackage.RegisterLoader(Result);
   except
     on E: Exception do
-      Logger.SendException(luaToString(Result, -1), E);
+      Logger.SendException('LuaNewBaseState()', E);
   end;
 end;
 
@@ -128,11 +128,11 @@ begin
   if lua_isnoneornil(L, -1) then
   begin
     lua_settop(L, 1);
-    raise Exception.Create('No function name ' + QuotedStr(AFuncName));
+    raise Exception.Create('No function name ' + AnsiQuotedStr(AFuncName, '"'));
   end;
   r := LuaPCall(L, 0, LUA_MULTRET, 0);
   if r <> 0 then
-    raise Exception.Create(LuaGetReturnString(r));
+    raise Exception.Create(Format('LuaCallFunction("%s") %s: %s', [AFuncName, LuaGetReturnString(r), luaToString(L, -1)]));
 end;
 
 function LuaGetReturnString(const ReturnCode: Integer): String;
@@ -188,15 +188,15 @@ begin
   Result := TMemoryStream.Create;
   try
     if luaL_loadfile(L, PAnsiChar(AFileName)) <> 0 then
-      raise Exception.Create('');
+      raise Exception.Create('luaL_loadfile ' + luaToString(L, -1));
     if lua_dump(L, @_luawriter, Result{$ifndef luajit}, 1{$endif}) <> 0 then
-      raise Exception.Create('');
+      raise Exception.Create('lua_dump ' + luaToString(L, -1));
   except
     on E: Exception do
     begin
       Result.Free;
       Result := nil;
-      Logger.SendException(luaToString(L, -1), E);
+      Logger.SendException(Format('LuaDumpFileToStream("%s")', [AFileName]), E);
     end;
   end;
 end;
@@ -225,7 +225,7 @@ begin
   if r = 0 then
     r := LuaPCall(L, 0, NResult, 0);
   if r <> 0 then
-    raise Exception.Create('LuaExecute '+LuaGetReturnString(r)+': '+luaToString(L,-1));
+    raise Exception.Create(Format('LuaExecute("%s") %s: %s', [AFileName, LuaGetReturnString(r), luaToString(L, -1)]));
 end;
 
 function LuaPCall(L: Plua_State; nargs, nresults, errf: Integer): Integer;

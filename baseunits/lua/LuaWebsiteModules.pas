@@ -164,7 +164,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendException(luaToString(L.Handle, -1), E);
+        Logger.SendException(Format('LUA>DoBeforeUpdateList("%s")', [TLuaWebsiteModule(Module.LuaModule).Container.FileName]), E);
     end;
   end;
 end;
@@ -184,7 +184,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendException(luaToString(L.Handle, -1), E);
+        Logger.SendException(Format('LUA>DoAfterUpdateList("%s")', [TLuaWebsiteModule(Module.LuaModule).Container.FileName]), E);
     end;
   end;
 end;
@@ -212,7 +212,7 @@ begin
         Page := lua_tointeger(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendException(luaToString(L.Handle, -1), E);
+        Logger.SendException(Format('LUA>DoGetDirectoryPageNumber("%s")', [TLuaWebsiteModule(Module.LuaModule).Container.FileName]), E);
     end;
   end;
 end;
@@ -239,7 +239,7 @@ begin
       Result := lua_tointeger(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendException(luaToString(L.Handle, -1), E);
+        Logger.SendException(Format('LUA>DoGetNameAndLink("%s")', [TLuaWebsiteModule(Module.LuaModule).Container.FileName]), E);
     end;
   end;
 end;
@@ -263,7 +263,7 @@ begin
       Result := lua_tointeger(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendException(luaToString(L.Handle, -1), E);
+        Logger.SendException(Format('LUA>DoGetInfo("%s")', [TLuaWebsiteModule(Module.LuaModule).Container.FileName]), E);
     end;
   end;
 end;
@@ -283,7 +283,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendException(luaToString(L.Handle, -1), E);
+        Logger.SendException(Format('LUA>DoTaskStart("%s")', [TLuaWebsiteModule(Module.LuaModule).Container.FileName]), E);
     end;
   end;
 end;
@@ -306,7 +306,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendException(luaToString(L.Handle, -1), E);
+        Logger.SendException(Format('LUA>DoGetPageNumber("%s")', [TLuaWebsiteModule(Module.LuaModule).Container.FileName]), E);
     end;
   end;
 end;
@@ -330,7 +330,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendException(luaToString(L.Handle, -1), E);
+        Logger.SendException(Format('LUA>DoGetImageURL("%s")', [TLuaWebsiteModule(Module.LuaModule).Container.FileName]), E);
     end;
   end;
 end;
@@ -354,7 +354,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendException(luaToString(L.Handle, -1), E);
+        Logger.SendException(Format('LUA>DoBeforeDownloadImage("%s")', [TLuaWebsiteModule(Module.LuaModule).Container.FileName]), E);
     end;
   end;
 end;
@@ -378,7 +378,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendException(luaToString(L.Handle, -1), E);
+        Logger.SendException(Format('LUA>DoDownloadImage("%s")', [TLuaWebsiteModule(Module.LuaModule).Container.FileName]), E);
     end;
   end;
 end;
@@ -401,7 +401,7 @@ begin
       Result := luaToString(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendException(luaToString(L.Handle, -1), E);
+        Logger.SendException(Format('LUA>DoSaveImage("%s")', [TLuaWebsiteModule(Module.LuaModule).Container.FileName]), E);
     end;
   end;
 end;
@@ -421,7 +421,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendException(luaToString(L.Handle, -1), E);
+        Logger.SendException(Format('LUA>DoAfterImageSaved("%s")', [TLuaWebsiteModule(Module.LuaModule).Container.FileName]), E);
     end;
   end;
 end;
@@ -442,7 +442,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendException(luaToString(L.Handle, -1), E);
+        Logger.SendException(Format('LUA>DoLogin("%s")', [TLuaWebsiteModule(Module.LuaModule).Container.FileName]), E);
     end;
   end;
 end;
@@ -477,15 +477,15 @@ begin
           if i = 0 then
             Result := True
           else
-            raise Exception.Create(LuaGetReturnString(i));
+            raise Exception.Create(LuaGetReturnString(i) + ': ' + luaToString(L, -1));
         end;
       end
       else
-        raise Exception.Create(LuaGetReturnString(i));
+        raise Exception.Create(LuaGetReturnString(i) + ': ' + luaToString(L, -1));
     end;
   except
     on E: Exception do
-      Logger.SendException(luaToString(L, -1), E);
+      Logger.SendException(Format('LUA>DoInit("%s")', [AFileName]), E);
   end;
   lua_close(L);
 end;
