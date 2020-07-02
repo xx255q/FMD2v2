@@ -16,7 +16,7 @@ function GetInfo()
 	if not HTTP.GET(u) then return net_problem end
 
 	x = CreateTXQuery(HTTP.Document)
-	MANGAINFO.Title     = x.XPathString('//meta[@property="og:title"]/@content'):gsub(' | MangaLife', '')
+	MANGAINFO.Title     = x.XPathString('//meta[@property="og:title"]/@content'):gsub(' | ' .. MODULE.Name, '')
 	MANGAINFO.CoverLink = x.XPathString('//meta[@property="og:image"]/@content')
 	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//span[@class="mlabel" and contains(., "Status")]/following-sibling::a[1]'))
 	MANGAINFO.Authors   = x.XPathString('//span[@class="mlabel" and contains(., "Author")]/following-sibling::a[1]')
@@ -26,10 +26,19 @@ function GetInfo()
 	local chapter_uri = x.XPathString('//div[@ng-if]/a/@href'):gsub('%{.*$', '')
 	local chapters = x.XPathString('//script[contains(.,"vm.Chapters =")]'):match('(%[.-%])')
 	x.ParseHTML(chapters)
-	for i, c in ipairs(x.XPathI('json(*)().ChapterName')) do
-	MANGAINFO.ChapterNames.Add('Chapter ' .. tostring(i) .. ' ' .. c.ToString())
-	MANGAINFO.ChapterLinks.Add(chapter_uri .. '-chapter-' .. tostring(i) .. '.html')
+	local v for v in x.XPath('json(*)().Chapter').Get() do
+		local indexnum, chpnum, partnum = v.ToString():match('(%d)(%d%d%d%d)(%d)')
+		local chapter_id = tostring(tonumber(chpnum))
+		if partnum ~= '0' then chapter_id = chapter_id .. '.' .. partnum end
+		if indexnum ~= '1' then
+			MANGAINFO.ChapterNames.Add('S' .. indexnum .. ' Chapter ' .. chapter_id)
+			MANGAINFO.ChapterLinks.Add(chapter_uri .. '-chapter-' .. chapter_id .. '-index-' .. indexnum .. '.html')
+		else
+			MANGAINFO.ChapterNames.Add('Chapter ' .. chapter_id)
+			MANGAINFO.ChapterLinks.Add(chapter_uri .. '-chapter-' .. chapter_id .. '.html')
+		end
 	end
+	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
 	return no_error
 end
@@ -46,7 +55,6 @@ function GetNameAndLink()
 	json = GetBetween('vm.FullDirectory = ', '}]};', x.XPathString('//script[contains(., "vm.FullDirectory = ")]')) .. '}]}'
 	json = json:gsub('\\"', ''):gsub('\\u2019', '\''):gsub('&#', '')
 	x.ParseHTML(json)
-	print(x.XPathString('json(*).Directory()'))
 	v = x.XPath('json(*).Directory()')
 
 	for i = 1, v.Count do
@@ -89,12 +97,16 @@ end
 ----------------------------------------------------------------------------------------------------
 
 function Init()
-	local m = NewWebsiteModule()
-	m.ID                    = '4c1e8bcc433d4ebca8e6b4d86ce100cf'
-	m.Name                  = 'MangaLife'
-	m.RootURL               = 'https://manga4life.com'
-	m.Category              = 'English'
-	m.OnGetInfo             = 'GetInfo'
-	m.OnGetNameAndLink      = 'GetNameAndLink'
-	m.OnGetPageNumber       = 'GetPageNumber'
+	function AddWebsiteModule(id, name, url, category)
+		local m = NewWebsiteModule()
+		m.ID                        = id
+		m.Name                      = name
+		m.RootURL                   = url
+		m.Category                  = category
+		m.OnGetInfo                 = 'GetInfo'
+		m.OnGetNameAndLink          = 'GetNameAndLink'
+		m.OnGetPageNumber           = 'GetPageNumber'
+	end
+	AddWebsiteModule('4c1e8bcc433d4ebca8e6b4d86ce100cf', 'MangaLife', 'https://manga4life.com', 'English')
+	AddWebsiteModule('3db42782cfc441e3a3498afa91f70a80', 'MangaSee', 'https://mangasee123.com', 'English')
 end
