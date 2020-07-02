@@ -182,15 +182,19 @@ end;
 
 function LuaDumpFileToStream(const L: Plua_State; const AFileName: String
   ): TMemoryStream;
+var
+  r: Integer;
 begin
   if not FileExists(AFileName) then
     Exit;
   Result := TMemoryStream.Create;
   try
-    if luaL_loadfile(L, PAnsiChar(AFileName)) <> 0 then
-      raise Exception.Create('luaL_loadfile ' + luaToString(L, -1));
-    if lua_dump(L, @_luawriter, Result{$ifndef luajit}, 1{$endif}) <> 0 then
-      raise Exception.Create('lua_dump ' + luaToString(L, -1));
+    r := luaL_loadfile(L, PAnsiChar(AFileName));
+    if r <> 0 then
+      raise Exception.Create('luaL_loadfile ' + LuaGetReturnString(r) + ': ' + luaToString(L, -1));
+    r := lua_dump(L, @_luawriter, Result{$ifndef luajit}, 1{$endif});
+    if r <> 0 then
+      raise Exception.Create('lua_dump ' + LuaGetReturnString(r) + ': ' + luaToString(L, -1));
   except
     on E: Exception do
     begin
@@ -210,10 +214,10 @@ end;
 function LuaLoadFromStreamOrFile(const L: Plua_State;
   const AStream: TMemoryStream; const AFileName: String): Integer;
 begin
-  if AlwaysLoadLuaFromFile then
-    Result := luaL_loadfile(L, PAnsiChar(AFileName))
+  if not AlwaysLoadLuaFromFile then
+    Result := luaL_loadbuffer(L, AStream.Memory, AStream.Size, PAnsiChar(AFileName))
   else
-    Result := luaL_loadbuffer(L, AStream.Memory, AStream.Size, PAnsiChar(AFileName));
+    Result := luaL_loadfile(L, PAnsiChar(AFileName));
 end;
 
 procedure LuaExecute(const L: Plua_State; const AStream: TMemoryStream;
@@ -225,7 +229,7 @@ begin
   if r = 0 then
     r := LuaPCall(L, 0, NResult, 0);
   if r <> 0 then
-    raise Exception.Create(Format('LuaExecute("%s") %s: %s', [AFileName, LuaGetReturnString(r), luaToString(L, -1)]));
+    raise Exception.Create(Format('LuaExecute() %s: %s', [LuaGetReturnString(r), luaToString(L, -1)]));
 end;
 
 function LuaPCall(L: Plua_State; nargs, nresults, errf: Integer): Integer;

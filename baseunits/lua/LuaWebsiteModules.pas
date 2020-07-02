@@ -463,7 +463,7 @@ begin
   try
     i := luaL_loadfile(L, PAnsiChar(AFileName));
     if i <> 0 then
-      raise Exception.Create(LuaGetReturnString(i))
+      raise Exception.Create('luaL_loadfile ' + LuaGetReturnString(i) + ': ' + luaToString(L, -1))
     else
     begin
       i := LuaPCall(L, 0, 0, 0);
