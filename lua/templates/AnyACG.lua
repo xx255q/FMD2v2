@@ -84,7 +84,7 @@ function _M.GetLanguageCodeSuffix(s)
   local suffix = ' [EN]'
 
   if s and (s ~= '') then
-    s = s:match('flag_(%w+)')
+    s = s:match('flag_(%S+)')
     if s and (s ~= 'united_kingdom') then suffix = ' [' .. string.upper(s) .. ']' end
   end
 
