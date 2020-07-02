@@ -9,12 +9,18 @@ uses
 
 implementation
 
-uses Duktape, LuaUtils, LuaPackage;
+uses Duktape, MultiLog, LuaUtils, LuaPackage;
 
 function lua_execjs(L: Plua_State): Integer; cdecl;
 begin
-  lua_pushstring(L, Duktape.ExecJS(luaToString(L, 1)));
-  Result := 1;
+  Result := 0;
+  try
+    lua_pushstring(L, Duktape.ExecJS(luaToString(L, 1)));
+    Result := 1;
+  except
+    on E: Exception do
+      Logger.SendError('Duktape.ExecJS() ' + E.Message);
+  end;
 end;
 
 const
