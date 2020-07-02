@@ -48,6 +48,7 @@ function GetInfo()
 		MANGAINFO.ChapterLinks.Add(chapter_uri .. vm_ChapterURLEncode(chapter))
 		MANGAINFO.ChapterNames.Add(chapterType .. " " .. vm_ChapterDisplay(chapter) .. " " .. chapterName)
 	end
+	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
 	return no_error
 end
