@@ -95,15 +95,16 @@ begin
     luaL_openlibs(Result);
     LuaBaseRegisterAll(Result);
     r := luaL_loadfile(Result, PAnsiChar(AFileName));
-    if r = 0 then
-      r := LuaPCall(Result, 0, LUA_MULTRET, 0);
+    if r <> 0 then
+      raise Exception.Create(LuaGetReturnString(r) + ': ' + luaToString(Result, -1));
+    r := LuaPCall(Result, 0, LUA_MULTRET, 0);
     if r <> 0 then
       raise Exception.Create(LuaGetReturnString(r) + ': ' + luaToString(Result, -1));
     if AFuncName <> '' then
       LuaCallFunction(Result, AFuncName);
   except
     on E: Exception do
-      Logger.SendException(Format('LuaDoFile(%s)', [AFileName]), E);
+      Logger.SendError('LuaDoFile() ' + E.Message);
   end;
 end;
 
@@ -169,12 +170,7 @@ begin
   L := luaL_newstate;
   try
     luaL_openlibs(L);
-    try
-      Result := LuaDumpFileToStream(L, AFileName);
-    except
-      on E: Exception do
-        Logger.SendException(luaToString(L, -1), E);
-    end;
+    Result := LuaDumpFileToStream(L, AFileName);
   finally
     lua_close(L);
   end;
@@ -200,7 +196,7 @@ begin
     begin
       Result.Free;
       Result := nil;
-      Logger.SendException(Format('LuaDumpFileToStream("%s")', [AFileName]), E);
+      Logger.SendError('LuaDumpFileToStream()' + E.Message);
     end;
   end;
 end;
