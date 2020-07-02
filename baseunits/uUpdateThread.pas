@@ -195,6 +195,7 @@ begin
   while workPtr<>-1 do
   begin
     info.GetDirectoryPage(manager.module.TotalDirectoryPage[workPtr]);;
+    info.HTTP.Reset;
     workPtr := manager.GetWorkPtr;
   end;
 end;
@@ -211,8 +212,6 @@ begin
   try
     while workPtr<>-1 do
     begin
-      names.Clear;
-      links.Clear;
       if BROWSER_INVERT then
         workPtr := manager.module.TotalDirectoryPage[manager.module.CurrentDirectoryIndex] - workPtr -1;
       info.GetNameAndLink(names, links, IntToStr(workPtr));
@@ -240,6 +239,9 @@ begin
           LeaveCriticalSection(manager.AddNamesAndLinksGuardian);
         end;
       end;
+      names.Clear;
+      links.Clear;
+      info.HTTP.Reset;
       workPtr := manager.GetWorkPtr;
     end;
   finally
@@ -269,6 +271,8 @@ begin
         end;
       end;
     end;
+    info.HTTP.Reset;
+    info.MangaInfo.Clear;
     workPtr := manager.GetWorkPtr;
   end;
 end;

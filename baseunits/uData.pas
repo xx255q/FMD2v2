@@ -28,7 +28,6 @@ type
   public
     HTTP: THTTPSendThread;
     MangaInfo: TMangaInfo;
-    Parse: TStringList;
     isGetByUpdater: Boolean;
     isGenerateFolderChapterName: Boolean;
     isRemoveUnicode: Boolean;
@@ -36,7 +35,6 @@ type
 
     constructor Create(const AOwnerThread: TBaseThread = nil; const ACreateInfo: Boolean = True);
     destructor Destroy; override;
-    procedure ClearInfo;
     function GetDirectoryPage(var APage: Integer): Byte;
     function GetNameAndLink(const ANames, ALinks: TStringList; AURL: String): Byte;
     function GetInfoFromURL(const AURL: String): Byte;
@@ -63,7 +61,6 @@ begin
   FOwner := AOwnerThread;
   HTTP := THTTPSendThread.Create(AOwnerThread);
   HTTP.Headers.NameValueSeparator := ':';
-  Parse := TStringList.Create;
   if ACreateInfo then
     MangaInfo := TMangaInfo.Create;
   isGetByUpdater := False;
@@ -74,26 +71,8 @@ destructor TMangaInformation.Destroy;
 begin
   if Assigned(MangaInfo) then
     MangaInfo.Free;
-  if Assigned(Parse) then
-    Parse.Free;
   HTTP.Free;
   inherited Destroy;
-end;
-
-procedure TMangaInformation.ClearInfo;
-begin
-  MangaInfo.Artists := '';
-  MangaInfo.Authors := '';
-  MangaInfo.Genres := '';
-  MangaInfo.Summary := '';
-  MangaInfo.CoverLink := '';
-  MangaInfo.NumChapter := 0;
-  MangaInfo.Status := '';
-  MangaInfo.Title := '';
-  MangaInfo.URL := '';
-  MangaInfo.Module := nil;
-  MangaInfo.ChapterNames.Clear;
-  MangaInfo.ChapterLinks.Clear;
 end;
 
 procedure TMangaInformation.SetModule(const AValue: Pointer);

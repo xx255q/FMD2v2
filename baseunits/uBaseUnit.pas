@@ -342,6 +342,7 @@ type
     destructor Destroy; override;
     function ModuleID: String; inline;
     function Website: String; inline;
+    procedure Clear;
   end;
 
   PDownloadInfo = ^TDownloadInfo;
@@ -3845,6 +3846,23 @@ end;
 function TMangaInfo.Website: String;
 begin
   Result := TModuleContainer(Module).Name;
+end;
+
+procedure TMangaInfo.Clear;
+begin
+  URL := '';
+  Title := '';
+  Link := '';
+  CoverLink := '';
+  Authors := '';
+  Artists := '';
+  Genres := '';
+  Status := '';
+  Summary := '';
+  NumChapter := 0;
+  ChapterNames.Clear;
+  ChapterLinks.Clear;
+  Module := nil;
 end;
 
 constructor TDownloadPageThread.Create(CreateSuspended: Boolean);
