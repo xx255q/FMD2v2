@@ -24,35 +24,35 @@ type
 
   TModuleContainer = class;
 
-  TOnBeforeUpdateList = function(const Module: TModuleContainer): Boolean;
-  TOnAfterUpdateList = function(const Module: TModuleContainer): Boolean;
-  TOnGetDirectoryPageNumber = function(const MangaInfo: TMangaInformation;
-    var Page: Integer; const WorkPtr: Integer; const Module: TModuleContainer): Byte;
-  TOnGetNameAndLink = function(const MangaInfo: TMangaInformation;
+  TOnBeforeUpdateList = function(const AModule: TModuleContainer): Boolean;
+  TOnAfterUpdateList = function(const AModule: TModuleContainer): Boolean;
+  TOnGetDirectoryPageNumber = function(const AMangaInfo: TMangaInformation;
+    var APage: Integer; const AWorkPtr: Integer; const AModule: TModuleContainer): Byte;
+  TOnGetNameAndLink = function(const AMangaInfo: TMangaInformation;
     const ANames, ALinks: TStringList; const AURL: String;
-    const Module: TModuleContainer): Byte;
-  TOnGetInfo = function(const MangaInfo: TMangaInformation; const AURL: String;
-    const Module: TModuleContainer): Byte;
+    const AModule: TModuleContainer): Byte;
+  TOnGetInfo = function(const AMangaInfo: TMangaInformation; const AURL: String;
+    const AModule: TModuleContainer): Byte;
 
-  TOnTaskStart = function(const Task: TTaskContainer; const Module: TModuleContainer): Boolean;
-  TOnGetPageNumber = function(const DownloadThread: TDownloadThread;
-    const AURL: String; const Module: TModuleContainer): Boolean;
-  TOnGetImageURL = function(const DownloadThread: TDownloadThread;
-    const AURL: String; const Module: TModuleContainer): Boolean;
+  TOnTaskStart = function(const ATask: TTaskContainer; const AModule: TModuleContainer): Boolean;
+  TOnGetPageNumber = function(const ADownloadThread: TDownloadThread;
+    const AURL: String; const AModule: TModuleContainer): Boolean;
+  TOnGetImageURL = function(const ADownloadThread: TDownloadThread;
+    const AURL: String; const AModule: TModuleContainer): Boolean;
 
-  TOnBeforeDownloadImage = function(const DownloadThread: TDownloadThread;
-    var AURL: String; const Module: TModuleContainer): Boolean;
+  TOnBeforeDownloadImage = function(const ADownloadThread: TDownloadThread;
+    var AURL: String; const AModule: TModuleContainer): Boolean;
 
-  TOnDownloadImage = function(const DownloadThread: TDownloadThread;
-    const AURL: String; const Module: TModuleContainer): Boolean;
+  TOnDownloadImage = function(const ADownloadThread: TDownloadThread;
+    const AURL: String; const AModule: TModuleContainer): Boolean;
 
-  TOnSaveImage = function(const DownloadThread: TDownloadThread;
-    const APath, AName: String; const Module: TModuleContainer): String;
+  TOnSaveImage = function(const ADownloadThread: TDownloadThread;
+    const APath, AName: String; const AModule: TModuleContainer): String;
 
-  TOnAfterImageSaved = function(const DownloadThread: TDownloadThread;
-    const AFilename: String; const Module: TModuleContainer): Boolean;
+  TOnAfterImageSaved = function(const ADownloadThread: TDownloadThread;
+    const AFileName: String; const AModule: TModuleContainer): Boolean;
 
-  TOnLogin = function(const AHTTP: THTTPSendThread; const Module: TModuleContainer): Boolean;
+  TOnLogin = function(const AHTTP: THTTPSendThread; const AModule: TModuleContainer): Boolean;
 
   TModuleMethod = (MMGetDirectoryPageNumber, MMGetNameAndLink, MMGetInfo,
     MMTaskStart, MMGetPageNumber, MMGetImageURL, MMBeforeDownloadImage,

@@ -149,14 +149,14 @@ uses
 threadvar
   TempModules:TLuaWebsiteModules;
 
-function DoBeforeUpdateList(const Module: TModuleContainer): Boolean;
+function DoBeforeUpdateList(const AModule: TModuleContainer): Boolean;
 var
   L: TLuaWebsiteModuleHandler;
 begin
   Result := False;
-  L := GetLuaWebsiteModuleHandler(Module);
-  with TLuaWebsiteModule(Module.LuaModule) do
+  with TLuaWebsiteModule(AModule.LuaModule) do
     try
+      L := GetLuaWebsiteModuleHandler(AModule);
       L.LoadObject('UPDATELIST', updateList, @luaUpdateListManagerAddMetaTable);
 
       L.CallFunction(OnBeforeUpdateList);
@@ -167,14 +167,14 @@ begin
     end;
 end;
 
-function DoAfterUpdateList(const Module: TModuleContainer): Boolean;
+function DoAfterUpdateList(const AModule: TModuleContainer): Boolean;
 var
   L: TLuaWebsiteModuleHandler;
 begin
   Result := False;
-  L := GetLuaWebsiteModuleHandler(Module);
-  with TLuaWebsiteModule(Module.LuaModule) do
+  with TLuaWebsiteModule(AModule.LuaModule) do
     try
+      L := GetLuaWebsiteModuleHandler(AModule);
       L.LoadObject('UPDATELIST', updateList, @luaUpdateListManagerAddMetaTable);
 
       L.CallFunction(OnAfterUpdateList);
@@ -185,44 +185,44 @@ begin
     end;
 end;
 
-function DoGetDirectoryPageNumber(const MangaInfo: TMangaInformation;
-  var Page: Integer; const WorkPtr: Integer; const Module: TModuleContainer): Byte;
+function DoGetDirectoryPageNumber(const AMangaInfo: TMangaInformation;
+  var APage: Integer; const AWorkPtr: Integer; const AModule: TModuleContainer): Byte;
 var
   L: TLuaWebsiteModuleHandler;
 begin
   Result := INFORMATION_NOT_FOUND;
-  L := GetLuaWebsiteModuleHandler(Module);
-  with TLuaWebsiteModule(Module.LuaModule) do
+  with TLuaWebsiteModule(AModule.LuaModule) do
     try
+      L := GetLuaWebsiteModuleHandler(AModule);
       LuaPushNetStatus(L.Handle);
-      L.LoadObject('HTTP', MangaInfo.HTTP, @luaHTTPSendThreadAddMetaTable);
+      L.LoadObject('HTTP', AMangaInfo.HTTP, @luaHTTPSendThreadAddMetaTable);
       L.LoadObject('UPDATELIST', updateList, @luaUpdateListManagerAddMetaTable);
-      luaPushIntegerGlobal(L.Handle, 'PAGENUMBER', Page);
-      luaPushIntegerGlobal(L.Handle, 'WORKPTR', WorkPtr);
+      luaPushIntegerGlobal(L.Handle, 'PAGENUMBER', APage);
+      luaPushIntegerGlobal(L.Handle, 'WORKPTR', AWorkPtr);
 
       L.CallFunction(OnGetDirectoryPageNumber);
       Result := lua_tointeger(L.Handle, -1);
       lua_getglobal(L.Handle, 'PAGENUMBER');
       if not lua_isnoneornil(L.Handle, -1) then
-        Page := lua_tointeger(L.Handle, -1);
+        APage := lua_tointeger(L.Handle, -1);
     except
       on E: Exception do
         Logger.SendError('LUA>DoGetDirectoryPageNumber("' + ExtractFileName(Container.FileName) + '")>' + E.Message);
     end;
 end;
 
-function DoGetNameAndLink(const MangaInfo: TMangaInformation;
+function DoGetNameAndLink(const AMangaInfo: TMangaInformation;
   const ANames, ALinks: TStringList; const AURL: String;
-  const Module: TModuleContainer): Byte;
+  const AModule: TModuleContainer): Byte;
 var
   L: TLuaWebsiteModuleHandler;
 begin
   Result := INFORMATION_NOT_FOUND;
-  L := GetLuaWebsiteModuleHandler(Module);
-  with TLuaWebsiteModule(Module.LuaModule) do
+  with TLuaWebsiteModule(AModule.LuaModule) do
     try
+      L := GetLuaWebsiteModuleHandler(AModule);
       LuaPushNetStatus(L.Handle);
-      L.LoadObject('HTTP', MangaInfo.HTTP, @luaHTTPSendThreadAddMetaTable);
+      L.LoadObject('HTTP', AMangaInfo.HTTP, @luaHTTPSendThreadAddMetaTable);
       L.LoadObject('NAMES', ANames, @luaStringsAddMetaTable);
       L.LoadObject('LINKS', ALinks, @luaStringsAddMetaTable);
       L.LoadObject('UPDATELIST', updateList, @luaUpdateListManagerAddMetaTable);
@@ -236,18 +236,18 @@ begin
     end;
 end;
 
-function DoGetInfo(const MangaInfo: TMangaInformation; const AURL: String;
-  const Module: TModuleContainer): Byte;
+function DoGetInfo(const AMangaInfo: TMangaInformation; const AURL: String;
+  const AModule: TModuleContainer): Byte;
 var
   L: TLuaWebsiteModuleHandler;
 begin
   Result := INFORMATION_NOT_FOUND;
-  L := GetLuaWebsiteModuleHandler(Module);
-  with TLuaWebsiteModule(Module.LuaModule) do
+  with TLuaWebsiteModule(AModule.LuaModule) do
     try
+      L := GetLuaWebsiteModuleHandler(AModule);
       LuaPushNetStatus(L.Handle);
-      L.LoadObject('MANGAINFO', MangaInfo.MangaInfo, @luaMangaInfoAddMetaTable);
-      L.LoadObject('HTTP', MangaInfo.HTTP, @luaHTTPSendThreadAddMetaTable);
+      L.LoadObject('MANGAINFO', AMangaInfo.MangaInfo, @luaMangaInfoAddMetaTable);
+      L.LoadObject('HTTP', AMangaInfo.HTTP, @luaHTTPSendThreadAddMetaTable);
       luaPushStringGlobal(L.Handle, 'URL', AURL);
 
       L.CallFunction(OnGetInfo);
@@ -258,15 +258,15 @@ begin
     end;
 end;
 
-function DoTaskStart(const Task: TTaskContainer; const Module: TModuleContainer): Boolean;
+function DoTaskStart(const ATask: TTaskContainer; const AModule: TModuleContainer): Boolean;
 var
   L: TLuaWebsiteModuleHandler;
 begin
   Result := False;
-  L := GetLuaWebsiteModuleHandler(Module);
-  with TLuaWebsiteModule(Module.LuaModule) do
+  with TLuaWebsiteModule(AModule.LuaModule) do
     try
-      L.LoadObject('TASK', Task, @luaDownloadTaskMetaTable);
+      L := GetLuaWebsiteModuleHandler(AModule);
+      L.LoadObject('TASK', ATask, @luaDownloadTaskMetaTable);
 
       L.CallFunction(OnTaskStart);
       Result := lua_toboolean(L.Handle, -1);
@@ -276,17 +276,17 @@ begin
     end;
 end;
 
-function DoGetPageNumber(const DownloadThread: TDownloadThread;
-  const AURL: String; const Module: TModuleContainer): Boolean;
+function DoGetPageNumber(const ADownloadThread: TDownloadThread;
+  const AURL: String; const AModule: TModuleContainer): Boolean;
 var
   L: TLuaWebsiteModuleHandler;
 begin
   Result := False;
-  L := GetLuaWebsiteModuleHandler(Module);
-  with TLuaWebsiteModule(Module.LuaModule) do
+  with TLuaWebsiteModule(AModule.LuaModule) do
     try
-      L.LoadObject('TASK', DownloadThread.Task.Container, @luaDownloadTaskMetaTable);
-      L.LoadObject('HTTP', DownloadThread.HTTP, @luaHTTPSendThreadAddMetaTable);
+      L := GetLuaWebsiteModuleHandler(AModule);
+      L.LoadObject('TASK', ADownloadThread.Task.Container, @luaDownloadTaskMetaTable);
+      L.LoadObject('HTTP', ADownloadThread.HTTP, @luaHTTPSendThreadAddMetaTable);
       luaPushStringGlobal(L.Handle, 'URL', AURL);
 
       L.CallFunction(OnGetPageNumber);
@@ -297,18 +297,18 @@ begin
     end;
 end;
 
-function DoGetImageURL(const DownloadThread: TDownloadThread; const AURL: String;
-  const Module: TModuleContainer): Boolean;
+function DoGetImageURL(const ADownloadThread: TDownloadThread; const AURL: String;
+  const AModule: TModuleContainer): Boolean;
 var
   L: TLuaWebsiteModuleHandler;
 begin
   Result := False;
-  L := GetLuaWebsiteModuleHandler(Module);
-  with TLuaWebsiteModule(Module.LuaModule) do
+  with TLuaWebsiteModule(AModule.LuaModule) do
     try
-      L.LoadObject('TASK', DownloadThread.Task.Container, @luaDownloadTaskMetaTable);
-      L.LoadObject('HTTP', DownloadThread.HTTP, @luaHTTPSendThreadAddMetaTable);
-      luaPushIntegerGlobal(L.Handle, 'WORKID', DownloadThread.WorkId);
+      L := GetLuaWebsiteModuleHandler(AModule);
+      L.LoadObject('TASK', ADownloadThread.Task.Container, @luaDownloadTaskMetaTable);
+      L.LoadObject('HTTP', ADownloadThread.HTTP, @luaHTTPSendThreadAddMetaTable);
+      luaPushIntegerGlobal(L.Handle, 'WORKID', ADownloadThread.WorkId);
       luaPushStringGlobal(L.Handle, 'URL', AURL);
 
       L.CallFunction(OnGetImageURL);
@@ -319,18 +319,18 @@ begin
     end;
 end;
 
-function DoBeforeDownloadImage(const DownloadThread: TDownloadThread;
-  var AURL: String; const Module: TModuleContainer): Boolean;
+function DoBeforeDownloadImage(const ADownloadThread: TDownloadThread;
+  var AURL: String; const AModule: TModuleContainer): Boolean;
 var
   L: TLuaWebsiteModuleHandler;
 begin
   Result := False;
-  L := GetLuaWebsiteModuleHandler(Module);
-  with TLuaWebsiteModule(Module.LuaModule) do
+  with TLuaWebsiteModule(AModule.LuaModule) do
     try
-      L.LoadObject('TASK', DownloadThread.Task.Container, @luaDownloadTaskMetaTable);
-      L.LoadObject('HTTP', DownloadThread.HTTP, @luaHTTPSendThreadAddMetaTable);
-      luaPushIntegerGlobal(L.Handle, 'WORKID', DownloadThread.WorkId);
+      L := GetLuaWebsiteModuleHandler(AModule);
+      L.LoadObject('TASK', ADownloadThread.Task.Container, @luaDownloadTaskMetaTable);
+      L.LoadObject('HTTP', ADownloadThread.HTTP, @luaHTTPSendThreadAddMetaTable);
+      luaPushIntegerGlobal(L.Handle, 'WORKID', ADownloadThread.WorkId);
       luaPushStringGlobal(L.Handle, 'URL', AURL);
 
       L.CallFunction(OnBeforeDownloadImage);
@@ -341,18 +341,18 @@ begin
     end;
 end;
 
-function DoDownloadImage(const DownloadThread: TDownloadThread;
-  const AURL: String; const Module: TModuleContainer): Boolean;
+function DoDownloadImage(const ADownloadThread: TDownloadThread;
+  const AURL: String; const AModule: TModuleContainer): Boolean;
 var
   L: TLuaWebsiteModuleHandler;
 begin
   Result := False;
-  L := GetLuaWebsiteModuleHandler(Module);
-  with TLuaWebsiteModule(Module.LuaModule) do
+  with TLuaWebsiteModule(AModule.LuaModule) do
     try
-      L.LoadObject('TASK', DownloadThread.Task.Container, @luaDownloadTaskMetaTable);
-      L.LoadObject('HTTP', DownloadThread.HTTP, @luaHTTPSendThreadAddMetaTable);
-      luaPushIntegerGlobal(L.Handle, 'WORKID', DownloadThread.WorkId);
+      L := GetLuaWebsiteModuleHandler(AModule);
+      L.LoadObject('TASK', ADownloadThread.Task.Container, @luaDownloadTaskMetaTable);
+      L.LoadObject('HTTP', ADownloadThread.HTTP, @luaHTTPSendThreadAddMetaTable);
+      luaPushIntegerGlobal(L.Handle, 'WORKID', ADownloadThread.WorkId);
       luaPushStringGlobal(L.Handle, 'URL', AURL);
 
       L.CallFunction(OnDownloadImage);
@@ -363,16 +363,16 @@ begin
     end;
 end;
 
-function DoSaveImage(const DownloadThread: TDownloadThread; const APath, AName: String;
-  const Module: TModuleContainer): String;
+function DoSaveImage(const ADownloadThread: TDownloadThread; const APath, AName: String;
+  const AModule: TModuleContainer): String;
 var
   L: TLuaWebsiteModuleHandler;
 begin
   Result := '';
-  L := GetLuaWebsiteModuleHandler(Module);
-  with TLuaWebsiteModule(Module.LuaModule) do
+  with TLuaWebsiteModule(AModule.LuaModule) do
     try
-      L.LoadObject('HTTP', DownloadThread.HTTP, @luaHTTPSendThreadAddMetaTable);
+      L := GetLuaWebsiteModuleHandler(AModule);
+      L.LoadObject('HTTP', ADownloadThread.HTTP, @luaHTTPSendThreadAddMetaTable);
       luaPushStringGlobal(L.Handle, 'PATH', APath);
       luaPushStringGlobal(L.Handle, 'FILENAME', AName);
 
@@ -384,15 +384,16 @@ begin
     end;
 end;
 
-function DoAfterImageSaved(const DownloadThread: TDownloadThread; const AFilename: String; const Module: TModuleContainer): Boolean;
+function DoAfterImageSaved(const ADownloadThread: TDownloadThread; const AFileName: String;
+  const AModule: TModuleContainer): Boolean;
 var
   L: TLuaWebsiteModuleHandler;
 begin
   Result := False;
-  L := GetLuaWebsiteModuleHandler(Module);
-  with TLuaWebsiteModule(Module.LuaModule) do
+  with TLuaWebsiteModule(AModule.LuaModule) do
     try
-      luaPushStringGlobal(L.Handle, 'FILENAME', AFilename);
+      L := GetLuaWebsiteModuleHandler(AModule);
+      luaPushStringGlobal(L.Handle, 'FILENAME', AFileName);
 
       L.CallFunction(OnAfterImageSaved);
       Result := lua_toboolean(L.Handle, -1);
@@ -402,14 +403,14 @@ begin
     end;
 end;
 
-function DoLogin(const AHTTP: THTTPSendThread; const Module: TModuleContainer): Boolean;
+function DoLogin(const AHTTP: THTTPSendThread; const AModule: TModuleContainer): Boolean;
 var
   L: TLuaWebsiteModuleHandler;
 begin
   Result := False;
-  L := GetLuaWebsiteModuleHandler(Module);
-  with TLuaWebsiteModule(Module.LuaModule) do
+  with TLuaWebsiteModule(AModule.LuaModule) do
     try
+      L := GetLuaWebsiteModuleHandler(AModule);
       LuaPushAccountStatus(L.Handle);
       L.LoadObject('HTTP', AHTTP, @luaHTTPSendThreadAddMetaTable);
 
@@ -437,29 +438,21 @@ begin
   try
     i := luaL_loadfile(L, PAnsiChar(AFileName));
     if i <> 0 then
-      raise Exception.Create('luaL_loadfile ' + LuaGetReturnString(i) + ': ' + luaToString(L, -1))
-    else
-    begin
-      i := LuaPCall(L, 0, 0, 0);
-      if i = 0 then
-      begin
-        lua_getglobal(L, PAnsiChar('Init'));
-        if lua_isfunction(L, -1) then
-        begin
-          luaPushFunctionGlobal(L, 'NewWebsiteModule', @_newwebsitemodule);
-          i := LuaPCall(L, 0, 0, 0);
-          if i = 0 then
-            Result := True
-          else
-            raise Exception.Create(LuaGetReturnString(i) + ': ' + luaToString(L, -1));
-        end;
-      end
-      else
-        raise Exception.Create(LuaGetReturnString(i) + ': ' + luaToString(L, -1));
-    end;
+      raise Exception.Create('luaL_loadfile ' + LuaGetReturnString(i) + ': ' + luaToString(L, -1));
+    i := LuaPCall(L, 0, 0, 0);
+    if i <> 0 then
+      raise Exception.Create('lua_pcall ' + LuaGetReturnString(i) + ': ' + luaToString(L, -1));
+    lua_getglobal(L, PAnsiChar('Init'));
+    if lua_isfunction(L, -1) = False then
+      raise Exception.Create('no function name "Init()"');
+    luaPushFunctionGlobal(L, 'NewWebsiteModule', @_newwebsitemodule);
+    i := LuaPCall(L, 0, 0, 0);
+    if i <> 0 then
+      raise Exception.Create('LuaCallFunction("Init()") ' + LuaGetReturnString(i) + ': ' + luaToString(L, -1));
+    Result := True
   except
     on E: Exception do
-      Logger.SendError('LUA>DoInit()>' + E.Message);
+      Logger.SendError('LUA>DoInit("' + ExtractFileName(AFileName) + '")>' + E.Message);
   end;
   lua_close(L);
 end;
