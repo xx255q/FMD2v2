@@ -188,7 +188,8 @@ begin
     r := luaL_loadfile(L, PAnsiChar(AFileName));
     if r <> 0 then
       raise Exception.Create('luaL_loadfile ' + LuaGetReturnString(r) + ': ' + luaToString(L, -1));
-    r := lua_dump(L, @_luawriter, Result{$ifndef luajit}, 1{$endif});
+    // disabled strip to print line info
+    r := lua_dump(L, @_luawriter, Result{$ifndef luajit}, 0{$endif});
     if r <> 0 then
       raise Exception.Create('lua_dump ' + LuaGetReturnString(r) + ': ' + luaToString(L, -1));
   except
