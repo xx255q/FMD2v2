@@ -53,16 +53,19 @@ function GetInfo()
 	if HTTP.GET(MANGAINFO.URL) then
 		local x = CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title     = x.XPathString('//title'):match('^[\r\n%s]-(.-)[\r\n]')
-		MANGAINFO.CoverLink = x.XPathString('//div[@id="rightside"]//img/@src')
+		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//div[@id="rightside"]//img/@src'))
 		MANGAINFO.Authors   = x.XPathStringAll('//div[@class="barContent"]//span[starts-with(., "Author") or starts-with(., "Writer")]/parent::*/a')
 		MANGAINFO.Artists   = x.XPathStringAll('//div[@class="barContent"]//span[starts-with(., "Artist")]/parent::*/a')
 		MANGAINFO.Summary   = x.XPathString('//div[@class="barContent"]/div/p[starts-with(.,"Summary:")]//following-sibling::p[1]')
 		MANGAINFO.Genres    = x.XPathStringAll('//div[@class="barContent"]//span[starts-with(., "Genre")]/parent::*/a')
 		MANGAINFO.Status    = MangaInfoStatusIfPos((x.XPathString('//div[@class="barContent"]/div/p[starts-with(.,"Status:")]')))
-		local v, s; for v in x.XPath('//table[@class="listing"]/tbody/tr/td/a').Get() do
+		
+		local namePattern = '^Read (.+) online$'
+		if MODULE.ID == '1a7b98800a114a3da5f48de91f45a880' then namePattern = '^Read (.+) comic online' end
+		local v, name; for v in x.XPath('//table[@class="listing"]/tbody/tr/td/a').Get() do
 			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
-			s = v.GetAttribute('title'):match('^Read (.+) online$')
-			MANGAINFO.ChapterNames.Add(s)
+			name = v.GetAttribute('title'):match(namePattern)
+			MANGAINFO.ChapterNames.Add(name)
 		end
 		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
