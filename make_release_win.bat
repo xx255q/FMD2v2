@@ -29,14 +29,20 @@ SET tdir=%cdir%\bin\%~1
 SET rdir=%cdir%\Release
 SET odir=%rdir%\%~1
 
-DEL /F "%tdir%\updater.exe"
-DEL /F "%tdir%\updater.dbg"
+echo.
+echo Building Updater %~1 --build-mode="%~2"
+echo ----------------------------------------------------
+DEL /F "%tdir%\updater.exe" 2>nul
+DEL /F "%tdir%\updater.dbg" 2>nul
 SET lbuild=%LAZ%\lazbuild --build-mode="%~2" %~4
 echo %lbuild% "%cdir%\updaterslim\updater.lpi"
 %lbuild% "%cdir%\updaterslim\updater.lpi"
 
-DEL /F "%tdir%\fmd.exe"
-DEL /F "%tdir%\fmd.dbg"
+echo.
+echo Building FMD %~1 --build-mode="%~3"
+echo ----------------------------------------------------
+DEL /F "%tdir%\fmd.exe" 2>nul
+DEL /F "%tdir%\fmd.dbg" 2>nul
 SET lbuild=%LAZ%\lazbuild --build-mode="%~3" %~4
 echo %lbuild% "%cdir%\mangadownloader\md.lpi"
 %lbuild% "%cdir%\mangadownloader\md.lpi"
@@ -51,16 +57,16 @@ call :copycdir licenses
 XCOPY /C /F /Y "%cdir%\languages\*.po" "%odir%\languages\"
 XCOPY /E /C /F /Y "%cdir%\dist\%~1" "%odir%\"
 IF "%luaver%" == "lua54" (
-  DEL /F "%odir%\lua53.dll"
-  DEL /F "%odir%\lua51.dll"
+  DEL /F "%odir%\lua53.dll" 2>nul
+  DEL /F "%odir%\lua51.dll" 2>nul
 )
 IF "%luaver%" == "lua53" (
-  DEL /F "%odir%\lua54.dll"
-  DEL /F "%odir%\lua51.dll"
+  DEL /F "%odir%\lua54.dll" 2>nul
+  DEL /F "%odir%\lua51.dll" 2>nul
 )
 IF "%luaver%" == "luajit" (
-  DEL /F "%odir%\lua54.dll"
-  DEL /F "%odir%\lua53.dll"
+  DEL /F "%odir%\lua54.dll" 2>nul
+  DEL /F "%odir%\lua53.dll" 2>nul
 )
 XCOPY /F /Y "%cdir%\dist\config.json" "%odir%\"
 XCOPY /F /Y "%cdir%\changelog.txt" "%odir%\"
@@ -68,7 +74,7 @@ XCOPY /F /Y "%cdir%\readme.rtf" "%odir%\"
 XCOPY /F /Y "%tdir%\fmd.exe" "%odir%\"
 XCOPY /F /Y "%tdir%\fmd.dbg" "%odir%\"
 XCOPY /F /Y "%tdir%\updater.exe" "%odir%\"
-DEL /F "%rdir%\%oname%"
+DEL /F "%rdir%\%oname%" 2>nul
 "%cdir%\dist\%~1\7za" a "%rdir%\%oname%" "%odir%\*" -mx9 -ssw -stl -t7z -y
 RMDIR /S /Q "%odir%"
 REM -----------------------------------------------------------
