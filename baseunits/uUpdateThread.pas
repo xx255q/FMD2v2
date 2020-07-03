@@ -36,6 +36,10 @@ type
     destructor Destroy; override;
   end;
 
+const
+  DefaultCommitCount = 32;
+
+type
   TUpdateListThreads = specialize TFPGList<TUpdateListThread>;
 
   { TUpdateListManagerThread }
@@ -109,7 +113,7 @@ type
     Threads: TUpdateListThreads;
     constructor Create;
     destructor Destroy; override;
-    procedure CheckCommit(const CommitCount: Integer = 32);
+    procedure CheckCommit(const CommitCount: Integer = DefaultCommitCount);
     property CurrentDirectoryPageNumber: Integer read FCurrentGetInfoLimit write SetCurrentDirectoryPageNumber;
   end;
   
@@ -214,16 +218,17 @@ begin
     begin
       if BROWSER_INVERT then
         workPtr := manager.module.TotalDirectoryPage[manager.module.CurrentDirectoryIndex] - workPtr -1;
-      info.GetNameAndLink(names, links, IntToStr(workPtr));
-
-      //if website has sorted list by latest added
-      //we will stop at first found against current db
-      if links.Count > 0 then
+      if (info.GetNameAndLink(names, links, IntToStr(workPtr)) <> INFORMATION_NOT_FOUND) and
+        (Links.Count <> 0) then
       begin
+        //if website has sorted list by latest added
+        //we will stop at first found against current db
         EnterCriticalSection(manager.AddNamesAndLinksGuardian);
         try
-          if manager.FIsPreListAvailable then begin
-            for i:=0 to links.Count-1 do begin
+          if manager.FIsPreListAvailable then
+          begin
+            for i:=0 to links.Count-1 do
+            begin
               if manager.mainDataProcess.AddData(names[i],links[i],'','','','','',0,0) then
                 manager.tempDataProcess.AddData(names[i],links[i],'','','','','',0,0)
               else if (manager.isFinishSearchingForNewManga=False) and manager.module.SortedList and (not BROWSER_INVERT) then
@@ -232,8 +237,10 @@ begin
             manager.mainDataProcess.Rollback;
           end
           else
+          begin
             for i:=0 to links.Count-1 do
               manager.tempDataProcess.AddData(names[i],links[i],'','','','','',0,0);
+          end;
           manager.tempDataProcess.Commit;
         finally
           LeaveCriticalSection(manager.AddNamesAndLinksGuardian);
@@ -257,18 +264,19 @@ begin
   begin
     info.MangaInfo.Title:=manager.tempDataProcess.Value[workPtr,DATA_PARAM_TITLE];
     info.MangaInfo.Link:=manager.tempDataProcess.Value[workPtr,DATA_PARAM_LINK];
-    if info.MangaInfo.Link<>'' then begin
-      info.GetInfoFromURL(info.MangaInfo.Link);
+    if (info.MangaInfo.Link<>'') and
+      (info.GetInfoFromURL(info.MangaInfo.Link) <> INFORMATION_NOT_FOUND) and
+      (not Terminated) and (info.MangaInfo.Status <> '-1') then
+    begin
       // status = '-1' mean it's not exist and shouldn't be saved to database
-      if (not Terminated) and (info.MangaInfo.Status <> '-1') then
-      begin
-        EnterCriticalSection(manager.AddInfoToDataGuardian);
-        try
-          info.AddInfoToData(info.MangaInfo.Link,info.MangaInfo.Link,manager.mainDataProcess);
-          manager.CheckCommit(manager.numberOfThreads);
-        finally
-          LeaveCriticalSection(manager.AddInfoToDataGuardian);
-        end;
+      EnterCriticalSection(manager.AddInfoToDataGuardian);
+      try
+        info.AddInfoToData(info.MangaInfo.Link,info.MangaInfo.Link,manager.mainDataProcess);
+        //manager.CheckCommit(manager.numberOfThreads);
+        // todo: test if CheckCommit(32) is sufficient.
+        manager.CheckCommit;
+      finally
+        LeaveCriticalSection(manager.AddInfoToDataGuardian);
       end;
     end;
     info.HTTP.Reset;
