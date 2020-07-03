@@ -149,6 +149,15 @@ uses
 threadvar
   TempModules:TLuaWebsiteModules;
 
+procedure SendException(const AText: String; AException: Exception); inline;
+begin
+  {$ifdef DEBUGINFO}
+  Logger.SendException(AText, AException);
+  {$else}
+  Logger.SendError(AText + E.Message);
+  {$endif}
+end;
+
 function DoBeforeUpdateList(const AModule: TModuleContainer): Boolean;
 var
   L: TLuaWebsiteModuleHandler;
@@ -163,7 +172,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError('LUA>DoBeforeUpdateList("' + ExtractFileName(Container.FileName) + '")>' + E.Message);
+        SendException('LUA>DoBeforeUpdateList("' + ExtractFileName(Container.FileName) + '")>', E);
     end;
 end;
 
@@ -181,7 +190,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError('LUA>DoAfterUpdateList("' + ExtractFileName(Container.FileName) + '")>' + E.Message);
+        SendException('LUA>DoAfterUpdateList("' + ExtractFileName(Container.FileName) + '")>', E);
     end;
 end;
 
@@ -207,7 +216,7 @@ begin
         APage := lua_tointeger(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError('LUA>DoGetDirectoryPageNumber("' + ExtractFileName(Container.FileName) + '")>' + E.Message);
+        SendException('LUA>DoGetDirectoryPageNumber("' + ExtractFileName(Container.FileName) + '")>', E);
     end;
 end;
 
@@ -232,7 +241,7 @@ begin
       Result := lua_tointeger(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError('LUA>DoGetNameAndLink("' + ExtractFileName(Container.FileName) + '")>' + E.Message);
+        SendException('LUA>DoGetNameAndLink("' + ExtractFileName(Container.FileName) + '")>', E);
     end;
 end;
 
@@ -254,7 +263,7 @@ begin
       Result := lua_tointeger(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError('LUA>DoGetInfo("' + ExtractFileName(Container.FileName) + '")>' + E.Message);
+        SendException('LUA>DoGetInfo("' + ExtractFileName(Container.FileName) + '")>', E);
     end;
 end;
 
@@ -272,7 +281,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError('LUA>DoTaskStart("' + ExtractFileName(Container.FileName) + '")>' + E.Message);
+        SendException('LUA>DoTaskStart("' + ExtractFileName(Container.FileName) + '")>', E);
     end;
 end;
 
@@ -293,7 +302,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError('LUA>DoGetPageNumber("' + ExtractFileName(Container.FileName) + '")>' + E.Message);
+        SendException('LUA>DoGetPageNumber("' + ExtractFileName(Container.FileName) + '")>', E);
     end;
 end;
 
@@ -315,7 +324,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError('LUA>DoGetImageURL("' + ExtractFileName(Container.FileName) + '")>' + E.Message);
+        SendException('LUA>DoGetImageURL("' + ExtractFileName(Container.FileName) + '")>', E);
     end;
 end;
 
@@ -337,7 +346,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError('LUA>DoBeforeDownloadImage("' + ExtractFileName(Container.FileName) + '")>' + E.Message);
+        SendException('LUA>DoBeforeDownloadImage("' + ExtractFileName(Container.FileName) + '")>', E);
     end;
 end;
 
@@ -359,7 +368,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError('LUA>DoDownloadImage("' + ExtractFileName(Container.FileName) + '")>' + E.Message);
+        SendException('LUA>DoDownloadImage("' + ExtractFileName(Container.FileName) + '")>', E);
     end;
 end;
 
@@ -380,7 +389,7 @@ begin
       Result := luaToString(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError('LUA>DoSaveImage("' + ExtractFileName(Container.FileName) + '")>' + E.Message);
+        SendException('LUA>DoSaveImage("' + ExtractFileName(Container.FileName) + '")>', E);
     end;
 end;
 
@@ -399,7 +408,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError('LUA>DoAfterImageSaved("' + ExtractFileName(Container.FileName) + '")>' + E.Message);
+        SendException('LUA>DoAfterImageSaved("' + ExtractFileName(Container.FileName) + '")>', E);
     end;
 end;
 
@@ -418,7 +427,7 @@ begin
       Result := lua_toboolean(L.Handle, -1);
     except
       on E: Exception do
-        Logger.SendError('LUA>DoLogin("' + ExtractFileName(Container.FileName) + '")>' + E.Message);
+        SendException('LUA>DoLogin("' + ExtractFileName(Container.FileName) + '")>', E);
     end;
 end;
 
@@ -452,7 +461,7 @@ begin
     Result := True
   except
     on E: Exception do
-      Logger.SendError('LUA>DoInit("' + ExtractFileName(AFileName) + '")>' + E.Message);
+      SendException('LUA>DoInit("' + ExtractFileName(AFileName) + '")>', E);
   end;
   lua_close(L);
 end;
@@ -551,7 +560,7 @@ begin
     end;
   except
     on E: Exception do
-      Logger.SendException(ClassName+'.Execute.Error',E);
+      SendException(ClassName+'.Execute.Error>', E);
   end;
   TempModules.Free;
 end;
