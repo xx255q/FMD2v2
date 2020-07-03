@@ -51,16 +51,15 @@ String.prototype.sup = function () { return "<sup>" + this + "</sup>"; };
 	end
 	challenge = challenge .. script .. '\r\nJSON.stringify($$e);'
 
-	local answer, timeout
-	answer = duktape.ExecJS(challenge)
-
-	if (answer == 'NaN') or (answer == '') then
+	local answer, timeout = duktape.ExecJS(challenge)
+	if (answer == nil) or (answer == 'NaN') or (answer == '') then
 		-- LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to solve the javscript challenge ' .. url .. '\r\n' .. body)
 		LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to solve the javscript challenge ' .. url .. '\r\n' .. challenge)
+	else
+		answer = answer:match('"jschl%-answer":.-"value":"(.-)"')		
+		timeout = tonumber(answer:match('"timeout":(%d+)')) or 4000
 	end
 
-	timeout = tonumber(answer:match('"timeout":(%d+)')) or 4000
-	answer = answer:match('"jschl%-answer":.-"value":"(.-)"')
 	return timeout, answer
 end
 
