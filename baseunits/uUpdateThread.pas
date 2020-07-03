@@ -196,11 +196,12 @@ end;
 procedure TUpdateListThread.GetDirectoryPage;
 begin
   workPtr := manager.GetWorkPtr;
-  while workPtr<>-1 do
+  while workPtr <> -1 do
   begin
     info.GetDirectoryPage(manager.module.TotalDirectoryPage[workPtr]);;
-    info.HTTP.Reset;
     workPtr := manager.GetWorkPtr;
+    if workPtr <> -1 then
+      info.HTTP.Reset;
   end;
 end;
 
@@ -214,7 +215,7 @@ begin
   names := TStringList.Create;
   links := TStringList.Create;
   try
-    while workPtr<>-1 do
+    while workPtr <> -1 do
     begin
       if BROWSER_INVERT then
         workPtr := manager.module.TotalDirectoryPage[manager.module.CurrentDirectoryIndex] - workPtr -1;
@@ -246,10 +247,13 @@ begin
           LeaveCriticalSection(manager.AddNamesAndLinksGuardian);
         end;
       end;
-      names.Clear;
-      links.Clear;
-      info.HTTP.Reset;
       workPtr := manager.GetWorkPtr;
+      if workPtr <> -1 then
+      begin
+        info.HTTP.Reset;
+        names.Clear;
+        links.Clear;
+      end;
     end;
   finally
     names.Free;
@@ -260,11 +264,11 @@ end;
 procedure TUpdateListThread.GetInfo;
 begin
   workPtr := manager.GetWorkPtr;
-  while workPtr<>-1 do
+  while workPtr <> -1 do
   begin
-    info.MangaInfo.Title:=manager.tempDataProcess.Value[workPtr,DATA_PARAM_TITLE];
-    info.MangaInfo.Link:=manager.tempDataProcess.Value[workPtr,DATA_PARAM_LINK];
-    if (info.MangaInfo.Link<>'') and
+    info.MangaInfo.Title := manager.tempDataProcess.Value[workPtr,DATA_PARAM_TITLE];
+    info.MangaInfo.Link := manager.tempDataProcess.Value[workPtr,DATA_PARAM_LINK];
+    if (info.MangaInfo.Link <> '') and
       (info.GetInfoFromURL(info.MangaInfo.Link) <> INFORMATION_NOT_FOUND) and
       (not Terminated) and (info.MangaInfo.Status <> '-1') then
     begin
@@ -279,9 +283,12 @@ begin
         LeaveCriticalSection(manager.AddInfoToDataGuardian);
       end;
     end;
-    info.HTTP.Reset;
-    info.MangaInfo.Clear;
     workPtr := manager.GetWorkPtr;
+    if workPtr <> -1 then
+    begin
+      info.HTTP.Reset;
+      info.MangaInfo.Clear;
+    end;
   end;
 end;
 

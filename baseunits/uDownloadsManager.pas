@@ -444,6 +444,8 @@ begin
     if GetLinkPageFromURL(Task.Container.ChapterLinks.Strings[Task.Container.CurrentDownloadChapterPtr]) then
       DoSuccess;
     WorkId := Task.GetWorkId;
+    if WorkId <> -1 then
+      HTTP.Reset;
   end;
 end;
 
@@ -455,6 +457,8 @@ begin
     if DownloadImage then
       DoSuccess;
     WorkId := Task.GetWorkId;
+    if WorkId <> -1 then
+      HTTP.Reset;
   end;
 end;
 
