@@ -661,8 +661,9 @@ end;
 
 function TLuaWebsiteModulesContainer.ByteCode: TMemoryStream;
 begin
+  // don't need to cache lua file on --lua-dofile
+  if AlwaysLoadLuaFromFile then Exit(nil);
   if FByteCode <> nil then Exit(FByteCode);
-
   if TryEnterCriticalSection(FGuardian) <> 0 then
   begin
     try
