@@ -47,8 +47,8 @@ const
 begin
   {
     app params
-    --lua_dofile: always load lua modules from file
-    --dump_loaded_modules: dump loaded modules ("ID Name") to log
+    --lua-dofile: always load lua modules from file
+    --dump-loaded-modules: dump loaded modules ("ID Name") to log
     --dorestart-pid=9999: windows only, handle used to restart app
   }
 

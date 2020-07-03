@@ -1964,7 +1964,7 @@ begin
     isStartup := False;
   end;
 
-  if AppParams.IndexOf('--dump_loaded_modules') <> -1 then
+  if AppParams.IndexOf('--dump-loaded-modules') <> -1 then
   begin
     s:=#10;
     for i:=0 to Modules.Count-1 do
