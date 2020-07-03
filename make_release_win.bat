@@ -12,9 +12,11 @@ SET luaver=lua54
 ECHO ^{>%update_file%
 ECHO   "_comment": "automatically build with make_release_win.bat",>>%update_file%
 
-CALL :makerelease i386-win32 Win32 --no-write-project
+REM CALL :makerelease i386-win32 Win32 "Win32 Debug" --no-write-project
+CALL :makerelease i386-win32 Win32 Win32 --no-write-project
 ECHO   ,>>%update_file%
-CALL :makerelease x86_64-win64 Win64 --no-write-project
+REM CALL :makerelease x86_64-win64 Win64 "Win64 Debug" --no-write-project
+CALL :makerelease x86_64-win64 Win64 Win64 --no-write-project
 
 ECHO ^}>>%update_file%
 
@@ -26,11 +28,19 @@ TITLE make %~1
 SET tdir=%cdir%\bin\%~1
 SET rdir=%cdir%\Release
 SET odir=%rdir%\%~1
+
+DEL /F "%tdir%\updater.exe"
+DEL /F "%tdir%\updater.dbg"
+SET lbuild=%LAZ%\lazbuild --build-mode="%~2" %~4
+echo %lbuild% "%cdir%\updaterslim\updater.lpi"
+%lbuild% "%cdir%\updaterslim\updater.lpi"
+
 DEL /F "%tdir%\fmd.exe"
 DEL /F "%tdir%\fmd.dbg"
-SET lbuild=%LAZ%\lazbuild --build-mode="%~2" %~3
-%lbuild% "%cdir%\updaterslim\updater.lpi"
+SET lbuild=%LAZ%\lazbuild --build-mode="%~3" %~4
+echo %lbuild% "%cdir%\mangadownloader\md.lpi"
 %lbuild% "%cdir%\mangadownloader\md.lpi"
+
 CALL :getfileversion "%tdir%\fmd.exe"
 SET oname=fmd_%fverb%_%~1.7z
 RMDIR /S /Q "%odir%"
@@ -56,6 +66,7 @@ XCOPY /F /Y "%cdir%\dist\config.json" "%odir%\"
 XCOPY /F /Y "%cdir%\changelog.txt" "%odir%\"
 XCOPY /F /Y "%cdir%\readme.rtf" "%odir%\"
 XCOPY /F /Y "%tdir%\fmd.exe" "%odir%\"
+XCOPY /F /Y "%tdir%\fmd.dbg" "%odir%\"
 XCOPY /F /Y "%tdir%\updater.exe" "%odir%\"
 DEL /F "%rdir%\%oname%"
 "%cdir%\dist\%~1\7za" a "%rdir%\%oname%" "%odir%\*" -mx9 -ssw -stl -t7z -y
