@@ -16,18 +16,19 @@ function GetInfo()
 
 	local chapter_uri = x.XPathString('//a[@ng-repeat]/@href'):gsub('{{.+$', '')
 	local body = HTTP.Document.ToString()
-	local vm_Chapters = body:match('vm%.Chapters%s*=%s*(%[.-%]);')
-	local vm_PageOne = body:match('vm%.PageOne%s*=%s*"(.-)"')
 
 	-- direct translation from "function MainFunction($http){..."
-	local vm_ChapterDisplay = function(e)
+	local json = require "utils.json"
+	local vm = {}
+	vm.Chapters = json.decode(body:match('vm%.Chapters%s*=%s*(%[.-%]);'))
+	vm.PageOne = body:match('vm%.PageOne%s*=%s*"(.-)"')
+	vm.ChapterDisplay = function(e)
 		local t = tonumber(e:sub(2, -2))
 		local n = e:sub(-1)
 		if '0' ~= n then t = t .. "." .. n end
 		return t
 	end
-
-	local vm_ChapterURLEncode = function(e)
+	vm.ChapterURLEncode = function(e)
 		local Index = ""
 		local t = e:sub(1, 1)
 		if 1 ~= t then Index = "-index-" .. t end
@@ -35,18 +36,14 @@ function GetInfo()
 		local m = ""
 		local a = e:sub(-1)
 		if '0' ~= a then m = "." .. a end
-		return "-chapter-" .. n .. m .. Index .. vm_PageOne .. ".html"
+		return "-chapter-" .. n .. m .. Index .. vm.PageOne .. ".html"
 	end
-
-	x.ParseHTML(vm_Chapters)
-	local chapter, chapterType, chapterName
-	local v; for v in x.XPath("json(*)()").Get() do
-		chapter = x.XPathString("Chapter", v)
-		chapterType = x.XPathString("Type", v)
-		chapterName = x.XPathString("ChapterName", v)
-		if chapterType == "" then chapterType = "Chapter" end
-		MANGAINFO.ChapterLinks.Add(chapter_uri .. vm_ChapterURLEncode(chapter))
-		MANGAINFO.ChapterNames.Add(chapterType .. " " .. vm_ChapterDisplay(chapter) .. " " .. chapterName)
+	local chapter, name; for _, chapter in ipairs(vm.Chapters) do
+		MANGAINFO.ChapterLinks.Add(chapter_uri .. vm.ChapterURLEncode(chapter.Chapter))
+		if (chapter.Type == nil) or (chapter.Type == "") then chapter.Type = "Chapter" end
+		name = chapter.Type .. " " .. vm.ChapterDisplay(chapter.Chapter)
+		if chapter.ChapterName and (chapter.ChapterName ~= "") then name = name .. " " .. chapter.ChapterName end
+		MANGAINFO.ChapterNames.Add(name)
 	end
 	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
@@ -79,24 +76,32 @@ end
 
 -- Get the page count for the current chapter.
 function GetPageNumber()
-	local chpnum, partnum, dir, host, name, pages, s, x = nil
-	local u = MaybeFillHost(MODULE.RootURL, URL)
-
-	if not HTTP.GET(u) then return net_problem end
-
-	x = CreateTXQuery(HTTP.Document)
-	name = GetBetween('vm.IndexName = ', ';', x.XPathString('//script[contains(., "vm.IndexName = ")]')):gsub('"', '')
-	host = GetBetween('vm.CurPathName = ', ';', x.XPathString('//script[contains(., "vm.CurPathName = ")]')):gsub('"', '')
-	x.ParseHTML(GetBetween('vm.CurChapter = ', ';', x.XPathString('//script[contains(., "vm.CurChapter = ")]')))
-	pages = tonumber(x.XPathString('json(*).Page'))
-	chpnum, partnum = x.XPathString('json(*).Chapter'):match('%d(%d%d%d%d)(%d)')
-	dir = x.XPathString('json(*).Directory')
-
-	if partnum ~= '0' then chpnum = chpnum .. '.' .. partnum end
-	if dir ~= '' then chpnum = dir .. '/' .. chpnum end
-
-	for i = 1, pages do
-		TASK.PageLinks.Add(host .. '/manga/' .. name .. '/' .. chpnum .. '-' .. string.format('%03d', i) .. '.png')
+	if not HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then return net_problem end
+	
+	local json = require "utils.json"
+	local body = HTTP.Document.ToString()
+	local vm = {}
+	vm.CurChapter = json.decode(body:match('vm.CurChapter = ({.-});'))
+	vm.CurPathName = body:match('vm.CurPathName = "(.-)"')
+	vm.ChapterImage = function(ChapterString)
+		local Chapter = ChapterString:sub(2, -2)
+		local Odd = tonumber(ChapterString:sub(-1))
+		if Odd == 0 then 
+			return Chapter
+		else
+			return Chapter .. "." .. Odd
+		end
+	end			
+	vm.PageImage = function(PageString)
+		local s = "000" .. PageString;
+		return s:sub(-3)
+	end
+	vm.CurURI = body:match('ng%-src="(https?://{{vm%.CurPathName}}.-){{vm%.CurChapter%.Directory'):gsub('{{vm%.CurPathName}}', vm.CurPathName)
+	if vm.CurChapter.Directory ~= '' then vm.CurURI = cm.CurURI .. cm.CurChapter.Directory .. '/' end
+	vm.CurURI = vm.CurURI .. vm.ChapterImage(vm.CurChapter.Chapter) .. '-'
+	
+	local Page; for Page = 1, vm.CurChapter.Page do
+		TASK.PageLinks.Add(vm.CurURI .. vm.PageImage(Page) .. '.png')
 	end
 
 	return no_error
