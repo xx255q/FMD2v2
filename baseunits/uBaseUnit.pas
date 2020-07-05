@@ -3951,7 +3951,7 @@ begin
   {$ifdef DEBUGINFO}
   Logger.SendException(AText, AException);
   {$else}
-  Logger.SendError(AText + E.Message);
+  Logger.SendError(AText + AException.Message);
   {$endif}
 end;
 
