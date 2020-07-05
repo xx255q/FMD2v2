@@ -33,10 +33,8 @@ type
     isRemoveUnicode: Boolean;
     isRemoveHostFromChapterLinks: Boolean;
 
-    constructor Create(const AOwnerThread: TBaseThread = nil; const ACreateInfo: Boolean = True);
+    constructor Create(const AOwnerThread: TBaseThread = nil);
     destructor Destroy; override;
-    function GetDirectoryPage(var APage: Integer): Byte;
-    function GetNameAndLink(const ANames, ALinks: TStringList; AURL: String): Byte;
     function GetInfoFromURL(const AURL: String): Byte;
     procedure SyncInfoToData(const ADataProcess: TDBDataProcess); overload;
     procedure AddInfoToData(const ATitle, ALink: String; const ADataProcess: TDBDataProcess); overload;
@@ -54,15 +52,12 @@ uses
 
 { TMangaInformation }
 
-constructor TMangaInformation.Create(const AOwnerThread: TBaseThread;
-  const ACreateInfo: Boolean);
+constructor TMangaInformation.Create(const AOwnerThread: TBaseThread);
 begin
   inherited Create;
   FOwner := AOwnerThread;
   HTTP := THTTPSendThread.Create(AOwnerThread);
-  HTTP.Headers.NameValueSeparator := ':';
-  if ACreateInfo then
-    MangaInfo := TMangaInfo.Create;
+  MangaInfo := TMangaInfo.Create;
   isGetByUpdater := False;
   isRemoveHostFromChapterLinks := True;
 end;
@@ -81,41 +76,6 @@ begin
   FModule := AValue;
   if Assigned(FModule) and Assigned(HTTP) then
     TModuleContainer(FModule).PrepareHTTP(HTTP);
-end;
-
-function TMangaInformation.GetDirectoryPage(var APage: Integer): Byte;
-begin
-  APage := 1;
-
-  //load pagenumber_config if available
-  if  TModuleContainer(FModule).Settings.Enabled and (TModuleContainer(FModule).Settings.UpdateListDirectoryPageNumber > 0) then
-  begin
-    APage := TModuleContainer(FModule).Settings.UpdateListDirectoryPageNumber;
-    BROWSER_INVERT := True;
-    Exit(NO_ERROR);
-  end;
-
-  BROWSER_INVERT := False;
-  if Assigned(TModuleContainer(FModule).OnGetDirectoryPageNumber) then
-    Result := TModuleContainer(FModule).OnGetDirectoryPageNumber(Self, APage, TUpdateListThread(Thread).workPtr, TModuleContainer(FModule))
-  else
-    Exit(INFORMATION_NOT_FOUND);
-
-  if APage < 1 then
-    APage := 1;
-end;
-
-function TMangaInformation.GetNameAndLink(const ANames, ALinks: TStringList;
-  AURL: String): Byte;
-begin
-  if Assigned(TModuleContainer(FModule).OnGetNameAndLink) then
-    Result := TModuleContainer(FModule).OnGetNameAndLink(Self, ANames, ALinks, AURL, TModuleContainer(FModule))
-  else
-    Exit(INFORMATION_NOT_FOUND);
-
-  //remove host from AURL
-  if ALinks.Count > 0 then
-    RemoveHostFromURLsPair(ALinks, ANames);
 end;
 
 function TMangaInformation.GetInfoFromURL(const AURL: String): Byte;

@@ -21,7 +21,7 @@ uses
   ExtCtrls, ComCtrls, Buttons, Spin, Menus, VirtualTrees, RichMemo, simpleipc,
   lclproc, types, LCLIntf, EditBtn, PairSplitter, MultiLog,
   FileChannel, FileUtil, LazUTF8Classes, TAGraph, TASources, TASeries, TATools,
-  AnimatedGif, uBaseUnit, uDownloadsManager, uFavoritesManager, uUpdateThread,
+  AnimatedGif, uBaseUnit, uDownloadsManager, uFavoritesManager,
   uSilentThread, uMisc, uGetMangaInfosThread, frmDropTarget, frmAccountManager,
   frmWebsiteOptionCustom, frmCustomColor, frmLogger, frmTransferFavorites,
   frmLuaModulesUpdater, CheckUpdate, DBDataProcess,
@@ -971,7 +971,7 @@ uses
   WinAPI,
   {$endif}
   frmImportFavorites, frmShutdownCounter, frmSelectDirectory,
-  frmWebsiteSettings, WebsiteModules, FMDVars, RegExpr, sqlite3dyn, Clipbrd,
+  frmWebsiteSettings, WebsiteModules, uUpdateThread, FMDVars, RegExpr, sqlite3dyn, Clipbrd,
   ssl_openssl_lib, LazFileUtils, LazUTF8, UTF8Process, webp, DBUpdater, pcre2, pcre2lib, dynlibs,
   LuaWebsiteModules, LuaBase, uBackupSettings;
 
@@ -1813,6 +1813,7 @@ begin
           WaitTimeout := 5;
           LabelMessage := RS_LblMessageExit;
         end;
+      else;
     end;
     Result := (ShowModal = mrOK);
   finally
@@ -3444,8 +3445,6 @@ begin
 end;
 
 procedure TMainForm.mnUpdateDownFromServerClick(Sender: TObject);
-var
-  m: TModuleContainer;
 begin
   if cbSelectManga.ItemIndex < 0 then Exit;
   if DBUpdaterThread <> nil then
@@ -3744,6 +3743,7 @@ var
           STATUS_STOP,
           STATUS_FAILED,
           STATUS_PROBLEM  : if not iResume then iResume := True;
+          else;
         end;
       end
       else if not iEnable then

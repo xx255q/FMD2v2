@@ -258,10 +258,6 @@ const
   CR_FILENAME  = '%FILENAME%';
 
 var
-  // Sites var
-  BROWSER_INVERT: Boolean = False;
-  //------------------------------------------
-
   Genre: array [0..37] of String;
 
   Revision: Cardinal;
@@ -3952,7 +3948,11 @@ end;
 
 procedure SendLogException(const AText: String; AException: Exception);
 begin
+  {$ifdef DEBUGINFO}
   Logger.SendException(AText, AException);
+  {$else}
+  Logger.SendError(AText + E.Message);
+  {$endif}
 end;
 
 function HeaderByName(const AHeaders: TStrings; const AHeaderName: String): String;

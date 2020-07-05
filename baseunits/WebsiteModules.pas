@@ -23,12 +23,17 @@ const
 type
 
   TModuleContainer = class;
+  TUpdateListManagerThread = TObject;
 
   TOnBeforeUpdateList = function(const AModule: TModuleContainer): Boolean;
   TOnAfterUpdateList = function(const AModule: TModuleContainer): Boolean;
-  TOnGetDirectoryPageNumber = function(const AMangaInfo: TMangaInformation;
-    var APage: Integer; const AWorkPtr: Integer; const AModule: TModuleContainer): Byte;
-  TOnGetNameAndLink = function(const AMangaInfo: TMangaInformation;
+  TOnGetDirectoryPageNumber = function(const AUpdateListManager: TUpdateListManagerThread;
+    const AHTTP: THTTPSendThread;
+    var APage: Integer;
+    const AWorkPtr: Integer;
+    const AModule: TModuleContainer): Byte;
+  TOnGetNameAndLink = function(const AUpdateListManager: TUpdateListManagerThread;
+    const AHTTP: THTTPSendThread;
     const ANames, ALinks: TStringList; const AURL: String;
     const AModule: TModuleContainer): Byte;
   TOnGetInfo = function(const AMangaInfo: TMangaInformation; const AURL: String;
@@ -364,12 +369,12 @@ begin
       AHTTP.UserAgent:=UserAgent;
     with Proxy do
     begin
-      s:='';
       case Proxy.ProxyType of
         ptDirect:AHTTP.SetNoProxy;
         ptHTTP:s:='HTTP';
         ptSOCKS4:s:='SOCKS4';
         ptSOCKS5:s:='SOCKS5';
+        else s:='';
       end;
       if s<>'' then
         AHTTP.SetProxy(s,ProxyHost,ProxyPort,ProxyUsername,ProxyPassword);

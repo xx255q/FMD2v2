@@ -103,8 +103,8 @@ end;
 function loadModuleFile(const AFileName: String): TObject;
 var
   f: String;
-  ctx: PDukContext;
   s: TMemoryStream;
+  //ctx: PDukContext;
   //r: TDukInt;
   //buf: Pointer;
   //buflen: Integer;

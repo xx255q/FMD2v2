@@ -380,6 +380,7 @@ begin
             fNew: FOwner.AddStatus(Format(RS_StatusNew, [FModule.name]));
             fUpdate: FOwner.AddStatus(Format(RS_StatusUpdate, [FModule.name]));
             fFailedDownload: FOwner.AddStatus(Format(RS_StatusRedownloaded, [FModule.name]));
+            else;
           end;
           FModule.flag := fDownloaded;
           InterLockedIncrement(FOwner.FDownloadedCount);
@@ -603,7 +604,6 @@ var
   i, imax: Integer;
   m: TLuaModuleRepo;
   f: String;
-  SOCKHEARTBEATRATE: Cardinal;
 begin
   Synchronize(@SyncStartDownload);
 
@@ -704,6 +704,7 @@ begin
         fUpdate: FStatusList.Add(Format(RS_StatusUpdate, [m.name]));
         fDelete: FStatusList.Add(Format(RS_StatusDelete, [m.name]));
         fFailedDownload: FStatusList.Add(Format(RS_StatusFailed, [m.name]));
+        else;
       end;
     end;
 
