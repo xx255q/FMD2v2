@@ -109,8 +109,8 @@ type
     FCookieManager: THTTPCookieManager;
     FConnectionsQueue: THTTPQueue;
     procedure SetAccountSupport(AValue: Boolean);
-    procedure CheckWebsiteBypass(const AHTTP: THTTPSendThread);
     function WebsiteBypassHTTPRequest(const AHTTP: THTTPSendThread; const Method, URL: String; const Response: TObject = nil): Boolean;
+    procedure MergeHTTPCookiesFromSetting(const AHTTP: THTTPSendThread);
     procedure SetTotalDirectory(AValue: Integer);
     procedure AddOption(const AOptionType: TWebsiteOptionType;
       const ABindValue: Pointer; const AName: String; const ACaption: PString; const AItems: PString = nil);
@@ -270,16 +270,16 @@ begin
     FAccount.Free;
 end;
 
-procedure TModuleContainer.CheckWebsiteBypass(const AHTTP: THTTPSendThread);
-begin
-  if AHTTP.OnHTTPRequest <> @WebsiteBypassHTTPRequest then
-    AHTTP.OnHTTPRequest := @WebsiteBypassHTTPRequest;
-end;
-
 function TModuleContainer.WebsiteBypassHTTPRequest(const AHTTP: THTTPSendThread;
   const Method, URL: String; const Response: TObject): Boolean;
 begin
   Result := WebsiteBypassRequest(AHTTP, Method, URL, Response, FWebsiteBypass);
+end;
+
+procedure TModuleContainer.MergeHTTPCookiesFromSetting(const AHTTP: THTTPSendThread);
+begin
+  if Settings.Enabled and (Settings.HTTP.Cookies <> '') then
+    AHTTP.MergeCookies(Settings.HTTP.Cookies);
 end;
 
 procedure TModuleContainer.SetTotalDirectory(AValue: Integer);
@@ -358,13 +358,12 @@ var
 begin
   AHTTP.CookieManager := FCookieManager;
   AHTTP.ConnectionsQueue := FConnectionsQueue;
-  CheckWebsiteBypass(AHTTP);
+  AHTTP.OnHTTPRequest := @WebsiteBypassHTTPRequest;
+  AHTTP.OnAfterSetHTTPCookies := @MergeHTTPCookiesFromSetting;
 
   if not Settings.Enabled then exit;
   with Settings.HTTP do
   begin
-    if Cookies<>'' then
-      AHTTP.MergeCookies(Cookies);
     if UserAgent<>'' then
       AHTTP.UserAgent:=UserAgent;
     with Proxy do

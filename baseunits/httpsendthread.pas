@@ -59,6 +59,8 @@ type
 
   THTTPSendThread = class;
 
+  THTTPSendThreadEvent = procedure(const AHTTP: THTTPSendThread) of object;
+
   THTTPMethodEvent = procedure(const AHTTP: THTTPSendThread; var Method, URL: String);
 
   THTTPRequestEvent = function(const AHTTP: THTTPSendThread; const Method, URL: String; const Response: TObject = nil): Boolean of object;
@@ -119,8 +121,9 @@ type
     property LastURL: String read FURL;
     property EnabledCookies: Boolean read FEnabledCookies write FEnabledCookies;
   public
-    BeforeHTTPMethod: THTTPMethodEvent;
-    AfterHTTPMethod: THTTPMethodEvent;
+    OnBeforeHTTPMethod: THTTPMethodEvent;
+    OnAfterHTTPMethod: THTTPMethodEvent;
+    OnAfterSetHTTPCookies: THTTPSendThreadEvent;
     OnHTTPRequest: THTTPRequestEvent;
     OnRedirected: THTTPMethodRedirectEvent;
     CookieManager: THTTPCookieManager;
@@ -451,6 +454,8 @@ begin
   end;
   if FEnabledCookies and Assigned(CookieManager) then
     CookieManager.SetCookies(FURL, Self);
+  if Assigned(OnAfterSetHTTPCookies) then
+    OnAfterSetHTTPCookies(Self);
 end;
 
 procedure THTTPSendThread.ParseHTTPCookies;
@@ -494,8 +499,8 @@ begin
     FOwner := AOwner;
     FOwner.OnCustomTerminate := @OnOwnerTerminate;
   end;
-  BeforeHTTPMethod := nil;
-  AfterHTTPMethod := nil;
+  OnBeforeHTTPMethod := nil;
+  OnAfterHTTPMethod := nil;
   OnHTTPRequest := nil;
   EnterCriticalsection(CS_ALLHTTPSendThread);
   try
@@ -524,16 +529,16 @@ var
 begin
   amethod:=Method;
   aurl:=URL;
-  if Assigned(BeforeHTTPMethod) then
-    BeforeHTTPMethod(Self, amethod, aurl);
+  if Assigned(OnBeforeHTTPMethod) then
+    OnBeforeHTTPMethod(Self, amethod, aurl);
   SetHTTPCookies;
   Result := inherited HTTPMethod(amethod, aurl);
   if FEnabledCookies then
     ParseHTTPCookies
   else
     Cookies.Clear;
-  if Assigned(AfterHTTPMethod) then
-    AfterHTTPMethod(Self, amethod, aurl);
+  if Assigned(OnAfterHTTPMethod) then
+    OnAfterHTTPMethod(Self, amethod, aurl);
 end;
 
 function THTTPSendThread.HTTPRequest(const Method, URL: String; const Response: TObject): Boolean;
@@ -705,7 +710,7 @@ begin
   for s in ACookies.Split(';') do
   begin
     if Pos('=', s) > 0 then
-      Cookies.Values[SeparateLeft(s,'=')] := SeparateRight(s,'=');
+      Cookies.Values[Trim(SeparateLeft(s,'='))] := Trim(SeparateRight(s,'='));
   end;
 end;
 
