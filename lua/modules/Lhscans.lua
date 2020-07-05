@@ -89,9 +89,13 @@ end
 function GetNameAndLink()
 	if HTTP.GET(MODULE.RootURL .. '/manga-list.html?listType=allABC') then
 		local x = CreateTXQuery(HTTP.Document)
-		local v for v in x.XPath('//span[@manga-slug]//a)').Get() do
-			NAMES.Add(Trim(SeparateLeft(v.ToString(), '- Raw')))
-			LINKS.Add(v.GetAttribute('href'))
+		if MODULE.ID == '694ff34a6ae4469fbdaecf8d3aebb6eb' then -- manhuascan
+			x.XPathHREFAll('//div[@id="Character"]//a', LINKS, NAMES)
+		else
+			local v; for v in x.XPath('//span[@manga-slug]//a)').Get() do
+				NAMES.Add(Trim(SeparateLeft(v.ToString(), '- Raw')))
+				LINKS.Add(v.GetAttribute('href'))
+			end
 		end
 		return no_error
 	else
