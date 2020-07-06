@@ -18,8 +18,15 @@ function GetInfo()
 	if pages == nil then pages = 1 end
 	while true do
 		for v in x.XPath('//div[contains(@class, "chapters-wrapper")]//h2[@class="chap"]/a').Get() do
-			MANGAINFO.ChapterNames.Add(x.XPathString('text()', v))
-			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
+			if x.XPathString('span/text()', v) == 'RAW' then 
+				if MODULE.GetOption('luaincluderaw') then
+				MANGAINFO.ChapterNames.Add(x.XPathString('text()', v) .. ' ' .. x.XPathString('span/text()', v))
+				MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
+				end
+			else
+				MANGAINFO.ChapterNames.Add(x.XPathString('text()', v))
+				MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
+			end
 		end
 		p = p + 1
 		if p > pages then
@@ -95,6 +102,8 @@ function Init()
 		m.OnGetPageNumber             = 'GetPageNumber'
 		m.OnGetDirectoryPageNumber    = 'GetDirectoryPageNumber'
 		m.OnBeforeDownloadImage       = 'BeforeDownloadImage'
+		
+		m.AddOptionCheckBox('luaincluderaw', 'Show [raw] chapters', false)
 	end
 	AddWebsiteModule('3b0d5c38081a4b21a39a388a3ec59197', 'HeavenManga', 'https://ww2.heaventoon.com', 'English')
 	AddWebsiteModule('a9a8bd394d63495686794a8d427bda00', 'HolyManga', 'https://w16.holymanga.net', 'English')
