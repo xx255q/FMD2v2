@@ -40,7 +40,7 @@ function GetInfo()
 			x.XPathHREFAll('//div[@class="chapter-list"]/div[@class="row"]/span/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		else
-			MANGAINFO.Title     = x.XPathString('//span[@class="info-image"]/img/@alt')
+			MANGAINFO.Title     = x.XPathString('//title'):match('(.+) Manga Online Free')
 			MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//span[@class="info-image"]/img/@src'))
 			MANGAINFO.Authors   = x.XPathStringAll('//td[contains(., "Author(s)")]/following-sibling::td/a')
 			MANGAINFO.Genres    = x.XPathStringAll('//td[contains(., "Genres")]/following-sibling::td/a')
