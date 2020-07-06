@@ -22,7 +22,6 @@ function LuaLoadFromStream(const L: Plua_State; const AStream: TMemoryStream; co
 function LuaLoadFromStreamOrFile(const L: Plua_State; const AStream: TMemoryStream; const AFileName: String): Integer; inline;
 
 procedure LuaExecute(const L: Plua_State; const AStream: TMemoryStream; const AFileName: String; const NResult: Integer = 0);
-function LuaPCall(L: Plua_State; nargs, nresults, errf: Integer): Integer; inline;
 
 function _luawriter(L: Plua_State; const p: Pointer; sz: size_t; ud: Pointer): Integer; cdecl;
 
@@ -97,7 +96,7 @@ begin
     r := luaL_loadfile(Result, PAnsiChar(AFileName));
     if r <> 0 then
       raise Exception.Create('luaL_loadfile ' + LuaGetReturnString(r) + ': ' + luaToString(Result, -1));
-    r := LuaPCall(Result, 0, LUA_MULTRET, 0);
+    r := lua_pcall(Result, 0, LUA_MULTRET, 0);
     if r <> 0 then
       raise Exception.Create('lua_pcall ' + LuaGetReturnString(r) + ': ' + luaToString(Result, -1));
     if AFuncName <> '' then
@@ -131,7 +130,7 @@ begin
     lua_settop(L, 1);
     raise Exception.Create('No function name ' + AnsiQuotedStr(AFuncName, '"'));
   end;
-  r := LuaPCall(L, 0, LUA_MULTRET, 0);
+  r := lua_pcall(L, 0, LUA_MULTRET, 0);
   if r <> 0 then
     raise Exception.Create(Format('LuaCallFunction("%s") %s: %s', [AFuncName, LuaGetReturnString(r), luaToString(L, -1)]));
 end;
@@ -225,19 +224,9 @@ begin
   r := LuaLoadFromStreamOrFile(L, AStream, AFileName);
   if r <> 0 then
     raise Exception.Create(Format('luaL_loadfile() %s: %s', [LuaGetReturnString(r), luaToString(L, -1)]));
-  r := LuaPCall(L, 0, NResult, 0);
+  r := lua_pcall(L, 0, NResult, 0);
   if r <> 0 then
     raise Exception.Create(Format('lua_pcall %s: %s', [LuaGetReturnString(r), luaToString(L, -1)]));
-end;
-
-function LuaPCall(L: Plua_State; nargs, nresults, errf: Integer): Integer;
-begin
-  lua_gc(L, LUA_GCSTOP, 0);
-  try
-    Result := lua_pcall(L, nargs, nresults, errf);
-  finally
-    lua_gc(L, LUA_GCRESTART, 0);
-  end;
 end;
 
 end.

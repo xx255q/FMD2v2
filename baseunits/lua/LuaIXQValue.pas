@@ -88,11 +88,21 @@ var
   v: IXQValue;
 begin
   Result := 0;
-  u := TUserData(lua_touserdata(L, 1));
+  //lua_rawgeti(L, LUA_REGISTRYINDEX, lua_tointeger(L, lua_upvalueindex(1)));
+  lua_rawgeti(L, LUA_REGISTRYINDEX, lua_tointeger(L, 1));
+  u := TUserData(luaToUserData(L, -1));
   Inc(u.Current);
-  if u.Current > u.FIXQValue.Count then Exit;
+  if u.Current > u.FIXQValue.Count then
+  begin
+    luaL_unref(L, LUA_REGISTRYINDEX, lua_tointeger(L, 1));
+    Exit;
+  end;
   v := u.FIXQValue.get(u.Current);
-  if v.kind = pvkUndefined then Exit;
+  if v.kind = pvkUndefined then
+  begin
+    luaL_unref(L, LUA_REGISTRYINDEX, lua_tointeger(L, 1));
+    Exit;
+  end;
   luaIXQValuePush(L, v);
   Result := 1;
 end;
@@ -112,7 +122,8 @@ begin
      else
      begin
        lua_pushcfunction(L, @ixqvalue_geti);
-       lua_pushlightuserdata(L, u);
+       lua_pushvalue(L, lua_upvalueindex(1)); // userdata
+       lua_pushinteger(L, luaL_ref(L, LUA_REGISTRYINDEX));
        Exit(2);
      end;
   end;

@@ -40,11 +40,8 @@ begin
     Result := nil;
     if FLoadedModule <> nil then // if module changed then cleanup lua state
     begin
-      lua_close(FHandle);
-      FHandle := LuaNewBaseState;
+      NewHandle;
       FLoadedModule := nil;
-      FLoadedChunks.Clear;
-      FLoadedObjects.Clear;
     end;
     M:=TLuaWebsiteModule(TModuleContainer(AModule).LuaModule);
     M.LuaDoMe(FHandle);
@@ -54,10 +51,6 @@ begin
     Result := Self;
   end;
 end;
-
-var
-  TM: TThreadManager;
-  //OldEndThread: TEndThreadHandler;
 
 threadvar
   _LuaHandler: TLuaWebsiteModuleHandler;
@@ -69,8 +62,25 @@ begin
   Result:=_LuaHandler.LoadModule(AModule);
 end;
 
+var
+  TM: TThreadManager;
+  OldEndThread: TEndThreadHandler;
+{  OldReleaseThreadVars: TReleaseThreadVarsHandler;
+
 // lua_close won't run __gc if it's called from different thread
 // so, ReleaseThreadVars can't be used
+
+procedure LuaReleaseThreadVars;
+begin
+  if _LuaHandler<>nil then
+  begin
+    _LuaHandler.Free;
+    _LuaHandler:=nil;
+  end;
+  if OldReleaseThreadVars<>nil then
+    OldReleaseThreadVars;
+end;}
+
 procedure LuaEndThread(ExitCode : DWord);
 begin
   if _LuaHandler<>nil then
@@ -78,14 +88,16 @@ begin
     _LuaHandler.Free;
     _LuaHandler:=nil;
   end;
-  // run in loop ?
-  //if OldEndThread<>nil then
-  //  OldEndThread(ExitCode);
+  {// run in loop ?
+  if OldEndThread<>nil then
+    OldEndThread(ExitCode);}
 end;
 
 initialization
   GetThreadManager(TM);
-  //OldEndThread := TM.EndThread;
+  {OldReleaseThreadVars := TM.ReleaseThreadVars;
+  TM.ReleaseThreadVars := @LuaReleaseThreadVars;}
+  OldEndThread := TM.EndThread;
   TM.EndThread := @LuaEndThread;
   SetThreadManager(TM);
 

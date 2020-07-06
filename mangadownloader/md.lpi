@@ -288,7 +288,7 @@
         <Item2 ID="952607008458" Targets="#project" Modes="Win64 Debug Leaks,Win32 Debug Leaks" Value="-dDEVBUILD"/>
         <Item3 ID="192299838639" Targets="#project" Modes="Win64 Debug Leaks,Win32 Debug Leaks" Value="-gh -dDEBUGLEAKS"/>
         <Item4 ID="102754335437" Targets="#project" Value="-dluajit"/>
-        <Item5 ID="676605726087" Targets="#project" Modes="Win32 Debug,Win64,Win32 Debug Leaks,Win32,Win64 Debug,Win64 Debug Leaks" Value="-dlua54"/>
+        <Item5 ID="676605726087" Targets="#project" Modes="Win32 Debug,Win64,Win32,Win64 Debug,Win64 Debug Leaks,Win32 Debug Leaks" Value="-dlua54"/>
       </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>

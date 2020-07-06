@@ -245,7 +245,7 @@ begin
   Result := '';
   i := lua_gettop(L);
   if i = 0 then
-    Exit;
+    Exit('[empty stack]');
   for i := 1 to i do
     Result += Format('%.3d[%s]: %s'#13#10,[i, HexStr(lua_topointer(L, i)), LuaToTypeString(L,i)]);
   SetLength(Result, Length(Result) - 2);

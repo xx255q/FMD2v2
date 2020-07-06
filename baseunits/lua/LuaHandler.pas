@@ -17,6 +17,8 @@ type
     FHandle: Plua_State;
     FLoadedChunks: TStringList;
     FLoadedObjects: TStringList;
+    procedure NewHandle;
+    procedure FreeHandle;
   public
     constructor Create;
     destructor Destroy; override;
@@ -36,27 +38,45 @@ uses httpsendthread;
 
 { TLuaHandler }
 
+procedure TLuaHandler.NewHandle;
+begin
+  FreeHandle;
+  FHandle := LuaNewBaseState;
+end;
+
+procedure TLuaHandler.FreeHandle;
+begin
+  if FHandle <> nil then
+  begin
+    lua_close(FHandle);
+    FHandle := nil;
+  end;
+  FLoadedChunks.Clear;
+  FLoadedObjects.Clear;
+end;
+
 constructor TLuaHandler.Create;
   function createlist: TStringList;
   begin
     Result := TStringList.Create;
-    with Result do begin
+    with Result do
+    begin
       Sorted := True;
       OwnsObjects := False;
       CaseSensitive := True;
     end;
   end;
 begin
-  FHandle := LuaNewBaseState;
   FLoadedChunks := createlist;
   FLoadedObjects := createlist;
+  NewHandle;
 end;
 
 destructor TLuaHandler.Destroy;
 begin
+  FreeHandle;
   FLoadedChunks.Free;
   FLoadedObjects.Free;
-  lua_close(FHandle);
   inherited Destroy;
 end;
 
@@ -77,7 +97,7 @@ begin
   if Result = 0 then
   begin
     FLoadedChunks.AddObject(AName, AChunk);
-    Result := LuaPCall(FHandle, 0, LUA_MULTRET, 0);
+    Result := lua_pcall(FHandle, 0, LUA_MULTRET, 0);
   end;
 end;
 
@@ -96,7 +116,7 @@ begin
   luaClassPushObject(FHandle, AObject, AName, False, AddMetaTable);
   FLoadedObjects.AddObject(AName, AObject);
   if (AObject is THTTPSendThread) and (TLuaHandler(THTTPSendThread(AObject).LuaHandler) <> self) then
-      THTTPSendThread(AObject).LuaHandler := Self;
+    THTTPSendThread(AObject).LuaHandler := Self;
 end;
 
 procedure TLuaHandler.CallFunction(const AFunctionName: String);

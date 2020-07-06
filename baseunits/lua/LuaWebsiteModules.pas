@@ -443,14 +443,14 @@ begin
     i := luaL_loadfile(L, PAnsiChar(AFileName));
     if i <> 0 then
       raise Exception.Create('luaL_loadfile ' + LuaGetReturnString(i) + ': ' + luaToString(L, -1));
-    i := LuaPCall(L, 0, 0, 0);
+    i := lua_pcall(L, 0, 0, 0);
     if i <> 0 then
       raise Exception.Create('lua_pcall ' + LuaGetReturnString(i) + ': ' + luaToString(L, -1));
     lua_getglobal(L, PAnsiChar('Init'));
     if lua_isfunction(L, -1) = False then
       raise Exception.Create('no function name "Init()"');
     luaPushFunctionGlobal(L, 'NewWebsiteModule', @_newwebsitemodule);
-    i := LuaPCall(L, 0, 0, 0);
+    i := lua_pcall(L, 0, 0, 0);
     if i <> 0 then
       raise Exception.Create('LuaCallFunction("Init()") ' + LuaGetReturnString(i) + ': ' + luaToString(L, -1));
     Result := True
