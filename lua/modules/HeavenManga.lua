@@ -74,6 +74,11 @@ function GetNameAndLink()
 	return no_error
 end
 
+function BeforeDownloadImage()
+	HTTP.Headers.Values['Referer'] = ' ' .. MaybeFillHost(MODULE.RootURL, TASK.ChapterLinks[TASK.CurrentDownloadChapterPtr])
+	return true
+end
+
 ----------------------------------------------------------------------------------------------------
 -- Module Initialization
 ----------------------------------------------------------------------------------------------------
@@ -89,7 +94,8 @@ function Init()
 		m.OnGetNameAndLink            = 'GetNameAndLink'
 		m.OnGetPageNumber             = 'GetPageNumber'
 		m.OnGetDirectoryPageNumber    = 'GetDirectoryPageNumber'
+		m.OnBeforeDownloadImage       = 'BeforeDownloadImage'
 	end
-	AddWebsiteModule('3b0d5c38081a4b21a39a388a3ec59197', 'HeavenManga', 'http://www.heaventoon.com', 'English')
-	AddWebsiteModule('a9a8bd394d63495686794a8d427bda00', 'HolyManga', 'http://w15.holymanga.net', 'English')
+	AddWebsiteModule('3b0d5c38081a4b21a39a388a3ec59197', 'HeavenManga', 'https://ww2.heaventoon.com', 'English')
+	AddWebsiteModule('a9a8bd394d63495686794a8d427bda00', 'HolyManga', 'https://w16.holymanga.net', 'English')
 end
