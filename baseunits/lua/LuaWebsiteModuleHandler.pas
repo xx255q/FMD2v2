@@ -64,8 +64,8 @@ end;
 
 var
   TM: TThreadManager;
-  OldEndThread: TEndThreadHandler;
-{  OldReleaseThreadVars: TReleaseThreadVarsHandler;
+  {OldEndThread: TEndThreadHandler;
+  OldReleaseThreadVars: TReleaseThreadVarsHandler;
 
 // lua_close won't run __gc if it's called from different thread
 // so, ReleaseThreadVars can't be used
@@ -96,8 +96,8 @@ end;
 initialization
   GetThreadManager(TM);
   {OldReleaseThreadVars := TM.ReleaseThreadVars;
-  TM.ReleaseThreadVars := @LuaReleaseThreadVars;}
-  OldEndThread := TM.EndThread;
+  TM.ReleaseThreadVars := @LuaReleaseThreadVars;
+  OldEndThread := TM.EndThread;}
   TM.EndThread := @LuaEndThread;
   SetThreadManager(TM);
 

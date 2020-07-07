@@ -17,6 +17,7 @@ type
     FHandle: Plua_State;
     FLoadedChunks: TStringList;
     FLoadedObjects: TStringList;
+    FCallFunctionCount: Cardinal;
     procedure NewHandle;
     procedure FreeHandle;
   public
@@ -42,6 +43,7 @@ procedure TLuaHandler.NewHandle;
 begin
   FreeHandle;
   FHandle := LuaNewBaseState;
+  FCallFunctionCount := 0;
 end;
 
 procedure TLuaHandler.FreeHandle;
@@ -121,7 +123,13 @@ end;
 
 procedure TLuaHandler.CallFunction(const AFunctionName: String);
 begin
+  if FCallFunctionCount > 9 then
+  begin
+    lua_gc(FHandle, LUA_GCCOLLECT, 0);
+    FCallFunctionCount := 0;
+  end;
   LuaCallFunction(FHandle, AFunctionName);
+  Inc(FCallFunctionCount);
 end;
 
 procedure TLuaHandler.ClearStack;
