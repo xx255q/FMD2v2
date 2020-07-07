@@ -126,6 +126,7 @@ begin
   if FCallFunctionCount > 15 then
   begin
     lua_gc(FHandle, LUA_GCCOLLECT, 0);
+    lua_gc(FHandle, LUA_GCCOLLECT, 0);
     FCallFunctionCount := 0;
   end;
   LuaCallFunction(FHandle, AFunctionName);

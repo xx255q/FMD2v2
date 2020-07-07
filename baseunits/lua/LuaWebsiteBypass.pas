@@ -97,6 +97,7 @@ begin
     if checkantibot_count > 31 then
     begin
       lua_gc(checkantibot_state, LUA_GCCOLLECT, 0);
+      lua_gc(checkantibot_state, LUA_GCCOLLECT, 0);
       checkantibot_count := 0;
     end;
     luaClassPushUserData(checkantibot_state, AHTTP, '', False, @luaHTTPSendThreadAddMetaTable);
