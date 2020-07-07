@@ -123,7 +123,7 @@ end;
 
 procedure TLuaHandler.CallFunction(const AFunctionName: String);
 begin
-  if FCallFunctionCount > 9 then
+  if FCallFunctionCount > 15 then
   begin
     lua_gc(FHandle, LUA_GCCOLLECT, 0);
     FCallFunctionCount := 0;
