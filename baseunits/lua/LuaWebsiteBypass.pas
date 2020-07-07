@@ -39,6 +39,8 @@ var
 
   checkantibot_state: Plua_State;
   checkantibot_cs: TRTLCriticalSection;
+  checkantibot_ref: Integer;
+  checkantibot_count: Cardinal;
 
 procedure doInitialization;
 begin
@@ -53,8 +55,13 @@ begin
     checkantibot_dump := LuaDumpFileToStream(checkantibot_state, checkantibot_file);
     if checkantibot_dump<>nil then
     begin
-      if lua_pcall(checkantibot_state, 0, 0, 0) = 0 then
-        InitCriticalSection(checkantibot_cs)
+      if (lua_pcall(checkantibot_state, 0, 0, 0) = 0) and
+        (lua_getglobal(checkantibot_state, '____CheckAntiBot') = LUA_TFUNCTION)then
+      begin
+        InitCriticalSection(checkantibot_cs);
+        checkantibot_ref := luaL_ref(checkantibot_state, LUA_REGISTRYINDEX);
+        checkantibot_count := 0;
+      end
       else
       begin
         lua_close(checkantibot_state);
@@ -86,8 +93,12 @@ begin
   Result := False;
   EnterCriticalSection(checkantibot_cs);
   try
-    lua_getglobal(checkantibot_state, '____CheckAntiBot');
-    if lua_isnoneornil(checkantibot_state, -1) then Exit;
+    if lua_rawgeti(checkantibot_state, LUA_REGISTRYINDEX, checkantibot_ref) <> LUA_TFUNCTION then Exit;
+    if checkantibot_count > 31 then
+    begin
+      lua_gc(checkantibot_state, LUA_GCCOLLECT, 0);
+      checkantibot_count := 0;
+    end;
     luaClassPushUserData(checkantibot_state, AHTTP, '', False, @luaHTTPSendThreadAddMetaTable);
     r := lua_pcall(checkantibot_state, 1, LUA_MULTRET, 0);
     if r <> 0 then
@@ -95,6 +106,7 @@ begin
     if lua_gettop(checkantibot_state) > 0 then
       Result := lua_toboolean(checkantibot_state, 1);
     lua_settop(checkantibot_state, 0);
+    Inc(checkantibot_count);
   except
     on E: Exception do
       Logger.SendException('CheckAntiBot.Error', E);
