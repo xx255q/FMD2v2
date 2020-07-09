@@ -442,7 +442,7 @@ end;
 procedure THTTPSendThread.OnOwnerTerminate(Sender: TObject);
 begin
   Sock.Tag := 1;
-  Sock.AbortSocket;
+  Sock.CloseSocket;
 end;
 
 procedure THTTPSendThread.SetHTTPCookies;
@@ -852,7 +852,14 @@ end;
 
 procedure THTTPSendThread.ResetBasic;
 begin
-  Clear;
+  FRangeStart := 0;
+  FRangeEnd := 0;
+  FDocument.Clear;
+  FHeaders.Clear;
+  FCookies.Clear;
+  FDownloadSize := 0;
+  FUploadSize := 0;
+  FSock.CloseSocket;
   if FGZip then Headers.Values['Accept-Encoding'] := ' gzip, deflate';
 end;
 
