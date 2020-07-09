@@ -31,7 +31,7 @@ var
 implementation
 
 uses
-  MultiLog,
+  uBaseUnit,
   LuaPackage, LuaClass, LuaUtils,
   LuaCriticalSection, LuaMemoryStream,
   LuaBaseUnit, LuaSynaUtil,
@@ -49,9 +49,9 @@ begin
   for i := 1 to lua_gettop(L) do
     case lua_type(L, i) of
       LUA_TBOOLEAN:
-        Logger.Send(BoolToStr(lua_toboolean(L, i), 'true', 'false'));
+        SendLog(BoolToStr(lua_toboolean(L, i), 'true', 'false'));
       else
-        Logger.Send(luaToString(L, i));
+        SendLog(luaToString(L, i));
     end;
 end;
 
@@ -103,7 +103,7 @@ begin
       LuaCallFunction(Result, AFuncName);
   except
     on E: Exception do
-      Logger.SendError('LuaDoFile()>' + E.Message);
+      SendLogException('LuaDoFile()>', E);
   end;
 end;
 
@@ -116,7 +116,7 @@ begin
     LuaPackage.RegisterLoader(Result);
   except
     on E: Exception do
-      Logger.SendException('LuaNewBaseState()', E);
+      SendLogException('LuaNewBaseState()>', E);
   end;
 end;
 
@@ -196,7 +196,7 @@ begin
     begin
       Result.Free;
       Result := nil;
-      Logger.SendError('LuaDumpFileToStream()>' + E.Message);
+      SendLogException('LuaDumpFileToStream()>', E);
     end;
   end;
 end;

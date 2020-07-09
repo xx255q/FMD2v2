@@ -501,6 +501,7 @@ var
   i, AMaxStackCount: Integer;
 begin
   Result := '';
+  {$IFDEF DEBUGINFO}
   try
     Result := BackTraceStrFunc(ExceptAddr);
     Frames := ExceptFrames;
@@ -512,6 +513,7 @@ begin
       Result := Result + (LineEnding + BackTraceStrFunc(Frames[i]));
   except
   end;
+  {$ENDIF}
 end;
 
 procedure TSimpleException.CreateExceptionReport;

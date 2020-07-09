@@ -214,7 +214,7 @@ begin
         [cffPreserveTime, cffOverwriteFile], True);
     except
       on E: Exception do
-        Logger.SendException('CopyDBDataProcess.Error!', E);
+        SendLogException('CopyDBDataProcess.Error!', E);
     end;
   end;
 end;
@@ -389,7 +389,7 @@ begin
   except
     on E: Exception do
     begin
-      Logger.SendException(Self.ClassName+'['+Website+'].InternalOpen.Error!', E);
+      SendLogException(Self.ClassName+'['+Website+'].InternalOpen.Error!', E);
       Result := False;
     end;
   end;
@@ -405,7 +405,7 @@ begin
       Result:=FQuery.Fields[DBTempFieldWebsiteIndex].AsString;
     except
       on E: Exception do
-        Logger.SendException(Self.ClassName+'['+Website+'].GetWebsiteName Error!'+
+        SendLogException(Self.ClassName+'['+Website+'].GetWebsiteName Error!'+
         'RecIndex: '+IntToStr(RecIndex), E);
     end;
   end
@@ -479,7 +479,7 @@ begin
     end;
   except
     on E: Exception do
-      Logger.SendException(Self.ClassName+'['+Website+'].AttachAllSites.Error!'+
+      SendLogException(Self.ClassName+'['+Website+'].AttachAllSites.Error!'+
         ' try to attach '+QuotedStr(SitesList[i]), E)
   end;
   FConn.ExecuteDirect('BEGIN TRANSACTION');
@@ -502,7 +502,7 @@ begin
       FAttachedSites.Delete(i);
     except
       on E: Exception do
-        Logger.SendException(Self.ClassName+'['+Website+'].DetachAllSites.Error!', E);
+        SendLogException(Self.ClassName+'['+Website+'].DetachAllSites.Error!', E);
     end;
   end;
   FConn.ExecuteDirect('BEGIN TRANSACTION');
@@ -519,7 +519,7 @@ begin
       Result := True;
     except
       on E: Exception do
-        Logger.SendException(Self.ClassName+'['+Website+'].ExecuteDirect.Error!'#13#10 +
+        SendLogException(Self.ClassName+'['+Website+'].ExecuteDirect.Error!'#13#10 +
           'SQL: ' + SQL, E);
     end;
 end;
@@ -584,7 +584,7 @@ begin
     end;
   except
     on E: Exception do
-      Logger.SendException(Self.ClassName+'['+Website+'].Destroy.Error!', E);
+      SendLogException(Self.ClassName+'['+Website+'].Destroy.Error!', E);
   end;
   DoneLocateLink;
   FAttachedSites.Free;
@@ -619,7 +619,7 @@ begin
       Result := FQuery.Active;
     except
       on E: Exception do
-        Logger.SendException(Self.ClassName+'.Open.Error!', E);
+        SendLogException(Self.ClassName+'.Open.Error!', E);
     end;
   end;
 end;
@@ -648,7 +648,7 @@ begin
       end;
     except
       on E: Exception do
-        Logger.SendException(Self.ClassName+'['+Website+'].OpenTable.Error!', E);
+        SendLogException(Self.ClassName+'['+Website+'].OpenTable.Error!', E);
     end;
   end;
   Result := FQuery.Active;
@@ -684,7 +684,7 @@ begin
       FConn.DatabaseName := '';
     except
       on E: Exception do
-        Logger.SendException(Self.ClassName+'['+Website+'].Close.Error!', E);
+        SendLogException(Self.ClassName+'['+Website+'].Close.Error!', E);
     end;
 end;
 
@@ -793,7 +793,7 @@ begin
     Result:=True;
   except
     on E: Exception do
-      Logger.SendException(ClassName+'['+Website+'].UpdateData.Error!'+LineEnding+sql,E);
+      SendLogException(ClassName+'['+Website+'].UpdateData.Error!'+LineEnding+sql,E);
   end;
 end;
 
@@ -807,7 +807,7 @@ begin
     Result := True;
   except
     on E: Exception do
-      Logger.SendException(ClassName+'['+Website+'].DeleteData.Error!',E);
+      SendLogException(ClassName+'['+Website+'].DeleteData.Error!',E);
   end;
 end;
 
@@ -824,7 +824,7 @@ begin
         FQuery.Active := queryactive;
     except
       on E: Exception do
-        Logger.SendException(Self.ClassName+'['+Website+'].Commit.Error!',E);
+        SendLogException(Self.ClassName+'['+Website+'].Commit.Error!',E);
     end;
 end;
 
@@ -835,7 +835,7 @@ begin
       FTrans.Rollback;
     except
       on E: Exception do
-        Logger.SendException(Self.ClassName+'['+Website+'].Rollback.Error!',E);
+        SendLogException(Self.ClassName+'['+Website+'].Rollback.Error!',E);
     end;
 end;
 
@@ -887,7 +887,7 @@ begin
       FQuery.Open;
     except
       on E: Exception do
-        Logger.SendException(Self.ClassName+'['+Website+'].Search.Error!'#13#10 +
+        SendLogException(Self.ClassName+'['+Website+'].Search.Error!'#13#10 +
           'SQL:'#13#10 + FQuery.SQL.Text, E);
     end;
   end;
@@ -1031,7 +1031,7 @@ begin
     except
       on E: Exception do
       begin
-        Logger.SendException(Self.ClassName+'['+Website+'].Filter.Error!'#13#10 +
+        SendLogException(Self.ClassName+'['+Website+'].Filter.Error!'#13#10 +
           'SQL:'#13#10 + FQuery.SQL.Text, E);
         FQuery.Close;
         SQL.Text := tsql;
@@ -1102,7 +1102,7 @@ begin
         VacuumTable;
       except
         on E: Exception do
-          Logger.SendException(Self.ClassName+'['+Website+'].Sort.Error!', E);
+          SendLogException(Self.ClassName+'['+Website+'].Sort.Error!', E);
       end;
     if FQuery.Active <> queryactive then
       FQuery.Active := queryactive;

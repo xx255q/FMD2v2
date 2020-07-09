@@ -14,7 +14,7 @@ var
 
 implementation
 
-uses FileCache, LazFileUtils;
+uses FileCache, uBaseUnit, LazFileUtils;
 
 var
   modules: TFileCache;
@@ -62,7 +62,7 @@ begin
     Result:=1;
   except
     on E: Exception do
-      logger.SendException('modSearch Error', E);
+      SendLogException('modSearch Error', E);
   end;
 end;
 
@@ -133,7 +133,7 @@ begin
     //end;
   //except
   //  on E: Exception do
-  //    Logger.SendException('require error: '+duk_safe_to_string(ctx, -1),E);
+  //    SendLogException('require error: '+duk_safe_to_string(ctx, -1),E);
   //end;
   //if s<>nil then
   //  s.Free;

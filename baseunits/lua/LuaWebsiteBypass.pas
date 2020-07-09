@@ -28,7 +28,7 @@ implementation
 uses
   {$ifdef luajit}lua{$else}{$ifdef lua54}lua54{$else}lua53{$endif}{$endif},
   LuaWebsiteModules, LuaHandler, LuaBase, LuaUtils, LuaHTTPSend, LuaClass,
-  WebsiteModules, FMDOptions, MultiLog;
+  WebsiteModules, FMDOptions, uBaseUnit, MultiLog;
 
 var
   checkantibot_dump,
@@ -110,7 +110,7 @@ begin
     Inc(checkantibot_count);
   except
     on E: Exception do
-      Logger.SendException('CheckAntiBot.Error', E);
+      SendLogException('CheckAntiBot.Error', E);
   end;
   LeaveCriticalSection(checkantibot_cs);
 end;
@@ -134,7 +134,7 @@ begin
     Result := lua_toboolean(L.Handle, 1);
   except
     on E: Exception do
-      Logger.SendException('WebsiteBypass.Error', E);
+      SendLogException('WebsiteBypass.Error', E);
   end;
   L.ClearStack;
 end;

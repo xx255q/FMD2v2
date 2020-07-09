@@ -659,6 +659,14 @@ procedure fmdPowerOff;
 procedure fmdHibernate;
 
 // logger
+{$IFNDEF DEBUGINFO}
+type
+  TLoggerException = class helper for TLogger
+  public
+    procedure SendExceptionStr(const AText: String; AExceptionStr: String); inline
+  end;
+{$ENDIF}
+
 procedure SendLog(const AText: String); overload; inline;
 procedure SendLog(const AText, AValue: String); overload; inline;
 procedure SendLog(const AText: String; const AValue: Variant); overload; inline;
@@ -3013,7 +3021,7 @@ begin
         HTTP.Document.SaveToStream(TStream(output));
     except
       on E: Exception do
-        Logger.SendException('GetPage.WriteOutput.Error!', E);
+        SendLogException('GetPage.WriteOutput.Error!', E);
     end;
     Result := True;
   end
@@ -3164,7 +3172,7 @@ begin
       end;
     except
       on E: Exception do
-        Logger.SendException('SaveImageStreamToFile.WriteToFile Failed! ' + f, E);
+        SendLogException('SaveImageStreamToFile.WriteToFile Failed! ' + f, E);
     end;
     if FileExists(f) then
     begin
@@ -3174,7 +3182,7 @@ begin
           FileSetDateUTF8(f, Age);
         except
           on E: Exception do
-            Logger.SendException('SaveImageStreamToFile.FileSetDate Error! ' + f, E);
+            SendLogException('SaveImageStreamToFile.FileSetDate Error! ' + f, E);
         end;
     end;
   end;
@@ -3917,6 +3925,12 @@ begin
   {$ENDIF}
 end;
 
+{$IFNDEF DEBUGINFO}
+procedure TLoggerException.SendExceptionStr(const AText: String; AExceptionStr: String);
+begin
+  SendBuffer(ltException, AText, AExceptionStr[1], Length(AExceptionStr));
+end;
+{$ENDIF}
 procedure SendLog(const AText: String);
 begin
   Logger.Send(AText);
@@ -3952,7 +3966,7 @@ begin
   {$ifdef DEBUGINFO}
   Logger.SendException(AText, AException);
   {$else}
-  Logger.SendError(AText + AException.Message);
+  Logger.SendExceptionStr(AText + AException.Message);
   {$endif}
 end;
 
