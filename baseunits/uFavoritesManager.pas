@@ -786,6 +786,7 @@ begin
     Self.DLManager := DLManager;
   if Self.DLManager = nil then Exit;
 
+  Self.Sort(Self.FSortColumn);
   EnterCriticalsection(CS_Favorites);
   try
     numOfNewChapters := 0;
