@@ -2618,6 +2618,7 @@ begin
     FavoriteManager.Add(
       mangaInfo.Module,
       mangaInfo.Title,
+      MangaInfo.Status,
       IntToStr(mangaInfo.NumChapter),
       mangaInfo.ChapterLinks.Text,
       s,
@@ -4343,6 +4344,8 @@ begin
       Brush.Color := CL_FVBrokenFavorite
     else
     begin
+      if FavoriteInfo.Status = MangaInfo_StatusCompleted then
+        Brush.Color := CL_FVCompletedManga;
       if FavoriteInfo.CurrentChapter = '0' then
         Brush.Color := CL_FVEmptyChapters;
       if Status = STATUS_CHECKING then
@@ -4352,10 +4355,7 @@ begin
         Assigned(NewMangaInfo) then
       begin
         if NewMangaInfoChaptersPos.Count > 0 then
-          Brush.Color := CL_FVNewChapterFound
-        else
-        if NewMangaInfo.Status = MangaInfo_StatusCompleted then
-          Brush.Color := CL_FVCompletedManga;
+          Brush.Color := CL_FVNewChapterFound;
       end;
     end;
     if Brush.Color <> clNone then

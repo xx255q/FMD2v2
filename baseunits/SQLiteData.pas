@@ -48,7 +48,7 @@ type
     function OpenDB: Boolean; virtual;
     function CreateDB: Boolean; virtual;
     function ConvertNewTableIF: Boolean; virtual;
-    procedure DoConvertNewTable;
+    procedure DoConvertNewTable; virtual;
     procedure GetRecordCount; virtual;
     procedure SetRecordCount(const AValue: Integer); virtual;
     procedure IncRecordCount(const N: Integer = 1);
@@ -242,7 +242,6 @@ procedure TSQliteData.DoConvertNewTable;
 var
   qactive: Boolean;
 begin
-  if not ConvertNewTableIF then Exit;
   if not FConn.Connected then Exit;
   try
     qactive := FQuery.Active;
@@ -366,7 +365,7 @@ begin
       DoOnError(E);
   end;
   Result := FQuery.Active;
-  if Result then DoConvertNewTable;
+  if Result and ConvertNewTableIF then DoConvertNewTable;
 end;
 
 procedure TSQliteData.Close;

@@ -118,7 +118,7 @@ type
     function LocateMangaByLink(const AModuleID, ALink: String): TFavoriteContainer;
     function IsMangaExistByLink(const AModuleID, ALink: String): Boolean; inline;
     // Add new manga to the list
-    procedure Add(const AModule: Pointer; const ATitle, ACurrentChapter, ADownloadedChapterList, ASaveTo, ALink: String);
+    procedure Add(const AModule: Pointer; const ATitle, AStatus, ACurrentChapter, ADownloadedChapterList, ASaveTo, ALink: String);
     // Merge manga information with a title that already exist in favorites
     procedure AddMerge(const ATitle, ACurrentChapter, ADownloadedChapterList, AWebsite,
       ASaveTo, ALink: String);
@@ -215,6 +215,7 @@ begin
       ModuleID,
       Link,
       Title,
+      Status,
       CurrentChapter,
       DownloadedChapterList,
       SaveTo,
@@ -246,6 +247,7 @@ begin
         NewMangaInfoChaptersPos := TCardinalList.Create;
         // update current chapters count immedietly
         FavoriteInfo.CurrentChapter := IntToStr(NewMangaInfo.ChapterLinks.Count);
+        FavoriteInfo.Status := NewMangaInfo.Status;
         if NewMangaInfo.ChapterLinks.Count > 0 then
         begin
           // tag 100 for transfer favorite, add all chapter to downloaded chapter list
@@ -1007,8 +1009,8 @@ begin
   Result := LocateMangaByLink(AModuleID, ALink) <> nil;
 end;
 
-procedure TFavoriteManager.Add(const AModule: Pointer; const ATitle,
-  ACurrentChapter, ADownloadedChapterList, ASaveTo, ALink: String);
+procedure TFavoriteManager.Add(const AModule: Pointer; const ATitle, AStatus, ACurrentChapter,
+  ADownloadedChapterList, ASaveTo, ALink: String);
 var
   newfv: Integer;
 begin
@@ -1022,6 +1024,7 @@ begin
       with FavoriteInfo do begin
         Module := AModule;
         Title := ATitle;
+        Status := AStatus;
         CurrentChapter := ACurrentChapter;
         SaveTo := ASaveTo;
         Link := ALink;
@@ -1130,6 +1133,7 @@ begin
               FavoriteInfo.ModuleID              := Fields[f_moduleid].AsString;
               FavoriteInfo.Link                  := Fields[f_link].AsString;
               FavoriteInfo.Title                 := Fields[f_title].AsString;
+              FavoriteInfo.Status                := Fields[f_status].AsString;
               FavoriteInfo.CurrentChapter        := Fields[f_currentchapter].AsString;
               FavoriteInfo.DownloadedChapterList := Fields[f_downloadedchapterlist].AsString;
               FavoriteInfo.SaveTo                := Fields[f_saveto].AsString;
@@ -1163,6 +1167,7 @@ begin
             ModuleID,
             Link,
             Title,
+            Status,
             CurrentChapter,
             DownloadedChapterList,
             SaveTo,

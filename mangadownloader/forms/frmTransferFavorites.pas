@@ -238,6 +238,7 @@ begin
         FavoriteManager.Add(
           Data^.NewModule,
           Title,
+          Status,
           CurrentChapter,
           dc,
           SaveTo,

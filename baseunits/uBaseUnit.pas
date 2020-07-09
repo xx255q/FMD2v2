@@ -371,8 +371,9 @@ type
   { TFavoriteInfo }
 
   TFavoriteInfo = packed record
-    Title,
     Link,
+    Title,
+    Status,
     SaveTo,
     Numbering,
     DownloadedChapterList,

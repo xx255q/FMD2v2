@@ -16,16 +16,18 @@ type
     FCommitCount: Integer;
     FAutoCommitCount: Integer;
     procedure SetAutoCommitCount(AValue: Integer);
+  protected
+    function ConvertNewTableIF: Boolean; override;
   public
     constructor Create(const AFilename: String);
     procedure InternalUpdate(const AOrder:Integer;const AEnabled:Boolean;
-      const AModuleID,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo: String;
+      const AModuleID,ALink,ATitle,AStatus,ACurrentChapter,ADownloadedChapterList,ASaveTo: String;
       const ADateLastChecked,ADateLastUpdated: TDateTime); inline;
     procedure InternalAdd(const AOrder:Integer;const AEnabled:Boolean;
-      const AModuleID,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo: String;
+      const AModuleID,ALink,ATitle,AStatus,ACurrentChapter,ADownloadedChapterList,ASaveTo: String;
       const ADateAdded: TDateTime); inline;
     function Add(const AOrder:Integer;const AEnabled:Boolean;
-      const AModuleID,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo:String;
+      const AModuleID,ALink,ATitle,AStatus,ACurrentChapter,ADownloadedChapterList,ASaveTo:String;
       const ADateAdded: TDateTime):Boolean;
     procedure Delete(const AWebsite, ALink: String);
     procedure Commit; override;
@@ -40,12 +42,13 @@ const
   f_moduleid               = 3;
   f_link                   = 4;
   f_title                  = 5;
-  f_currentchapter         = 6;
-  f_downloadedchapterlist  = 7;
-  f_saveto                 = 8;
-  f_dateadded              = 9;
-  f_datelastchecked        = 10;
-  f_datelastupdated        = 11;
+  f_status                 = 6;
+  f_currentchapter         = 7;
+  f_downloadedchapterlist  = 8;
+  f_saveto                 = 9;
+  f_dateadded              = 10;
+  f_datelastchecked        = 11;
+  f_datelastupdated        = 12;
 
 implementation
 
@@ -55,6 +58,12 @@ procedure TFavoritesDB.SetAutoCommitCount(AValue: Integer);
 begin
   if FAutoCommitCount = AValue then Exit;
   FAutoCommitCount := AValue;
+end;
+
+function TFavoritesDB.ConvertNewTableIF: Boolean;
+begin
+  // TODO: deprecated after 2 release from 2.0.18
+  Result := Table.FindField('status') = nil;
 end;
 
 constructor TFavoritesDB.Create(const AFilename: String);
@@ -72,25 +81,26 @@ begin
     '"moduleid" TEXT,' +
     '"link" TEXT,' +
     '"title" TEXT,' +
+    '"status" TEXT,' +
     '"currentchapter" TEXT,' +
     '"downloadedchapterlist" TEXT,' +
     '"saveto" TEXT,' +
     '"dateadded" DATETIME,' +
     '"datelastchecked" DATETIME,' +
     '"datelastupdated" DATETIME';
-  FieldsParams := '"id","order","enabled","moduleid","link","title","currentchapter","downloadedchapterlist","saveto","dateadded","datelastchecked","datelastupdated"';
+  FieldsParams := '"id","order","enabled","moduleid","link","title","status","currentchapter","downloadedchapterlist","saveto","dateadded","datelastchecked","datelastupdated"';
   SelectParams := 'SELECT * FROM ' + QuotedStrD(TableName) + ' ORDER BY "order"';
 end;
 
-procedure TFavoritesDB.InternalUpdate(const AOrder: Integer;
-  const AEnabled: Boolean; const AModuleID, ALink, ATitle, ACurrentChapter,
-  ADownloadedChapterList, ASaveTo: String; const ADateLastChecked,
-  ADateLastUpdated: TDateTime);
+procedure TFavoritesDB.InternalUpdate(const AOrder: Integer; const AEnabled: Boolean;
+  const AModuleID, ALink, ATitle, AStatus, ACurrentChapter, ADownloadedChapterList,
+  ASaveTo: String; const ADateLastChecked, ADateLastUpdated: TDateTime);
 begin
   Connection.ExecuteDirect('UPDATE "favorites" SET ' +
     '"order"='+QuotedStr(AOrder)+', '+
     '"enabled"='+QuotedStr(AEnabled)+', '+
     '"title"='+QuotedStr(ATitle)+', '+
+    '"status"='+QuotedStr(AStatus)+', '+
     '"currentchapter"='+QuotedStr(ACurrentChapter)+', '+
     '"downloadedchapterlist"='+QuotedStr(ADownloadedChapterList)+', '+
     '"saveto"='+QuotedStr(ASaveTo)+', '+
@@ -99,8 +109,8 @@ begin
     ' WHERE "id"='+QuotedStr(LowerCase(AModuleID+ALink)));
 end;
 
-procedure TFavoritesDB.InternalAdd(const AOrder:Integer;const AEnabled:Boolean;
-  const AModuleID,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo:String;
+procedure TFavoritesDB.InternalAdd(const AOrder: Integer; const AEnabled: Boolean; const AModuleID,
+  ALink, ATitle, AStatus, ACurrentChapter, ADownloadedChapterList, ASaveTo: String;
   const ADateAdded: TDateTime);
 begin
   Connection.ExecuteDirect('INSERT OR REPLACE INTO "favorites" (' +
@@ -112,6 +122,7 @@ begin
     QuotedStr(AModuleID) + ', ' +
     QuotedStr(ALink) + ', ' +
     QuotedStr(ATitle) + ', ' +
+    QuotedStr(AStatus) + ', ' +
     QuotedStr(ACurrentChapter)  + ', ' +
     QuotedStr(ADownloadedChapterList) + ', ' +
     QuotedStr(ASaveTo) + ',' +
@@ -120,15 +131,15 @@ begin
     QuotedStr(ADateAdded) + ')');
 end;
 
-function TFavoritesDB.Add(const AOrder: Integer; const AEnabled: Boolean;
-  const AModuleID, ALink, ATitle, ACurrentChapter, ADownloadedChapterList,
-  ASaveTo: String; const ADateAdded: TDateTime): Boolean;
+function TFavoritesDB.Add(const AOrder: Integer; const AEnabled: Boolean; const AModuleID, ALink,
+  ATitle, AStatus, ACurrentChapter, ADownloadedChapterList, ASaveTo: String;
+  const ADateAdded: TDateTime): Boolean;
 begin
   Result := False;
   if (AModuleID = '') or (ALink = '') then Exit;
   if not Connection.Connected then Exit;
   try
-    InternalAdd(AOrder,AEnabled,AModuleID,ALink,ATitle,ACurrentChapter,ADownloadedChapterList,ASaveTo,ADateAdded);
+    InternalAdd(AOrder,AEnabled,AModuleID,ALink,ATitle,AStatus,ACurrentChapter,ADownloadedChapterList,ASaveTo,ADateAdded);
     Result := True;
     Inc(FCommitCount);
     if FCommitCount >= FAutoCommitCount then

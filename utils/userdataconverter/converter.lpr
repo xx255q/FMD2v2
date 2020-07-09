@@ -16,6 +16,7 @@ var
   dbcon: TSQLite3Connection;
   dbquery: TSQLQuery;
   dbtrans: TSQLTransaction;
+  datenow: String;
 
 function copyfile(fromfile, tofile:string):boolean;
 begin
@@ -92,6 +93,8 @@ begin
       free;
     end;
 
+  datenow := QuotedStr(Now);
+
   s:=IncludeTrailingPathDelimiter(GetCurrentDir)+Sqlite3Lib;
   if FileExists(s) then
     SQLiteDefaultLibrary := s;
@@ -142,12 +145,14 @@ begin
       dbcon.Connected := true;
       dbcon.ExecuteDirect('ALTER TABLE "favorites" RENAME COLUMN "websitelink" TO "id"');
       dbcon.ExecuteDirect('ALTER TABLE "favorites" RENAME COLUMN "website" TO "moduleid"');
+      dbcon.ExecuteDirect('ALTER TABLE "favorites" ADD COLUMN "status" TEXT');
       dbcon.ExecuteDirect('ALTER TABLE "favorites" ADD COLUMN "dateadded" DATETIME');
       dbcon.ExecuteDirect('ALTER TABLE "favorites" ADD COLUMN "datelastchecked" DATETIME');
       dbcon.ExecuteDirect('ALTER TABLE "favorites" ADD COLUMN "datelastupdated" DATETIME');
-      dbcon.ExecuteDirect('UPDATE "favorites" SET "dateadded"='+QuotedStr(Now));
-      dbcon.ExecuteDirect('UPDATE "favorites" SET "datelastchecked"='+QuotedStr(Now));
-      dbcon.ExecuteDirect('UPDATE "favorites" SET "datelastupdated"='+QuotedStr(Now));
+      dbcon.ExecuteDirect('UPDATE "favorites" SET "status"=''1''');
+      dbcon.ExecuteDirect('UPDATE "favorites" SET "dateadded"='+datenow);
+      dbcon.ExecuteDirect('UPDATE "favorites" SET "datelastchecked"='+datenow);
+      dbcon.ExecuteDirect('UPDATE "favorites" SET "datelastupdated"='+datenow);
       dbquery.SQL.Text := 'SELECT "id", "moduleid" FROM "favorites"';
       dbquery.ExecSQL;
       dbquery.Active := true;

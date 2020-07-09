@@ -481,6 +481,7 @@ begin
       FavoriteManager.Add(
         Module,
         Title,
+        info.MangaInfo.Status,
         IntToStr(Info.MangaInfo.NumChapter),
         info.MangaInfo.ChapterLinks.Text,
         s,
