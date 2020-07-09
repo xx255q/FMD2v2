@@ -12,7 +12,7 @@ interface
 uses
   Classes, SysUtils, fgl, uData, uDownloadsManager, FMDOptions, httpsendthread,
   WebsiteModulesSettings, LuaWebsiteBypass, RegExpr, fpjson, jsonparser,
-  jsonscanner, fpjsonrtti, uBaseUnit, httpcookiemanager, syncobjs;
+  jsonscanner, fpjsonrtti, uBaseUnit, httpcookiemanager, BaseThread, syncobjs;
 
 const
   MODULE_NOT_FOUND = -1;
@@ -160,6 +160,7 @@ type
     procedure AddOptionComboBox(const ABindValue: PInteger; const AName: String;
       const ACaption, AItems: PString);
     procedure PrepareHTTP(const AHTTP: THTTPSendThread);
+    function CreateHTTP(const AOwner: TBaseThread = nil): THTTPSendThread; inline;
 
     procedure IncActiveTaskCount; inline;
     procedure DecActiveTaskCount; inline;
@@ -379,6 +380,12 @@ begin
         AHTTP.SetProxy(s,ProxyHost,ProxyPort,ProxyUsername,ProxyPassword);
     end;
   end;
+end;
+
+function TModuleContainer.CreateHTTP(const AOwner: TBaseThread): THTTPSendThread;
+begin
+  Result := THTTPSendThread.Create(AOwner);
+  PrepareHTTP(Result);
 end;
 
 procedure TModuleContainer.IncActiveTaskCount;

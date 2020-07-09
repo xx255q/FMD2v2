@@ -87,7 +87,7 @@ type
     function InternalHTTPRequest(const Method, URL: String; const Response: TObject = nil): Boolean;
     function DefaultHTTPRequest(const Method, URL: String; const Response: TObject = nil): Boolean;
   public
-    constructor Create(AOwner: TBaseThread = nil);
+    constructor Create(const AOwner: TBaseThread = nil);
     destructor Destroy; override;
     procedure ParseHTTPCookies; inline;
     function HTTPMethod(const Method, URL: string): Boolean;
@@ -473,7 +473,7 @@ begin
     Result := HTTPRequest(Method, URL, Response);
 end;
 
-constructor THTTPSendThread.Create(AOwner: TBaseThread);
+constructor THTTPSendThread.Create(const AOwner: TBaseThread);
 begin
   inherited Create;
   LuaHandler := nil;
