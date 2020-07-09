@@ -19,6 +19,7 @@ type
 
   TDBDataProcess = class(TObject)
   private
+    FGuardian: TRTLCriticalSection;
     FConn: TSQLite3Connection;
     FTrans: TSQLTransaction;
     FQuery: TSQLQuery;
@@ -59,6 +60,9 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+
+    procedure Lock; inline;
+    procedure Unlock; inline;
 
     function Connect(const AWebsite: String): Boolean;
     function Open(const AWebsite: String = ''): Boolean;
@@ -545,6 +549,7 @@ end;
 constructor TDBDataProcess.Create;
 begin
   inherited Create;
+  InitCriticalSection(FGuardian);
   FConn := TSQLite3Connection.Create(nil);
   FTrans := TSQLTransaction.Create(nil);
   FQuery := TSQLQuery.Create(nil);
@@ -593,7 +598,18 @@ begin
   FTrans.Free;
   FConn.Free;
   FRegxp.Free;
+  Finalize(FGuardian);
   inherited Destroy;
+end;
+
+procedure TDBDataProcess.Lock;
+begin
+  EnterCriticalSection(FGuardian);
+end;
+
+procedure TDBDataProcess.Unlock;
+begin
+  LeaveCriticalSection(FGuardian);
 end;
 
 function TDBDataProcess.Connect(const AWebsite: String): Boolean;
