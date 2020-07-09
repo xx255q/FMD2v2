@@ -20,7 +20,8 @@ type
     property Module: Pointer read FLoadedModule;
   end;
 
-function GetLuaWebsiteModuleHandler(const AModule: Pointer): TLuaWebsiteModuleHandler;
+function GetLuaWebsiteModuleHandler(const AModule: Pointer): TLuaWebsiteModuleHandler; inline;
+procedure FreeLuaWebsiteModuleHandler; inline;
 
 implementation
 
@@ -62,6 +63,12 @@ begin
   Result:=_LuaHandler.LoadModule(AModule);
 end;
 
+procedure FreeLuaWebsiteModuleHandler;
+begin
+  if _LuaHandler<>nil then
+    FreeAndNil(_LuaHandler);
+end;
+
 var
   TM: TThreadManager;
   {OldEndThread: TEndThreadHandler;
@@ -83,11 +90,7 @@ end;}
 
 procedure LuaEndThread(ExitCode : DWord);
 begin
-  if _LuaHandler<>nil then
-  begin
-    _LuaHandler.Free;
-    _LuaHandler:=nil;
-  end;
+  FreeLuaWebsiteModuleHandler;
   {// run in loop ?
   if OldEndThread<>nil then
     OldEndThread(ExitCode);}
