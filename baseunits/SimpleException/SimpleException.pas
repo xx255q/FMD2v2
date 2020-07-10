@@ -496,9 +496,11 @@ begin
 end;
 
 function TSimpleException.GetStackTraceStr: String;
+{$IFDEF DEBUGINFO}
 var
   Frames: PPointer;
   i, AMaxStackCount: Integer;
+{$ENDIF}
 begin
   Result := '';
   {$IFDEF DEBUGINFO}
