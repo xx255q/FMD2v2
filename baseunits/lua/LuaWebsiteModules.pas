@@ -504,10 +504,12 @@ begin
       finally
         FOwner.FMainGuardian.Leave;
       end;
-      for i := 0 to TempModules.Count - 1 do
+      Modules.Lock;
+      try
+        for i := 0 to TempModules.Count - 1 do
         with TempModules[i] do
         begin
-          Modules.AddModule(Module);
+          Modules.List.Add(Module);
           c.Modules.Add(TempModules[i]);
           Container := c;
           Module.RootURL := LowerCase(Module.RootURL);
@@ -538,6 +540,9 @@ begin
           if OnLogin <> '' then
             Module.OnLogin := @DoLogin;
         end;
+      finally
+        Modules.Unlock;
+      end;
       TempModules.Clear;
     end;
 end;

@@ -100,7 +100,6 @@ type
 
   TModuleContainer = class
   private
-    FIndex: Integer;
     FAccount: TWebsiteModuleAccount;
     FAccountSupport: Boolean;
     FSettings: TWebsiteModuleSettings;
@@ -149,7 +148,6 @@ type
     constructor Create;
     destructor Destroy; override;
   public
-    property Index: Integer read FIndex;
     property TotalDirectory: Integer read FTotalDirectory write SetTotalDirectory;
     procedure AddOptionCheckBox(const ABindValue: PBoolean; const AName: String;
       const ACaption: PString);
@@ -183,7 +181,7 @@ type
 
   TWebsiteModules = class
   private
-    FCSModules: TRTLCriticalSection;
+    FGuardian: TRTLCriticalSection;
     FModuleList: TModuleContainers;
     FLastLocateModule: TModuleContainer;
     function GetModule(const AModuleIndex: Integer): TModuleContainer;
@@ -192,12 +190,10 @@ type
     constructor Create;
     destructor Destroy; override;
     procedure Sort;
-    procedure LockModules;
-    procedure UnlockModules;
-    procedure AddModule(const AModule: TModuleContainer);
+    procedure Lock; inline;
+    procedure Unlock; inline;
     procedure LoadFromFile;
     procedure SaveToFile;
-    function AddNewModule: TModuleContainer;
     function LocateModule(const AModuleID: String): TModuleContainer;
     function LocateModuleByHost(const AHost: String): TModuleContainer;
     property List: TModuleContainers read FModuleList;
@@ -209,10 +205,6 @@ var
   Modules: TWebsiteModules;
 
 procedure doInitialize;
-function AddModule: TModuleContainer;
-
-procedure LockCreateConnection;
-procedure UnlockCreateConnection;
 
 function CleanOptionName(const S: String): String;
 
@@ -298,7 +290,6 @@ end;
 constructor TModuleContainer.Create;
 begin
   Guardian := TCriticalSection.Create;
-  FIndex := -1;
   ActiveTaskCount := 0;
   AccountSupport := False;
   SortedList := False;
@@ -443,7 +434,7 @@ end;
 
 constructor TWebsiteModules.Create;
 begin
-  InitCriticalSection(FCSModules);
+  InitCriticalSection(FGuardian);
   FModuleList := TModuleContainers.Create;
   FLastLocateModule := nil;
 end;
@@ -456,7 +447,7 @@ begin
     for i := FModuleList.Count - 1 downto 0 do
       FModuleList[i].Free;
   FModuleList.Free;
-  DoneCriticalsection(FCSModules);
+  DoneCriticalsection(FGuardian);
   inherited Destroy;
 end;
 
@@ -468,27 +459,6 @@ end;
 procedure TWebsiteModules.Sort;
 begin
   FModuleList.Sort(@TModuleContainerCompare);
-end;
-
-procedure TWebsiteModules.AddModule(const AModule: TModuleContainer);
-begin
-  EnterCriticalsection(FCSModules);
-  try
-    AModule.FIndex := FModuleList.Add(AModule);
-  finally
-    LeaveCriticalsection(FCSModules);
-  end;
-end;
-
-function TWebsiteModules.AddNewModule: TModuleContainer;
-begin
-  EnterCriticalsection(FCSModules);
-  try
-    Result := TModuleContainer.Create;
-    Result.FIndex := FModuleList.Add(Result);
-  finally
-    LeaveCriticalsection(FCSModules);
-  end;
 end;
 
 function TWebsiteModules.LocateModule(const AModuleID: String): TModuleContainer;
@@ -553,14 +523,14 @@ begin
     InterlockedExchange(Pointer(FLastLocateModule), Pointer(Result));
 end;
 
-procedure TWebsiteModules.LockModules;
+procedure TWebsiteModules.Lock;
 begin
-  EnterCriticalsection(FCSModules);
+  EnterCriticalsection(FGuardian);
 end;
 
-procedure TWebsiteModules.UnlockModules;
+procedure TWebsiteModules.Unlock;
 begin
-  LeaveCriticalsection(FCSModules);
+  LeaveCriticalsection(FGuardian);
 end;
 
 procedure TWebsiteModules.LoadFromFile;
@@ -729,23 +699,6 @@ procedure doInitialize;
 begin
   if Modules = nil then
     Modules := TWebsiteModules.Create;
-end;
-
-function AddModule: TModuleContainer;
-begin
-  if Modules = nil then
-    doInitialize;
-  Result := Modules.AddNewModule;
-end;
-
-procedure LockCreateConnection;
-begin
-  EnterCriticalsection(CS_Connection);
-end;
-
-procedure UnlockCreateConnection;
-begin
-  LeaveCriticalsection(CS_Connection);
 end;
 
 initialization
