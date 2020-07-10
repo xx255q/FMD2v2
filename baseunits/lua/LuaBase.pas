@@ -180,24 +180,23 @@ function LuaDumpFileToStream(const L: Plua_State; const AFileName: String
 var
   r: Integer;
 begin
-  if not FileExists(AFileName) then
-    Exit;
-  Result := TMemoryStream.Create;
+  Result := nil;
+  if not FileExists(AFileName) then Exit;
   try
     r := luaL_loadfile(L, PAnsiChar(AFileName));
     if r <> 0 then
       raise Exception.Create('luaL_loadfile ' + LuaGetReturnString(r) + ': ' + luaToString(L, -1));
     // disabled strip to print line info
+    Result := TMemoryStream.Create;
     r := lua_dump(L, @_luawriter, Result{$ifndef luajit}, 0{$endif});
     if r <> 0 then
+    begin
+      FreeAndNil(Result);
       raise Exception.Create('lua_dump ' + LuaGetReturnString(r) + ': ' + luaToString(L, -1));
+    end;
   except
     on E: Exception do
-    begin
-      Result.Free;
-      Result := nil;
       SendLogException('LuaDumpFileToStream()>', E);
-    end;
   end;
 end;
 
@@ -210,7 +209,7 @@ end;
 function LuaLoadFromStreamOrFile(const L: Plua_State;
   const AStream: TMemoryStream; const AFileName: String): Integer;
 begin
-  if not AlwaysLoadLuaFromFile then
+  if (not AlwaysLoadLuaFromFile) and (AStream <> nil) then
     Result := luaL_loadbuffer(L, AStream.Memory, AStream.Size, PAnsiChar(AFileName))
   else
     Result := luaL_loadfile(L, PAnsiChar(AFileName));
