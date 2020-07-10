@@ -92,7 +92,7 @@ function Init()
 		local m = NewWebsiteModule()
 		m.ID = id
 		m.Name = name
-		m.RootURL = URL
+		m.RootURL = url
 		m.Category = 'English'
 		m.OnGetInfo='getinfo'
 		m.OnGetPageNumber='getpagenumber'

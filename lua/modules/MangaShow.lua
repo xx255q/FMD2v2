@@ -124,7 +124,7 @@ function Init()
 		m.ID=id
 		m.Category=cat
 		m.Name=site
-		m.RootURL=URL
+		m.RootURL=url
 		m.OnGetInfo='getinfo'
 		m.OnGetPageNumber='getpagenumber'
 		m.OnGetNameAndLink='getnameandlink'

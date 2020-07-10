@@ -92,7 +92,7 @@ function Init()
 		m.ID=id
 		m.Category='English'
 		m.Name=site
-		m.RootURL=URL
+		m.RootURL=url
 		m.LastUpdated='April 5, 2018'
 		m.OnGetInfo='getinfo'
 		m.OnGetPageNumber='getpagenumber'
