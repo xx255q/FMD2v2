@@ -59,7 +59,7 @@ function GetInfo()
 		MANGAINFO.Summary   = x.XPathString('//div[@class="barContent"]/div/p[starts-with(.,"Summary:")]//following-sibling::p[1]')
 		MANGAINFO.Genres    = x.XPathStringAll('//div[@class="barContent"]//span[starts-with(., "Genre")]/parent::*/a')
 		MANGAINFO.Status    = MangaInfoStatusIfPos((x.XPathString('//div[@class="barContent"]/div/p[starts-with(.,"Status:")]')))
-		
+
 		local namePattern = '^Read (.+) online$'
 		if MODULE.ID == '1a7b98800a114a3da5f48de91f45a880' then namePattern = '^Read (.+) comic online' end
 		local v, name; for v in x.XPath('//table[@class="listing"]/tbody/tr/td/a').Get() do
@@ -86,8 +86,8 @@ function GetPageNumber()
 		if TASK.PageLinks.Count == 0 then return false end
 		-- kissmanga encrypted data
 		if (MODULE.ID == '4f40515fb43640ddb08eb61278fc97a5') and HTTP.GET(MODULE.RootURL .. '/Scripts/lo.js') then
-			LOGGER = require 'fmd.logger'
-			crypto = require 'fmd.crypto'
+			local LOGGER = require 'fmd.logger'
+			local crypto = require 'fmd.crypto'
 			local key, iv
 			-- get the key and initialization vector
 
@@ -95,7 +95,7 @@ function GetPageNumber()
 				return str:gsub('\\x',''):gsub('%x%x',function(c)return c.char(tonumber(c,16))end)
 			end
 
-			local chko2 = body:match('%["([^"]+)"%]; chko = _') or ''
+			local chko2 = body:match('%["([^"]+)"%]; chko = _?') or ''
 			local chko2_plus = body:match('chko = .+%["([^"]+)"%]; chko = ') or ''
 			chko2 = JSHexToStr(chko2)
 			chko2_plus = JSHexToStr(chko2_plus)
@@ -145,9 +145,11 @@ chko2_plus  : %s
 test_string : %s
 					]], tostring(iv), tostring(chko1), tostring(chko2), tostring(chko2_plus), test_p))
 					TASK.PageLinks.Clear()
+					return false
 				end
 			else
 				LOGGER.SendError('[KissManga] unable to extract the parameters to decrypt ' .. URL)
+				return false
 			end
 		end
 		return true
