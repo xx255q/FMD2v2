@@ -18,12 +18,17 @@ function getinfo()
 			ctitle = x.XPathString('h4', v)
 			for vi in x.XPath('div//ul/li/div', v).Get() do
 				scanname = ' [' .. x.XPathString('div[1]', vi) .. ']'
-				viewerurl = x.XPathString('div/form/@action', vi)
-				formparams = ''
-				for vii in x.XPath('div/form/input', vi).Get() do
-					formparams = formparams .. '&' .. vii.GetAttribute('name') .. '=' .. EncodeURLElement(vii.GetAttribute('value'))
+				viewerurl = x.XPathString('div/a[contains(@class,"btn-sm")]/@href', vi)
+				if viewerurl == '' then
+					viewerurl = x.XPathString('div/form/@action', vi)
+					formparams = ''
+					for vii in x.XPath('div/form/input', vi).Get() do
+						formparams = formparams .. '&' .. vii.GetAttribute('name') .. '=' .. EncodeURLElement(vii.GetAttribute('value'))
+					end
+					viewerurl = viewerurl .. formparams:gsub('^&','?')
 				end
-				viewerurl = viewerurl .. formparams:gsub('^&','?')
+				MANGAINFO.ChapterNames.Add(ctitle .. ' ' .. scanname)
+				MANGAINFO.ChapterLinks.Add(viewerurl)
 				MANGAINFO.ChapterNames.Add(ctitle .. ' ' .. scanname)
 				MANGAINFO.ChapterLinks.Add(viewerurl)
 			end
