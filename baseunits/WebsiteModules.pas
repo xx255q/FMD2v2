@@ -499,7 +499,7 @@ function TWebsiteModules.LocateModuleByHost(const AHost: String
     i: Integer;
   begin
     for i := FModuleList.Count - 1 downto 0 do
-      if Pos(s, LowerCase(FModuleList[i].RootURL)) <> 0 then
+      if Pos(s, FModuleList[i].RootURL) <> 0 then
         Exit(FModuleList[i]);
     Result := nil;
   end;
