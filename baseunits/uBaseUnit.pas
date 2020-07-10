@@ -661,9 +661,12 @@ procedure fmdHibernate;
 // logger
 {$IFNDEF DEBUGINFO}
 type
+
+  { TLoggerException }
+
   TLoggerException = class helper for TLogger
   public
-    procedure SendExceptionStr(const AText: String; AExceptionStr: String); inline
+    procedure SendExceptionStr(const AText: String); inline;
   end;
 {$ENDIF}
 
@@ -3926,9 +3929,9 @@ begin
 end;
 
 {$IFNDEF DEBUGINFO}
-procedure TLoggerException.SendExceptionStr(const AText: String; AExceptionStr: String);
+procedure TLoggerException.SendExceptionStr(const AText: String);
 begin
-  SendBuffer(ltException, AText, AExceptionStr[1], Length(AExceptionStr));
+  SendStream(ltException, AText, nil);
 end;
 {$ENDIF}
 procedure SendLog(const AText: String);
@@ -3966,7 +3969,7 @@ begin
   {$ifdef DEBUGINFO}
   Logger.SendException(AText, AException);
   {$else}
-  Logger.SendExceptionStr(AText + AException.Message);
+  Logger.SendExceptionStr(AText + ' ' + TrimLeft(AException.Message));
   {$endif}
 end;
 
