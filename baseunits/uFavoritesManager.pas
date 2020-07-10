@@ -438,7 +438,7 @@ begin
       if FPendingCount = 0 then Break;
     end;
 
-    while (not Terminated) and (Threads.Count > 0) do
+    while (not Terminated) and (Threads.Count <> 0) do
       Sleep(HeartBeatRate);
   except
     on E: Exception do

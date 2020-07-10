@@ -290,9 +290,8 @@ constructor TDownloadThread.Create(const ATask: TTaskThread);
 begin
   inherited Create(False);
   Task := ATask;
-  HTTP := THTTPSendThread.Create(Self);
+  HTTP := TModuleContainer(Task.Container.DownloadInfo.Module).CreateHTTP(Self);
   HTTP.Sock.OnStatus := @SockOnStatus;
-  TModuleContainer(Task.Container.DownloadInfo.Module).PrepareHTTP(HTTP);
 end;
 
 destructor TDownloadThread.Destroy;
@@ -710,7 +709,7 @@ end;
 
 procedure TTaskThread.WaitForThreads;
 begin
-  while Threads.Count > 0 do
+  while Threads.Count <> 0 do
     Sleep(HeartBeatRate);
 end;
 

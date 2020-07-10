@@ -26,7 +26,7 @@ type
     FWorkPtr: Integer;
   protected
     procedure Execute; override;
-    procedure GetDirectoryPage;
+    procedure GetDirectoryPageNumber;
     procedure GetNamesAndLinks;
     procedure GetInfo;
   public
@@ -48,7 +48,6 @@ type
     FThreadAborted,
     FThreadEndNormally,
     FIsPreListAvailable: Boolean;
-    FCurrentGetInfoLimitGuardian: TRTLCriticalSection;
 
     FStatusBar: TPanel;
     FButtonCancel: TSpeedButton;
@@ -61,11 +60,10 @@ type
     FStatusTextRect: TRect;
     FStatusText: String;
 
-
     FTimerRepaint: TTimer;
     FNeedRepaint: Boolean;
 
-    FGetWorkPtrGuardian: TRTLCriticalSection;
+    FGuardian: TRTLCriticalSection;
     FWorkPtr: Integer;
     FTotalPtr: Integer;
     FCurrentGetInfoLimit: Integer;
@@ -95,9 +93,10 @@ type
     procedure CreateNewDownloadThread;
     function GetWorkPtr: Integer;
   public
-    ThreadsGuardian,
-    AddInfoToDataGuardian,
-    AddNamesAndLinksGuardian: TRTLCriticalSection;
+    procedure Lock; inline;
+    procedure Unlock; inline;
+  public
+    ThreadsGuardian: TRTLCriticalSection;
     isFinishSearchingForNewManga, isDoneUpdateNecessary: Boolean;
     mainDataProcess: TDBDataProcess;
     tempDataProcess: TDBDataProcess;
@@ -135,7 +134,7 @@ resourcestring
 implementation
 
 uses
-  frmMain, FMDVars, Dialogs;
+  frmMain, FMDVars, LuaWebsiteModuleHandler, Dialogs;
 
 const
   CL_ProgressBarBaseLine = $bcbcbc;
@@ -169,20 +168,18 @@ begin
   if FWorkPtr = -1 then Exit;
 
   case FOwner.FCurrentCS of
-    CS_DIRECTORY_COUNT : GetDirectoryPage;
+    CS_DIRECTORY_COUNT : GetDirectoryPageNumber;
     CS_DIRECTORY_PAGE  : GetNamesAndLinks;
     CS_INFO            : GetInfo;
   end;
 end;
 
-procedure TUpdateListThread.GetDirectoryPage;
+procedure TUpdateListThread.GetDirectoryPageNumber;
 var
   http: THTTPSendThread;
   {R: Byte;}
 begin
-  http := THTTPSendThread.Create(Self);
-  FOwner.module.PrepareHTTP(http);
-
+  http := FOwner.module.CreateHTTP(Self);
   try
     while FWorkPtr <> -1 do
     begin
@@ -190,14 +187,9 @@ begin
       FOwner.module.TotalDirectoryPage[FWorkPtr] := 1;
 
       //load pagenumber_config if available
-      if FOwner.module.Settings.Enabled and (FOwner.module.Settings.UpdateListDirectoryPageNumber > 0) then
+      if Assigned(FOwner.module.OnGetDirectoryPageNumber) then
       begin
-        FOwner.module.TotalDirectoryPage[FWorkPtr] := FOwner.module.Settings.UpdateListDirectoryPageNumber;
-        FOwner.InvertedList := True;
-      end
-      else if Assigned(FOwner.module.OnGetDirectoryPageNumber) then
-      begin
-        // TODO: GetDirectoryPage.Result(Byte), do something with the result
+        // TODO: GetDirectoryPageNumber.Result(Byte), do something with the result
         {R := }FOwner.module.OnGetDirectoryPageNumber(FOwner, http, FOwner.module.TotalDirectoryPage[FWorkPtr], FWorkPtr, FOwner.module);
         if FOwner.module.TotalDirectoryPage[FWorkPtr] < 1 then
           FOwner.module.TotalDirectoryPage[FWorkPtr] := 1;
@@ -222,11 +214,9 @@ var
   R: Byte;
   i: Integer;
 begin
-  http := THTTPSendThread.Create(Self);
-  FOwner.module.PrepareHTTP(http);
+  http := FOwner.module.CreateHTTP(Self);
   names := TStringList.Create;
   links := TStringList.Create;
-
   try
     while FWorkPtr <> -1 do
     begin
@@ -244,7 +234,7 @@ begin
 
         //if website has sorted list by latest added
         //we will stop at first found against current db
-        EnterCriticalSection(FOwner.AddNamesAndLinksGuardian);
+        FOwner.tempDataProcess.Lock;
         try
           if FOwner.FIsPreListAvailable then
           begin
@@ -264,7 +254,7 @@ begin
           end;
           FOwner.tempDataProcess.Commit;
         finally
-          LeaveCriticalSection(FOwner.AddNamesAndLinksGuardian);
+          FOwner.tempDataProcess.Unlock;
         end;
       end;
 
@@ -293,37 +283,42 @@ begin
   info := TMangaInformation.Create(Self);
   info.isGetByUpdater := True;
   info.Module := FOwner.module;
-
-  try
-    while FWorkPtr <> -1 do
-    begin
-      info.MangaInfo.Title := FOwner.tempDataProcess.Value[FWorkPtr,DATA_PARAM_TITLE];
-      info.MangaInfo.Link := FOwner.tempDataProcess.Value[FWorkPtr,DATA_PARAM_LINK];
+  while FWorkPtr <> -1 do
+  begin
+    try
+      FOwner.tempDataProcess.Lock;
+      try
+        info.MangaInfo.Title := FOwner.tempDataProcess.Value[FWorkPtr,DATA_PARAM_TITLE];
+        info.MangaInfo.Link := FOwner.tempDataProcess.Value[FWorkPtr,DATA_PARAM_LINK];
+      finally
+        FOwner.tempDataProcess.Unlock;
+      end;
       if (info.MangaInfo.Link <> '') and
         (info.GetInfoFromURL(info.MangaInfo.Link) <> INFORMATION_NOT_FOUND) and
         (not Terminated) and (info.MangaInfo.Status <> '-1') then
       begin
         // status = '-1' mean it's not exist and shouldn't be saved to database
-        EnterCriticalSection(FOwner.AddInfoToDataGuardian);
+        FOwner.mainDataProcess.Lock;
         try
           info.AddInfoToData(info.MangaInfo.Link,info.MangaInfo.Link,FOwner.mainDataProcess);
           //FOwner.CheckCommit(FOwner.numberOfThreads);
           // todo: test if CheckCommit(32) is sufficient.
           FOwner.CheckCommit;
         finally
-          LeaveCriticalSection(FOwner.AddInfoToDataGuardian);
+          FOwner.mainDataProcess.Unlock;
         end;
       end;
+
       FWorkPtr := FOwner.GetWorkPtr;
       if FWorkPtr <> -1 then
       begin
         info.HTTP.Reset;
         info.MangaInfo.Clear;
       end;
+    except
+      on E: Exception do
+        SendLogException(Self.ClassName+'.GetNamesAndLinks()>ERROR ', E);
     end;
-  except
-    on E: Exception do
-      SendLogException(Self.ClassName+'.GetNamesAndLinks()>ERROR ', E);
   end;
 
   info.Free;
@@ -376,11 +371,8 @@ begin
   FreeOnTerminate := True;
   OnCustomTerminate := @TerminateCurrent;
 
+  InitCriticalSection(FGuardian);
   InitCriticalSection(ThreadsGuardian);
-  InitCriticalSection(AddInfoToDataGuardian);
-  InitCriticalSection(AddNamesAndLinksGuardian);
-  InitCriticalSection(FCurrentGetInfoLimitGuardian);
-  InitCriticalSection(FGetWorkPtrGuardian);
 
   websites := TStringList.Create;
   mainDataProcess := TDBDataProcess.Create;
@@ -411,11 +403,8 @@ begin
   tempDataProcess.Free;
   Threads.Free;
   isUpdating := False;
-  DoneCriticalsection(FGetWorkPtrGuardian);
-  DoneCriticalsection(FCurrentGetInfoLimitGuardian);
-  DoneCriticalsection(AddInfoToDataGuardian);
-  DoneCriticalsection(AddNamesAndLinksGuardian);
   DoneCriticalsection(ThreadsGuardian);
+  DoneCriticalsection(FGuardian);
   inherited Destroy;
 end;
 
@@ -477,11 +466,11 @@ end;
 procedure TUpdateListManagerThread.SetCurrentDirectoryPageNumber(AValue: Integer);
 begin
   if AValue < FCurrentGetInfoLimit then Exit;
+  Lock;
   try
-    EnterCriticalsection(FCurrentGetInfoLimitGuardian);
     FCurrentGetInfoLimit := AValue;
   finally
-    LeaveCriticalsection(FCurrentGetInfoLimitGuardian);
+    Unlock;
   end;
 end;
 
@@ -684,7 +673,13 @@ begin
             module.OnAfterUpdateList(module);
           if Assigned(module.OnBeforeUpdateList) then
             module.OnBeforeUpdateList(module);
-          CheckOut(module.TotalDirectory, CS_DIRECTORY_COUNT);
+          if module.Settings.Enabled and (module.Settings.UpdateListDirectoryPageNumber > 0) then
+          begin
+            module.TotalDirectoryPage[FWorkPtr] := module.Settings.UpdateListDirectoryPageNumber;
+            InvertedList := True;
+          end
+          else
+            CheckOut(module.TotalDirectory, CS_DIRECTORY_COUNT);
 
           if Terminated then
           begin
@@ -761,7 +756,7 @@ begin
           end;
         except
           on E: Exception do
-            Logger.SendException(cloghead + 'error occured!', E);
+            SendLogException(cloghead + 'error occured!', E);
         end;
 
         tempDataProcess.Close;
@@ -798,8 +793,8 @@ end;
 
 procedure TUpdateListManagerThread.WaitForThreads;
 begin
-  while Threads.Count > 0 do
-    Sleep(HeartBeatRate);
+  while Threads.Count <> 0 do
+    Sleep(2000); // this will wait for a loop of high number
 end;
 
 procedure TUpdateListManagerThread.TerminateCurrent(Sender: TObject);
@@ -840,7 +835,7 @@ begin
 
   if workPtr >= FCurrentGetInfoLimit then Exit;
 
-  EnterCriticalSection(FGetWorkPtrGuardian);
+  Lock;
   try
     GetCurrentLimit;
     if Threads.Count > numberOfThreads then Exit;
@@ -867,7 +862,14 @@ begin
             '...';
         end;
       CS_INFO:
-        s := Format('%s | %s "%s"', [s, RS_GettingInfo, tempDataProcess.Value[workPtr,DATA_PARAM_TITLE]]);
+        begin
+          tempDataProcess.Lock;
+          try
+            s := Format('%s | %s "%s"', [s, RS_GettingInfo, tempDataProcess.Value[workPtr,DATA_PARAM_TITLE]]);
+          finally
+            tempDataProcess.Unlock;
+          end;
+        end;
     end;
     UpdateStatusText(s);
     FWorkPtr := workPtr + 1;
@@ -876,8 +878,18 @@ begin
     if (Threads.Count < numberOfThreads) and (workPtr < FCurrentGetInfoLimit) then
       CreateNewDownloadThread;
   finally
-    LeaveCriticalSection(FGetWorkPtrGuardian);
+    Unlock;
   end;
+end;
+
+procedure TUpdateListManagerThread.Lock;
+begin
+  EnterCriticalSection(FGuardian);
+end;
+
+procedure TUpdateListManagerThread.Unlock;
+begin
+  LeaveCriticalSection(FGuardian);
 end;
 
 end.
