@@ -30,10 +30,7 @@ function GetNameAndLink()
 		s = s .. '/' .. (URL + 1) .. '/'
 	end
 	if HTTP.GET(s) then
-		local v for v in CreateTXQuery(HTTP.Document).XPath('//*[@class="img-overlay text-center"]/a').Get() do
-			LINKS.Add(v.GetAttribute('href'))
-			NAMES.Add(x.XPathString('h2/@data-title', v))
-		end
+		CreateTXQuery(HTTP.Document).XPathHREFAll('//div[contains(@class, "book-grid-item")]/a', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem
