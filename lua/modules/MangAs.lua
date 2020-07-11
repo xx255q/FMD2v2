@@ -29,8 +29,22 @@ end
 
 -- Get the page count for the current chapter.
 function GetPageNumber()
-	Template.GetPageNumber()
-
+	if not HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then return net_problem end
+	local body = HTTP.Document.ToString()
+	local pages = body:match('var pages = (%[.-%]);')
+	if pages then
+		local json = require "utils.json"
+		local crypto = require "fmd.crypto"
+		local baseuri = (body:match("array%.push%('(.-)'") or ''):gsub('/+$','') .. '/'
+		local pages = json.decode(pages)
+		local i, v; for i, v in ipairs(pages) do
+			if v.external == '0' then
+				TASK.PageLinks.Add(baseuri .. v.page_image)
+			else
+				TASK.PageLinks.Add(crypto.DecodeURL(crypto.DecodeBase64(v.page_image:gsub('^https://', ''))))
+			end
+		end
+	end
 	return no_error
 end
 
