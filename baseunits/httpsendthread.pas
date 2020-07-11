@@ -109,7 +109,8 @@ type
     procedure SetDefaultProxy;
     procedure Reset;
     procedure ResetBasic;
-    procedure ClearCookies;
+    procedure ClearCookies; inline;
+    procedure ClearCookiesStorage; inline;
     procedure SaveDocumentToFile(const AFileName: String; const ATryOriginalFileName: Boolean = False; const ALastModified: TDateTime = -1);
     property Timeout: Integer read FTimeout write SetTimeout;
     property RetryCount: Integer read FRetryCount write FRetryCount;
@@ -867,6 +868,13 @@ procedure THTTPSendThread.ClearCookies;
 begin
   Cookies.Clear;
   FClearCookies:=True;
+end;
+
+procedure THTTPSendThread.ClearCookiesStorage;
+begin
+  Cookies.Clear;
+  if CookieManager<>nil then
+    CookieManager.Clear;
 end;
 
 procedure THTTPSendThread.SaveDocumentToFile(const AFileName: String;

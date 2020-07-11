@@ -67,6 +67,12 @@ begin
   TUserData(luaClassGetObject(L)).ClearCookies;
 end;
 
+function http_clearcookiesstorage(L: Plua_State): Integer; cdecl;
+begin
+  Result := 0;
+  TUserData(luaClassGetObject(L)).ClearCookiesStorage;
+end;
+
 function http_addservercookie(L: Plua_State): Integer; cdecl;
 begin
   Result := 0;
@@ -117,7 +123,7 @@ begin
 end;
 
 const
-  methods: packed array [0..12] of luaL_Reg = (
+  methods: packed array [0..13] of luaL_Reg = (
     (name: 'Request'; func: @http_request),
     (name: 'GET'; func: @http_get),
     (name: 'POST'; func: @http_post),
@@ -126,6 +132,7 @@ const
     (name: 'Reset'; func: @http_reset),
     (name: 'ResetBasic'; func: @http_resetbasic),
     (name: 'ClearCookies'; func: @http_clearcookies),
+    (name: 'ClearCookiesStorage'; func: @http_clearcookiesstorage),
     (name: 'GetCookies'; func: @http_getcookies),
     (name: 'AddServerCookie'; func: @http_addservercookie),
     (name: 'ParseServerCookies'; func: @http_parseservercookies),
