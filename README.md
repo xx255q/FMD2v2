@@ -3,7 +3,7 @@
 <sup>(Forked from https://github.com/riderkick/FMD)</sup>
 
 Use the converter if you want to migrate your FMD1 settings and databases.
-[Converter](https://github.com/dazedcat19/FMD2/releases/tag/2.0.19.0)
+[Converter](https://github.com/dazedcat19/FMD2/releases/tag/2.0.2.0)
 
 ## Download
 
@@ -18,8 +18,8 @@ This is an active fork of the Free Manga Downloader which is a free open source 
   
 ## Build instructions
 
-In order to build FMD from the source code, you must install the latest version of Lazarus and Free Pascal Compiler:  
-[![Lazarus IDE 2.0.8](https://img.shields.io/badge/Lazarus%20IDE-2.0.8-Blue.svg)](http://www.lazarus-ide.org/)  
+In order to build FMD from the source code, you must install the latest Trunk version of Lazarus and Free Pascal Compiler:  
+[![Lazarus](https://img.shields.io/badge/Lazarus%20IDE-Blue.svg)](http://www.lazarus-ide.org/)  
 
 To compile FMD some packages and components are needed. You can download and install most of them by the built-in Online Package Manager (OPM).  
 The following packages and components are used for building FMD:  
