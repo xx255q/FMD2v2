@@ -155,5 +155,22 @@ function Init()
 	m.OnGetPageNumber='getpagenumber'
 	m.OnGetNameAndLink='getnameandlink'
 	m.OnBeforeDownloadImage = 'BeforeDownloadImage'
-	m.AddOptionCheckBox('download_webp', 'Download WebP', true)
+	
+	local fmd = require 'fmd.env'
+	local slang = fmd.SelectedLanguage
+	local lang = {
+		['en'] = {
+			['webp'] = 'Download WebP'
+		},
+		['id_ID'] = {
+			['webp'] = 'Unduh WebP'
+		},
+		get =
+			function(self, key)
+				local sel = self[slang]
+				if sel == nil then sel = self['en'] end
+				return sel[key]
+			end
+	}
+	m.AddOptionCheckBox('download_webp', lang:get('webp'), true)
 end

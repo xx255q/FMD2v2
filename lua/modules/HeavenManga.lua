@@ -103,7 +103,23 @@ function Init()
 		m.OnGetDirectoryPageNumber    = 'GetDirectoryPageNumber'
 		m.OnBeforeDownloadImage       = 'BeforeDownloadImage'
 		
-		m.AddOptionCheckBox('luaincluderaw', 'Show [raw] chapters', false)
+		local fmd = require 'fmd.env'
+		local slang = fmd.SelectedLanguage
+		local lang = {
+			['en'] = {
+				['includeraw'] = 'Show [raw] chapters'
+			},
+			['id_ID'] = {
+				['includeraw'] = 'Tampilkan bab [raw]'
+			},
+			get =
+				function(self, key)
+					local sel = self[slang]
+					if sel == nil then sel = self['en'] end
+					return sel[key]
+				end
+		}
+		m.AddOptionCheckBox('luaincluderaw', lang:get('includeraw'), false)
 	end
 	AddWebsiteModule('3b0d5c38081a4b21a39a388a3ec59197', 'HeavenManga', 'https://ww2.heaventoon.com', 'English')
 	AddWebsiteModule('a9a8bd394d63495686794a8d427bda00', 'HolyManga', 'https://w16.holymanga.net', 'English')

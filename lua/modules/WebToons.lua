@@ -167,16 +167,33 @@ function Init()
 	m.Category              ='English'
 	m.Name                  ='WebToons'
 	m.RootURL               ='https://www.webtoons.com/'
-	m.LastUpdated           ='April 14, 2019'
 	m.OnGetInfo             ='getinfo'
 	m.OnGetPageNumber       ='getpagenumber'
 	m.OnGetNameAndLink      ='getnameandlink'
 	m.OnBeforeDownloadImage = 'BeforeDownloadImage'
-
-	m.AddOptionCheckBox('luaincludechallengetitles', 'Include manga titles from WebToons Challenge (takes very very long to create manga list!):', false)
+	
+	local fmd = require 'fmd.env'
+	local slang = fmd.SelectedLanguage
+	local lang = {
+		['en'] = {
+			['includechallengetitles'] = 'Include manga titles from WebToons Challenge (takes very very long to create manga list!)',
+			['lang'] = 'Language:'
+		},
+		['id_ID'] = {
+			['includechallengetitles'] = 'Sertakan judul komik dari WebToons Challenge (perlu waktu yang sangat lama untuk membuat daftar komik!)',
+			['lang'] = 'Bahasa:'
+		},
+		get =
+			function(self, key)
+				local sel = self[slang]
+				if sel == nil then sel = self['en'] end
+				return sel[key]
+			end
+	}
+	m.AddOptionCheckBox('luaincludechallengetitles', lang:get('includechallengetitles'), false)
 
 	local items = 'All'
 	local t = getlanglist()
 	for k, v in ipairs(t) do items = items .. '\r\n' .. v; end
-	m.AddOptionComboBox('lualang', 'Language:', items, 2)
+	m.AddOptionComboBox('lualang', lang:get('lang'), items, 2)
 end

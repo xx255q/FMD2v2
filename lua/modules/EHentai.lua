@@ -14,7 +14,26 @@ function Init()
 		m.DynamicPageLink            = true
 		m.MaxTaskLimit               = 1
 		m.MaxConnectionLimit         = 2
-		m.AddOptionComboBox('imagesize', 'Image size:', 'Auto\n780x\n980x\n1280x\n1600x\n2400x\nOriginal', 0)
+		
+		local fmd = require 'fmd.env'
+		local slang = fmd.SelectedLanguage
+		local lang = {
+			['en'] = {
+				['imagesize'] = 'Image size:',
+				['size'] = 'Auto\n780x\n980x\n1280x\n1600x\n2400x\nOriginal'
+			},
+			['id_ID'] = {
+				['imagesize'] = 'Ukuran gambar:',
+				['size'] = 'Otomatis\n780x\n980x\n1280x\n1600x\n2400x\nAsli'
+			},
+			get =
+				function(self, key)
+					local sel = self[slang]
+					if sel == nil then sel = self['en'] end
+					return sel[key]
+				end
+		}
+		m.AddOptionComboBox('imagesize', lang:get('imagesize'), lang:get('size'), 0)
 		return m
 	end
 	AddWebsiteModule('f7ab487b6d29468e8280e8a3cbebbeb4', 'E-Hentai', 'https://e-hentai.org')

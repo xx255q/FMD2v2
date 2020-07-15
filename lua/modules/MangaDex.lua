@@ -396,13 +396,35 @@ function Init()
 	m.MaxConnectionLimit       = 2
 	m.AccountSupport           = true
 	m.OnLogin                  = 'Login'
-
-	m.AddOptionSpinEdit('mdx_interval', 'Min. interval between requests (s)', 1)
-	m.AddOptionSpinEdit('mdx_delay', 'Delay (s)', 1)
-	m.AddOptionCheckBox('luashowscangroup', 'Show scanlation group', false)
+	
+	local fmd = require 'fmd.env'
+	local slang = fmd.SelectedLanguage
+	local lang = {
+		['en'] = {
+			['interval'] = 'Min. interval between requests (s)',
+			['delay'] = 'Delay (s)',
+			['showscangroup'] = 'Show scanlation group',
+			['lang'] = 'Language:'
+		},
+		['id_ID'] = {
+			['interval'] = 'Interval minimum antara permintaan (detik)',
+			['delay'] = 'Tunda (detik)',
+			['showscangroup'] = 'Tampilkan grup scanlation',
+			['lang'] = 'Bahasa:'
+		},
+		get =
+			function(self, key)
+				local sel = self[slang]
+				if sel == nil then sel = self['en'] end
+				return sel[key]
+			end
+	}
+	m.AddOptionSpinEdit('mdx_interval', lang:get('interval'), 1)
+	m.AddOptionSpinEdit('mdx_delay', lang:get('delay'), 1)
+	m.AddOptionCheckBox('luashowscangroup', lang:get('showscangroup'), false)
 
 	local items = 'All'
 	local t = getlanglist()
 	for k, v in ipairs(t) do items = items .. '\r\n' .. v; end
-	m.AddOptionComboBox('lualang', 'Language:', items, 11)
+	m.AddOptionComboBox('lualang', lang:get('lang'), items, 11)
 end
