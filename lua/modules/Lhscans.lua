@@ -59,7 +59,7 @@ function GetPageNumber()
 	local u = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(u) then
 		local x=CreateTXQuery(HTTP.Document)
-		if MODULE.Name == 'Manhwa18' then
+		if MODULE.ID == '794187d0e92e4933bf63812438d69017' then -- manhwa18
 			local v = x.XPath('//img[contains(@class, "chapter-img")]/@src')
 			for i = 1, v.Count do
 				local s = v.Get(i).ToString()
@@ -68,12 +68,12 @@ function GetPageNumber()
 					TASK.PageLinks.Add(s)
 				end
 			end
-		elseif MODULE.Name == 'LoveHeaven' then
+		elseif MODULE.ID == '9e96846a035646988e1b2eb0f356d795' then -- loveheaven
 			local crypto = require 'fmd.crypto'
 			local v = x.XPath('//img[contains(@class, "chapter-img")]/@data-src')
 			for i = 1, v.Count do
 				local s = v.Get(i).ToString()
-				if string.find(s, "LoveHeaven") == nil then
+				if string.find(s, "https") == nil then
 					TASK.PageLinks.Add(crypto.DecodeBase64(s))
 				end
 			end
