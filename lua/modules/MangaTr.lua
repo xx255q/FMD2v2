@@ -27,9 +27,9 @@ function GetInfo()
 		while p <= pages do
 			if p >= 1 then
 				HTTP.Reset()
-				HTTP.Headers.Values['Cache-Control'] = 'no-cache'
-				HTTP.Headers.Values['content-type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
-				HTTP.Headers.Add('X-Requested-With: XMLHttpRequest')
+				HTTP.Headers.Values['Cache-Control'] = ' no-cache'
+				HTTP.Headers.Values['X-Requested-With'] = ' XMLHttpRequest'
+				HTTP.MimeType = 'application/x-www-form-urlencoded; charset=UTF-8'
 				if HTTP.POST(MODULE.RootURL .. '/cek/fetch_pages_manga.php?manga_cek='..info, 'page='..p) then
 					x.ParseHTML(HTTP.Document)
 				else
