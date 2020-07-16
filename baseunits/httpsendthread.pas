@@ -83,6 +83,7 @@ type
     procedure SetTimeout(AValue: Integer);
     procedure OnOwnerTerminate(Sender: TObject);
   protected
+    procedure NormalizeHeaders;
     procedure SetHTTPCookies;
     function InternalHTTPRequest(const Method, URL: String; const Response: TObject = nil): Boolean;
     function DefaultHTTPRequest(const Method, URL: String; const Response: TObject = nil): Boolean;
@@ -446,6 +447,14 @@ begin
   Sock.CloseSocket;
 end;
 
+procedure THTTPSendThread.NormalizeHeaders;
+var
+  i: Integer;
+begin
+  for i := 0 to Headers.Count - 1 do
+    Headers[i] := Trim(Headers.Names[i]) + ': ' + Trim(Headers.ValueFromIndex[i]);
+end;
+
 procedure THTTPSendThread.SetHTTPCookies;
 begin
   if FClearCookies then
@@ -482,7 +491,9 @@ begin
   if Trim(DefaultUserAgent) <> '' then
     UserAgent := DefaultUserAgent;
   Protocol := '1.1';
+  Headers.CaseSensitive := False;
   Headers.NameValueSeparator := ':';
+  Headers.CaseSensitive := False;
   Cookies.NameValueSeparator := '=';
   Cookies.Delimiter := ';';
   FEnabledCookies := True;
@@ -579,6 +590,7 @@ begin
   if FURL = '' then Exit;
   FURL := MaybeEncodeURL(FURL);
   if Pos('HTTP/', Headers.Text) = 1 then Reset;
+  NormalizeHeaders;
   HTTPHeader := TStringList.Create;
   HTTPHeader.Assign(Headers);
   try
@@ -674,10 +686,18 @@ begin
 end;
 
 function THTTPSendThread.POST(const URL: String; const POSTData: String; const Response: TObject): Boolean;
+var
+  L: Integer;
 begin
   if POSTData <> '' then begin
     Document.Clear;
     WriteStrToStream(Document, POSTData);
+  end;
+  L := Headers.IndexOfName('Content-Type');
+  if L <> -1 then
+  begin
+    MimeType := Trim(Headers.ValueFromIndex[L]);
+    Headers.Delete(L);
   end;
   if (MimeType = 'text/html') or (MimeType = '') then
     MimeType := 'application/x-www-form-urlencoded';
@@ -688,7 +708,7 @@ function THTTPSendThread.XHR(const URL: String; const Response: TObject
   ): Boolean;
 begin
   if Pos('HTTP/', Headers.Text) = 1 then Reset;
-  Headers.Add('X-Requested-With: XMLHttpRequest');
+  Headers.Values['X-Requested-With'] := ' XMLHttpRequest';
   Result := GET(URL, Response);
 end;
 
