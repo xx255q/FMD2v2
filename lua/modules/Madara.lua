@@ -89,9 +89,9 @@ function Modules.Madara()
 			local idmanga = x.XPathString('//div[@id="manga-chapters-holder"]/@data-id')
 			if MANGAINFO.ChapterLinks.Count < 1 then
 				HTTP.Reset()
-				HTTP.Headers.Values['Cache-Control'] = 'no-cache'
-				HTTP.Headers.Values['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
-				HTTP.Headers.Add('X-Requested-With: XMLHttpRequest')
+				HTTP.Headers.Values['Cache-Control'] = ' no-cache'
+				HTTP.Headers.Values['X-Requested-With'] = ' XMLHttpRequest'
+				HTTP.MimeType = 'application/x-www-form-urlencoded; charset=UTF-8'
 				local q = 'action=manga_get_chapters&manga=' .. idmanga
 				if HTTP.POST(MODULE.RootURL .. '/wp-admin/admin-ajax.php', q) then
 						local x = CreateTXQuery(HTTP.Document)
