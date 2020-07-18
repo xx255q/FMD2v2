@@ -192,15 +192,6 @@ function getpagenumber()
 			local s = x.XPathString('*')
 			x.ParseHTML(crypto.DecodeBase64(GetBetween('](atob(', ')),', s)))
 			x.XPathStringAll('json(*)()', TASK.PageLinks)
-		elseif MODULE.Name == 'MangaShiro' then
-			local x = CreateTXQuery(HTTP.Document)
-			local v=x.XPath('//*[@id="readerarea"]//a')
-				for i=1,v.Count do
-						local v1=v.Get(i)
-						if string.find(v1.GetAttribute('href'), "shironime.png") == nil then
-								TASK.PageLinks.Add(v1.GetAttribute('href'))
-						end
-				end
 		elseif MODULE.Name == 'Kiryuu' then
 			local x = CreateTXQuery(HTTP.Document)
 			local v=x.XPath('//*[@id="readerarea"]//img')
