@@ -44,14 +44,19 @@ end
 
 -- Get the page count for the current chapter.
 function GetPageNumber()
-	local x = nil
+	local v, x = nil
 	local u = MaybeFillHost(MODULE.RootURL, URL):gsub('/+$', '') .. '/'
 
 	if not HTTP.GET(u) then return net_problem end
 
 	x = CreateTXQuery(HTTP.Document)
-	x.XPathStringAll('//div[@class="chapter-content"]//img/@src', TASK.PageLinks)
-	TASK.PageNumber = TASK.PageLinks.Count
+	for v in x.XPath('//div[@class="chapter-content"]//img').Get() do
+		local src = v.GetAttribute('src')
+		if src:find('&url=') then
+			src = string.match(src, "&url=(.*)")
+		end
+    TASK.PageLinks.Add(src)
+	end
 
 	return no_error
 end
@@ -107,10 +112,10 @@ function Init()
 		local slang = fmd.SelectedLanguage
 		local lang = {
 			['en'] = {
-				['includeraw'] = 'Show [raw] chapters'
+				['includeraw'] = 'Show [RAW] chapters'
 			},
 			['id_ID'] = {
-				['includeraw'] = 'Tampilkan bab [raw]'
+				['includeraw'] = 'Tampilkan bab [RAW]'
 			},
 			get =
 				function(self, key)
@@ -122,5 +127,5 @@ function Init()
 		m.AddOptionCheckBox('luaincluderaw', lang:get('includeraw'), false)
 	end
 	AddWebsiteModule('3b0d5c38081a4b21a39a388a3ec59197', 'HeavenManga', 'https://ww2.heaventoon.com', 'English')
-	AddWebsiteModule('a9a8bd394d63495686794a8d427bda00', 'HolyManga', 'https://w16.holymanga.net', 'English')
+	AddWebsiteModule('a9a8bd394d63495686794a8d427bda00', 'HolyManga', 'https://w17.holymanga.net', 'English')
 end
