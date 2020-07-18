@@ -26,10 +26,16 @@ function GetInfo()
 	MANGAINFO.Title     = x.XPathString('(//div[contains(@class, "container")]//h2)[1]/substring-after(., "Manga ")')
 	MANGAINFO.Artists   = x.XPathStringAll('//dt[text()="' .. XPathTokenArtists .. '"]/following-sibling::dd[1]')
 
-	v = x.XPath('//ul[@class="chapters888"]/li/h5')
-	for i = 1, v.Count do
-		MANGAINFO.ChapterLinks.Add(x.XPathString('a/@href', v.Get(i)))
-		MANGAINFO.ChapterNames.Add(x.XPathString('.', v.Get(i)))
+	for v in x.XPath('//ul[@class="chapters888"]/li/h5').Get() do
+		if x.XPathString('normalize-space(.)', v):find('RAW') then
+			if MODULE.GetOption('luaincluderaw') then
+				MANGAINFO.ChapterLinks.Add(x.XPathString('a/@href', v))
+				MANGAINFO.ChapterNames.Add(x.XPathString('normalize-space(.)', v))
+			end
+		else
+			MANGAINFO.ChapterLinks.Add(x.XPathString('a/@href', v))
+			MANGAINFO.ChapterNames.Add(x.XPathString('normalize-space(.)', v))
+		end
 	end
 	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
@@ -63,4 +69,22 @@ function Init()
 	m.OnGetInfo                = 'GetInfo'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
 	m.OnGetPageNumber          = 'GetPageNumber'
+	
+	local fmd = require 'fmd.env'
+	local slang = fmd.SelectedLanguage
+	local lang = {
+		['en'] = {
+			['includeraw'] = 'Show [RAW] chapters'
+		},
+		['id_ID'] = {
+			['includeraw'] = 'Tampilkan bab [RAW]'
+		},
+		get =
+			function(self, key)
+				local sel = self[slang]
+				if sel == nil then sel = self['en'] end
+				return sel[key]
+			end
+	}
+	m.AddOptionCheckBox('luaincluderaw', lang:get('includeraw'), false)
 end
