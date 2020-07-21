@@ -92,5 +92,4 @@ function Init()
 
 	cat = 'English'
 	AddWebsiteModule('d2f24dec90e841b1aab4bea145ffb638', 'MangaNT', 'https://mangant.com', cat)
-	AddWebsiteModule('a964861afd0f410cb5122df5f50d3e1a', 'ManhuaPlus', 'https://manhuaplus.com')
 end
