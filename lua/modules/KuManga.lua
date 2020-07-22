@@ -24,21 +24,21 @@ function GetInfo()
 	MANGAINFO.Genres    = x.XPathString('//*[@class="panel-footer" and contains(.,"Géneros")]/string-join(.//a,", ")')
 	MANGAINFO.Summary   = x.XPathString('//meta[@property="og:description"]/@content')
 
-	x.XPathHREFAll('//table[contains(@class, "table")]//h4[@class="title"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+	local function parseChapters()
+		x.XPathHREFAll('//table[contains(@class, "table")]//h4[@class="title"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+	end	
+	parseChapters()
 
-	-- Get count of chapter list pages.
-	local function GetPageChapterListPageCount(s)
-		local s = GetBetween('php_pagination(', ');', s)
-		return math.ceil(tonumber(s:match('.-,.-,.-,.-,(.-),.-,.-')) / tonumber(s:match('.-,.-,.-,.-,.-,(.-),.-')))
-	end
-
-	local c = GetPageChapterListPageCount(x.XPathString('//script[contains(., "php_pagination")]'))
+	local body = HTTP.Document.ToString()
+	local totCntnts = tonumber(body:match('var totCntnts=(%d+);')) or 1
+	local perPage = tonumber(body:match("php_pagination%(.-,.-,.-,.-,.-,0x(.-),"), 16) or 10
+	local c = math.ceil(totCntnts / perPage)
 
 	if c > 1 then
 		for i = 2, c do
 			if HTTP.GET(MANGAINFO.URL .. '/p/' .. i) then
-				x = CreateTXQuery(HTTP.Document)
-				x.XPathHREFAll('//table[contains(@class, "table")]//h4[@class="title"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+				x.ParseHTML(HTTP.Document)
+				parseChapters()
 			end
 		end
 	end
