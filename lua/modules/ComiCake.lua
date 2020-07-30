@@ -1,27 +1,35 @@
 function Init()
-	function AddWebsiteModule(id, name, url, category)
+	function AddWebsiteModule(id, name, url)
 		local m = NewWebsiteModule()
 		m.ID                        = id
 		m.Name                      = name
 		m.RootURL                   = url
-		m.Category                  = category
+		m.Category                  = 'English-Scanlation'
 		m.OnGetNameAndLink          = 'GetNameAndLink'
 		m.OnGetInfo                 = 'GetInfo'
 		m.OnGetPageNumber           = 'GetPageNumber'
 		m.OnGetDirectoryPageNumber  = 'GetDirectoryPageNumber'
 	end
-	local cat = 'English-Scanlation'
-	AddWebsiteModule('380e42a9e93e488abcd74cf47b2cf148', 'LetItGoScans', 'https://reader.letitgo.scans.today', cat)
-	AddWebsiteModule('14ac824309034a6495fc4f91873aeb30', 'ProjectTime', 'https://read.ptscans.com', cat)
-	AddWebsiteModule('02a1221995a54021b084687364cbff50', 'WhimSubs', 'https://whimsubs.xyz', cat)
+	AddWebsiteModule('380e42a9e93e488abcd74cf47b2cf148', 'LetItGoScans', 'https://reader.letitgo.scans.today')
+	AddWebsiteModule('14ac824309034a6495fc4f91873aeb30', 'ProjectTime', 'https://read.ptscans.com')
+	AddWebsiteModule('02a1221995a54021b084687364cbff50', 'WhimSubs', 'https://whimsubs.xyz')
 end
 
 function GetNameAndLink()
-	if HTTP.GET(MODULE.RootURL..'/directory/'..(URL + 1)) then
-		CreateTXQuery(HTTP.Document).XPathHREFAll('//div[@class="mdc-card__media-title"]/a',LINKS,NAMES)
-		return no_error
+	if MODULE.ID == '02a1221995a54021b084687364cbff50' then -- whimsubs
+		if HTTP.GET(MODULE.RootURL..'/r/directory/' .. (URL + 1)) then
+			CreateTXQuery(HTTP.Document).XPathHREFAll('//div[@class="mdc-card__media-title"]/a', LINKS, NAMES)
+			return no_error
+		else
+			return net_problem
+		end
 	else
-		return net_problem
+		if HTTP.GET(MODULE.RootURL..'/directory/' .. (URL + 1)) then
+			CreateTXQuery(HTTP.Document).XPathHREFAll('//div[@class="mdc-card__media-title"]/a', LINKS, NAMES)
+			return no_error
+		else
+			return net_problem
+		end
 	end
 end
 
@@ -45,9 +53,9 @@ function GetInfo()
 end
 
 function GetPageNumber()
-	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL..'/manifest.json')) then
+	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL .. '/manifest.json')) then
 		local x = CreateTXQuery(HTTP.Document)
-		x.XPathStringAll('json(*).readingOrder().href',TASK.PageLinks)
+		x.XPathStringAll('json(*).readingOrder().href', TASK.PageLinks)
 	else
 		return false
 	end
@@ -55,10 +63,19 @@ function GetPageNumber()
 end
 
 function GetDirectoryPageNumber()
-	if HTTP.GET(MODULE.RootURL..'/directory/') then
-		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//div[@class="pagination"]//a[contains(., "last")]/@href'):match('/(%d+)/'))
-		return no_error
+	if MODULE.ID == '02a1221995a54021b084687364cbff50' then -- whimsubs
+		if HTTP.GET(MODULE.RootURL .. '/r/directory/') then
+			PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//div[@class="pagination"]//a[contains(., "last")]/@href'):match('/r/directory/(%d+)/'))
+			return no_error
+		else
+			return net_problem
+		end
 	else
-		return net_problem
+		if HTTP.GET(MODULE.RootURL .. '/directory/') then
+			PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//div[@class="pagination"]//a[contains(., "last")]/@href'):match('/(%d+)/'))
+			return no_error
+		else
+			return net_problem
+		end
 	end
 end
