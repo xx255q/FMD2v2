@@ -14,7 +14,7 @@ function Init()
 		m.DynamicPageLink            = true
 		m.MaxTaskLimit               = 1
 		m.MaxConnectionLimit         = 2
-		
+
 		local fmd = require 'fmd.env'
 		local slang = fmd.SelectedLanguage
 		local lang = {
@@ -92,15 +92,14 @@ function GetNameAndLink()
 end
 
 function GetInfo()
-	URL = URL:gsub('/%?%w.*$', '/'):gsub('/*$', '') .. '/'
 	HTTP.Cookies.Values['nw'] = '1'
-	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
+	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL:gsub('/%?%w.*$', '/'):gsub('/*$', '') .. '/')
 	if HTTP.GET(MANGAINFO.URL) then
 		-- if there's only 1 line, it's a banned message
 		-- todo: identify the banned message
 		local x = CreateTXQuery(HTTP.Document)
 
-		MANGAINFO.CoverLink = x.XPathString('//*[@id="gd1"]/img/@src')
+		MANGAINFO.CoverLink = x.XPathString('//*[@id="gd1"]/div/@style'):match(' url%((.-)%) ')
 		MANGAINFO.Title     = x.XPathString('//*[@id="gn"]')
 		MANGAINFO.Artists   = x.XPathStringAll('//a[starts-with(@id,"ta_artist")]')
 		MANGAINFO.Genres    = x.XPathStringAll('//a[starts-with(@id,"ta_")and(not(starts-with(@id,"ta_artist")))]')
@@ -117,9 +116,9 @@ function GetInfo()
 end
 
 function GetPageNumber()
-	URL = URL:gsub('/%?%w.*$', '/'):gsub('/*$', '') .. '/'
+	URL = MaybeFillHost(MODULE.RootURL, URL:gsub('/%?%w.*$', '/'):gsub('/*$', '') .. '/')
 	HTTP.Cookies.Values['nw'] = '1'
-	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
+	if HTTP.GET(URL) then
 		local fileutil = require 'fmd.fileutil'
 		local x = CreateTXQuery()
 		local function GetImageLink()
