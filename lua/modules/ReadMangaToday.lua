@@ -28,11 +28,9 @@ function GetInfo()
 		MANGAINFO.Summary   = x.XPathString('//*[contains(@class,"movie-detail")]')
 		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//*[@class="dl-horizontal"]/dt[starts-with(.,"Status")]/following-sibling::dd[1]'))
 
-		local v, vi, i = x.XPath('//ul[@class="chp_lst"]/li/a')
-		for i = 1, v.Count do
-			vi = v.Get(i)
-			MANGAINFO.ChapterLinks.Add(vi.GetAttribute('href'))
-			MANGAINFO.ChapterNames.Add(x.XPathString('span[1]',vi))
+		local v; for v in x.XPath('//ul[@class="chp_lst"]/li/a').Get() do
+			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
+			MANGAINFO.ChapterNames.Add(x.XPathString('span[1]', v))
 		end
 		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
@@ -45,7 +43,7 @@ function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local x = CreateTXQuery(HTTP.Document)
 		x.ParseHTML(Trim(GetBetween('var images = ', ';', x.XPathString('//script[@type="text/javascript" and contains(., "var images")]'))))
-		for v in x.XPath('json(*)()("URL")').Get() do
+		for v in x.XPath('json(*)()("url")').Get() do
 			TASK.PageLinks.Add(v.ToString():gsub('///', '//'))
 		end
 		return true
