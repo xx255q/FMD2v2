@@ -15,7 +15,24 @@ XPathTokenGenres    = 'Género'
 
 -- Get info and chapter list for current manga.
 function GetInfo()
-	Template.GetInfo()
+	local u = MaybeFillHost(MODULE.RootURL, URL)
+
+	if not HTTP.GET(u) then return net_problem end
+
+	local x = CreateTXQuery(HTTP.Document)
+	MANGAINFO.Title     = x.XPathString('(//div[contains(@class, "container")]//h2)[1]')
+	MANGAINFO.CoverLink = x.XPathString('//div[@class="boxed"]/img/@src')
+	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//dt[text()="' .. XPathTokenStatus .. '"]/following-sibling::dd[1]/span'), 'Ongoing', 'Complete')
+	MANGAINFO.Authors   = x.XPathStringAll('//dt[text()="' .. XPathTokenAuthors .. '"]/following-sibling::dd[1]/a')
+	MANGAINFO.Artists   = x.XPathStringAll('//dt[text()="' .. XPathTokenArtists .. '"]/following-sibling::dd[1]/a')
+	MANGAINFO.Genres    = x.XPathStringAll('//dt[text()="' .. XPathTokenGenres .. '"]/following-sibling::dd[1]/a')
+	MANGAINFO.Summary   = x.XPathString('//div[contains(@class, "well")]/p')
+
+	local v; for v in x.XPath('//ul[@class="chapters"]/li/h5/em').Get() do
+		MANGAINFO.ChapterLinks.Add(x.XPathString('a[2]/@href', v))
+		MANGAINFO.ChapterNames.Add(x.XPathString('normalize-space(.)', v))
+	end
+	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
 	return no_error
 end
