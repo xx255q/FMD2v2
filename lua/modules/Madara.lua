@@ -373,6 +373,7 @@ function Init()
 	AddWebsiteModule('2ea2c910054841e5bd82f2d34f6e832a', 'Apolltoons', 'https://apolltoons.xyz', cat)
 	AddWebsiteModule('a964861afd0f410cb5122df5f50d3e1a', 'ManhuaPlus', 'https://manhuaplus.com', cat)
 	AddWebsiteModule('f31e7a36050c424291c839f0a02d92a4', 'ApollComics', 'https://apollcomics.xyz', cat)
+	AddWebsiteModule('404bb1f54c374a53bd850afdd6f873b3', 'ToonilyNet', 'https://toonily.net', cat)
 
 	cat = 'Arabic-Scanlation'
 	AddWebsiteModule('7bda2905b61c49d1976777e9f2356361', '3asqOrg', 'https://3asq.org', cat)
