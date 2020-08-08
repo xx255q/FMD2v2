@@ -29,8 +29,6 @@ function getinfo()
 				end
 				MANGAINFO.ChapterNames.Add(ctitle .. ' ' .. scanname)
 				MANGAINFO.ChapterLinks.Add(viewerurl)
-				MANGAINFO.ChapterNames.Add(ctitle .. ' ' .. scanname)
-				MANGAINFO.ChapterLinks.Add(viewerurl)
 			end
 		end
 		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
@@ -42,8 +40,8 @@ end
 
 function getpagenumber()
 	HTTP.Headers.Values['Referer'] = ' ' .. MaybeFillHost(MODULE.RootURL, TASK.Link)
-	local url = MaybeFillHost(MODULE.RootURL, URL)
-	if not HTTP.GET(url) then return false; end
+	URL = MaybeFillHost(MODULE.RootURL, URL)
+	if not HTTP.GET(URL) then return false; end
 	local rurl = HTTP.Headers.Values['location']
 	if rurl ~= '' then
 		HTTP.Headers.Values['Referer'] = ' ' .. url
@@ -51,9 +49,13 @@ function getpagenumber()
 	end
 
 	local x = CreateTXQuery(HTTP.Document)
-	TASK.PageNumber = tonumber(x.XPathString('count((//select[@id="viewer-pages-select"])[1]/option)')) or 1
-	TASK.PageContainerLinks.Add(HTTP.LastURL)
-	TASK.PageLinks.Add(x.XPathString('//img[contains(@class,"viewer-image")]/@src'))
+	TASK.PageNumber = tonumber(x.XPathString('count((//select[@id="viewer-pages-select"])[1]/option)')) or 0
+	if TASK.PageNumber == 0 then
+		x.XPathStringAll('//img[@class="viewer-img"]/@data-src', TASK.PageLinks)
+	else
+		TASK.PageContainerLinks.Add(HTTP.LastURL)
+		TASK.PageLinks.Add(x.XPathString('//img[contains(@class,"viewer-image")]/@src'))
+	end
 	return true
 end
 
