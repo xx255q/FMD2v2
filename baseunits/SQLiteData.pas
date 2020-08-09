@@ -250,7 +250,7 @@ begin
     begin
       ExecuteDirect('DROP TABLE IF EXISTS ' + QuotedStrD('temp' + FTableName));
       ExecuteDirect('CREATE TABLE ' + QuotedStrD('temp' + FTableName) + ' (' + FCreateParams + ')');
-      ExecuteDirect('INSERT INTO ' + QuotedStrD('temp' + FTableName) + ' (' + FieldsParams + ') SELECT ' + FieldsParams + ' FROM "' + FTableName + '"');
+      ExecuteDirect('INSERT INTO ' + QuotedStrD('temp' + FTableName) + ' (' + FFieldsParams + ') SELECT ' + FFieldsParams + ' FROM "' + FTableName + '"');
       ExecuteDirect('DROP TABLE ' + QuotedStrD(FTableName));
       ExecuteDirect('ALTER TABLE ' + QuotedStrD('temp' + FTableName) + ' RENAME TO ' + QuotedStrD(FTableName));
     end;
