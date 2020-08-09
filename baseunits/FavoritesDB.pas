@@ -89,7 +89,7 @@ begin
     '"datelastchecked" DATETIME,' +
     '"datelastupdated" DATETIME';
   FieldsParams := '"id","order","enabled","moduleid","link","title","status","currentchapter","downloadedchapterlist","saveto","dateadded","datelastchecked","datelastupdated"';
-  SelectParams := 'SELECT * FROM ' + QuotedStrD(TableName) + ' ORDER BY "order"';
+  SelectParams := 'SELECT ' + FieldsParams + ' FROM ' + QuotedStrD(TableName) + ' ORDER BY "order"';
 end;
 
 procedure TFavoritesDB.InternalUpdate(const AOrder: Integer; const AEnabled: Boolean;
