@@ -16,8 +16,6 @@ type
     FCommitCount: Integer;
     FAutoCommitCount: Integer;
     procedure SetAutoCommitCount(AValue: Integer);
-  protected
-    function ConvertNewTableIF: Boolean; override;
   public
     constructor Create(const AFilename: String);
     procedure InternalUpdate(const AOrder:Integer;const AEnabled:Boolean;
@@ -58,12 +56,6 @@ procedure TFavoritesDB.SetAutoCommitCount(AValue: Integer);
 begin
   if FAutoCommitCount = AValue then Exit;
   FAutoCommitCount := AValue;
-end;
-
-function TFavoritesDB.ConvertNewTableIF: Boolean;
-begin
-  // TODO: deprecated after 2 release from 2.0.18
-  Result := Table.FindField('status') = nil;
 end;
 
 constructor TFavoritesDB.Create(const AFilename: String);
