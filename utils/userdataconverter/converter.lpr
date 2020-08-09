@@ -16,7 +16,7 @@ var
   dbcon: TSQLite3Connection;
   dbquery: TSQLQuery;
   dbtrans: TSQLTransaction;
-  datenow: String;
+  datenow, FTableName, FCreateParams, FFieldsParams, FSelectParams: String;
 
 function copyfile(fromfile, tofile:string):boolean;
 begin
@@ -55,6 +55,11 @@ end;
 function QuotedStr(const S: TDateTime): String;
 begin
   Result := AnsiQuotedStr(DateTimeToSQLiteDateTime(S), '''');
+end;
+
+function QuotedStrD(const S: String): String;
+begin
+  Result := AnsiQuotedStr(S, '"');
 end;
 
 begin
@@ -145,10 +150,33 @@ begin
       dbcon.Connected := true;
       dbcon.ExecuteDirect('ALTER TABLE "favorites" RENAME COLUMN "websitelink" TO "id"');
       dbcon.ExecuteDirect('ALTER TABLE "favorites" RENAME COLUMN "website" TO "moduleid"');
-      dbcon.ExecuteDirect('ALTER TABLE "favorites" ADD COLUMN "status" TEXT');
-      dbcon.ExecuteDirect('ALTER TABLE "favorites" ADD COLUMN "dateadded" DATETIME');
-      dbcon.ExecuteDirect('ALTER TABLE "favorites" ADD COLUMN "datelastchecked" DATETIME');
-      dbcon.ExecuteDirect('ALTER TABLE "favorites" ADD COLUMN "datelastupdated" DATETIME');
+
+      FTableName := 'favorites';
+      FCreateParams :=
+        '"id" VARCHAR(3000) NOT NULL PRIMARY KEY,' +
+        '"order" INTEGER,' +
+        '"enabled" BOOLEAN,' +
+        '"moduleid" TEXT,' +
+        '"link" TEXT,' +
+        '"title" TEXT,' +
+        '"status" TEXT,' +
+        '"currentchapter" TEXT,' +
+        '"downloadedchapterlist" TEXT,' +
+        '"saveto" TEXT,' +
+        '"dateadded" DATETIME,' +
+        '"datelastchecked" DATETIME,' +
+        '"datelastupdated" DATETIME';
+      FFieldsParams := '"id","order","enabled","moduleid","link","title","status","currentchapter","downloadedchapterlist","saveto","dateadded","datelastchecked","datelastupdated"';
+      FSelectParams := 'SELECT ' + FFieldsParams + ' FROM ' + QuotedStrD(FTableName) + ' ORDER BY "order"';
+      with dbcon do
+      begin
+        ExecuteDirect('DROP TABLE IF EXISTS ' + QuotedStrD('temp' + FTableName));
+        ExecuteDirect('CREATE TABLE ' + QuotedStrD('temp' + FTableName) + ' (' + FCreateParams + ')');
+        ExecuteDirect('INSERT INTO ' + QuotedStrD('temp' + FTableName) + ' (' + FFieldsParams + ') SELECT ' + FFieldsParams + ' FROM "' + FTableName + '"');
+        ExecuteDirect('DROP TABLE ' + QuotedStrD(FTableName));
+        ExecuteDirect('ALTER TABLE ' + QuotedStrD('temp' + FTableName) + ' RENAME TO ' + QuotedStrD(FTableName));
+      end;
+
       dbcon.ExecuteDirect('UPDATE "favorites" SET "status"=''1''');
       dbcon.ExecuteDirect('UPDATE "favorites" SET "dateadded"='+datenow);
       dbcon.ExecuteDirect('UPDATE "favorites" SET "datelastchecked"='+datenow);
