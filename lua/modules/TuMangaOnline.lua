@@ -1,16 +1,49 @@
-function getinfo()
-	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
+function Init()
+	local m = NewWebsiteModule()
+	m.ID                         = '9185eb6c49324a849c7d7925a41ef3a3'
+	m.Name                       = 'TuMangaOnline'
+	m.RootURL                    = 'https://lectortmo.com'
+	m.Category                   = 'Spanish'
+	m.MaxTaskLimit               = 1
+	m.MaxConnectionLimit         = 1
+	m.OnGetNameAndLink           = 'GetNameAndLink'
+	m.OnGetInfo                  = 'GetInfo'
+	m.OnGetPageNumber            = 'GetPageNumber'
+	m.OnGetImageURL              = 'GetImageURL'
+end
+
+function GetNameAndLink()
+	local s = '/library?order_item=alphabetically&order_dir=asc&filter_by=title&_page=1&page=' .. (URL + 1)
+	if HTTP.GET(MODULE.RootURL .. s) then
+		local x = CreateTXQuery(HTTP.Document)
+		local hasTitles = false
+		local v; for v in x.XPath('//*[@data-identifier]/a').Get() do
+			LINKS.Add(v.GetAttribute('href'))
+			NAMES.Add(x.XPathString('div/div[@class="thumbnail-title"]', v))
+			hasTitles = true
+		end
+		if hasTitles then
+			UPDATELIST.CurrentDirectoryPageNumber = UPDATELIST.CurrentDirectoryPageNumber + 1
+		end
+		return no_error
+	else
+		return net_problem
+	end
+end
+
+function GetInfo()
+	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=CreateTXQuery(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		if MANGAINFO.Title == '' then
 			MANGAINFO.Title = Trim(x.XPathString('//h1[contains(@class, "element-title")]/text()'))
 		end
 		MANGAINFO.CoverLink = x.XPathString('//img[contains(@class,"book-thumbnail")]/@src')
-		MANGAINFO.Genres=x.XPathStringAll('//a[contains(@class, "badge")]')
-		MANGAINFO.Authors=Trim(x.XPathString('//span[@class="list-group-item" and contains(., "Autor")]/a'))
-		MANGAINFO.Artists=Trim(x.XPathString('//span[@class="list-group-item" and contains(., "Artist")]/a'))
-		MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//span[contains(@class, "book-status")]'), 'public', 'final')
-		MANGAINFO.Summary = x.XPathStringAll('//*[@class="element-description"]/text()', '')
+		MANGAINFO.Genres    = x.XPathStringAll('//a[contains(@class, "badge")]')
+		MANGAINFO.Authors   = Trim(x.XPathString('//span[@class="list-group-item" and contains(., "Autor")]/a'))
+		MANGAINFO.Artists   = Trim(x.XPathString('//span[@class="list-group-item" and contains(., "Artist")]/a'))
+		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//span[contains(@class, "book-status")]'), 'public', 'final')
+		MANGAINFO.Summary   = x.XPathStringAll('//*[@class="element-description"]/text()', '')
 
 		local EncodeURLElement = require "fmd.crypto".EncodeURLElement
 		local v, vi, vii, ctitle, scanname, viewerurl, formparams
@@ -38,7 +71,7 @@ function getinfo()
 	end
 end
 
-function getpagenumber()
+function GetPageNumber()
 	HTTP.Headers.Values['Referer'] = ' ' .. MaybeFillHost(MODULE.RootURL, TASK.Link)
 	URL = MaybeFillHost(MODULE.RootURL, URL)
 	if not HTTP.GET(URL) then return false; end
@@ -59,7 +92,7 @@ function getpagenumber()
 	return true
 end
 
-function getimageurl()
+function GetImageURL()
 	local s = MaybeFillHost(MODULE.RootURL, TASK.PageContainerLinks[0])
 	HTTP.Headers.Values['Referer'] = ' ' .. MaybeFillHost(s)
 	if HTTP.GET(s .. '/' .. tostring(WORKID+1)) then
@@ -67,39 +100,4 @@ function getimageurl()
 		return true
 	end
 	return false
-end
-
-function getnameandlink()
-	local s = '/library?order_item=alphabetically&order_dir=asc&filter_by=title&page='..(URL + 1)
-	if HTTP.GET(MODULE.RootURL .. s) then
-		local x = CreateTXQuery(HTTP.Document)
-		local v = x.XPath('//*[@data-identifier]/a')
-		local hasTitles = false
-		for i = 1, v.Count do
-			local v1 = v.Get(i)
-			LINKS.Add(v1.GetAttribute('href'))
-			NAMES.Add(x.XPathString('div/div[@class="thumbnail-title"]', v1))
-			hasTitles = true
-		end
-		if hasTitles then
-			UPDATELIST.CurrentDirectoryPageNumber = UPDATELIST.CurrentDirectoryPageNumber + 1
-		end
-		return no_error
-	else
-		return net_problem
-	end
-end
-
-function Init()
-	local m = NewWebsiteModule()
-	m.ID = '9185eb6c49324a849c7d7925a41ef3a3'
-	m.Name = 'Tumangaonline'
-	m.RootURL = 'https://lectortmo.com'
-	m.Category = 'Spanish'
-	m.MaxTaskLimit = 1
-	m.MaxConnectionLimit = 1
-	m.OnGetInfo='getinfo'
-	m.OnGetPageNumber='getpagenumber'
-	m.OnGetNameAndLink='getnameandlink'
-	m.OnGetImageURL='getimageurl'
 end
