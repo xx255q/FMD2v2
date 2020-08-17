@@ -620,7 +620,8 @@ begin
         // break too many redirect
         if redirectcounter >= FMaxRedirect then Exit
         else Inc(redirectcounter);
-        HTTPHeader.Values['Referer'] := ' ' + FURL;
+        if HTTPHeader.Values['Referer'] = '' then
+          HTTPHeader.Values['Referer'] := ' ' + FURL;
         s := Trim(Headers.Values['Location']);
         if s<>'' then
         begin
