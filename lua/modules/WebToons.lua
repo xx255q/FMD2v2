@@ -25,7 +25,6 @@ function getinfo()
 				MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
 				MANGAINFO.ChapterNames.Add(x.XPathString('.//span[@class="subj"]/span', v))
 			end
-
 			p = x.XPathString('//div[@class="paginate"]/a[@href="#"]/following-sibling::a/@href')
 			if (p ~= '') and HTTP.GET(MaybeFillHost(MODULE.RootURL, p)) then
 				x.ParseHTML(HTTP.Document)
@@ -60,63 +59,46 @@ function getnameandlink()
 	if selectedLang > 0 then
 		l = {[findlang(selectedLang)] = ""}
 	end
-	for key, value in pairs(l) do
-		local dirurl = key..'/genre'
-		if HTTP.GET(MODULE.RootURL..dirurl) then
-			local x=CreateTXQuery(HTTP.Document)
-			local v
+	local key, dirurl, v
+	local x = CreateTXQuery()
+	for key, _ in pairs(l) do
+		dirurl = key..'/genre'
+		if HTTP.GET(MODULE.RootURL .. dirurl) then
+			x.ParseHTML(HTTP.Document)
 			for v in x.XPath('//div[@class="card_wrap genre"]/ul/li/a').Get() do
-				NAMES.Add(x.XPathString('.//div[@class="Info"]//p[@class="subj"]', v)..' ['..key..']');
-				LINKS.Add(v.GetAttribute('href'));
+				NAMES.Add(x.XPathString('.//div[@class="Info"]//p[@class="subj"]', v) .. ' [' .. key .. ']')
+				LINKS.Add(v.GetAttribute('href'))
 			end
-			return no_error
 		else
 			return net_problem
 		end
 	end
+
 	if MODULE.GetOption('luaincludechallengetitles') then
-		getnameandlinkforchallenge()
-	end
-end
-
-function getnameandlinkforchallenge()
-	local selectedLang = MODULE.GetOption('lualang')
-	local l = langs
-	if selectedLang > 0 then
-		l = {[findlang(selectedLang)] = ""}
-	end
-	for key, value in pairs(l) do
-		local dirurl = key..'/challenge/list?genreTab=ALL&sortOrder=UPDATE'
-		if HTTP.GET(MODULE.RootURL..dirurl) then
-			local x=CreateTXQuery(HTTP.Document)
-
-			local pages = 1
-			local p = 1
-			while p <= pages do
-				if p > 1 then
-					if HTTP.GET(MODULE.RootURL..dirurl..'&page='..tostring(p)) then
-						x=CreateTXQuery(HTTP.Document)
+		for key, _ in pairs(l) do
+			dirurl = key..'/challenge/list?genreTab=ALL&sortOrder=UPDATE'
+			if HTTP.GET(MODULE.RootURL..dirurl) then
+				x.ParseHTML(HTTP.Document)
+				local v, p
+				while true do
+					for v in x.XPath('//div[@class="challenge_cont_area"]/div[contains(@class,"challenge_lst")]/ul/li/a[contains(@class,"challenge_item")]').Get() do
+						NAMES.Add(x.XPathString('./p[@class="subj"]', v)..' ['..key..']');
+						LINKS.Add(v.GetAttribute('href'));
+					end
+					p = x.XPathString('//div[@class="paginate"]/a[@href="#"]/following-sibling::a/@href')
+					if (p ~= '') and HTTP.GET(MaybeFillHost(MODULE.RootURL, p)) then
+						x.ParseHTML(HTTP.Document)
 					else
 						break
 					end
 				end
-				if p == pages then
-					local pg = x.XPathString('//div[@class="paginate"]/a[last()]/substring-after(@href, "&page=")')
-					if pg ~= '' then pages = tonumber(pg) end
-				end
-				local v
-				for v in x.XPath('//div[@class="challenge_cont_area"]/div[contains(@class,"challenge_lst")]/ul/li/a[contains(@class,"challenge_item")]').Get()
-					NAMES.Add(x.XPathString('./p[@class="subj"]', v)..' ['..key..']');
-					LINKS.Add(v.GetAttribute('href'));
-				end
-				p = p + 1
+			else
+				return net_problem
 			end
-
-			return no_error
-		else
-			return net_problem
 		end
 	end
+
+	return no_error
 end
 
 function BeforeDownloadImage()
