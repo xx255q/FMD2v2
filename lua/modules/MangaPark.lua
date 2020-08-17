@@ -77,7 +77,7 @@ function Init()
 		m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
 		m.SortedList = true
 	end
-	AddWebsiteModule('09d49c7760904bc2817dbc80757de44a', 'MangaPark', 'https://mangapark.me')
+	AddWebsiteModule('09d49c7760904bc2817dbc80757de44a', 'MangaPark', 'https://mangapark.net')
 	AddWebsiteModule('32b25f04931b414a803286a6f8cabd8d', 'MangaParkNet', 'https://mangapark.net')
 	AddWebsiteModule('273268fd7b1a42b38e50c010a630bfad', 'MangaParkCom', 'https://mangapark.com')
 end
