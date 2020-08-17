@@ -18,28 +18,22 @@ function getinfo()
 			MANGAINFO.Genres=x.XPathString('//div[@class="info challenge"]/p')
 		end
 		MANGAINFO.Summary=x.XPathString('//p[@class="summary"]')
-		local pages = 1
-		local p = 1
-		while p <= pages do
-			if p > 1 then
-				if HTTP.GET(MANGAINFO.URL .. '&page=' .. tostring(p)) then
-					x=CreateTXQuery(HTTP.Document)
-				else
-					break
-				end
+
+		local v, p
+		while true do
+			for v in x.XPath('//div[@class="detail_lst"]/ul/li/a').Get() do
+				MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
+				MANGAINFO.ChapterNames.Add(x.XPathString('.//span[@class="subj"]/span', v))
 			end
-			if p == pages then
-				local pg = x.XPathString('//div[@class="detail_lst"]/div[@class="paginate"]/a[last()]/substring-after(@href, "&page=")')
-				if pg ~= '' then pages = tonumber(pg) end
+
+			p = x.XPathString('//div[@class="paginate"]/a[@href="#"]/following-sibling::a/@href')
+			if (p ~= '') and HTTP.GET(MaybeFillHost(MODULE.RootURL, p)) then
+				x.ParseHTML(HTTP.Document)
+			else
+				break
 			end
-			local v=x.XPath('//div[@class="detail_lst"]/ul/li/a')
-			for i=1,v.Count do
-				local v1=v.Get(i)
-				MANGAINFO.ChapterLinks.Add(v1.GetAttribute('href'))
-				MANGAINFO.ChapterNames.Add(x.XPathString('.//span[@class="subj"]/span', v1))
-			end
-			p = p + 1
 		end
+
 		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
@@ -70,11 +64,10 @@ function getnameandlink()
 		local dirurl = key..'/genre'
 		if HTTP.GET(MODULE.RootURL..dirurl) then
 			local x=CreateTXQuery(HTTP.Document)
-			local v = x.XPath('//div[@class="card_wrap genre"]/ul/li/a')
-			for i = 1, v.Count do
-				local v1 = v.Get(i)
-				NAMES.Add(x.XPathString('.//div[@class="Info"]//p[@class="subj"]', v1)..' ['..key..']');
-				LINKS.Add(v1.GetAttribute('href'));
+			local v
+			for v in x.XPath('//div[@class="card_wrap genre"]/ul/li/a').Get() do
+				NAMES.Add(x.XPathString('.//div[@class="Info"]//p[@class="subj"]', v)..' ['..key..']');
+				LINKS.Add(v.GetAttribute('href'));
 			end
 			return no_error
 		else
@@ -111,11 +104,10 @@ function getnameandlinkforchallenge()
 					local pg = x.XPathString('//div[@class="paginate"]/a[last()]/substring-after(@href, "&page=")')
 					if pg ~= '' then pages = tonumber(pg) end
 				end
-				local v = x.XPath('//div[@class="challenge_cont_area"]/div[contains(@class,"challenge_lst")]/ul/li/a[contains(@class,"challenge_item")]')
-				for i = 1, v.Count do
-					local v1 = v.Get(i)
-					NAMES.Add(x.XPathString('./p[@class="subj"]', v1)..' ['..key..']');
-					LINKS.Add(v1.GetAttribute('href'));
+				local v
+				for v in x.XPath('//div[@class="challenge_cont_area"]/div[contains(@class,"challenge_lst")]/ul/li/a[contains(@class,"challenge_item")]').Get()
+					NAMES.Add(x.XPathString('./p[@class="subj"]', v)..' ['..key..']');
+					LINKS.Add(v.GetAttribute('href'));
 				end
 				p = p + 1
 			end
@@ -171,7 +163,7 @@ function Init()
 	m.OnGetPageNumber       ='getpagenumber'
 	m.OnGetNameAndLink      ='getnameandlink'
 	m.OnBeforeDownloadImage = 'BeforeDownloadImage'
-	
+
 	local fmd = require 'fmd.env'
 	local slang = fmd.SelectedLanguage
 	local lang = {
