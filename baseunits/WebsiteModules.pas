@@ -609,8 +609,8 @@ begin
               for k:=0 to j_cookies.Count-1 do
               begin
                 c:=THTTPCookie.Create;
-                CookieManager.Cookies.Add(c);
                 jd.JSONToObject(TJSONObject(j_cookies.Items[k]), c);
+                CookieManager.AddCookie(c, True);
               end;
             end;
             ja.Delete(j);

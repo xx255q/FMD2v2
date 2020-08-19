@@ -49,6 +49,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+    procedure AddCookie(const C: THTTPCookie; const KeepOld: Boolean = False);
     procedure AddServerCookie(const AURL, ACookie: String; const AServerDate: TDateTime);
     procedure AddServerCookies(const AURL: String; const AServerHeaders: TStringList);
     procedure SetCookies(const AURL: String; const AHTTP: THTTPSend);
@@ -74,6 +75,30 @@ begin
   FCookies.Free;
   FGuardian.Free;
   inherited Destroy;
+end;
+
+procedure THTTPCookieManager.AddCookie(const C: THTTPCookie; const KeepOld: Boolean);
+var
+  i: Integer;
+  x: Boolean;
+begin
+  x := True;
+  for i := 0 to FCookies.Count-1 do
+    with FCookies[i] do
+    begin
+      if (C.Name = Name) and (C.Domain = Domain) and (C.Path = Path) then
+      begin
+        if KeepOld then
+        begin
+          x := False;
+          C.Free;
+        end
+        else
+          FCookies.Delete(i);
+        Break;
+      end;
+    end;
+  if x then FCookies.Add(C);
 end;
 
 procedure THTTPCookieManager.InternalAddServerCookie(const AURL, ACookie: String;
@@ -137,16 +162,8 @@ begin
     end;
     if c.SameSite = '' then
       c.SameSite := 'none';
-
-    // search and delete existing cookie
-    for i := 0 to FCookies.Count-1 do
-      if (c.Name = FCookies[i].Name) and (c.Domain = FCookies[i].Domain) and (c.Path = FCookies[i].Path) then
-      begin
-        FCookies.Delete(i);
-        Break;
-      end;
   finally
-    FCookies.Add(c);
+    AddCookie(c);
   end;
   Finalize(scookie);
 end;
