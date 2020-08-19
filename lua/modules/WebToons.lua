@@ -7,7 +7,6 @@ local langs = {
 
 function getinfo()
 	MANGAINFO.URL = MANGAINFO.URL:gsub('(.*)&page=.*', '%1')
-	HTTP.Cookies.Values['ageGatePass'] = 'True'
 	if HTTP.GET(MANGAINFO.URL) then
 		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title = x.XPathString('//meta[@property="og:title"]/@content')
@@ -27,8 +26,6 @@ function getinfo()
 			end
 			p = x.XPathString('//div[@class="paginate"]/a[@href="#"]/following-sibling::a/@href')
 			if p == '' then	break end
-			HTTP.Reset()
-			HTTP.Cookies.Values['ageGatePass'] = 'True'
 			if HTTP.GET(MaybeFillHost(MODULE.RootURL, p)) then
 				x.ParseHTML(HTTP.Document)
 			else
@@ -148,6 +145,7 @@ function Init()
 	m.OnGetPageNumber       ='getpagenumber'
 	m.OnGetNameAndLink      ='getnameandlink'
 	m.OnBeforeDownloadImage = 'BeforeDownloadImage'
+	m.AddServerCookie('webtoons.com', 'ageGatePass=True; max-age=31556952')
 
 	local fmd = require 'fmd.env'
 	local slang = fmd.SelectedLanguage
@@ -173,7 +171,4 @@ function Init()
 	local t = getlanglist()
 	for k, v in ipairs(t) do items = items .. '\r\n' .. v; end
 	m.AddOptionComboBox('lualang', lang:get('lang'), items, 2)
-	if tonumber(fmd.Revision) >= 4850 then
-		m.AddServerCookie('webtoons.com', 'ageGatePass=True; max-age=31556952')
-	end
 end
