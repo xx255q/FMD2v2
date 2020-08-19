@@ -107,7 +107,6 @@ var
   Prot, User, Pass, Host, Port, Path, Para: String;
   s, n, ni, v: String;
   c: THTTPCookie;
-  i: Integer;
   scookie: TStringArray;
 begin
   s := Trim(ACookie);
