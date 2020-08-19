@@ -26,7 +26,10 @@ function getinfo()
 				MANGAINFO.ChapterNames.Add(x.XPathString('.//span[@class="subj"]/span', v))
 			end
 			p = x.XPathString('//div[@class="paginate"]/a[@href="#"]/following-sibling::a/@href')
-			if (p ~= '') and HTTP.GET(MaybeFillHost(MODULE.RootURL, p)) then
+			if p == '' then	break end
+			HTTP.Reset()
+			HTTP.Cookies.Values['ageGatePass'] = 'True'
+			if HTTP.GET(MaybeFillHost(MODULE.RootURL, p)) then
 				x.ParseHTML(HTTP.Document)
 			else
 				break
