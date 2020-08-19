@@ -173,4 +173,7 @@ function Init()
 	local t = getlanglist()
 	for k, v in ipairs(t) do items = items .. '\r\n' .. v; end
 	m.AddOptionComboBox('lualang', lang:get('lang'), items, 2)
+	if tonumber(fmd.Revision) >= 4850 then
+		m.AddServerCookie('webtoons.com', 'ageGatePass=True; max-age=31556952')
+	end
 end
