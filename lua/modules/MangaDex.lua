@@ -311,20 +311,16 @@ function getnameandlink()
 	end
 end
 
-
-
 function delay()
-	local currentTime = os.time()
-	local lastDelay = MODULE.Storage['lastDelay']
-	local mdx_interval = tonumber(MODULE.GetOption('mdx_interval')) or 1
-	local mdx_delay = tonumber(MODULE.GetOption('mdx_delay')) or 1 -- * MODULE.ActiveConnectionCount
+	local lastDelay = tonumber(MODULE.Storage['lastDelay']) or 1
+	local mdx_delay = tonumber(MODULE.GetOption('mdx_delay')) or 2 -- * MODULE.ActiveConnectionCount
 	if lastDelay ~= '' then
-		lastDelay = tonumber(lastDelay)
-		if (currentTime - lastDelay) < mdx_interval then
-			sleep(mdx_delay)
+		lastDelay = os.time() - lastDelay
+		if lastDelay < mdx_delay then
+			sleep((mdx_delay - lastDelay) * 1000)
 		end
 	end
-	MODULE.Storage['lastDelay'] = currentTime
+	MODULE.Storage['lastDelay'] = os.time()
 end
 
 function Login()
@@ -396,19 +392,17 @@ function Init()
 	m.MaxConnectionLimit       = 2
 	m.AccountSupport           = true
 	m.OnLogin                  = 'Login'
-	
+
 	local fmd = require 'fmd.env'
 	local slang = fmd.SelectedLanguage
 	local lang = {
 		['en'] = {
-			['interval'] = 'Min. interval between requests (s)',
-			['delay'] = 'Delay (s)',
+			['delay'] = 'Delay (s) between requests',
 			['showscangroup'] = 'Show scanlation group',
 			['lang'] = 'Language:'
 		},
 		['id_ID'] = {
-			['interval'] = 'Interval minimum antara permintaan (detik)',
-			['delay'] = 'Tunda (detik)',
+			['delay'] = 'Tunda (detik) antara permintaan',
 			['showscangroup'] = 'Tampilkan grup scanlation',
 			['lang'] = 'Bahasa:'
 		},
@@ -419,8 +413,7 @@ function Init()
 				return sel[key]
 			end
 	}
-	m.AddOptionSpinEdit('mdx_interval', lang:get('interval'), 1)
-	m.AddOptionSpinEdit('mdx_delay', lang:get('delay'), 1)
+	m.AddOptionSpinEdit('mdx_delay', lang:get('delay'), 2)
 	m.AddOptionCheckBox('luashowscangroup', lang:get('showscangroup'), false)
 
 	local items = 'All'
