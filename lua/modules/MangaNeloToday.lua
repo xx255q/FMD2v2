@@ -1,13 +1,18 @@
 function Init()
-	local m = NewWebsiteModule()
-	m.ID                       = '268801f2a1404fe3a24bc8932e7a1b4a'
-	m.Name                     = 'MangaDexToday'
-	m.RootURL                  = 'https://mangadex.today'
-	m.Category                 = 'English'
-	m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
-	m.OnGetNameAndLink         = 'GetNameAndLink'
-	m.OnGetInfo                = 'GetInfo'
-	m.OnGetPageNumber          = 'GetPageNumber'
+	function AddWebsiteModule(id, name, url)
+		local m = NewWebsiteModule()
+		m.ID                       = id
+		m.Name                     = name
+		m.RootURL                  = url
+		m.Category                 = 'English'
+		m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
+		m.OnGetNameAndLink         = 'GetNameAndLink'
+		m.OnGetInfo                = 'GetInfo'
+		m.OnGetPageNumber          = 'GetPageNumber'
+	end
+	AddWebsiteModule('268801f2a1404fe3a24bc8932e7a1b4a', 'MangaNeloToday', 'https://manganelo.today')
+	AddWebsiteModule('baeeb8234a2e440f91a639df71cfc1c5', 'MangaNeloInfo', 'https://manganelo.info')
+	AddWebsiteModule('3ee990e25e004de5880432e5615c14b2', 'MangaNeloMe', 'https://manganelo.me')
 end
 
 local dirurl = '/popular-manga'
