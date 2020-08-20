@@ -721,6 +721,10 @@ begin
     currentMaxThread := OptionMaxThreads;
   if currentMaxThread > OptionMaxThreads then
     currentMaxThread := OptionMaxThreads;
+  if (TModuleContainer(Container.DownloadInfo.Module).ConnectionsQueue.MaxConnections > 0) and (currentMaxThread > TModuleContainer(Container.DownloadInfo.Module).ConnectionsQueue.MaxConnections) then
+    currentMaxThread := TModuleContainer(Container.DownloadInfo.Module).ConnectionsQueue.MaxConnections;
+  if currentMaxThread < 1 then
+    currentMaxThread := 1;  //default
 end;
 
 procedure TTaskThread.CreateNewDownloadThread;

@@ -809,7 +809,12 @@ begin
   if module.Settings.Enabled and (module.Settings.UpdateListNumberOfThread > 0) then
     numberOfThreads := module.Settings.UpdateListNumberOfThread
   else
+  if module.MaxThreadPerTaskLimit > 0 then
+    numberOfThreads := module.MaxThreadPerTaskLimit
+  else
     numberOfThreads := OptionMaxThreads;
+  if (module.ConnectionsQueue.MaxConnections > 0) and (numberOfThreads > module.ConnectionsQueue.MaxConnections) then
+    numberOfThreads := module.ConnectionsQueue.MaxConnections;
   if numberOfThreads < 1 then
     numberOfThreads := 1;  //default
 end;
