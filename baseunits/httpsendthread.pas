@@ -99,7 +99,7 @@ type
     function XHR(const URL: String; const Response: TObject = nil): Boolean;
     function GetCookies: String;
     procedure MergeCookies(const ACookies: String);
-    procedure AddServerCookie(const AURL, ACookies: String; const AServerDate: TDateTime); inline;
+    procedure AddServerCookies(const AURL, ACookies: String; const AServerDate: TDateTime); inline;
     function GetLastModified: TDateTime;
     function GetOriginalFileName: String;
     function ThreadTerminated: Boolean;
@@ -736,11 +736,11 @@ begin
   end;
 end;
 
-procedure THTTPSendThread.AddServerCookie(const AURL, ACookies: String; const AServerDate: TDateTime
-  );
+procedure THTTPSendThread.AddServerCookies(const AURL, ACookies: String;
+  const AServerDate: TDateTime);
 begin
   if Assigned(CookieManager) then
-    CookieManager.AddServerCookie(AURL, ACookies, AServerDate);
+    CookieManager.AddServerCookies(AURL, ACookies, AServerDate);
 end;
 
 function THTTPSendThread.GetLastModified: TDateTime;

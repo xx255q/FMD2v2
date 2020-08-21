@@ -50,10 +50,12 @@ type
     constructor Create;
     destructor Destroy; override;
     procedure AddCookie(const C: THTTPCookie; const KeepOld: Boolean = False);
-    procedure AddServerCookie(const AURL, ACookie: String; const AServerDate: TDateTime);
-    procedure AddServerCookies(const AURL: String; const AServerHeaders: TStringList);
+    procedure AddServerCookies(const AURL, ACookies: String; const AServerDate: TDateTime); overload;
+    procedure AddServerCookies(const AURL: String; const AServerHeaders: TStringList); overload;
     procedure SetCookies(const AURL: String; const AHTTP: THTTPSend);
     procedure Clear;
+    function GetServerCookies(const ADomain, AName: String): String;
+    procedure RemoveCookies(const ADomain, AName: String);
   published
     property Cookies: THTTPCookies read FCookies;
   end;
@@ -112,7 +114,10 @@ begin
   s := Trim(ACookie);
   if s = '' then Exit;
 
-  ParseURL(AURL, Prot, User, Pass, Host, Port, Path, Para);
+  Host := '';
+  Path := '/';
+  if AURL <> '' then
+    ParseURL(AURL, Prot, User, Pass, Host, Port, Path, Para);
   scookie := s.Split(';');
   if Length(scookie) = 0 then Exit;
 
@@ -167,12 +172,16 @@ begin
   Finalize(scookie);
 end;
 
-procedure THTTPCookieManager.AddServerCookie(const AURL, ACookie: String;
+procedure THTTPCookieManager.AddServerCookies(const AURL, ACookies: String;
   const AServerDate: TDateTime);
+var
+  s: String;
 begin
+  if ACookies = '' then Exit;
   FGuardian.Enter;
   try
-    InternalAddServerCookie(AURL, ACookie, AServerDate);
+    for s in Trim(ACookies).Split(#10) do
+      InternalAddServerCookie(AURL, s, AServerDate);
   finally
     FGuardian.Leave;
   end;
@@ -182,25 +191,21 @@ procedure THTTPCookieManager.AddServerCookies(const AURL: String; const AServerH
   );
 var
   i: Integer;
-  s: String;
+  c, s: String;
   d: TDateTime;
 begin
-  FGuardian.Enter;
-  try
+  c := '';
+  for i := 0 to AServerHeaders.Count - 1 do
+    if Pos('set-cookie', LowerCase(AServerHeaders[i])) = 1 then
+      c += #13#10 + Trim(AServerHeaders.ValueFromIndex[i]);
+  if c <> '' then
+  begin
     s := Trim(AServerHeaders.Values['Date']);
     if s <> '' then
       d := DecodeRfcDateTime(s)
     else
       d := Now;
-    for i := 0 to AServerHeaders.Count - 1 do
-    begin
-      if Pos('set-cookie', LowerCase(AServerHeaders[i])) = 1 then
-      begin
-        InternalAddServerCookie(AURL, Trim(AServerHeaders.ValueFromIndex[i]), d);
-      end;
-    end;
-  finally
-    FGuardian.Leave;
+    AddServerCookies(AURL, c, d);
   end;
 end;
 
@@ -288,6 +293,52 @@ begin
   FGuardian.Enter;
   try
     FCookies.Clear;
+  finally
+    FGuardian.Leave;
+  end;
+end;
+
+function THTTPCookieManager.GetServerCookies(const ADomain, AName: String): String;
+var
+  c: THTTPCookie;
+begin
+  Result := '';
+  FGuardian.Enter;
+  try
+    for c in FCookies do
+    begin
+      if SameText(ADomain, c.Domain) and ((AName = '') or SameText(AName, c.Name)) then
+      begin
+        Result += #13#10 + c.Name + '=' + c.Value + '; domain=' + c.Domain + '; path=' + c.Path;
+        if c.Persistent then
+          Result += '; expires=' + Rfc822DateTime(c.Expires);
+        if c.Secure then
+          Result += '; secure';
+        if c.HttpOnly then
+          Result += '; httponly';
+        if c.SameSite <> 'none' then
+          Result += '; samesite=' + c.SameSite;
+      end;
+    end;
+  finally
+    FGuardian.Leave;
+  end;
+  Result := Trim(Result);
+end;
+
+procedure THTTPCookieManager.RemoveCookies(const ADomain, AName: String);
+var
+  i: Integer;
+  c: THTTPCookie;
+begin
+  FGuardian.Enter;
+  try
+    for i := FCookies.Count-1 downto 0 do
+    begin
+      c := FCookies[i];
+      if SameText(ADomain, c.Domain) and ((AName = '') or SameText(AName, c.Name)) then
+        FCookies.Delete(i);
+    end;
   finally
     FGuardian.Leave;
   end;

@@ -603,6 +603,7 @@ begin
                 jd.JSONToObject(jo2,Account);
                 if Account.Username<>'' then Account.Username := DecryptString(Account.Username);
                 if Account.Password<>'' then Account.Password := DecryptString(Account.Password);
+                if Account.Cookies<>'' then Account.Cookies := DecryptString(Account.Cookies);
                 if Account.Status=asChecking then
                   Account.Status:=asUnknown;
               end;
@@ -664,6 +665,7 @@ begin
           jo2:=js.ObjectToJSON(Account);
           jo2.Strings['Username']:=EncryptString(Account.Username);
           jo2.Strings['Password']:=EncryptString(Account.Password);
+          jo2.Strings['Cookies']:=EncryptString(Account.Cookies);
           jo.Add('Account',jo2);
         end;
         j_cookies:=TJSONArray.Create;

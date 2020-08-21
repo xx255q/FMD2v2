@@ -864,10 +864,31 @@ begin
   TLuaWebsiteModule(luaClassGetObject(L)).Module.TotalDirectory := lua_tointeger(L, 1);
 end;
 
-function lua_addservercookie(L: Plua_State): Integer; cdecl;
+function lua_addservercookies(L: Plua_State): Integer; cdecl;
 begin
   Result := 0;
-  TLuaWebsiteModule(luaClassGetObject(L)).Module.CookieManager.AddServerCookie(luaToString(L, 1), luaToString(L, 2), Now);
+  if lua_gettop(L) = 2 then
+    TLuaWebsiteModule(luaClassGetObject(L)).Module.CookieManager.AddServerCookies(luaToString(L, 1), luaToString(L, 2), Now)
+  else
+    TLuaWebsiteModule(luaClassGetObject(L)).Module.CookieManager.AddServerCookies('', luaToString(L, 1), Now);
+end;
+
+function lua_getservercookies(L: Plua_State): Integer; cdecl;
+begin
+  if lua_gettop(L) = 2 then
+    lua_pushstring(L, TLuaWebsiteModule(luaClassGetObject(L)).Module.CookieManager.GetServerCookies(luaToString(L, 1), luaToString(L, 2)))
+  else
+    lua_pushstring(L, TLuaWebsiteModule(luaClassGetObject(L)).Module.CookieManager.GetServerCookies(luaToString(L, 1), ''));
+  Result := 1;
+end;
+
+function lua_removecookies(L: Plua_State): Integer; cdecl;
+begin
+  Result := 0;
+  if lua_gettop(L) = 2 then
+    TLuaWebsiteModule(luaClassGetObject(L)).Module.CookieManager.RemoveCookies(luaToString(L, 1), luaToString(L, 2))
+  else
+    TLuaWebsiteModule(luaClassGetObject(L)).Module.CookieManager.RemoveCookies(luaToString(L, 1), '');
 end;
 
 function lua_clearcookies(L: Plua_State): Integer; cdecl;
@@ -919,12 +940,14 @@ begin
 end;
 
 const
-  methods: packed array [0..7] of luaL_Reg = (
+  methods: packed array [0..9] of luaL_Reg = (
     (name: 'AddOptionCheckBox'; func: @lua_addoptioncheckbox),
     (name: 'AddOptionEdit'; func: @lua_addoptionedit),
     (name: 'AddOptionSpinEdit'; func: @lua_addoptionspinedit),
     (name: 'AddOptionComboBox'; func: @lua_addoptioncombobox),
-    (name: 'AddServerCookie'; func: @lua_addservercookie),
+    (name: 'AddServerCookies'; func: @lua_addservercookies),
+    (name: 'GetServerCookies'; func: @lua_getservercookies),
+    (name: 'RemoveCookies'; func: @lua_removecookies),
     (name: 'ClearCookies'; func: @lua_clearcookies),
     (name: 'GetOption'; func: @lua_getoption),
     (name: nil; func: nil)

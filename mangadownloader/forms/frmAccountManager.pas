@@ -125,6 +125,8 @@ end;
 procedure TAccountCheckThread.Execute;
 begin
   try
+    fmodule.Account.Status := asChecking;
+    Synchronize(@SyncStatus);
     fmodule.OnLogin(fhttp, fmodule);
     Synchronize(@SyncStatus);
   except
@@ -142,6 +144,7 @@ begin
   fthreadlist:=AThreadList;
   fthreadlist.Add(Self);
   fhttp:=THTTPSendThread.Create(Self);
+  fmodule.PrepareHTTP(fhttp);
 end;
 
 destructor TAccountCheckThread.Destroy;

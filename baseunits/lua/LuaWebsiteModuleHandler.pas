@@ -79,11 +79,8 @@ var
 
 procedure LuaReleaseThreadVars;
 begin
-  if _LuaHandler<>nil then
-  begin
-    _LuaHandler.Free;
-    _LuaHandler:=nil;
-  end;
+  FreeLuaWebsiteModuleHandler;
+
   if OldReleaseThreadVars<>nil then
     OldReleaseThreadVars;
 end;}
@@ -103,5 +100,8 @@ initialization
   OldEndThread := TM.EndThread;}
   TM.EndThread := @LuaEndThread;
   SetThreadManager(TM);
+
+finalization
+  FreeLuaWebsiteModuleHandler;
 
 end.

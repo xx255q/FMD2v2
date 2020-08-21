@@ -73,10 +73,13 @@ begin
   TUserData(luaClassGetObject(L)).ClearCookiesStorage;
 end;
 
-function http_addservercookie(L: Plua_State): Integer; cdecl;
+function http_addservercookies(L: Plua_State): Integer; cdecl;
 begin
   Result := 0;
-  TUserData(luaClassGetObject(L)).AddServerCookie(luaToString(L, 1), luaToString(L, 2), Now);
+  if lua_gettop(L) = 2 then
+    TUserData(luaClassGetObject(L)).AddServerCookies(luaToString(L, 1), luaToString(L, 2), Now)
+  else
+    TUserData(luaClassGetObject(L)).AddServerCookies('', luaToString(L, 1), Now);
 end;
 
 function http_parseservercookies(L: Plua_State): Integer; cdecl;
@@ -134,7 +137,7 @@ const
     (name: 'ClearCookies'; func: @http_clearcookies),
     (name: 'ClearCookiesStorage'; func: @http_clearcookiesstorage),
     (name: 'GetCookies'; func: @http_getcookies),
-    (name: 'AddServerCookie'; func: @http_addservercookie),
+    (name: 'AddServerCookies'; func: @http_addservercookies),
     (name: 'ParseServerCookies'; func: @http_parseservercookies),
     (name: 'SetProxy'; func: @http_setproxy),
     (name: nil; func: nil)
