@@ -1,6 +1,5 @@
 function getinfo()
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL,URL)
-	HTTP.Cookies.Values['mangadex_h_toggle'] = '1'
 	local id = URL:match('title/(%d+)')
 	if id == nil then id = URL:match('manga/(%d+)'); end
 	delay()
@@ -263,7 +262,6 @@ function findlang(lang)
 end
 
 function getpagenumber()
-	HTTP.Cookies.Values['mangadex_h_toggle'] = '1'
 	local chapterid = URL:match('chapter/(%d+)')
 	delay()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,'/api/chapter/'..chapterid)) then
@@ -286,7 +284,6 @@ end
 local dirurl='/titles/2'
 
 function getdirectorypagenumber()
-	HTTP.Cookies.Values['mangadex_h_toggle'] = '1'
 	HTTP.Cookies.Values['mangadex_title_mode'] = '2'
 	delay()
 	if HTTP.GET(MODULE.RootURL .. dirurl) then
@@ -299,7 +296,6 @@ function getdirectorypagenumber()
 end
 
 function getnameandlink()
-	HTTP.Cookies.Values['mangadex_h_toggle'] = '1'
 	HTTP.Cookies.Values['mangadex_title_mode'] = '2'
 	delay()
 	if HTTP.GET(MODULE.RootURL .. dirurl .. '/' .. (URL + 1) .. '/') then
@@ -378,6 +374,23 @@ function Login()
 	return true
 end
 
+function AccountState()
+	local cookies = ''
+	if MODULE.Account.Enabled then
+		cookies = MODULE.Account.Cookies
+		if cookies ~= '' then
+			MODULE.AddServerCookies(MODULE.Account.Cookies)
+		end
+	else
+		cookies = MODULE.GetServerCookies('mangadex.org', 'mangadex_rememberme_token')
+		if cookies ~= '' then
+			MODULE.Account.Cookies = cookies
+			MODULE.RemoveCookies('mangadex.org', 'mangadex_rememberme_token')
+		end
+	end
+	return true
+end
+
 function Init()
 	local m = NewWebsiteModule()
 	m.ID                       = 'd07c9c2425764da8ba056505f57cf40c'
@@ -392,6 +405,8 @@ function Init()
 	m.MaxConnectionLimit       = 2
 	m.AccountSupport           = true
 	m.OnLogin                  = 'Login'
+	m.OnAccountState           = 'AccountState'
+	m.AddServerCookies('mangadex.org', 'mangadex_h_toggle=1; max-age=31556952')
 
 	local fmd = require 'fmd.env'
 	local slang = fmd.SelectedLanguage
