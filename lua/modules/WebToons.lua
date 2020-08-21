@@ -145,7 +145,7 @@ function Init()
 	m.OnGetPageNumber       ='getpagenumber'
 	m.OnGetNameAndLink      ='getnameandlink'
 	m.OnBeforeDownloadImage = 'BeforeDownloadImage'
-	m.AddServerCookie('webtoons.com', 'ageGatePass=True; max-age=31556952')
+	m.AddServerCookies('webtoons.com', 'ageGatePass=True; max-age=31556952')
 
 	local fmd = require 'fmd.env'
 	local slang = fmd.SelectedLanguage
