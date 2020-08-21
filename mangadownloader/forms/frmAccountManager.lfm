@@ -10,7 +10,7 @@ object AccountManagerForm: TAccountManagerForm
   ClientWidth = 392
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '1.8.0.6'
+  LCLVersion = '2.1.0.0'
   object pnBtContainer: TPanel
     Left = 307
     Height = 316

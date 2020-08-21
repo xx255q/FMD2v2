@@ -29,6 +29,7 @@ type
     OnSaveImage: String;
     OnAfterImageSaved: String;
     OnLogin: String;
+    OnAccountState: String;
     Storage: TStringsStorage;
     LastUpdated: String;
     Container: TLuaWebsiteModulesContainer;
@@ -426,6 +427,24 @@ begin
     end;
 end;
 
+function DoAccountState(const AModule: TModuleContainer): Boolean;
+var
+  L: TLuaWebsiteModuleHandler;
+begin
+  Result := False;
+  with TLuaWebsiteModule(AModule.LuaModule) do
+    try
+      L := GetLuaWebsiteModuleHandler(AModule);
+      LuaPushAccountStatus(L.Handle);
+
+      L.CallFunction(OnAccountState);
+      Result := lua_toboolean(L.Handle, -1);
+    except
+      on E: Exception do
+        SendLogException('LUA>DoAccountState("' + ExtractFileName(Container.FileName) + '")>', E);
+    end;
+end;
+
 function _newwebsitemodule(L: Plua_State): Integer; cdecl;
 begin
   luaClassPushObject(L, TLuaWebsiteModule.Create, '', False, @luaWebsiteModuleAddMetaTable);
@@ -539,6 +558,8 @@ begin
             Module.OnAfterImageSaved := @DoAfterImageSaved;
           if OnLogin <> '' then
             Module.OnLogin := @DoLogin;
+          if OnAccountState <> '' then
+            Module.OnAccountState := @DoAccountState;
         end;
       finally
         Modules.Unlock;
@@ -918,6 +939,7 @@ begin
     luaClassAddStringProperty(L, MetaTable, 'Username', @Username);
     luaClassAddStringProperty(L, MetaTable, 'Password', @Password);
     luaClassAddIntegerProperty(L, MetaTable, 'Status', @Status);
+    luaClassAddStringProperty(L, MetaTable, 'Cookies', @Cookies);
     luaClassAddObject(L, MetaTable, Guardian, 'Guardian', @luaCriticalSectionAddMetaTable);
   end;
 end;
@@ -954,6 +976,7 @@ begin
     luaClassAddStringProperty(L, MetaTable, 'OnSaveImage', @OnSaveImage);
     luaClassAddStringProperty(L, MetaTable, 'OnAfterImageSaved', @OnAfterImageSaved);
     luaClassAddStringProperty(L, MetaTable, 'OnLogin', @OnLogin);
+    luaClassAddStringProperty(L, MetaTable, 'OnAccountState', @OnAccountState);
     luaClassAddStringProperty(L, MetaTable, 'LastUpdated', @LastUpdated);
     luaClassAddIntegerProperty(L, MetaTable, 'CurrentDirectoryIndex', @Module.CurrentDirectoryIndex);
 

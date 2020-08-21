@@ -287,8 +287,12 @@ end;
 
 procedure TAccountManagerForm.vtAccountListChecked(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
+var
+  m: TModuleContainer;
 begin
-  PModuleContainer(Sender.GetNodeData(Node))^.Account.Enabled:=Node^.CheckState=csCheckedNormal;
+  m := PModuleContainer(Sender.GetNodeData(Node))^;
+  m.Account.Enabled:=Node^.CheckState=csCheckedNormal;
+  if m.OnAccountState<>nil then m.OnAccountState(m);
 end;
 
 procedure TAccountManagerForm.vtAccountListCompareNodes(

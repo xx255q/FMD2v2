@@ -58,6 +58,7 @@ type
     const AFileName: String; const AModule: TModuleContainer): Boolean;
 
   TOnLogin = function(const AHTTP: THTTPSendThread; const AModule: TModuleContainer): Boolean;
+  TOnAccountState = function(const AModule: TModuleContainer): Boolean;
 
   TModuleMethod = (MMGetDirectoryPageNumber, MMGetNameAndLink, MMGetInfo,
     MMTaskStart, MMGetPageNumber, MMGetImageURL, MMBeforeDownloadImage,
@@ -80,9 +81,10 @@ type
   TWebsiteModuleAccount = class
   private
     FEnabled: Boolean;
-    FPassword: String;
     FStatus: TAccountStatus;
-    FUsername: String;
+    FUsername,
+    FPassword,
+    FCookies: String;
   public
     Guardian: TCriticalSection;
     constructor Create;
@@ -92,6 +94,7 @@ type
     property Username: String read FUsername write FUsername;
     property Password: String read FPassword write FPassword;
     property Status: TAccountStatus read FStatus write FStatus;
+    property Cookies: String read FCookies write FCookies;
   end;
 
   PModuleContainer = ^TModuleContainer;
@@ -145,6 +148,7 @@ type
     OnSaveImage: TOnSaveImage;
     OnAfterImageSaved: TOnAfterImageSaved;
     OnLogin: TOnLogin;
+    OnAccountState: TOnAccountState;
     constructor Create;
     destructor Destroy; override;
   public
