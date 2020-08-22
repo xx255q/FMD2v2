@@ -51,7 +51,7 @@ function GetDirectoryPageNumber()
 end
 
 function GetNameAndLink()
-	if HTTP.GET(MODULE.RootURL .. '/directory/' .. (URL + 1) .. '.html?az') then
+	if HTTP.GET(MODULE.RootURL .. '/directory/' .. (URL + 1) .. '.htm?az') then
 		CreateTXQuery(HTTP.Document).XPathHREFAll('//ul[contains(@class, "manga-list")]/li/a', LINKS, NAMES)
 		return no_error
 	else
