@@ -5,7 +5,6 @@ function Init()
 		m.Name                     = name
 		m.RootURL                  = rooturl
 		m.Category                 = cat
-		m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
 		m.OnGetNameAndLink         = 'GetNameAndLink'
 		m.OnGetInfo                = 'GetInfo'
 		m.OnGetPageNumber          = 'GetPageNumber'
@@ -16,6 +15,7 @@ function Init()
 	AddWebsiteModule('8e7bd7b38aa041aa9bc1bddeec33b6f4', 'MangaHere', 'https://www.mangahere.cc', cat)
 
 	local m = AddWebsiteModule('0d3653a8d9b747a381374f32e0a1641e', 'FanFox', 'https://fanfox.net', cat)
+	m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
 	local fmd = require 'fmd.env'
 	local slang = fmd.SelectedLanguage
 	local lang = {
@@ -51,11 +51,20 @@ function GetDirectoryPageNumber()
 end
 
 function GetNameAndLink()
-	if HTTP.GET(MODULE.RootURL .. '/directory/' .. (URL + 1) .. '.htm?az') then
-		CreateTXQuery(HTTP.Document).XPathHREFAll('//ul[contains(@class, "manga-list")]/li/a', LINKS, NAMES)
-		return no_error
+	if MODULE.ID == '8e7bd7b38aa041aa9bc1bddeec33b6f4' then	-- mangahere
+		if HTTP.GET(MODULE.RootURL .. '/mangalist/') then
+			CreateTXQuery(HTTP.Document).XPathHREFAll('//p[@class="browse-new-block-content"]/a', LINKS, NAMES)
+			return no_error
+		else
+			return net_problem
+		end
 	else
-		return net_problem
+		if HTTP.GET(MODULE.RootURL .. '/directory/' .. (URL + 1) .. '.html?az') then
+			CreateTXQuery(HTTP.Document).XPathHREFAll('//ul[contains(@class, "manga-list")]/li/a', LINKS, NAMES)
+			return no_error
+		else
+			return net_problem
+		end
 	end
 end
 
