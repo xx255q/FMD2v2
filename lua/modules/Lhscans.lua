@@ -22,6 +22,7 @@ function Init()
 	AddWebsiteModule('570e716a029e45cabccc2b660ed81425', 'ManhwaScan', 'https://manhwascan.com', cat)
 	AddWebsiteModule('694ff34a6ae4469fbdaecf8d3aebb6eb', 'ManhuaScan', 'https://manhuascan.com', cat)
 	AddWebsiteModule('3b7ab0c7342f4783910f7842ea05630b', 'EcchiScan', 'https://ecchiscan.com', cat)
+	AddWebsiteModule('f488bcb1911b4f21baa1ab65ef9ca61c', 'HeroScan', 'https://heroscan.com', cat)
 	
 	cat = 'English-Scanlation'
 	AddWebsiteModule('7fb5fbed6d3a44fe923ecc7bf929e6cb', 'LHTranslation', 'https://lhtranslation.net', cat)
@@ -77,6 +78,8 @@ function GetPageNumber()
 					TASK.PageLinks.Add(crypto.DecodeBase64(s))
 				end
 			end
+		elseif MODULE.ID == 'f488bcb1911b4f21baa1ab65ef9ca61c' then -- heroscan
+			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-original', TASK.PageLinks)
 		else
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@src', TASK.PageLinks)
 		end
