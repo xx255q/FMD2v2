@@ -1,5 +1,5 @@
 function Init()
-	function AddWebsiteModule(id, name, url)
+	local function AddWebsiteModule(id, name, url)
 		local m = NewWebsiteModule()
 		m.ID                         = id
 		m.Name                       = name

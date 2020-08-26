@@ -225,7 +225,7 @@ function r_getnameandlink()
 end
 
 function Init()
-	function filldef(m)
+	local function filldef(m)
 		local dict =  require('fmd.strings').Create()
 		dict.Values['60a2b0ed56cd458c4633d04b1b76b7e9'] = '18a72a69a64a13a1a43a3aa42a23a66a26a19a51a54a78a34a17a31a35a15a58a29a61a48a73a74a44a52a60a24a63a20a32a7a45a53a75a55a62a59a41a76a68a2a36a21a10a38a33a71a40a67a22a4a50a80a65a27a37a47a70a14a28a16a6a56a30a57a5a11a79a9a77a46a39a25a49a8a12'
 		dict.Values['400df5e8817565e28b2e141c533ed7db'] = '61a74a10a45a3a37a72a22a57a39a25a56a52a29a70a60a67a41a63a55a27a28a43a18a5a9a8a40a17a48a44a79a38a47a32a73a4a6a13a34a33a49a2a42a50a76a54a36a35a14a58a7a69a46a16a30a21a11aa51a53a77a26a31a1a19a20a80a24a62a68a59a66a75a12a64a78a71a15a65a23'
@@ -249,7 +249,7 @@ function Init()
 		m.Storage['dict'] = dict.Text
 		m.Storage['loaded'] = '0'
 	end
-	function AddWebsiteModule(id, name, url)
+	local function AddWebsiteModule(id, name, url)
 		local m = NewWebsiteModule()
 		filldef(m)
 		m.ID = id

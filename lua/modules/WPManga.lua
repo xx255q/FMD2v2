@@ -155,7 +155,7 @@ function getnameandlink()
 end
 
 function Init()
-	function AddWebsiteModule(id, name, url, category)
+	local function AddWebsiteModule(id, name, url, category)
 		local m = NewWebsiteModule()
 		m.ID                       = id
 		m.Name                     = name

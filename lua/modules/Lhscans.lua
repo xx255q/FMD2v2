@@ -1,5 +1,6 @@
 function Init()
-	function AddWebsiteModule(id, name, url, cat)
+	local cat = 'Raw'
+	local function AddWebsiteModule(id, name, url)
 		local m = NewWebsiteModule()
 		m.ID                         = id
 		m.Category                   = cat
@@ -11,21 +12,20 @@ function Init()
 		m.OnGetNameAndLink           = 'GetNameAndLink'
 		m.OnBeforeDownloadImage      = 'BeforeDownloadImage'
 	end
-	local cat = 'Raw'
-	AddWebsiteModule('9e96846a035646988e1b2eb0f356d795', 'LoveHeaven', 'https://loveheaven.net', cat)
-	AddWebsiteModule('4c089029492f43c98d9f27a23403247b', 'HanaScan', 'https://hanascan.com', cat)
-	AddWebsiteModule('010777f53bf2414fad039b9567c8a9ce', 'MangaHato', 'https://mangahato.com', cat)
-	AddWebsiteModule('794187d0e92e4933bf63812438d69017', 'Manhwa18', 'https://manhwa18.com', cat)
+	AddWebsiteModule('9e96846a035646988e1b2eb0f356d795', 'LoveHeaven', 'https://loveheaven.net')
+	AddWebsiteModule('4c089029492f43c98d9f27a23403247b', 'HanaScan', 'https://hanascan.com')
+	AddWebsiteModule('010777f53bf2414fad039b9567c8a9ce', 'MangaHato', 'https://mangahato.com')
+	AddWebsiteModule('794187d0e92e4933bf63812438d69017', 'Manhwa18', 'https://manhwa18.com')
 
 	cat = 'English'
-	AddWebsiteModule('80427d9a7b354f04a8f432b345f0f640', 'MangaWeek', 'https://mangaweek.com', cat)
-	AddWebsiteModule('570e716a029e45cabccc2b660ed81425', 'ManhwaScan', 'https://manhwascan.com', cat)
-	AddWebsiteModule('694ff34a6ae4469fbdaecf8d3aebb6eb', 'ManhuaScan', 'https://manhuascan.com', cat)
-	AddWebsiteModule('3b7ab0c7342f4783910f7842ea05630b', 'EcchiScan', 'https://ecchiscan.com', cat)
-	AddWebsiteModule('f488bcb1911b4f21baa1ab65ef9ca61c', 'HeroScan', 'https://heroscan.com', cat)
+	AddWebsiteModule('80427d9a7b354f04a8f432b345f0f640', 'MangaWeek', 'https://mangaweek.com')
+	AddWebsiteModule('570e716a029e45cabccc2b660ed81425', 'ManhwaScan', 'https://manhwascan.com')
+	AddWebsiteModule('694ff34a6ae4469fbdaecf8d3aebb6eb', 'ManhuaScan', 'https://manhuascan.com')
+	AddWebsiteModule('3b7ab0c7342f4783910f7842ea05630b', 'EcchiScan', 'https://ecchiscan.com')
+	AddWebsiteModule('f488bcb1911b4f21baa1ab65ef9ca61c', 'HeroScan', 'https://heroscan.com')
 	
 	cat = 'English-Scanlation'
-	AddWebsiteModule('7fb5fbed6d3a44fe923ecc7bf929e6cb', 'LHTranslation', 'https://lhtranslation.net', cat)
+	AddWebsiteModule('7fb5fbed6d3a44fe923ecc7bf929e6cb', 'LHTranslation', 'https://lhtranslation.net')
 end
 
 function GetInfo()
