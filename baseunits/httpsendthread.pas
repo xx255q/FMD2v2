@@ -655,7 +655,7 @@ begin
     begin
       mstream := TMemoryStream.Create;
       try
-        ZUncompressStream(Document, mstream);
+        GZIPUtils.unzipStream(Document, mstream);
         Document.Clear;
         Document.LoadFromStream(mstream);
       except

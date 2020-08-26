@@ -3006,7 +3006,7 @@ begin
     begin
       mstream := TMemoryStream.Create;
       try
-        ZUncompressStream(HTTP.Document, mstream);
+        GZIPUtils.unzipStream(HTTP.Document, mstream);
         HTTP.Document.Clear;
         HTTP.Document.LoadFromStream(mstream);
       except
