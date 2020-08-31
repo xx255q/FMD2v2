@@ -32,7 +32,7 @@ function getpagenumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		----------------------------------------------------------------------------------------------
 		--  direct translaton of https://ltn.hitomi.la/common.js and https://ltn.hitomi.la/reader.js
-
+		local re = require 'fmd.pcre2'
 		local adapose = false
 
 		function subdomain_from_galleryid(g, number_of_frontends)
@@ -43,7 +43,7 @@ function getpagenumber()
 			return string.char(97 + o)
 		end
 
-		function subdomain_from_url(URL, base)
+		function subdomain_from_url(url, base)
 			local retval = 'a'
 			if (base) then
 				retval = base
@@ -53,7 +53,7 @@ function getpagenumber()
 			local b = 16
 
 			local r = '^.*/[0-9a-f]/([0-9a-f]{2})/.*$'
-			local m = re.replace(r,URL,'$1')
+			local m = re.gsub(url, r, '$1')
 			if not(m) then
 				return retval
 			end
@@ -71,15 +71,15 @@ function getpagenumber()
 			return retval
 		end
 
-		function url_from_url(URL, base)
-			return re.replace('//..?\\.hitomi\\.la/', URL, '//'..subdomain_from_url(URL, base)..'.hitomi.la/')
+		function url_from_url(url, base)
+			return re.gsub(url, '//..?\\.hitomi\\.la/', '//'..subdomain_from_url(url, base)..'.hitomi.la/')
 		end
 
 		function full_path_from_hash(hash)
 			if (hash:len() < 3) then
 				return hash
 			end
-			return re.replace('^.*(..)(.)$', hash, '$2/$1/'..hash)
+			return re.gsub(hash, '^.*(..)(.)$', '$2/$1/'..hash)
 		end
 
 		function url_from_hash(galleryid, image, dir, ext)
@@ -95,7 +95,7 @@ function getpagenumber()
 		function image_url_from_image(galleryid, image, no_webp)
 			local webp
 			if (image['hash'] and image['haswebp'] and not(no_webp)) then
-							webp = 'webp'
+				webp = 'webp'
 			end
 
 			return url_from_url_from_hash(galleryid, image, webp)
