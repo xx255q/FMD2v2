@@ -170,12 +170,15 @@ var
   ALLHTTPSendThread: TFPList;
   CS_ALLHTTPSendThread: TRTLCriticalSection;
 
-function poschar(const c:char;const s:string;const offset:cardinal=1):integer;
+function poschar(const c:char;const s:string;const offset:cardinal=1;const escapechars:string=''):integer;
 var
   i:integer;
 begin
   for i:=offset to length(s) do
+  begin
+    if s[i] in escapechars then Break;
     if s[i]=c then Exit(i);
+  end;
   Result:=0;
 end;
 
@@ -209,12 +212,12 @@ begin
       if Assigned(APath) then APath^:=iurl;
       Exit;
     end;
-  p:=poschar(':',iurl);
-  if (p<>0) and (p<Length(iurl)) and (iurl[P+1]='/') then
+  p:=poschar(':',iurl,1,'/');
+  if (p<>0) and (p+2<Length(iurl)) and (iurl[P+1]+iurl[p+2]='//') then
   begin
     iproto:=Copy(iurl,1,p-1);
-    Delete(iurl,1,p);
-    p:=poschar(':',iurl);
+    Delete(iurl,1,p+2);
+    p:=poschar(':',iurl,1,'/');
   end;
   q:=0;
   if (p<>0) and (p<Length(iurl)) and (iurl[P+1] in ['0'..'9']) then
@@ -226,7 +229,7 @@ begin
     delete(iurl,p,q-p);
   end;
   cleanuri(iurl);
-  p:=poschar('.',iurl);
+  p:=poschar('.',iurl,1,'/');
   q:=poschar('/',iurl);
   if (p<>0) and (p<Length(iurl)) then
     if p<q then
