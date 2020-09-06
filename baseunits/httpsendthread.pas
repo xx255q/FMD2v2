@@ -704,7 +704,7 @@ begin
     Headers.Delete(L);
   end;
   if (MimeType = 'text/html') or (MimeType = '') then
-    MimeType := 'application/x-www-form-urlencoded';
+    MimeType := 'application/x-www-form-urlencoded; charset=UTF-8';
   Result := InternalHTTPRequest('POST', URL, Response);
 end;
 
@@ -884,6 +884,7 @@ begin
   FCookies.Clear;
   FDownloadSize := 0;
   FUploadSize := 0;
+  FMimeType := 'text/html';   // MimeType always replaced by received content-type header after each succesful request
   FSock.CloseSocket;
   if FGZip then Headers.Values['Accept-Encoding'] := ' gzip, deflate';
 end;
