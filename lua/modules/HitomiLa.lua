@@ -1,41 +1,32 @@
-local domain = 'hitomi.la'
-
-function set_https(s)
-	if s:match('^//') then
-		return 'https:' .. s
-	else
-		return s
-	end
-end
-
-function getinfo()
-	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
+function GetInfo()
+	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if not HTTP.GET(MANGAINFO.URL) then return net_problem end
-	local x=CreateTXQuery(HTTP.Document)
-	if x.XPathString('//title'):lower()=='redirect' then
+	
+	local x = CreateTXQuery(HTTP.Document)
+	if x.XPathString('//title'):lower() =='redirect' then
 		if HTTP.GET(x.XPathString('//a/@href')) then
 			x.ParseHTML(HTTP.Document)
 		else return net_problem end
 	end
-	MANGAINFO.Title = x.XPathString('//div[starts-with(@class,"gallery")]/h1')
-	MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//div[@class="cover"]//img/@src'))
-	MANGAINFO.CoverLink = set_https(MANGAINFO.CoverLink)
-	MANGAINFO.Authors=x.XPathStringAll('//div[starts-with(@class,"gallery")]/h2/ul/li/a')
-	MANGAINFO.Genres=x.XPathStringAll('//div[@class="gallery-info"]/table//tr/td//a')
+	
+	MANGAINFO.Title     = x.XPathString('//div[starts-with(@class,"gallery")]/h1')
+	MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//div[@class="cover"]//img/@src')):gsub('^//','https://')
+	MANGAINFO.Authors   = x.XPathStringAll('//div[starts-with(@class,"gallery")]/h2/ul/li/a')
+	MANGAINFO.Genres    = x.XPathStringAll('//div[@class="gallery-info"]/table//tr/td//a')
+	
 	MANGAINFO.ChapterLinks.Add(x.XPathString('//div[contains(@class,"cover-column")]/a/@href'))
 	MANGAINFO.ChapterNames.Add(MANGAINFO.Title)
 	return no_error
 end
 ----------------------------------------------------------------------------------------------
 
-function getpagenumber()
+function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		----------------------------------------------------------------------------------------------
 		--  direct translaton of https://ltn.hitomi.la/common.js and https://ltn.hitomi.la/reader.js
-		local re = require 'fmd.pcre2'
 		local adapose = false
 
-		function subdomain_from_galleryid(g, number_of_frontends)
+		local function subdomain_from_galleryid(g, number_of_frontends)
 			if (adapose) then
 				return '0'
 			end
@@ -43,7 +34,7 @@ function getpagenumber()
 			return string.char(97 + o)
 		end
 
-		function subdomain_from_url(url, base)
+		local function subdomain_from_url(url, base)
 			local retval = 'a'
 			if (base) then
 				retval = base
@@ -52,8 +43,8 @@ function getpagenumber()
 			local number_of_frontends = 3
 			local b = 16
 
-			local r = '^.*/[0-9a-f]/([0-9a-f]{2})/.*$'
-			local m = re.gsub(url, r, '$1')
+			local r = '^.*/%w/(%w%w)/.*$'
+			local m = url:gsub(r, '%1')
 			if not(m) then
 				return retval
 			end
@@ -71,28 +62,28 @@ function getpagenumber()
 			return retval
 		end
 
-		function url_from_url(url, base)
-			return re.gsub(url, '//..?\\.hitomi\\.la/', '//'..subdomain_from_url(url, base)..'.hitomi.la/')
+		local function url_from_url(url, base)
+			return url:gsub('//..?%.hitomi%.la/', '//' .. subdomain_from_url(url, base) .. '.hitomi.la/')
 		end
 
-		function full_path_from_hash(hash)
+		local function full_path_from_hash(hash)
 			if (hash:len() < 3) then
 				return hash
 			end
-			return re.gsub(hash, '^.*(..)(.)$', '$2/$1/'..hash)
+			return hash:gsub('^.*(..)(.)$', '%2/%1/' .. hash)
 		end
 
-		function url_from_hash(galleryid, image, dir, ext)
+		local function url_from_hash(galleryid, image, dir, ext)
 			ext = ext or dir or image.name:match('%.(.+)')
 			dir = dir or 'images'
-			return 'https://a.hitomi.la/'..dir..'/'..full_path_from_hash(image.hash)..'.'..ext
+			return 'https://a.hitomi.la/' .. dir .. '/' .. full_path_from_hash(image.hash) .. '.' .. ext
 		end
 
 		function url_from_url_from_hash(galleryid, image, dir, ext, base)
 			return url_from_url(url_from_hash(galleryid, image, dir, ext), base)
 		end
 
-		function image_url_from_image(galleryid, image, no_webp)
+		local function image_url_from_image(galleryid, image, no_webp)
 			local webp
 			if (image['hash'] and image['haswebp'] and not(no_webp)) then
 				webp = 'webp'
@@ -106,15 +97,15 @@ function getpagenumber()
 		local galleryid   = URL:match('/(%d+)%.html')
 		local gallery_url = x.XPathString('//script[contains(@src,"reader.js")]/@src'):match('//(.+)/')
 		if galleryid and gallery_url and HTTP.GET('https://'..gallery_url..'/galleries/'..galleryid..'.js') then
-			local no_webp=not MODULE.GetOption('download_webp')
+			local no_webp = not MODULE.GetOption('download_webp')
 			local s = HTTP.Document.ToString():match('(%[.-%])')
 			if s then
 				x.ParseHTML(s)
-				local image={},v for v in x.XPath('json(*)()').Get() do
-					image.hash    = x.XPathString('./hash',v)
-					image.haswebp = x.XPathString('./haswebp',v)=='1'
-					image.name    = x.XPathString('./name',v)
-					image.hasavif = x.XPathString('./hasavif',v)=='1'
+				local image={}, v for v in x.XPath('json(*)()').Get() do
+					image.hash    = x.XPathString('./hash', v)
+					image.haswebp = x.XPathString('./haswebp', v) == '1'
+					image.name    = x.XPathString('./name', v)
+					image.hasavif = x.XPathString('./hasavif', v) == '1'
 					TASK.PageLinks.Add(image_url_from_image(galleryid, image, no_webp))
 				end
 			end
@@ -132,14 +123,15 @@ function BeforeDownloadImage()
 	return true
 end
 
-function getnameandlink()
-	if not HTTP.GET('https://ltn.'..domain..'/index-all.nozomi') then return net_problem end
+function GetNameAndLink()
+	if not HTTP.GET('https://ltn.hitomi.la/index-all.nozomi') then return net_problem end
 	local s = HTTP.Document.ToString()
+	local prefix = MODULE.RootURL .. '/galleries/'
 	-- number in uint32 little-endian
 	local n
-	for i=1,s:len(),4 do
+	for i = 1, s:len(), 4 do
 		n = s:byte(i+3) + (s:byte(i+2) << 8) + (s:byte(i+1) << 16) + (s:byte(i) << 24)
-		LINKS.Add('https://'..domain..'/galleries/'..n..'.html')
+		LINKS.Add(prefix..n..'.html')
 		NAMES.Add(n)
 	end
 	return no_error
@@ -147,15 +139,15 @@ end
 
 function Init()
 	local m = NewWebsiteModule()
-	m.ID = '1972cec9c85b43f6b10b11920a7aafef'
-	m.Name = 'HitomiLa'
-	m.RootURL = 'https://'..domain
-	m.Category = 'H-Sites'
-	m.OnGetInfo='getinfo'
-	m.OnGetPageNumber='getpagenumber'
-	m.OnGetNameAndLink='getnameandlink'
+	m.ID                    = '1972cec9c85b43f6b10b11920a7aafef'
+	m.Name                  = 'HitomiLa'
+	m.RootURL               = 'https://hitomi.la'
+	m.Category              = 'H-Sites'
+	m.OnGetInfo             = 'GetInfo'
+	m.OnGetPageNumber       = 'GetPageNumber'
+	m.OnGetNameAndLink      = 'GetNameAndLink'
 	m.OnBeforeDownloadImage = 'BeforeDownloadImage'
-	
+
 	local fmd = require 'fmd.env'
 	local slang = fmd.SelectedLanguage
 	local lang = {
