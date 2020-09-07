@@ -703,7 +703,7 @@ begin
     MimeType := Trim(Headers.ValueFromIndex[L]);
     Headers.Delete(L);
   end;
-  if (MimeType = 'text/html') or (MimeType = '') then
+  if (MimeType = 'text/html') then
     MimeType := 'application/x-www-form-urlencoded; charset=UTF-8';
   Result := InternalHTTPRequest('POST', URL, Response);
 end;
