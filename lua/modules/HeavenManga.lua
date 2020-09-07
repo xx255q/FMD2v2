@@ -96,18 +96,18 @@ end
 ----------------------------------------------------------------------------------------------------
 
 function Init()
-	function AddWebsiteModule(id, name, URL, cat)
+	function AddWebsiteModule(id, name, url)
 		local m = NewWebsiteModule()
 		m.ID                          = id
 		m.Name                        = name
-		m.RootURL                     = URL
-		m.Category                    = cat
+		m.RootURL                     = url
+		m.Category                    = 'English'
 		m.OnGetInfo                   = 'GetInfo'
 		m.OnGetNameAndLink            = 'GetNameAndLink'
 		m.OnGetPageNumber             = 'GetPageNumber'
 		m.OnGetDirectoryPageNumber    = 'GetDirectoryPageNumber'
 		m.OnBeforeDownloadImage       = 'BeforeDownloadImage'
-		
+
 		local fmd = require 'fmd.env'
 		local slang = fmd.SelectedLanguage
 		local lang = {
@@ -126,6 +126,7 @@ function Init()
 		}
 		m.AddOptionCheckBox('luaincluderaw', lang:get('includeraw'), false)
 	end
-	AddWebsiteModule('3b0d5c38081a4b21a39a388a3ec59197', 'HeavenManga', 'https://ww3.heaventoon.com', 'English')
-	AddWebsiteModule('a9a8bd394d63495686794a8d427bda00', 'HolyManga', 'https://w19.holymanga.net', 'English')
+	AddWebsiteModule('3b0d5c38081a4b21a39a388a3ec59197', 'HeavenManga', 'https://ww3.heaventoon.com')
+	AddWebsiteModule('a9a8bd394d63495686794a8d427bda00', 'HolyManga', 'https://w19.holymanga.net')
+	AddWebsiteModule('f49e608b66994721a5ea992b56367d96', 'KooManga', 'https://ww4.koomanga.com')
 end
