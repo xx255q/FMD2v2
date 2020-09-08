@@ -40,7 +40,7 @@ function GetInfo()
 		MANGAINFO.Genres    = x.XPathStringAll('//div[@class="ui list"]/div/a')
 		MANGAINFO.Summary   = x.XPathString('//div[@class="series-summary-wrapper"]/p[2]')
 		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//span[contains(@class, "series-status")]'))
-		
+
 		x.XPathHREFAll('//td[@id="table-episodes-title"]//a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
@@ -51,7 +51,16 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		CreateTXQuery(HTTP.Document).XPathStringAll('//div[contains(@class, "ch-image-container")]//img/@src', TASK.PageLinks)
+		local x = CreateTXQuery(HTTP.Document)
+		local h = x.XPathString('//*[@data-homepage]/@data-homepage')
+		if h == '' then h = MODULE.RootURL end
+		h = h:gsub('/+$','')
+		local v, s
+		for v in x.XPath('//div[contains(@class,"ch-image-container")]//img').Get() do
+			s = v.GetAttribute('src')
+			if s:find('^/') then s = h .. s end
+			TASK.PageLinks.Add(s)
+		end
 		return true
 	else
 		return false
