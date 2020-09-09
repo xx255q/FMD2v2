@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, httpsend, synautil, synacode, ssl_openssl, blcksock,
-  GZIPUtils, BaseThread, httpcookiemanager, dateutils, strutils;
+  BaseThread, httpcookiemanager, dateutils, strutils,
+  GZIPUtils, BrotliDec;
 
 const
 
@@ -586,7 +587,9 @@ var
   redirectcounter: Integer = 0;
   s, h, p: String;
   HTTPHeader: TStringList;
-  mstream: TMemoryStream;
+  dstream: TMemoryStream;
+  enc_br: Boolean = False;
+  enc_gzip: Boolean = False;
 begin
   Result := False;
   FURL := TrimRight(TrimLeftSet(URL, [':', '/', #0..' ']));
@@ -650,33 +653,40 @@ begin
           Headers.Assign(HTTPHeader);
         end;
       end;
-
-    // response
-    // decompress data
-    s := LowerCase(Headers.Values['Content-Encoding']);
-    if (Pos('gzip', s) <> 0) or (Pos('deflate', s) <> 0) then
-    begin
-      mstream := TMemoryStream.Create;
-      try
-        GZIPUtils.unzipStream(Document, mstream);
-        Document.Clear;
-        Document.LoadFromStream(mstream);
-      except
-      end;
-      mstream.Free;
-    end;
-    if Assigned(Response) then
-    begin
-      if Response is TStringList then
-        TStringList(Response).LoadFromStream(Document)
-      else
-      if Response is TStream then
-        Document.SaveToStream(TStream(Response));
-    end;
-    Result := Document.Size > 0;
   finally
     HTTPHeader.Free;
   end;
+
+  // decompress data
+  s := LowerCase(Headers.Values['Content-Encoding']);
+  enc_br := s.Contains('br');
+  if not enc_br then
+    enc_gzip := s.Contains('gzip') or s.Contains('deflate');
+  if enc_br or enc_gzip then
+  begin
+    dstream := TMemoryStream.Create;
+    try
+      if enc_br then
+        BrotliDec.BrotliDecodeStream(Document, dstream)
+      else
+        GZIPUtils.unzipStream(Document, dstream);
+      Document.Clear;
+      Document.LoadFromStream(dstream);
+    finally
+      dstream.Free;
+    end;
+  end;
+
+  // response
+  if Assigned(Response) then
+  begin
+    if Response is TStringList then
+      TStringList(Response).LoadFromStream(Document)
+    else
+    if Response is TStream then
+      Document.SaveToStream(TStream(Response));
+  end;
+  Result := Document.Size > 0;
 end;
 
 function THTTPSendThread.HEAD(const URL: String; const Response: TObject): Boolean;
@@ -887,7 +897,7 @@ begin
   FUploadSize := 0;
   FMimeType := 'text/html';   // MimeType always replaced by received content-type header after each succesful request
   FSock.CloseSocket;
-  if FCompress then Headers.Values['Accept-Encoding'] := 'gzip, deflate';
+  if FCompress then Headers.Values['Accept-Encoding'] := 'gzip, deflate, br';
 end;
 
 procedure THTTPSendThread.ClearCookies;
