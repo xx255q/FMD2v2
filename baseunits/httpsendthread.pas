@@ -74,7 +74,7 @@ type
     FURL: String;
     FOwner: TBaseThread;
     FRetryCount: Integer;
-    FGZip: Boolean;
+    FCompress: Boolean;
     FFollowRedirection: Boolean;
     FMaxRedirect: Integer;
     FAllowServerErrorResponse: Boolean;
@@ -115,7 +115,7 @@ type
     procedure SaveDocumentToFile(const AFileName: String; const ATryOriginalFileName: Boolean = False; const ALastModified: TDateTime = -1);
     property Timeout: Integer read FTimeout write SetTimeout;
     property RetryCount: Integer read FRetryCount write FRetryCount;
-    property GZip: Boolean read FGZip write FGZip;
+    property Compress: Boolean read FCompress write FCompress;
     property FollowRedirection: Boolean read FFollowRedirection write FFollowRedirection;
     property AllowServerErrorResponse: Boolean read FAllowServerErrorResponse write FAllowServerErrorResponse;
     property Thread: TBaseThread read FOwner;
@@ -151,7 +151,7 @@ function FormatByteSize(const ABytes: Integer; AShowPerSecond: Boolean = False):
 const
   UserAgentSynapse   = 'Mozilla/4.0 (compatible; Synapse)';
   UserAgentCURL      = 'curl/7.70.0';
-  UserAgentDefault   = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0';
+  UserAgentDefault   = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:79.0) Gecko/20100101 Firefox/79.0';
   HeartBeatRate      = 1000;
 
 var
@@ -501,7 +501,7 @@ begin
   Cookies.Delimiter := ';';
   FEnabledCookies := True;
   FClearCookies := False;
-  FGZip := True;
+  FCompress := True;
   FFollowRedirection := True;
   FAllowServerErrorResponse := False;
   FRetryCount := DefaultRetryCount;
@@ -869,10 +869,11 @@ end;
 procedure THTTPSendThread.Reset;
 begin
   ResetBasic;
-  Headers.Values['DNT'] := ' 1';
-  Headers.Values['Accept'] := ' text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
-  Headers.Values['Accept-Charset'] := ' utf8';
-  Headers.Values['Accept-Language'] := ' en-US,en;q=0.8';
+  Headers.Values['DNT'] := '1';
+  Headers.Values['Upgrade-Insecure-Requests'] := '1';
+  Headers.Values['Accept'] := 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8';
+  Headers.Values['Accept-Language'] := 'en-US,en;q=0.5';
+  Headers.Values['Accept-Charset'] := 'utf-8';
 end;
 
 procedure THTTPSendThread.ResetBasic;
@@ -886,7 +887,7 @@ begin
   FUploadSize := 0;
   FMimeType := 'text/html';   // MimeType always replaced by received content-type header after each succesful request
   FSock.CloseSocket;
-  if FGZip then Headers.Values['Accept-Encoding'] := ' gzip, deflate';
+  if FCompress then Headers.Values['Accept-Encoding'] := 'gzip, deflate';
 end;
 
 procedure THTTPSendThread.ClearCookies;
