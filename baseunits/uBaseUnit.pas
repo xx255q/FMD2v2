@@ -339,6 +339,7 @@ type
     function ModuleID: String; inline;
     function Website: String; inline;
     procedure Clear;
+    function Clone: TMangaInfo;
   end;
 
   PDownloadInfo = ^TDownloadInfo;
@@ -3871,6 +3872,24 @@ begin
   ChapterNames.Clear;
   ChapterLinks.Clear;
   Module := nil;
+end;
+
+function TMangaInfo.Clone: TMangaInfo;
+begin
+  Result := TMangaInfo.Create;
+  Result.URL := URL;
+  Result.Title := Title;
+  Result.Link := Link;
+  Result.CoverLink := CoverLink;
+  Result.Authors := Authors;
+  Result.Artists := Artists;
+  Result.Genres := Genres;
+  Result.Status := Status;
+  Result.Summary := Summary;
+  Result.NumChapter := NumChapter;
+  Result.ChapterNames.AddStrings(ChapterNames);
+  Result.ChapterLinks.AddStrings(ChapterLinks);
+  Result.Module := Module;
 end;
 
 constructor TDownloadPageThread.Create(CreateSuspended: Boolean);
