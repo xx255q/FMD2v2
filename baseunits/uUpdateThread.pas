@@ -24,6 +24,7 @@ type
   private
     FOwner: TUpdateListManagerThread;
     FWorkPtr: Integer;
+    FMangaInfo: TMangaInformation;
   protected
     procedure Execute; override;
     procedure GetDirectoryPageNumber;
@@ -88,10 +89,11 @@ type
     procedure TerminateThreads;
     procedure WaitForThreads; inline;
     procedure TerminateCurrent(Sender: TObject);
+    procedure ThreadAdd(const T: TUpdateListThread);
+    procedure ThreadRemove(const T: TUpdateListThread);
   protected
     procedure GetCurrentLimit;
-    procedure CreateNewDownloadThread;
-    function GetWorkPtr: Integer;
+    function GetNext(const T: TUpdateListThread): Boolean;
   public
     procedure Lock; inline;
     procedure Unlock; inline;
@@ -148,25 +150,26 @@ constructor TUpdateListThread.Create(const AOwner: TUpdateListManagerThread);
 begin
   inherited Create(False);
   FOwner := AOwner;
+  FOwner.ThreadAdd(Self);
+  if FOwner.FCurrentCS = CS_INFO then
+  begin
+    FMangaInfo := TMangaInformation.Create(Self);
+    FMangaInfo.isGetByUpdater := True;
+    FMangaInfo.Module := FOwner.module;
+  end;
   FWorkPtr := -1;
 end;
 
 destructor TUpdateListThread.Destroy;
 begin
-  EnterCriticalsection(FOwner.ThreadsGuardian);
-  try
-    FOwner.Threads.Remove(Self);
-  finally
-    LeaveCriticalsection(FOwner.ThreadsGuardian);
-  end;
+  FOwner.ThreadRemove(Self);
+  if FMangaInfo <> nil then
+    FMangaInfo.Free;
   inherited Destroy;
 end;
 
 procedure TUpdateListThread.Execute;
 begin
-  FWorkPtr := FOwner.GetWorkPtr;
-  if FWorkPtr = -1 then Exit;
-
   case FOwner.FCurrentCS of
     CS_DIRECTORY_COUNT : GetDirectoryPageNumber;
     CS_DIRECTORY_PAGE  : GetNamesAndLinks;
@@ -181,30 +184,30 @@ var
 begin
   http := FOwner.module.CreateHTTP(Self);
   try
-    while FWorkPtr <> -1 do
+    while FOwner.GetNext(Self) do
     begin
-      {R := INFORMATION_NOT_FOUND;}
-      FOwner.module.TotalDirectoryPage[FWorkPtr] := 1;
+      try
+        {R := INFORMATION_NOT_FOUND;}
+        FOwner.module.TotalDirectoryPage[FWorkPtr] := 1;
 
-      //load pagenumber_config if available
-      if Assigned(FOwner.module.OnGetDirectoryPageNumber) then
-      begin
-        // TODO: GetDirectoryPageNumber.Result(Byte), do something with the result
-        {R := }FOwner.module.OnGetDirectoryPageNumber(FOwner, http, FOwner.module.TotalDirectoryPage[FWorkPtr], FWorkPtr, FOwner.module);
-        if FOwner.module.TotalDirectoryPage[FWorkPtr] < 1 then
-          FOwner.module.TotalDirectoryPage[FWorkPtr] := 1;
-      end;
+        //load pagenumber_config if available
+        if Assigned(FOwner.module.OnGetDirectoryPageNumber) then
+        begin
+          // TODO: GetDirectoryPageNumber.Result(Byte), do something with the result
+          {R := }FOwner.module.OnGetDirectoryPageNumber(FOwner, http, FOwner.module.TotalDirectoryPage[FWorkPtr], FWorkPtr, FOwner.module);
+          if FOwner.module.TotalDirectoryPage[FWorkPtr] < 1 then
+            FOwner.module.TotalDirectoryPage[FWorkPtr] := 1;
+        end;
 
-      FWorkPtr := FOwner.GetWorkPtr;
-      if FWorkPtr <> -1 then
         http.Reset;
+      except
+        on E: Exception do
+          SendLogException(Self.ClassName+'.GetDirectoryPage()>ERROR ', E);
+      end;
     end;
-  except
-    on E: Exception do
-      SendLogException(Self.ClassName+'.GetDirectoryPage()>ERROR ', E);
+  finally
+    http.Free;
   end;
-
-  http.Free;
 end;
 
 procedure TUpdateListThread.GetNamesAndLinks;
@@ -218,89 +221,75 @@ begin
   names := TStringList.Create;
   links := TStringList.Create;
   try
-    while FWorkPtr <> -1 do
+    while FOwner.GetNext(Self) do
     begin
-      R := INFORMATION_NOT_FOUND;
-      if FOwner.InvertedList then
-        FWorkPtr := FOwner.module.TotalDirectoryPage[FOwner.module.CurrentDirectoryIndex] - FWorkPtr -1;
+      try
+        R := INFORMATION_NOT_FOUND;
+        if FOwner.InvertedList then
+          FWorkPtr := FOwner.module.TotalDirectoryPage[FOwner.module.CurrentDirectoryIndex] - FWorkPtr -1;
 
-      if Assigned(FOwner.module.OnGetNameAndLink) then
-        R := FOwner.module.OnGetNameAndLink(FOwner, http, names, links, IntToStr(FWorkPtr), FOwner.module);
+        if Assigned(FOwner.module.OnGetNameAndLink) then
+          R := FOwner.module.OnGetNameAndLink(FOwner, http, names, links, IntToStr(FWorkPtr), FOwner.module);
 
-      if (R <> INFORMATION_NOT_FOUND) and (links.Count <> 0) then
-      begin
-        //remove host from URLs
-        RemoveHostFromURLsPair(links, names);
+        if (R <> INFORMATION_NOT_FOUND) and (links.Count <> 0) then
+        begin
+          //remove host from URLs
+          RemoveHostFromURLsPair(links, names);
 
-        //if website has sorted list by latest added
-        //we will stop at first found against current db
-        FOwner.tempDataProcess.Lock;
-        try
-          if FOwner.FIsPreListAvailable then
-          begin
-            for i:=0 to links.Count-1 do
+          //if website has sorted list by latest added
+          //we will stop at first found against current db
+          FOwner.tempDataProcess.Lock;
+          try
+            if FOwner.FIsPreListAvailable then
             begin
-              if FOwner.mainDataProcess.AddData(names[i],links[i],'','','','','',0,0) then
-                FOwner.tempDataProcess.AddData(names[i],links[i],'','','','','',0,0)
-              else if (FOwner.isFinishSearchingForNewManga=False) and FOwner.module.SortedList and (not FOwner.InvertedList) then
-                FOwner.isFinishSearchingForNewManga:=True;
+              for i:=0 to links.Count-1 do
+              begin
+                if FOwner.mainDataProcess.AddData(names[i],links[i],'','','','','',0,0) then
+                  FOwner.tempDataProcess.AddData(names[i],links[i],'','','','','',0,0)
+                else if (FOwner.isFinishSearchingForNewManga=False) and FOwner.module.SortedList and (not FOwner.InvertedList) then
+                  FOwner.isFinishSearchingForNewManga:=True;
+              end;
+              FOwner.mainDataProcess.Rollback;
+            end
+            else
+            begin
+              for i:=0 to links.Count-1 do
+                FOwner.tempDataProcess.AddData(names[i],links[i],'','','','','',0,0);
             end;
-            FOwner.mainDataProcess.Rollback;
-          end
-          else
-          begin
-            for i:=0 to links.Count-1 do
-              FOwner.tempDataProcess.AddData(names[i],links[i],'','','','','',0,0);
+            FOwner.tempDataProcess.Commit;
+          finally
+            FOwner.tempDataProcess.Unlock;
           end;
-          FOwner.tempDataProcess.Commit;
-        finally
-          FOwner.tempDataProcess.Unlock;
         end;
-      end;
 
-      FWorkPtr := FOwner.GetWorkPtr;
-      if FWorkPtr <> -1 then
-      begin
         http.Reset;
         names.Clear;
         links.Clear;
+      except
+        on E: Exception do
+          SendLogException(Self.ClassName+'.GetNamesAndLinks()>ERROR ', E);
       end;
     end;
-  except
-    on E: Exception do
-      SendLogException(Self.ClassName+'.GetNamesAndLinks()>ERROR ', E);
+  finally
+    http.Free;
+    names.Free;
+    links.Free;
   end;
-
-  http.Free;
-  names.Free;
-  links.Free;
 end;
 
 procedure TUpdateListThread.GetInfo;
-var
-  info: TMangaInformation;
 begin
-  info := TMangaInformation.Create(Self);
-  info.isGetByUpdater := True;
-  info.Module := FOwner.module;
-  while FWorkPtr <> -1 do
+  while FOwner.GetNext(Self) do
   begin
     try
-      FOwner.tempDataProcess.Lock;
-      try
-        info.MangaInfo.Title := FOwner.tempDataProcess.Value[FWorkPtr,DATA_PARAM_TITLE];
-        info.MangaInfo.Link := FOwner.tempDataProcess.Value[FWorkPtr,DATA_PARAM_LINK];
-      finally
-        FOwner.tempDataProcess.Unlock;
-      end;
-      if (info.MangaInfo.Link <> '') and
-        (info.GetInfoFromURL(info.MangaInfo.Link) <> INFORMATION_NOT_FOUND) and
-        (not Terminated) and (info.MangaInfo.Status <> '-1') then
+      if (FMangaInfo.MangaInfo.Link <> '') and
+        (FMangaInfo.GetInfoFromURL(FMangaInfo.MangaInfo.Link) <> INFORMATION_NOT_FOUND) and
+        (not Terminated) and (FMangaInfo.MangaInfo.Status <> '-1') then
       begin
         // status = '-1' mean it's not exist and shouldn't be saved to database
         FOwner.mainDataProcess.Lock;
         try
-          info.AddInfoToData(info.MangaInfo.Link,info.MangaInfo.Link,FOwner.mainDataProcess);
+          FMangaInfo.AddInfoToData(FMangaInfo.MangaInfo.Link,FMangaInfo.MangaInfo.Link,FOwner.mainDataProcess);
           //FOwner.CheckCommit(FOwner.numberOfThreads);
           // todo: test if CheckCommit(32) is sufficient.
           FOwner.CheckCommit;
@@ -309,19 +298,13 @@ begin
         end;
       end;
 
-      FWorkPtr := FOwner.GetWorkPtr;
-      if FWorkPtr <> -1 then
-      begin
-        info.HTTP.Reset;
-        info.MangaInfo.Clear;
-      end;
+      FMangaInfo.HTTP.Reset;
+      FMangaInfo.MangaInfo.Clear;
     except
       on E: Exception do
         SendLogException(Self.ClassName+'.GetNamesAndLinks()>ERROR ', E);
     end;
   end;
-
-  info.Free;
 end;
 
 { TUpdateListManagerThread }
@@ -458,7 +441,7 @@ begin
   FCurrentGetInfoLimit := alimit;
   FCurrentCS := acs;
 
-  CreateNewDownloadThread;
+  TUpdateListThread.Create(Self);
 
   WaitForThreads;
 end;
@@ -802,6 +785,26 @@ begin
   TerminateThreads;
 end;
 
+procedure TUpdateListManagerThread.ThreadAdd(const T: TUpdateListThread);
+begin
+  EnterCriticalSection(ThreadsGuardian);
+  try
+    Threads.Add(T);
+  finally
+    LeaveCriticalSection(ThreadsGuardian);
+  end;
+end;
+
+procedure TUpdateListManagerThread.ThreadRemove(const T: TUpdateListThread);
+begin
+  EnterCriticalSection(ThreadsGuardian);
+  try
+    Threads.Remove(T);
+  finally
+    LeaveCriticalSection(ThreadsGuardian);
+  end;
+end;
+
 procedure TUpdateListManagerThread.GetCurrentLimit;
 begin
   if FTotalPtr <> FCurrentGetInfoLimit then
@@ -819,21 +822,12 @@ begin
     numberOfThreads := 1;  //default
 end;
 
-procedure TUpdateListManagerThread.CreateNewDownloadThread;
-begin
-  EnterCriticalsection(ThreadsGuardian);
-  try
-    Threads.Add(TUpdateListThread.Create(Self));
-  finally
-    LeaveCriticalsection(ThreadsGuardian);
-  end;
-end;
-
-function TUpdateListManagerThread.GetWorkPtr: Integer;
+function TUpdateListManagerThread.GetNext(const T: TUpdateListThread): Boolean;
 var
   s: String;
 begin
-  Result := -1;
+  Result := False;
+  T.FWorkPtr := -1;
   if Terminated then Exit;
   // Finish searching for new series in sorted mode
   if (FCurrentCS = CS_DIRECTORY_PAGE) and (isFinishSearchingForNewManga) then Exit;
@@ -845,7 +839,8 @@ begin
     GetCurrentLimit;
     if Threads.Count > numberOfThreads then Exit;
 
-    Result := workPtr;
+    T.FWorkPtr := workPtr;
+    Result := True;
     InterlockedIncrement(workPtr);
 
     s := RS_UpdatingList + Format(' [%d/%d] %s | [T:%d] [%d/%d]',
@@ -870,7 +865,9 @@ begin
         begin
           tempDataProcess.Lock;
           try
-            s := Format('%s | %s "%s"', [s, RS_GettingInfo, tempDataProcess.Value[workPtr,DATA_PARAM_TITLE]]);
+            T.FMangaInfo.MangaInfo.Title := tempDataProcess.Value[FWorkPtr,DATA_PARAM_TITLE];
+            T.FMangaInfo.MangaInfo.Link := tempDataProcess.Value[FWorkPtr,DATA_PARAM_LINK];
+            s := Format('%s | %s "%s"', [s, RS_GettingInfo, T.FMangaInfo.MangaInfo.Title]);
           finally
             tempDataProcess.Unlock;
           end;
@@ -881,7 +878,7 @@ begin
 
     // spawn new worker thread
     if (Threads.Count < numberOfThreads) and (workPtr < FCurrentGetInfoLimit) then
-      CreateNewDownloadThread;
+      TUpdateListThread.Create(Self);
   finally
     Unlock;
   end;
