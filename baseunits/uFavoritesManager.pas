@@ -496,7 +496,6 @@ begin
   Result := False;
   C := nil;
 
-  if FPendingCount = 0 then Exit;
   if FThreads.Count > OptionMaxFavoriteThreads then Exit;
 
   EnterCriticalSection(FCS_GetNext);
@@ -518,7 +517,7 @@ begin
     end;
 
     if (FPendingCount > 0) and (FThreads.Count < OptionMaxFavoriteThreads) then
-       TFavoriteThread.Create(Self);
+      TFavoriteThread.Create(Self);
   finally
     LeaveCriticalSection(FCS_GetNext);
   end;
