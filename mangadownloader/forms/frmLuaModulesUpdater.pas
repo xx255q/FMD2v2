@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   Buttons, Menus, ExtCtrls, VirtualTrees, synautil, httpsendthread, BaseThread,
-  XQueryEngineHTML, GitHubRepoV3, fpjson, jsonparser, jsonscanner, dateutils;
+  XQueryEngineHTML, GitHubRepoV3, MultiLog, fpjson, jsonparser, jsonscanner, dateutils;
 
 type
 
@@ -485,34 +485,39 @@ begin
   FOwner.btCheckUpdate.Caption := RS_CheckUpdate;
   FOwner.ThreadCheck := nil;
   FOwner.tmRepaintList.Enabled := False;
-  if FMainRepos <> nil then
-    try
-      FOwner.vtLuaModulesRepos.BeginUpdate;
-      FOwner.Repos := FMainRepos;
-      FOwner.ReinitList;
-      FMainRepos.SaveToFile(LUA_REPO_FILE);
-    finally
-      FOwner.vtLuaModulesRepos.EndUpdate;
-    end;
+  try
+    if FMainRepos <> nil then
+      try
+        FOwner.vtLuaModulesRepos.BeginUpdate;
+        FOwner.Repos := FMainRepos;
+        FOwner.ReinitList;
+        FMainRepos.SaveToFile(LUA_REPO_FILE);
+      finally
+        FOwner.vtLuaModulesRepos.EndUpdate;
+      end;
 
-  if not Terminated then
-  begin
-    if (FDownloadedCount <> 0) then
+    if not Terminated then
     begin
-      yesRestart := OptionModulesUpdaterAutoRestart;
-      if not yesRestart then
-        with TfrmDialogYN.Create(FOwner) do
-          try
-            Caption := RS_ModulesUpdatedTitle;
-            lbMessage.Caption := RS_ModulesUpdatedRestart;
-            mMessages.Lines.AddStrings(FStatusList);
-            yesRestart := ShowModal = mrYes;
-          finally
-            free;
-          end;
-      if yesRestart then
-        MainForm.RestartFMD;
+      if (FDownloadedCount <> 0) then
+      begin
+        yesRestart := OptionModulesUpdaterAutoRestart;
+        if not yesRestart then
+          with TfrmDialogYN.Create(FOwner) do
+            try
+              Caption := RS_ModulesUpdatedTitle;
+              lbMessage.Caption := RS_ModulesUpdatedRestart;
+              mMessages.Lines.AddStrings(FStatusList);
+              yesRestart := ShowModal = mrYes;
+            finally
+              free;
+            end;
+        if yesRestart then
+          MainForm.RestartFMD;
+      end;
     end;
+  except
+    on E: Exception do
+       Logger.SendException('LuaModulesUpdater.SyncFinal Error!', E);
   end;
 end;
 
@@ -755,10 +760,15 @@ end;
 
 procedure TCheckUpdateThread.Execute;
 begin
-  Synchronize(@SyncStartChecking);
-  DoSync;
-  if not Terminated then
-    Sleep(1000);
+  try
+    Synchronize(@SyncStartChecking);
+    DoSync;
+    if not Terminated then
+      Sleep(1000);
+  except
+    on E: Exception do
+      Logger.SendException('LuaModulesUpdater.Error!', E);
+  end;
   Synchronize(@SyncFinal);
 end;
 
@@ -831,7 +841,8 @@ end;
 
 procedure TLuaModulesUpdaterForm.btCheckUpdateTerminateClick(Sender: TObject);
 begin
-  ThreadCheck.Terminate;
+  if ThreadCheck <> nil then
+    ThreadCheck.Terminate;
 end;
 
 procedure TLuaModulesUpdaterForm.tmRepaintListTimer(Sender: TObject);
