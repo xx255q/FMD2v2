@@ -1756,6 +1756,10 @@ msgstr ""
 "Σημείωση:\n"
 "Το όνομα φακέλου Manga πρέπει να έχει τουλάχιστον %MANGA%."
 
+#: tmainform.lboptionmaxfavoritethreads.caption
+msgid "Max number of favorite check at the same time"
+msgstr ""
+
 #: tmainform.lboptionmaxparallel.caption
 msgid "Number of downloaded tasks at the same time"
 msgstr "Αριθμός ταυτόχρονων εργασιών λήψης"

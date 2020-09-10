@@ -1712,6 +1712,10 @@ msgstr ""
 "Примечание:\n"
 "Имя папки манги должно содержать как минимум %MANGA%."
 
+#: tmainform.lboptionmaxfavoritethreads.caption
+msgid "Max number of favorite check at the same time"
+msgstr ""
+
 #: tmainform.lboptionmaxparallel.caption
 msgid "Number of downloaded tasks at the same time"
 msgstr "Количество одновременно загружаемых задач"

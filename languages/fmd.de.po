@@ -1713,6 +1713,10 @@ msgstr ""
 "Note:\n"
 "Manga Ordnername muss mindest %MANGA% haben."
 
+#: tmainform.lboptionmaxfavoritethreads.caption
+msgid "Max number of favorite check at the same time"
+msgstr ""
+
 #: tmainform.lboptionmaxparallel.caption
 msgid "Number of downloaded tasks at the same time"
 msgstr "Anzahl von Downloads zur selben Zeit"

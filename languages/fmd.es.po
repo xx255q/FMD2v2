@@ -1713,6 +1713,10 @@ msgstr ""
 "Nota:\n"
 "El Nombre del la Carpeta del Manga debe tener al menos %MANGA%."
 
+#: tmainform.lboptionmaxfavoritethreads.caption
+msgid "Max number of favorite check at the same time"
+msgstr ""
+
 #: tmainform.lboptionmaxparallel.caption
 msgid "Number of downloaded tasks at the same time"
 msgstr "Numero de Tareas de Descargas al Mismo Tiempo"

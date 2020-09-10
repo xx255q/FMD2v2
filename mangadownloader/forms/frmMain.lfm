@@ -1,11 +1,11 @@
 object MainForm: TMainForm
-  Left = 150
-  Height = 657
-  Top = 47
+  Left = 162
+  Height = 634
+  Top = 57
   Width = 855
   ActiveControl = pcMain
   Caption = 'Free Manga Downloader'
-  ClientHeight = 657
+  ClientHeight = 634
   ClientWidth = 855
   Color = clWindow
   OnClose = FormClose
@@ -16,13 +16,13 @@ object MainForm: TMainForm
   LCLVersion = '2.1.0.0'
   object pcMain: TPageControl
     Left = 2
-    Height = 626
+    Height = 603
     Top = 8
     Width = 853
-    ActivePage = tsDownload
+    ActivePage = tsOption
     Align = alClient
     ParentFont = False
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 0
     OnChange = pcMainChange
     object tsDownload: TTabSheet
@@ -2650,18 +2650,18 @@ object MainForm: TMainForm
     object tsOption: TTabSheet
       Caption = 'Options'
       ChildSizing.TopBottomSpacing = 4
-      ClientHeight = 598
+      ClientHeight = 575
       ClientWidth = 845
       object pcOptions: TPageControl
         Left = 0
-        Height = 500
+        Height = 477
         Top = 4
         Width = 845
-        ActivePage = tsGeneral
+        ActivePage = tsConnections
         Align = alTop
         Anchors = [akTop, akLeft, akRight, akBottom]
         ParentFont = False
-        TabIndex = 0
+        TabIndex = 2
         TabOrder = 0
         object tsGeneral: TTabSheet
           Caption = 'General'
@@ -3115,22 +3115,22 @@ object MainForm: TMainForm
         end
         object tsConnections: TTabSheet
           Caption = 'Connections'
-          ClientHeight = 472
+          ClientHeight = 449
           ClientWidth = 837
           object sbDownloadConnections: TScrollBox
             Left = 0
-            Height = 472
+            Height = 449
             Top = 0
             Width = 837
             HorzScrollBar.Page = 455
-            VertScrollBar.Page = 382
+            VertScrollBar.Page = 429
             Align = alClient
             BorderStyle = bsNone
             ChildSizing.LeftRightSpacing = 4
             ChildSizing.TopBottomSpacing = 8
             ChildSizing.HorizontalSpacing = 4
             ChildSizing.VerticalSpacing = 4
-            ClientHeight = 472
+            ClientHeight = 449
             ClientWidth = 837
             TabOrder = 0
             object cbOptionUseProxy: TCheckBox
@@ -3139,7 +3139,7 @@ object MainForm: TMainForm
               AnchorSideTop.Side = asrBottom
               Left = 4
               Height = 19
-              Top = 246
+              Top = 293
               Width = 72
               BorderSpacing.Top = 20
               Caption = 'Use proxy'
@@ -3153,7 +3153,7 @@ object MainForm: TMainForm
               AnchorSideTop.Side = asrBottom
               Left = 4
               Height = 105
-              Top = 269
+              Top = 316
               Width = 425
               AutoSize = True
               Caption = 'Proxy config'
@@ -3314,10 +3314,13 @@ object MainForm: TMainForm
             end
             object seOptionMaxParallel: TSpinEdit
               AnchorSideLeft.Control = sbDownloadConnections
+              AnchorSideTop.Control = seOptionMaxFavoriteThreads
+              AnchorSideTop.Side = asrBottom
               Left = 4
               Height = 23
-              Top = 8
+              Top = 82
               Width = 52
+              BorderSpacing.Top = 12
               MaxValue = 8
               MinValue = 1
               ParentFont = False
@@ -3332,7 +3335,7 @@ object MainForm: TMainForm
               AnchorSideTop.Side = asrCenter
               Left = 60
               Height = 15
-              Top = 12
+              Top = 86
               Width = 247
               Caption = 'Number of downloaded tasks at the same time'
               ParentColor = False
@@ -3346,7 +3349,7 @@ object MainForm: TMainForm
               AnchorSideRight.Side = asrBottom
               Left = 4
               Height = 23
-              Top = 35
+              Top = 109
               Width = 52
               Anchors = [akTop, akLeft, akRight]
               MaxValue = 32
@@ -3363,7 +3366,7 @@ object MainForm: TMainForm
               AnchorSideTop.Side = asrCenter
               Left = 60
               Height = 15
-              Top = 39
+              Top = 113
               Width = 286
               Caption = 'Number of downloaded files per task at the same time'
               ParentColor = False
@@ -3377,7 +3380,7 @@ object MainForm: TMainForm
               AnchorSideRight.Side = asrBottom
               Left = 4
               Height = 23
-              Top = 62
+              Top = 136
               Width = 52
               Anchors = [akTop, akLeft, akRight]
               MinValue = -1
@@ -3392,7 +3395,7 @@ object MainForm: TMainForm
               AnchorSideTop.Side = asrCenter
               Left = 60
               Height = 15
-              Top = 66
+              Top = 140
               Width = 391
               Caption = 'Number of retry times if tasks have download problems (-1 = always retry)'
               ParentColor = False
@@ -3400,13 +3403,12 @@ object MainForm: TMainForm
             end
             object seOptionConnectionTimeout: TSpinEdit
               AnchorSideLeft.Control = sbDownloadConnections
-              AnchorSideTop.Control = seOptionMaxRetry
-              AnchorSideTop.Side = asrBottom
+              AnchorSideTop.Control = sbDownloadConnections
               AnchorSideRight.Control = seOptionMaxRetry
               AnchorSideRight.Side = asrBottom
               Left = 4
               Height = 23
-              Top = 89
+              Top = 8
               Width = 52
               Anchors = [akTop, akLeft, akRight]
               MaxValue = 300
@@ -3423,7 +3425,7 @@ object MainForm: TMainForm
               AnchorSideTop.Side = asrCenter
               Left = 60
               Height = 15
-              Top = 93
+              Top = 12
               Width = 161
               Caption = 'Connection timeout (seconds)'
               ParentColor = False
@@ -3436,7 +3438,7 @@ object MainForm: TMainForm
               AnchorSideTop.Side = asrCenter
               Left = 60
               Height = 15
-              Top = 120
+              Top = 167
               Width = 183
               Caption = 'Number of retry times if task failed'
               ParentColor = False
@@ -3444,13 +3446,13 @@ object MainForm: TMainForm
             end
             object seOptionRetryFailedTask: TSpinEdit
               AnchorSideLeft.Control = sbDownloadConnections
-              AnchorSideTop.Control = seOptionConnectionTimeout
+              AnchorSideTop.Control = seOptionMaxRetry
               AnchorSideTop.Side = asrBottom
               AnchorSideRight.Control = seOptionMaxRetry
               AnchorSideRight.Side = asrBottom
               Left = 4
               Height = 23
-              Top = 116
+              Top = 163
               Width = 52
               Anchors = [akTop, akLeft, akRight]
               ParentFont = False
@@ -3464,7 +3466,7 @@ object MainForm: TMainForm
               AnchorSideTop.Side = asrBottom
               Left = 4
               Height = 19
-              Top = 145
+              Top = 192
               Width = 216
               BorderSpacing.Top = 6
               Caption = 'Always start task from failed chapters'
@@ -3478,7 +3480,7 @@ object MainForm: TMainForm
               AnchorSideRight.Side = asrBottom
               Left = 4
               Height = 23
-              Top = 203
+              Top = 250
               Width = 829
               Anchors = [akTop, akLeft, akRight]
               TabOrder = 8
@@ -3489,11 +3491,43 @@ object MainForm: TMainForm
               AnchorSideTop.Side = asrBottom
               Left = 4
               Height = 15
-              Top = 184
+              Top = 231
               Width = 98
               BorderSpacing.Top = 20
               Caption = 'Default user-agent'
               ParentColor = False
+            end
+            object seOptionMaxFavoriteThreads: TSpinEdit
+              AnchorSideLeft.Control = sbDownloadConnections
+              AnchorSideTop.Control = seOptionConnectionTimeout
+              AnchorSideTop.Side = asrBottom
+              AnchorSideRight.Control = seOptionMaxRetry
+              AnchorSideRight.Side = asrBottom
+              Left = 4
+              Height = 23
+              Top = 47
+              Width = 52
+              Anchors = [akTop, akLeft, akRight]
+              BorderSpacing.Top = 16
+              MaxValue = 32
+              MinValue = 1
+              ParentFont = False
+              ParentShowHint = False
+              TabOrder = 9
+              Value = 1
+            end
+            object lbOptionMaxFavoriteThreads: TLabel
+              AnchorSideLeft.Control = seOptionMaxFavoriteThreads
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = seOptionMaxFavoriteThreads
+              AnchorSideTop.Side = asrCenter
+              Left = 60
+              Height = 15
+              Top = 51
+              Width = 250
+              Caption = 'Max number of favorite check at the same time'
+              ParentColor = False
+              ParentFont = False
             end
           end
         end
@@ -4679,7 +4713,7 @@ object MainForm: TMainForm
       object btOptionApply: TBitBtn
         Left = 8
         Height = 45
-        Top = 540
+        Top = 517
         Width = 125
         Anchors = [akLeft, akBottom]
         AutoSize = True
@@ -4976,7 +5010,7 @@ object MainForm: TMainForm
   object sbMain: TStatusBar
     Left = 0
     Height = 23
-    Top = 634
+    Top = 611
     Width = 855
     Panels = <    
       item
@@ -4990,7 +5024,7 @@ object MainForm: TMainForm
   end
   object spMainSplitter: TSplitter
     Left = 0
-    Height = 626
+    Height = 603
     Top = 8
     Width = 2
     OnMoved = spMainSplitterMoved

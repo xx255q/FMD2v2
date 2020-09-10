@@ -388,7 +388,7 @@ begin
         if FavoriteInfo.Module = nil then
           Status := STATUS_IDLE
         else
-        if (Threads.Count < OptionMaxThreads) then
+        if (Threads.Count < OptionMaxFavoriteThreads) then
         begin
           EnterCriticalsection(CS_Threads);
           try
@@ -419,17 +419,17 @@ begin
   try
     while not Terminated do
     begin
-      cmaxthreads := OptionMaxThreads;
+      cmaxthreads := OptionMaxFavoriteThreads;
       // if current thread count > max Threads allowed we wait until thread count decreased
       while (not Terminated) and (Threads.Count >= cmaxthreads) do
         Sleep(HeartBeatRate);
       Checkout;
       // if there is concurent connection limit applied and no more possible item to check
       // we will wait until thread count decreased
-      // break wait if OptionMaxThreads changed
+      // break wait if OptionMaxFavoriteThreads changed
       cthread := Threads.Count;
       while (not Terminated) and (Threads.Count > 0) and (Threads.Count = cthread) and
-        (cmaxthreads = OptionMaxThreads) do
+        (cmaxthreads = OptionMaxFavoriteThreads) do
         Sleep(HeartBeatRate);
       // if there is no more item need to be checked, but thread count still > 0 we will wait for it
       // we will also wait if there is new item pushed, so we will check it after it

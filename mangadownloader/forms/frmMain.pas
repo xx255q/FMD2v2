@@ -94,6 +94,7 @@ type
     edWebsitesSearch: TEditButton;
     gbImageConversion: TGroupBox;
     IconDLLeft: TImageList;
+    lbOptionMaxFavoriteThreads: TLabel;
     lbOptionDefaultUserAgent: TLabel;
     lbPNGCompressionLevel: TLabel;
     lbJPEGQuality: TLabel;
@@ -169,6 +170,7 @@ type
     sbWebsiteOptions: TScrollBox;
     btDownloadSplit: TSpeedButton;
     sbGeneralSettings: TScrollBox;
+    seOptionMaxFavoriteThreads: TSpinEdit;
     seOptionRetryFailedTask: TSpinEdit;
     seJPEGQuality: TSpinEdit;
     spThumb: TSplitter;
@@ -5184,10 +5186,11 @@ begin
         SaveDropTargetFormInformation;
 
       // connections
+      WriteInteger('connections', 'ConnectionTimeout', seOptionConnectionTimeout.Value);
+      WriteInteger('connections', 'MaxFavoriteThreads', seOptionMaxFavoriteThreads.Value);
       WriteInteger('connections', 'NumberOfTasks', seOptionMaxParallel.Value);
       WriteInteger('connections', 'NumberOfThreadsPerTask', seOptionMaxThread.Value);
       WriteInteger('connections', 'Retry', seOptionMaxRetry.Value);
-      WriteInteger('connections', 'ConnectionTimeout', seOptionConnectionTimeout.Value);
       WriteInteger('connections', 'NumberOfAutoRetryFailedTask', seOptionRetryFailedTask.Value);
       WriteBool('connections', 'AlwaysRetruFailedChaptersOnStart', ckOptionsAlwaysStartTaskFromFailedChapters.Checked);
       if DefaultUserAgent <> UserAgentDefault then
@@ -5351,12 +5354,13 @@ begin
     OptionShowDownloadsTabOnNewTasks := cbOptionShowDownloadsTabOnNewTasks.Checked;
 
     //connection
+    OptionConnectionTimeout := seOptionConnectionTimeout.Value;
+    OptionMaxFavoriteThreads := seOptionMaxFavoriteThreads.Value;
     OptionMaxParallel := seOptionMaxParallel.Value;
     OptionMaxThreads := seOptionMaxThread.Value;
     OptionMaxRetry := seOptionMaxRetry.Value;
     DLManager.RetryConnect := OptionMaxRetry;
     SetDefaultRetryCountAndApply(OptionMaxRetry);
-    OptionConnectionTimeout := seOptionConnectionTimeout.Value;
     SetDefaultTimeoutAndApply(OptionConnectionTimeout * 1000);
     OptionRetryFailedTask := seOptionRetryFailedTask.Value;
     OptionAlwaysStartTaskFromFailedChapters := ckOptionsAlwaysStartTaskFromFailedChapters.Checked;

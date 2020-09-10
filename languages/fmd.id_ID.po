@@ -1715,6 +1715,10 @@ msgstr ""
 "Catatan:\n"
 "Nama direktori komik setidaknya harus memiliki %MANGA%."
 
+#: tmainform.lboptionmaxfavoritethreads.caption
+msgid "Max number of favorite check at the same time"
+msgstr ""
+
 #: tmainform.lboptionmaxparallel.caption
 msgid "Number of downloaded tasks at the same time"
 msgstr "Jumlah unduhan aktif pada waktu yang sama"

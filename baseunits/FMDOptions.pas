@@ -126,10 +126,11 @@ var
   OptionJPEGQuality: Integer = 80;
 
   // connections
+  OptionConnectionTimeout: Integer = 30;
+  OptionMaxFavoriteThreads: Integer = 1;
   OptionMaxParallel: Integer = 1;
   OptionMaxThreads: Integer = 1;
   OptionMaxRetry: Integer = 5;
-  OptionConnectionTimeout: Integer = 30;
   OptionRetryFailedTask: Integer = 1;
   OptionAlwaysStartTaskFromFailedChapters: Boolean = True;
   OptionEnableCloudflareBypass: Boolean = True;
