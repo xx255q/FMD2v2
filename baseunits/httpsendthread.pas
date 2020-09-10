@@ -81,6 +81,7 @@ type
     FAllowServerErrorResponse: Boolean;
     FEnabledCookies: Boolean;
     FClearCookies: Boolean;
+    FOwnerCustomTerminate: TNotifyEvent;
     procedure SetTimeout(AValue: Integer);
     procedure OnOwnerTerminate(Sender: TObject);
   protected
@@ -449,6 +450,8 @@ procedure THTTPSendThread.OnOwnerTerminate(Sender: TObject);
 begin
   Sock.Tag := 1;
   Sock.CloseSocket;
+  if Assigned(FOwnerCustomTerminate) then
+    FOwnerCustomTerminate(Sender);
 end;
 
 procedure THTTPSendThread.NormalizeHeaders;
@@ -513,6 +516,7 @@ begin
   if Assigned(AOwner) then
   begin
     FOwner := AOwner;
+    FOwnerCustomTerminate := FOwner.OnCustomTerminate;
     FOwner.OnCustomTerminate := @OnOwnerTerminate;
   end;
   OnBeforeHTTPMethod := nil;
@@ -528,8 +532,13 @@ end;
 
 destructor THTTPSendThread.Destroy;
 begin
-  If Assigned(FOwner) then
-    FOwner.OnCustomTerminate := nil;
+  If FOwner <> nil then
+  begin
+    if FOwnerCustomTerminate <> nil then
+       FOwner.OnCustomTerminate := FOwnerCustomTerminate
+    else
+      FOwner.OnCustomTerminate := nil;
+  end;
   EnterCriticalsection(CS_ALLHTTPSendThread);
   try
     ALLHTTPSendThread.Remove(Self);
