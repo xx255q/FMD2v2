@@ -662,19 +662,20 @@ begin
   enc_br := s.Contains('br');
   if not enc_br then
     enc_gzip := s.Contains('gzip') or s.Contains('deflate');
-  if enc_br or enc_gzip then
+  if (enc_br and (Document.Size > 2)) or
+     (enc_gzip and (Document.Size > 20)) then
   begin
     dstream := TMemoryStream.Create;
     try
       if enc_br then
-        BrotliDec.BrotliDecodeStream(Document, dstream)
+        BrotliDecodeStream(Document, dstream)
       else
-        GZIPUtils.unzipStream(Document, dstream);
+        unzipStream(Document, dstream);
       Document.Clear;
       Document.LoadFromStream(dstream);
-    finally
-      dstream.Free;
+    except
     end;
+    dstream.Free;
   end;
 
   // response
