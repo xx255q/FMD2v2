@@ -55,13 +55,11 @@ var
   procedure WriteOutput;
   var
     OutSize: TBrotliSize;
-    PrevLen: Integer;
   begin
     OutSize := PAnsiChar(NextOut) - PAnsiChar(@BufferOut[0]);
     if OutSize = 0 then Exit;
 
-    PrevLen := outStream.Size;
-    outStream.Size := PrevLen + OutSize;
+    outStream.SetSize(outStream.Size + OutSize);
     outStream.Write(BufferOut[0], OutSize);
   end;
 
@@ -74,14 +72,13 @@ begin
     if BrotliDecoderSetParameter(State, BROTLI_DECODER_PARAM_LARGE_WINDOW, 1) = 0 then Exit;
 
     inStream.Position := 0;
-    outStream.Position := 0;
+    outStream.Clear;
 
     AvailableIn := inStream.Size;
     NextIn := inStream.Memory;
     AvailableOut := BUFFER_SIZE;
     SetLength(BufferOut, BUFFER_SIZE);
     NextOut := @BufferOut[0];
-    outStream.Size := 0;
 
     while True do
     begin
