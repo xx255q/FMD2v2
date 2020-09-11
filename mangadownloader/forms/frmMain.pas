@@ -93,9 +93,14 @@ type
     edURL: TEditButton;
     edWebsitesSearch: TEditButton;
     gbImageConversion: TGroupBox;
+    gbOptionsConnectionsDownloads: TGroupBox;
+    gbOptionsConnectiosFavorites: TGroupBox;
+    gbOptionsConnectionsUpdateList: TGroupBox;
+    gbOptionsConnectionsGeneral: TGroupBox;
     IconDLLeft: TImageList;
     lbOptionMaxFavoriteThreads: TLabel;
     lbOptionDefaultUserAgent: TLabel;
+    lbOptionMaxUpdateListThreads: TLabel;
     lbPNGCompressionLevel: TLabel;
     lbJPEGQuality: TLabel;
     lbWebPSaveAs: TLabel;
@@ -171,6 +176,7 @@ type
     btDownloadSplit: TSpeedButton;
     sbGeneralSettings: TScrollBox;
     seOptionMaxFavoriteThreads: TSpinEdit;
+    seOptionMaxUpdateListThreads: TSpinEdit;
     seOptionRetryFailedTask: TSpinEdit;
     seJPEGQuality: TSpinEdit;
     spThumb: TSplitter;
@@ -5054,18 +5060,24 @@ begin
         miFavoritesDefaultActionOpenFolder.Checked := True;
     end;
 
-    // connection
-    seOptionConnectionTimeout.Value := ReadInteger('connections', 'ConnectionTimeout', OptionConnectionTimeout);
-    seOptionMaxFavoriteThreads.Value := ReadInteger('connections', 'MaxFavoriteThreads', OptionMaxFavoriteThreads);
+    // connection download
     seOptionMaxParallel.Value := ReadInteger('connections', 'NumberOfTasks', OptionMaxParallel);
     seOptionMaxThread.Value := ReadInteger('connections', 'NumberOfThreadsPerTask', OptionMaxThreads);
     seOptionMaxRetry.Value := ReadInteger('connections', 'Retry', OptionMaxRetry);;
     seOptionRetryFailedTask.Value := ReadInteger('connections', 'NumberOfAutoRetryFailedTask', OptionRetryFailedTask);
     ckOptionsAlwaysStartTaskFromFailedChapters.Checked := ReadBool('connections', 'AlwaysStartFromFailedChapters', OptionAlwaysStartTaskFromFailedChapters);
+
+    // connection favorites
+    seOptionMaxFavoriteThreads.Value := ReadInteger('connections', 'MaxFavoriteThreads', OptionMaxFavoriteThreads);
+
+    // connection update list
+    seOptionMaxUpdateListThreads.Value := ReadInteger('connecions', 'MaxUpdateListThreads', OptionMaxUpdateListThreads);
+
+    // connection general
+    seOptionConnectionTimeout.Value := ReadInteger('connections', 'ConnectionTimeout', OptionConnectionTimeout);
     edOptionDefaultUserAgent.Text := ReadString('connections', 'DefaultUserAgent', DefaultUserAgent);
     if edOptionDefaultUserAgent.Text = '' then
       edOptionDefaultUserAgent.Text := DefaultUserAgent;
-
     // proxy
     cbOptionUseProxy.Checked := ReadBool('connections', 'UseProxy', False);
     cbOptionProxyType.Text := ReadString('connections', 'ProxyType', 'HTTP');
@@ -5186,14 +5198,21 @@ begin
       if not (isExiting and Assigned(FormDropTarget)) then
         SaveDropTargetFormInformation;
 
-      // connections
-      WriteInteger('connections', 'ConnectionTimeout', seOptionConnectionTimeout.Value);
-      WriteInteger('connections', 'MaxFavoriteThreads', seOptionMaxFavoriteThreads.Value);
+      // connections downloads
       WriteInteger('connections', 'NumberOfTasks', seOptionMaxParallel.Value);
       WriteInteger('connections', 'NumberOfThreadsPerTask', seOptionMaxThread.Value);
       WriteInteger('connections', 'Retry', seOptionMaxRetry.Value);
       WriteInteger('connections', 'NumberOfAutoRetryFailedTask', seOptionRetryFailedTask.Value);
       WriteBool('connections', 'AlwaysRetruFailedChaptersOnStart', ckOptionsAlwaysStartTaskFromFailedChapters.Checked);
+
+      // connections favorite
+      WriteInteger('connections', 'MaxFavoriteThreads', seOptionMaxFavoriteThreads.Value);
+
+      // connections update list
+      WriteInteger('connections', 'MaxUpdateListThreads', seOptionMaxUpdateListThreads.Value);
+
+      // connections general
+      WriteInteger('connections', 'ConnectionTimeout', seOptionConnectionTimeout.Value);
       if DefaultUserAgent <> UserAgentDefault then
 	      WriteString('connections', 'DefaultUserAgent', DefaultUserAgent)
       else
@@ -5354,9 +5373,7 @@ begin
     OptionShowFavoritesTabOnNewManga := cbOptionShowFavoritesTabOnNewManga.Checked;
     OptionShowDownloadsTabOnNewTasks := cbOptionShowDownloadsTabOnNewTasks.Checked;
 
-    //connection
-    OptionConnectionTimeout := seOptionConnectionTimeout.Value;
-    OptionMaxFavoriteThreads := seOptionMaxFavoriteThreads.Value;
+    //connection downloads
     OptionMaxParallel := seOptionMaxParallel.Value;
     OptionMaxThreads := seOptionMaxThread.Value;
     OptionMaxRetry := seOptionMaxRetry.Value;
@@ -5365,11 +5382,19 @@ begin
     SetDefaultTimeoutAndApply(OptionConnectionTimeout * 1000);
     OptionRetryFailedTask := seOptionRetryFailedTask.Value;
     OptionAlwaysStartTaskFromFailedChapters := ckOptionsAlwaysStartTaskFromFailedChapters.Checked;
+
+    // connections favorites
+    OptionMaxFavoriteThreads := seOptionMaxFavoriteThreads.Value;
+
+    // connections update list
+    OptionMaxUpdateListThreads := seOptionMaxUpdateListThreads.Value;
+
+    // connections general
+    OptionConnectionTimeout := seOptionConnectionTimeout.Value;
     edOptionDefaultUserAgent.Text := Trim(edOptionDefaultUserAgent.Text);
     if edOptionDefaultUserAgent.Text = '' then
       edOptionDefaultUserAgent.Text := UserAgentDefault;
     DefaultUserAgent := edOptionDefaultUserAgent.Text;
-
     // proxy
     if cbOptionUseProxy.Checked then
       SetDefaultProxyAndApply(cbOptionProxyType.Text, edOptionHost.Text,

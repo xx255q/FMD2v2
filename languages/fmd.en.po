@@ -1509,6 +1509,28 @@ msgstr "Proxy config"
 msgid "Renaming"
 msgstr "Renaming"
 
+#: tmainform.gboptionsconnectionsdownloads.caption
+#, fuzzy
+msgctxt "tmainform.gboptionsconnectionsdownloads.caption"
+msgid "Downloads"
+msgstr "Downloads"
+
+#: tmainform.gboptionsconnectionsgeneral.caption
+#, fuzzy
+msgctxt "tmainform.gboptionsconnectionsgeneral.caption"
+msgid "General"
+msgstr "General"
+
+#: tmainform.gboptionsconnectionsupdatelist.caption
+msgid "Update list"
+msgstr ""
+
+#: tmainform.gboptionsconnectiosfavorites.caption
+#, fuzzy
+msgctxt "tmainform.gboptionsconnectiosfavorites.caption"
+msgid "Favorites"
+msgstr "Favorites"
+
 #: tmainform.lbdefaultdownloadpath.caption
 msgid "Choose the default download path:"
 msgstr "Choose the default download path:"
@@ -1726,6 +1748,10 @@ msgstr "Number of retry times if tasks have download problems (-1 = always retry
 #: tmainform.lboptionmaxthread.caption
 msgid "Number of downloaded files per task at the same time"
 msgstr "Number of downloaded files per task at the same time"
+
+#: tmainform.lboptionmaxupdatelistthreads.caption
+msgid "Max number of update list threads"
+msgstr ""
 
 #: tmainform.lboptionnewmangatime.caption
 msgid "New manga based on  it's update time (days)"
@@ -2220,6 +2246,7 @@ msgid "Favorites"
 msgstr "Favorites"
 
 #: tmainform.tsgeneral.caption
+msgctxt "tmainform.tsgeneral.caption"
 msgid "General"
 msgstr "General"
 

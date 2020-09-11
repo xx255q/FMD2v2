@@ -1511,6 +1511,28 @@ msgstr "Vekil ayarları"
 msgid "Renaming"
 msgstr "Yeniden adlandırma"
 
+#: tmainform.gboptionsconnectionsdownloads.caption
+#, fuzzy
+msgctxt "tmainform.gboptionsconnectionsdownloads.caption"
+msgid "Downloads"
+msgstr "İndirmeler"
+
+#: tmainform.gboptionsconnectionsgeneral.caption
+#, fuzzy
+msgctxt "tmainform.gboptionsconnectionsgeneral.caption"
+msgid "General"
+msgstr "Genel"
+
+#: tmainform.gboptionsconnectionsupdatelist.caption
+msgid "Update list"
+msgstr ""
+
+#: tmainform.gboptionsconnectiosfavorites.caption
+#, fuzzy
+msgctxt "tmainform.gboptionsconnectiosfavorites.caption"
+msgid "Favorites"
+msgstr "Favoriler"
+
 #: tmainform.lbdefaultdownloadpath.caption
 msgid "Choose the default download path:"
 msgstr "Varsayılan indirme yolunu seç:"
@@ -1728,6 +1750,10 @@ msgstr "İndirmede sorun varsa tekrar deneme sayısı (-1 = sürekli yeniden den
 #: tmainform.lboptionmaxthread.caption
 msgid "Number of downloaded files per task at the same time"
 msgstr "Tek görev başına aynı anda indirilmiş dosya sayısı (Maks: 32)"
+
+#: tmainform.lboptionmaxupdatelistthreads.caption
+msgid "Max number of update list threads"
+msgstr ""
 
 #: tmainform.lboptionnewmangatime.caption
 msgid "New manga based on  it's update time (days)"
@@ -2222,6 +2248,7 @@ msgid "Favorites"
 msgstr "Favoriler"
 
 #: tmainform.tsgeneral.caption
+msgctxt "tmainform.tsgeneral.caption"
 msgid "General"
 msgstr "Genel"
 

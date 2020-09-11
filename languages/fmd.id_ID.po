@@ -1513,6 +1513,28 @@ msgstr "Konfigurasi proxy"
 msgid "Renaming"
 msgstr "Mengubah nama"
 
+#: tmainform.gboptionsconnectionsdownloads.caption
+#, fuzzy
+msgctxt "tmainform.gboptionsconnectionsdownloads.caption"
+msgid "Downloads"
+msgstr "Unduhan"
+
+#: tmainform.gboptionsconnectionsgeneral.caption
+#, fuzzy
+msgctxt "tmainform.gboptionsconnectionsgeneral.caption"
+msgid "General"
+msgstr "Umum"
+
+#: tmainform.gboptionsconnectionsupdatelist.caption
+msgid "Update list"
+msgstr ""
+
+#: tmainform.gboptionsconnectiosfavorites.caption
+#, fuzzy
+msgctxt "tmainform.gboptionsconnectiosfavorites.caption"
+msgid "Favorites"
+msgstr "Kesukaan"
+
 #: tmainform.lbdefaultdownloadpath.caption
 msgid "Choose the default download path:"
 msgstr "Pilih lokasi unduhan asali:"
@@ -1730,6 +1752,10 @@ msgstr "Jumlah pengulangan jika unduhan memiliki masalah (-1 = selalu coba lagi)
 #: tmainform.lboptionmaxthread.caption
 msgid "Number of downloaded files per task at the same time"
 msgstr "Jumlah koneksi per unduhan pada waktu yang sama"
+
+#: tmainform.lboptionmaxupdatelistthreads.caption
+msgid "Max number of update list threads"
+msgstr ""
 
 #: tmainform.lboptionnewmangatime.caption
 msgid "New manga based on  it's update time (days)"
@@ -2224,6 +2250,7 @@ msgid "Favorites"
 msgstr "Kesukaan"
 
 #: tmainform.tsgeneral.caption
+msgctxt "tmainform.tsgeneral.caption"
 msgid "General"
 msgstr "Umum"
 

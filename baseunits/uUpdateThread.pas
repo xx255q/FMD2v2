@@ -815,7 +815,7 @@ begin
   if module.MaxThreadPerTaskLimit > 0 then
     numberOfThreads := module.MaxThreadPerTaskLimit
   else
-    numberOfThreads := OptionMaxThreads;
+    numberOfThreads := OptionMaxUpdateListThreads;
   if (module.ConnectionsQueue.MaxConnections > 0) and (numberOfThreads > module.ConnectionsQueue.MaxConnections) then
     numberOfThreads := module.ConnectionsQueue.MaxConnections;
   if numberOfThreads < 1 then

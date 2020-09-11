@@ -1435,6 +1435,25 @@ msgstr ""
 msgid "Renaming"
 msgstr ""
 
+#: tmainform.gboptionsconnectionsdownloads.caption
+msgctxt "tmainform.gboptionsconnectionsdownloads.caption"
+msgid "Downloads"
+msgstr ""
+
+#: tmainform.gboptionsconnectionsgeneral.caption
+msgctxt "tmainform.gboptionsconnectionsgeneral.caption"
+msgid "General"
+msgstr ""
+
+#: tmainform.gboptionsconnectionsupdatelist.caption
+msgid "Update list"
+msgstr ""
+
+#: tmainform.gboptionsconnectiosfavorites.caption
+msgctxt "tmainform.gboptionsconnectiosfavorites.caption"
+msgid "Favorites"
+msgstr ""
+
 #: tmainform.lbdefaultdownloadpath.caption
 msgid "Choose the default download path:"
 msgstr ""
@@ -1616,6 +1635,10 @@ msgstr ""
 
 #: tmainform.lboptionmaxthread.caption
 msgid "Number of downloaded files per task at the same time"
+msgstr ""
+
+#: tmainform.lboptionmaxupdatelistthreads.caption
+msgid "Max number of update list threads"
 msgstr ""
 
 #: tmainform.lboptionnewmangatime.caption
@@ -2096,6 +2119,7 @@ msgid "Dialogs"
 msgstr ""
 
 #: tmainform.tsdownload.caption
+msgctxt "tmainform.tsdownload.caption"
 msgid "Downloads"
 msgstr ""
 
@@ -2105,6 +2129,7 @@ msgid "Favorites"
 msgstr ""
 
 #: tmainform.tsgeneral.caption
+msgctxt "tmainform.tsgeneral.caption"
 msgid "General"
 msgstr ""
 

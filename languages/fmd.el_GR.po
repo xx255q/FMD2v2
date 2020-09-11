@@ -1554,6 +1554,28 @@ msgstr "Ρυθμίσεις διακομιστή μεσολάβησης"
 msgid "Renaming"
 msgstr "Μετονομασία"
 
+#: tmainform.gboptionsconnectionsdownloads.caption
+#, fuzzy
+msgctxt "tmainform.gboptionsconnectionsdownloads.caption"
+msgid "Downloads"
+msgstr "Λήψεις"
+
+#: tmainform.gboptionsconnectionsgeneral.caption
+#, fuzzy
+msgctxt "tmainform.gboptionsconnectionsgeneral.caption"
+msgid "General"
+msgstr "Γενικές"
+
+#: tmainform.gboptionsconnectionsupdatelist.caption
+msgid "Update list"
+msgstr ""
+
+#: tmainform.gboptionsconnectiosfavorites.caption
+#, fuzzy
+msgctxt "tmainform.gboptionsconnectiosfavorites.caption"
+msgid "Favorites"
+msgstr "Αγαπημένα"
+
 #: tmainform.lbdefaultdownloadpath.caption
 msgid "Choose the default download path:"
 msgstr "Καθορίστε την προεπιλεγμένη διαδρομή λήψης:"
@@ -1771,6 +1793,10 @@ msgstr "Αριθμός επαναλήψεων αν οι εργασίες έχο�
 #: tmainform.lboptionmaxthread.caption
 msgid "Number of downloaded files per task at the same time"
 msgstr "Αριθμός ταυτόχρονα ληφθέντων αρχείων ανά εργασία"
+
+#: tmainform.lboptionmaxupdatelistthreads.caption
+msgid "Max number of update list threads"
+msgstr ""
 
 #: tmainform.lboptionnewmangatime.caption
 msgid "New manga based on  it's update time (days)"
@@ -2266,6 +2292,7 @@ msgid "Favorites"
 msgstr "Αγαπημένα"
 
 #: tmainform.tsgeneral.caption
+msgctxt "tmainform.tsgeneral.caption"
 msgid "General"
 msgstr "Γενικές"
 
