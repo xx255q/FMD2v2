@@ -23,12 +23,12 @@ function getinfo()
 end
 
 function getpagenumber()
-	TASK.PageNumber=0
-	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
 		CreateTXQuery(HTTP.Document).XPathStringAll('//div[@class="pictures"]//img/@src', TASK.PageLinks)
 
 		if TASK.PageNumber == 1 then
+			TASK.PageNumber = 0
+			TASK.PageLinks.Clear()
 			return false
 		end
 
