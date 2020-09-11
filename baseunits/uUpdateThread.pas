@@ -865,8 +865,8 @@ begin
         begin
           tempDataProcess.Lock;
           try
-            T.FMangaInfo.MangaInfo.Title := tempDataProcess.Value[FWorkPtr,DATA_PARAM_TITLE];
-            T.FMangaInfo.MangaInfo.Link := tempDataProcess.Value[FWorkPtr,DATA_PARAM_LINK];
+            T.FMangaInfo.MangaInfo.Title := tempDataProcess.Value[T.FWorkPtr,DATA_PARAM_TITLE];
+            T.FMangaInfo.MangaInfo.Link := tempDataProcess.Value[T.FWorkPtr,DATA_PARAM_LINK];
             s := Format('%s | %s "%s"', [s, RS_GettingInfo, T.FMangaInfo.MangaInfo.Title]);
           finally
             tempDataProcess.Unlock;
