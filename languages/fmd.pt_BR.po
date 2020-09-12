@@ -1370,14 +1370,6 @@ msgstr "Sempre iniciar tarefa dos capítulos que falharam"
 msgid "Save PNG as JPEG"
 msgstr "Salvar PNG como JPEG"
 
-#: tmainform.dedownloadfiltercustomdatefrom.text
-msgid "deDownloadFilterCustomDateFrom"
-msgstr ""
-
-#: tmainform.dedownloadfiltercustomdateto.text
-msgid "deDownloadFilterCustomDateTo"
-msgstr ""
-
 #: tmainform.edcustomgenres.texthint
 msgid "Input custom genres, separated by comma"
 msgstr "Entrar gêneros personalizados, separados por vírgula"

@@ -1369,14 +1369,6 @@ msgstr "Always start task from failed chapters"
 msgid "Save PNG as JPEG"
 msgstr "Save PNG as JPEG"
 
-#: tmainform.dedownloadfiltercustomdatefrom.text
-msgid "deDownloadFilterCustomDateFrom"
-msgstr ""
-
-#: tmainform.dedownloadfiltercustomdateto.text
-msgid "deDownloadFilterCustomDateTo"
-msgstr ""
-
 #: tmainform.edcustomgenres.texthint
 msgid "Input custom genres, separated by comma"
 msgstr "Input custom genres, separated by comma"

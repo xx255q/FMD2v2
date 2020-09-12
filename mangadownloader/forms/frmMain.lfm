@@ -88,7 +88,6 @@ object MainForm: TMainForm
               NumGlyphs = 1
               MaxLength = 0
               TabOrder = 0
-              Text = 'deDownloadFilterCustomDateFrom'
             end
             object deDownloadFilterCustomDateTo: TDateEdit
               AnchorSideLeft.Control = pnDownloadFilterCustomDate
@@ -107,7 +106,6 @@ object MainForm: TMainForm
               NumGlyphs = 1
               MaxLength = 0
               TabOrder = 1
-              Text = 'deDownloadFilterCustomDateTo'
             end
             object lbDownloadFilterCustomDateFrom: TLabel
               AnchorSideLeft.Control = pnDownloadFilterCustomDate

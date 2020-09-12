@@ -1371,14 +1371,6 @@ msgstr ""
 msgid "Save PNG as JPEG"
 msgstr "Speichere PNG als JPEG"
 
-#: tmainform.dedownloadfiltercustomdatefrom.text
-msgid "deDownloadFilterCustomDateFrom"
-msgstr ""
-
-#: tmainform.dedownloadfiltercustomdateto.text
-msgid "deDownloadFilterCustomDateTo"
-msgstr ""
-
 #: tmainform.edcustomgenres.texthint
 msgid "Input custom genres, separated by comma"
 msgstr "Eingabe individueller Genres, durch Komma getrennt"

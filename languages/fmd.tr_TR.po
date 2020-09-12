@@ -1371,14 +1371,6 @@ msgstr "Görevi her zaman başarısız bölümlerden başlat"
 msgid "Save PNG as JPEG"
 msgstr "PNGyi JPEG olarak kaydet"
 
-#: tmainform.dedownloadfiltercustomdatefrom.text
-msgid "deDownloadFilterCustomDateFrom"
-msgstr ""
-
-#: tmainform.dedownloadfiltercustomdateto.text
-msgid "deDownloadFilterCustomDateTo"
-msgstr ""
-
 #: tmainform.edcustomgenres.texthint
 msgid "Input custom genres, separated by comma"
 msgstr "Kişisel tür ekle, virgülle ayırarak"

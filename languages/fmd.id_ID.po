@@ -1373,14 +1373,6 @@ msgstr "Selalu mulai unduhan dari bab yang gagal"
 msgid "Save PNG as JPEG"
 msgstr "Simpan PNG sebagai JPEG"
 
-#: tmainform.dedownloadfiltercustomdatefrom.text
-msgid "deDownloadFilterCustomDateFrom"
-msgstr ""
-
-#: tmainform.dedownloadfiltercustomdateto.text
-msgid "deDownloadFilterCustomDateTo"
-msgstr ""
-
 #: tmainform.edcustomgenres.texthint
 msgid "Input custom genres, separated by comma"
 msgstr "Masukkan genre pilihan, dipisahkan dengan koma"

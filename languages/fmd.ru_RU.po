@@ -1370,14 +1370,6 @@ msgstr "Всегда запускать задачу с неудавшихся �
 msgid "Save PNG as JPEG"
 msgstr "Сохранять PNG как JPEG"
 
-#: tmainform.dedownloadfiltercustomdatefrom.text
-msgid "deDownloadFilterCustomDateFrom"
-msgstr ""
-
-#: tmainform.dedownloadfiltercustomdateto.text
-msgid "deDownloadFilterCustomDateTo"
-msgstr ""
-
 #: tmainform.edcustomgenres.texthint
 msgid "Input custom genres, separated by comma"
 msgstr "Ввод пользовательских жанров, разделенных запятой"

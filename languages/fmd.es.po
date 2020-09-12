@@ -1371,14 +1371,6 @@ msgstr "Siempre Empezar Tareas desde Capítulos Fallídos"
 msgid "Save PNG as JPEG"
 msgstr "Guardar PNG como JPEG"
 
-#: tmainform.dedownloadfiltercustomdatefrom.text
-msgid "deDownloadFilterCustomDateFrom"
-msgstr ""
-
-#: tmainform.dedownloadfiltercustomdateto.text
-msgid "deDownloadFilterCustomDateTo"
-msgstr ""
-
 #: tmainform.edcustomgenres.texthint
 msgid "Input custom genres, separated by comma"
 msgstr "Ingresa géneros personalizados, separados por coma"
