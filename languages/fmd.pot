@@ -182,6 +182,10 @@ msgctxt "frmmain.rs_checking"
 msgid "Checking..."
 msgstr ""
 
+#: frmmain.rs_custom
+msgid "Custom"
+msgstr ""
+
 #: frmmain.rs_dlgcannotconnecttoserver
 msgid "Cannot connect to the server."
 msgstr ""
@@ -273,16 +277,8 @@ msgid ""
 "<none>"
 msgstr ""
 
-#: frmmain.rs_fiveyears
-msgid "Five years"
-msgstr ""
-
 #: frmmain.rs_fmdalreadyrunning
 msgid "Free Manga Downloader already running!"
-msgstr ""
-
-#: frmmain.rs_fouryears
-msgid "Four years"
 msgstr ""
 
 #: frmmain.rs_hintfavoriteproblem
@@ -331,6 +327,10 @@ msgstr ""
 msgid "In progress"
 msgstr ""
 
+#: frmmain.rs_last7days
+msgid "Last 7 days"
+msgstr ""
+
 #: frmmain.rs_lblautochecknewchapterminute
 #, object-pascal-format
 msgctxt "frmmain.rs_lblautochecknewchapterminute"
@@ -364,16 +364,8 @@ msgstr ""
 msgid "Mode: Searching..."
 msgstr ""
 
-#: frmmain.rs_onemonth
-msgid "One month"
-msgstr ""
-
-#: frmmain.rs_oneweek
-msgid "One week"
-msgstr ""
-
-#: frmmain.rs_oneyear
-msgid "One year"
+#: frmmain.rs_olderthan6months
+msgid "Older than 6 months"
 msgstr ""
 
 #: frmmain.rs_optioncompress
@@ -402,10 +394,6 @@ msgstr ""
 msgid "Selected: %d"
 msgstr ""
 
-#: frmmain.rs_sixmonths
-msgid "Six months"
-msgstr ""
-
 #: frmmain.rs_software
 msgid "Software"
 msgstr ""
@@ -415,20 +403,12 @@ msgctxt "frmmain.rs_softwarepath"
 msgid "Path to the software (e.g. C:\\MangaDownloader)"
 msgstr ""
 
-#: frmmain.rs_tenyears
-msgid "Ten years"
-msgstr ""
-
-#: frmmain.rs_threeyears
-msgid "Three years"
+#: frmmain.rs_thismonth
+msgid "This month"
 msgstr ""
 
 #: frmmain.rs_today
 msgid "Today"
-msgstr ""
-
-#: frmmain.rs_twoyears
-msgid "Two years"
 msgstr ""
 
 #: frmmain.rs_version
@@ -786,11 +766,17 @@ msgstr ""
 msgid "Reset value"
 msgstr ""
 
+#: tmainform.btndownloadfiltercustomdateapply.caption
+msgctxt "tmainform.btndownloadfiltercustomdateapply.caption"
+msgid "Apply"
+msgstr ""
+
 #: tmainform.btopenlog.caption
 msgid "Open log"
 msgstr ""
 
 #: tmainform.btoptionapply.caption
+msgctxt "tmainform.btoptionapply.caption"
 msgid "Apply"
 msgstr ""
 
@@ -1314,6 +1300,14 @@ msgstr ""
 msgid "Save PNG as JPEG"
 msgstr ""
 
+#: tmainform.dedownloadfiltercustomdatefrom.text
+msgid "deDownloadFilterCustomDateFrom"
+msgstr ""
+
+#: tmainform.dedownloadfiltercustomdateto.text
+msgid "deDownloadFilterCustomDateTo"
+msgstr ""
+
 #: tmainform.edcustomgenres.texthint
 msgid "Input custom genres, separated by comma"
 msgstr ""
@@ -1456,6 +1450,14 @@ msgstr ""
 
 #: tmainform.lbdefaultdownloadpath.caption
 msgid "Choose the default download path:"
+msgstr ""
+
+#: tmainform.lbdownloadfiltercustomdatefrom.caption
+msgid "From:"
+msgstr ""
+
+#: tmainform.lbdownloadfiltercustomdateto.caption
+msgid "To:"
 msgstr ""
 
 #: tmainform.lbdroptargetopacity.caption

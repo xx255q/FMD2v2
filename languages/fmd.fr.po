@@ -204,6 +204,10 @@ msgctxt "frmmain.rs_checking"
 msgid "Checking..."
 msgstr "Vérification en cours..."
 
+#: frmmain.rs_custom
+msgid "Custom"
+msgstr ""
+
 #: frmmain.rs_dlgcannotconnecttoserver
 msgid "Cannot connect to the server."
 msgstr "Connexion au serveur impossible."
@@ -302,17 +306,9 @@ msgstr ""
 "En cours\n"
 "<non renseigné>"
 
-#: frmmain.rs_fiveyears
-msgid "Five years"
-msgstr "Cinq ans"
-
 #: frmmain.rs_fmdalreadyrunning
 msgid "Free Manga Downloader already running!"
 msgstr "Free Manga Downloader est déjà en cours d'exécution !"
-
-#: frmmain.rs_fouryears
-msgid "Four years"
-msgstr "Quatre ans"
 
 #: frmmain.rs_hintfavoriteproblem
 msgid ""
@@ -363,6 +359,10 @@ msgstr "Site :"
 msgid "In progress"
 msgstr "En cours"
 
+#: frmmain.rs_last7days
+msgid "Last 7 days"
+msgstr ""
+
 #: frmmain.rs_lblautochecknewchapterminute
 #, object-pascal-format
 msgctxt "frmmain.rs_lblautochecknewchapterminute"
@@ -401,17 +401,9 @@ msgctxt "frmmain.rs_modesearching"
 msgid "Mode: Searching..."
 msgstr "Mode : Recherche..."
 
-#: frmmain.rs_onemonth
-msgid "One month"
-msgstr "Un mois"
-
-#: frmmain.rs_oneweek
-msgid "One week"
-msgstr "Une semaine"
-
-#: frmmain.rs_oneyear
-msgid "One year"
-msgstr "Un an"
+#: frmmain.rs_olderthan6months
+msgid "Older than 6 months"
+msgstr ""
 
 #: frmmain.rs_optioncompress
 msgid ""
@@ -448,10 +440,6 @@ msgstr ""
 msgid "Selected: %d"
 msgstr "Sélectionnés : %d"
 
-#: frmmain.rs_sixmonths
-msgid "Six months"
-msgstr "Six mois"
-
 #: frmmain.rs_software
 msgid "Software"
 msgstr "Logiciel"
@@ -461,21 +449,13 @@ msgctxt "frmmain.rs_softwarepath"
 msgid "Path to the software (e.g. C:\\MangaDownloader)"
 msgstr "Répertoire du logiciel (par ex. C:\\MangaDownloader)"
 
-#: frmmain.rs_tenyears
-msgid "Ten years"
-msgstr "Dix ans"
-
-#: frmmain.rs_threeyears
-msgid "Three years"
-msgstr "Trois ans"
+#: frmmain.rs_thismonth
+msgid "This month"
+msgstr ""
 
 #: frmmain.rs_today
 msgid "Today"
 msgstr "Aujourd'hui"
-
-#: frmmain.rs_twoyears
-msgid "Two years"
-msgstr "Deux ans"
 
 #: frmmain.rs_version
 msgid "Version"
@@ -845,11 +825,18 @@ msgstr "Filtrer le catalogue"
 msgid "Reset value"
 msgstr "Réinitialiser les filtres"
 
+#: tmainform.btndownloadfiltercustomdateapply.caption
+#, fuzzy
+msgctxt "tmainform.btndownloadfiltercustomdateapply.caption"
+msgid "Apply"
+msgstr "Appliquer"
+
 #: tmainform.btopenlog.caption
 msgid "Open log"
 msgstr "Ouvrir le journal"
 
 #: tmainform.btoptionapply.caption
+msgctxt "tmainform.btoptionapply.caption"
 msgid "Apply"
 msgstr "Appliquer"
 
@@ -1461,6 +1448,14 @@ msgstr "Toujours reprendre la tâche à partir des chapitres échoués"
 msgid "Save PNG as JPEG"
 msgstr "Enregistrer les PNG en tant que JPEG"
 
+#: tmainform.dedownloadfiltercustomdatefrom.text
+msgid "deDownloadFilterCustomDateFrom"
+msgstr ""
+
+#: tmainform.dedownloadfiltercustomdateto.text
+msgid "deDownloadFilterCustomDateTo"
+msgstr ""
+
 #: tmainform.edcustomgenres.texthint
 msgid "Input custom genres, separated by comma"
 msgstr "Genres personnalisés, séparés par des virgules..."
@@ -1613,6 +1608,14 @@ msgstr "Favoris"
 #: tmainform.lbdefaultdownloadpath.caption
 msgid "Choose the default download path:"
 msgstr "Choisissez le répertoire d'enregistrement par défaut :"
+
+#: tmainform.lbdownloadfiltercustomdatefrom.caption
+msgid "From:"
+msgstr ""
+
+#: tmainform.lbdownloadfiltercustomdateto.caption
+msgid "To:"
+msgstr ""
 
 #: tmainform.lbdroptargetopacity.caption
 msgid "Opacity"

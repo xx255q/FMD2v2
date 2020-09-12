@@ -203,6 +203,10 @@ msgctxt "frmmain.rs_checking"
 msgid "Checking..."
 msgstr "Kontrol ediliyor..."
 
+#: frmmain.rs_custom
+msgid "Custom"
+msgstr ""
+
 #: frmmain.rs_dlgcannotconnecttoserver
 msgid "Cannot connect to the server."
 msgstr "Sunucuya bağlanılamıyor."
@@ -301,17 +305,9 @@ msgstr ""
 "Devam Ediyor\n"
 "<Hiçbiri>"
 
-#: frmmain.rs_fiveyears
-msgid "Five years"
-msgstr "Beş yıl"
-
 #: frmmain.rs_fmdalreadyrunning
 msgid "Free Manga Downloader already running!"
 msgstr "Free Manga Downloader zaten çalışıyor!"
-
-#: frmmain.rs_fouryears
-msgid "Four years"
-msgstr "Dört yıl"
 
 #: frmmain.rs_hintfavoriteproblem
 msgid ""
@@ -362,6 +358,10 @@ msgstr "Site:"
 msgid "In progress"
 msgstr "Devam ediyor"
 
+#: frmmain.rs_last7days
+msgid "Last 7 days"
+msgstr ""
+
 #: frmmain.rs_lblautochecknewchapterminute
 #, object-pascal-format
 msgctxt "frmmain.rs_lblautochecknewchapterminute"
@@ -400,17 +400,9 @@ msgctxt "frmmain.rs_modesearching"
 msgid "Mode: Searching..."
 msgstr "Mod: Aranıyor..."
 
-#: frmmain.rs_onemonth
-msgid "One month"
-msgstr "Bir ay"
-
-#: frmmain.rs_oneweek
-msgid "One week"
-msgstr "Bir hafta"
-
-#: frmmain.rs_oneyear
-msgid "One year"
-msgstr "Bir yıl"
+#: frmmain.rs_olderthan6months
+msgid "Older than 6 months"
+msgstr ""
 
 #: frmmain.rs_optioncompress
 msgid ""
@@ -447,10 +439,6 @@ msgstr ""
 msgid "Selected: %d"
 msgstr "Seçildi: %d"
 
-#: frmmain.rs_sixmonths
-msgid "Six months"
-msgstr "Altı ay"
-
 #: frmmain.rs_software
 msgid "Software"
 msgstr "Yazılım"
@@ -460,21 +448,13 @@ msgctxt "frmmain.rs_softwarepath"
 msgid "Path to the software (e.g. C:\\MangaDownloader)"
 msgstr "Yazılım yolu (mesela c:\\MangaDownloader)"
 
-#: frmmain.rs_tenyears
-msgid "Ten years"
-msgstr "On yıl"
-
-#: frmmain.rs_threeyears
-msgid "Three years"
-msgstr "Üç yıl"
+#: frmmain.rs_thismonth
+msgid "This month"
+msgstr ""
 
 #: frmmain.rs_today
 msgid "Today"
 msgstr "Bugün"
-
-#: frmmain.rs_twoyears
-msgid "Two years"
-msgstr "İki yıl"
 
 #: frmmain.rs_version
 msgid "Version"
@@ -844,11 +824,18 @@ msgstr "Filtre"
 msgid "Reset value"
 msgstr "Değeri sıfırla"
 
+#: tmainform.btndownloadfiltercustomdateapply.caption
+#, fuzzy
+msgctxt "tmainform.btndownloadfiltercustomdateapply.caption"
+msgid "Apply"
+msgstr "Uygula"
+
 #: tmainform.btopenlog.caption
 msgid "Open log"
 msgstr "Günlüğü aç"
 
 #: tmainform.btoptionapply.caption
+msgctxt "tmainform.btoptionapply.caption"
 msgid "Apply"
 msgstr "Uygula"
 
@@ -1384,6 +1371,14 @@ msgstr "Görevi her zaman başarısız bölümlerden başlat"
 msgid "Save PNG as JPEG"
 msgstr "PNGyi JPEG olarak kaydet"
 
+#: tmainform.dedownloadfiltercustomdatefrom.text
+msgid "deDownloadFilterCustomDateFrom"
+msgstr ""
+
+#: tmainform.dedownloadfiltercustomdateto.text
+msgid "deDownloadFilterCustomDateTo"
+msgstr ""
+
 #: tmainform.edcustomgenres.texthint
 msgid "Input custom genres, separated by comma"
 msgstr "Kişisel tür ekle, virgülle ayırarak"
@@ -1536,6 +1531,14 @@ msgstr "Favoriler"
 #: tmainform.lbdefaultdownloadpath.caption
 msgid "Choose the default download path:"
 msgstr "Varsayılan indirme yolunu seç:"
+
+#: tmainform.lbdownloadfiltercustomdatefrom.caption
+msgid "From:"
+msgstr ""
+
+#: tmainform.lbdownloadfiltercustomdateto.caption
+msgid "To:"
+msgstr ""
 
 #: tmainform.lbdroptargetopacity.caption
 msgid "Opacity"

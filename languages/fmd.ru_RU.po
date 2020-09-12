@@ -201,6 +201,10 @@ msgctxt "frmmain.rs_checking"
 msgid "Checking..."
 msgstr "Проверка..."
 
+#: frmmain.rs_custom
+msgid "Custom"
+msgstr ""
+
 #: frmmain.rs_dlgcannotconnecttoserver
 msgid "Cannot connect to the server."
 msgstr "Не удалось подключиться к серверу."
@@ -299,17 +303,9 @@ msgstr ""
 "Онгоинг\n"
 "<нет>"
 
-#: frmmain.rs_fiveyears
-msgid "Five years"
-msgstr "Пять лет"
-
 #: frmmain.rs_fmdalreadyrunning
 msgid "Free Manga Downloader already running!"
 msgstr "Бесплатный Manga Downloader уже запущен!"
-
-#: frmmain.rs_fouryears
-msgid "Four years"
-msgstr "Четыре года"
 
 #: frmmain.rs_hintfavoriteproblem
 msgid ""
@@ -360,6 +356,10 @@ msgstr "Сайт:"
 msgid "In progress"
 msgstr "В процессе"
 
+#: frmmain.rs_last7days
+msgid "Last 7 days"
+msgstr ""
+
 #: frmmain.rs_lblautochecknewchapterminute
 #, object-pascal-format
 msgctxt "frmmain.rs_lblautochecknewchapterminute"
@@ -398,17 +398,9 @@ msgctxt "frmmain.rs_modesearching"
 msgid "Mode: Searching..."
 msgstr "Режим: Поиск..."
 
-#: frmmain.rs_onemonth
-msgid "One month"
-msgstr "За месяц"
-
-#: frmmain.rs_oneweek
-msgid "One week"
-msgstr "За неделю"
-
-#: frmmain.rs_oneyear
-msgid "One year"
-msgstr "Год"
+#: frmmain.rs_olderthan6months
+msgid "Older than 6 months"
+msgstr ""
 
 #: frmmain.rs_optioncompress
 msgid ""
@@ -445,10 +437,6 @@ msgstr ""
 msgid "Selected: %d"
 msgstr "Выбрано: %d"
 
-#: frmmain.rs_sixmonths
-msgid "Six months"
-msgstr "Пол года"
-
 #: frmmain.rs_software
 msgid "Software"
 msgstr "Программа"
@@ -458,21 +446,13 @@ msgctxt "frmmain.rs_softwarepath"
 msgid "Path to the software (e.g. C:\\MangaDownloader)"
 msgstr "Путь к программе (например, C:\\MangaDownloader)"
 
-#: frmmain.rs_tenyears
-msgid "Ten years"
-msgstr "Десять лет"
-
-#: frmmain.rs_threeyears
-msgid "Three years"
-msgstr "Три года"
+#: frmmain.rs_thismonth
+msgid "This month"
+msgstr ""
 
 #: frmmain.rs_today
 msgid "Today"
 msgstr "Cегодня"
-
-#: frmmain.rs_twoyears
-msgid "Two years"
-msgstr "Два года"
 
 #: frmmain.rs_version
 msgid "Version"
@@ -842,11 +822,18 @@ msgstr "Фильтр"
 msgid "Reset value"
 msgstr "Сбросить том"
 
+#: tmainform.btndownloadfiltercustomdateapply.caption
+#, fuzzy
+msgctxt "tmainform.btndownloadfiltercustomdateapply.caption"
+msgid "Apply"
+msgstr "Принять"
+
 #: tmainform.btopenlog.caption
 msgid "Open log"
 msgstr "Открыть лог"
 
 #: tmainform.btoptionapply.caption
+msgctxt "tmainform.btoptionapply.caption"
 msgid "Apply"
 msgstr "Принять"
 
@@ -1383,6 +1370,14 @@ msgstr "Всегда запускать задачу с неудавшихся �
 msgid "Save PNG as JPEG"
 msgstr "Сохранять PNG как JPEG"
 
+#: tmainform.dedownloadfiltercustomdatefrom.text
+msgid "deDownloadFilterCustomDateFrom"
+msgstr ""
+
+#: tmainform.dedownloadfiltercustomdateto.text
+msgid "deDownloadFilterCustomDateTo"
+msgstr ""
+
 #: tmainform.edcustomgenres.texthint
 msgid "Input custom genres, separated by comma"
 msgstr "Ввод пользовательских жанров, разделенных запятой"
@@ -1535,6 +1530,14 @@ msgstr "Избранное"
 #: tmainform.lbdefaultdownloadpath.caption
 msgid "Choose the default download path:"
 msgstr "Выберите путь загрузки по умолчанию:"
+
+#: tmainform.lbdownloadfiltercustomdatefrom.caption
+msgid "From:"
+msgstr ""
+
+#: tmainform.lbdownloadfiltercustomdateto.caption
+msgid "To:"
+msgstr ""
 
 #: tmainform.lbdroptargetopacity.caption
 msgid "Opacity"

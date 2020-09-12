@@ -19,10 +19,10 @@ object MainForm: TMainForm
     Height = 610
     Top = 8
     Width = 853
-    ActivePage = tsOption
+    ActivePage = tsDownload
     Align = alClient
     ParentFont = False
-    TabIndex = 3
+    TabIndex = 0
     TabOrder = 0
     OnChange = pcMainChange
     object tsDownload: TTabSheet
@@ -47,7 +47,7 @@ object MainForm: TMainForm
           ClientHeight = 574
           object tvDownloadFilter: TTreeView
             Left = 0
-            Height = 574
+            Height = 446
             Top = 0
             Width = 200
             Align = alClient
@@ -57,6 +57,130 @@ object MainForm: TMainForm
             TabOrder = 0
             OnSelectionChanged = tvDownloadFilterSelectionChanged
             Options = [tvoAutoExpand, tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
+          end
+          object pnDownloadFilterCustomDate: TPanel
+            Left = 0
+            Height = 128
+            Top = 446
+            Width = 200
+            Align = alBottom
+            AutoSize = True
+            BevelOuter = bvNone
+            ChildSizing.LeftRightSpacing = 4
+            ChildSizing.TopBottomSpacing = 4
+            ClientHeight = 128
+            ClientWidth = 200
+            TabOrder = 1
+            object deDownloadFilterCustomDateFrom: TDateEdit
+              AnchorSideLeft.Control = pnDownloadFilterCustomDate
+              AnchorSideTop.Control = lbDownloadFilterCustomDateFrom
+              AnchorSideTop.Side = asrBottom
+              AnchorSideRight.Control = pnDownloadFilterCustomDate
+              AnchorSideRight.Side = asrBottom
+              Left = 4
+              Height = 23
+              Top = 19
+              Width = 192
+              CalendarDisplaySettings = [dsShowHeadings, dsShowDayNames]
+              DateOrder = doNone
+              ButtonWidth = 23
+              Anchors = [akTop, akLeft, akRight]
+              NumGlyphs = 1
+              MaxLength = 0
+              TabOrder = 0
+              Text = 'deDownloadFilterCustomDateFrom'
+            end
+            object deDownloadFilterCustomDateTo: TDateEdit
+              AnchorSideLeft.Control = pnDownloadFilterCustomDate
+              AnchorSideTop.Control = lbDownloadFilterCustomDateTo
+              AnchorSideTop.Side = asrBottom
+              AnchorSideRight.Control = pnDownloadFilterCustomDate
+              AnchorSideRight.Side = asrBottom
+              Left = 4
+              Height = 23
+              Top = 65
+              Width = 192
+              CalendarDisplaySettings = [dsShowHeadings, dsShowDayNames]
+              DateOrder = doNone
+              ButtonWidth = 23
+              Anchors = [akTop, akLeft, akRight]
+              NumGlyphs = 1
+              MaxLength = 0
+              TabOrder = 1
+              Text = 'deDownloadFilterCustomDateTo'
+            end
+            object lbDownloadFilterCustomDateFrom: TLabel
+              AnchorSideLeft.Control = pnDownloadFilterCustomDate
+              AnchorSideTop.Control = pnDownloadFilterCustomDate
+              Left = 4
+              Height = 15
+              Top = 4
+              Width = 31
+              Caption = 'From:'
+              ParentColor = False
+            end
+            object lbDownloadFilterCustomDateTo: TLabel
+              AnchorSideLeft.Control = pnDownloadFilterCustomDate
+              AnchorSideTop.Control = deDownloadFilterCustomDateFrom
+              AnchorSideTop.Side = asrBottom
+              Left = 4
+              Height = 15
+              Top = 50
+              Width = 15
+              BorderSpacing.Top = 8
+              Caption = 'To:'
+              ParentColor = False
+            end
+            object btnDownloadFilterCustomDateApply: TBitBtn
+              AnchorSideLeft.Control = pnDownloadFilterCustomDate
+              AnchorSideTop.Control = deDownloadFilterCustomDateTo
+              AnchorSideTop.Side = asrBottom
+              Left = 4
+              Height = 26
+              Top = 98
+              Width = 77
+              AutoSize = True
+              BorderSpacing.Top = 10
+              Caption = 'Apply'
+              Glyph.Data = {
+                36040000424D3604000000000000360000002800000010000000100000000100
+                2000000000000004000064000000640000000000000000000000000000000000
+                00050000001E000000320000003300000082000000830101014E000000330000
+                003300000022000000089C5106999C51065CA75C0D00B56A1800000000000000
+                00030000000F000000190000001A00000078D1C2C2FF0303037A0000001A0000
+                001A0000001100000004A75C0DCCA75C0DCCA95E0E5CB56A1800000000000000
+                000000000000000000000202020002020272C4B5B5FF05050578B76C1999B56A
+                18CCB56A18CCB56A18CCB56A18CCFFC538FFB56A18CCB76C195C000000000000
+                000000000000010101000101010001010174C4B5B5FF0909097EC37923CCFFE3
+                92FFFFD56AFFFFD15DFFFFD15DFFFFD15DFFFFD873FFC37923CC000000000000
+                00000000000000000000000000000000007AC4B5B5FF0B0B0B87D0852D99D287
+                2ECCD2872ECCD2872ECCD2872ECCFFE597FFD2872ECCD0852D5C000000000000
+                00000000000000000000000000000000007BC4B5B5FF0B0B0B89714C1F00D58A
+                3100D58A3100D98E3400DF9438CCDF9438CCDE93375CD2872E001B1B1B001616
+                16000404040000000000000000000000007BC4B5B5FF0B0B0B8912121200A870
+                2D00D58A3100E69B3D00E79C3E99E79C3E5CDF943800D2872E00363636002C2C
+                2C000808080000000000000000260000007BC4B5B5FF0B0B0B891717172F2525
+                25005C4A3300E69B3D00E89D3F00E89D3F00DF943800D2872E00363636002C2C
+                2C0008080800000000240000006AC7C6C6FFAFA4A4FFC4B2B2FF171717852525
+                252D353535006B594100E89D3F00E89D3F00DF943800D2872E00363636002C2C
+                2C000808082400000066CBCBCBFFC1C0C0FFAEA1A1FFBEACACFFD8C7C7FF2525
+                257E3535352A434343006F5D450097724300936D3F008C673A00363636002C2C
+                2C2408080866D1D1D1FFC3C3C3FFBBBABAFFAC9E9EFFB8A6A6FFCEBCBCFFDFCD
+                CDFF3535357743434328464646004646460046464600464646004B4B4B002C2C
+                2C66E2E2E2FFCFCFCFFFBDBDBDFFB7B5B5FFAB9C9CFFB4A2A2FFC7B5B5FFDCCA
+                CAFFEBDADAFF4343436F4E4E4E005151510051515100515151004F4F4F662C2C
+                2C66C1C1C1FFB4B4B4FFA9A9A9FF9D9C9CFF918A8AFF978E8EFFA59C9CFFB6AD
+                ADFFC5BCBCFF4343436F4F4F4F695151510051515100515151004F4F4F66EAEA
+                EAFFE6E6E6FFDEDEDEFFD5D5D5FFCECACAFFC4B5B5FFC9B8B8FFD6C4C4FFE4D2
+                D2FFF0DFDFFFF9E8E8FF4F4F4F695151510051515100515151004F4F4F4D2C2C
+                2C6608080866000000660000006A0000007B020202890B0B0B89171717852525
+                257E353535774343436F4F4F4F4F515151005151510051515100FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+                FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
+              }
+              OnClick = btnDownloadFilterCustomDateApplyClick
+              TabOrder = 2
+            end
           end
         end
         object pssDownloads: TPairSplitterSide
@@ -419,11 +543,11 @@ object MainForm: TMainForm
     object tsInformation: TTabSheet
       Caption = 'Manga Info'
       ChildSizing.TopBottomSpacing = 4
-      ClientHeight = 598
+      ClientHeight = 582
       ClientWidth = 845
       object psInfo: TPairSplitter
         Left = 0
-        Height = 590
+        Height = 574
         Top = 4
         Width = 845
         Align = alClient
@@ -431,18 +555,18 @@ object MainForm: TMainForm
         object pssInfoList: TPairSplitterSide
           Cursor = crArrow
           Left = 0
-          Height = 590
+          Height = 574
           Top = 0
           Width = 200
           ChildSizing.HorizontalSpacing = 4
           ChildSizing.VerticalSpacing = 4
           ClientWidth = 200
-          ClientHeight = 590
+          ClientHeight = 574
           object vtMangaList: TVirtualStringTree
             AnchorSideTop.Control = lbMode
             AnchorSideTop.Side = asrBottom
             Left = 0
-            Height = 509
+            Height = 493
             Top = 81
             Width = 200
             Align = alBottom
@@ -683,14 +807,14 @@ object MainForm: TMainForm
         object pssInfo: TPairSplitterSide
           Cursor = crArrow
           Left = 205
-          Height = 590
+          Height = 574
           Top = 0
           Width = 640
           ClientWidth = 640
-          ClientHeight = 590
+          ClientHeight = 574
           object pcInfo: TPageControl
             Left = 0
-            Height = 590
+            Height = 574
             Top = 0
             Width = 640
             ActivePage = tsInfoManga
@@ -700,11 +824,11 @@ object MainForm: TMainForm
             object tsInfoManga: TTabSheet
               Caption = 'Info'
               ChildSizing.TopBottomSpacing = 4
-              ClientHeight = 562
+              ClientHeight = 546
               ClientWidth = 632
               object sbInformation: TScrollBox
                 Left = 0
-                Height = 554
+                Height = 538
                 Top = 4
                 Width = 632
                 HorzScrollBar.Page = 305
@@ -714,7 +838,7 @@ object MainForm: TMainForm
                 BorderStyle = bsNone
                 ChildSizing.HorizontalSpacing = 4
                 ChildSizing.VerticalSpacing = 4
-                ClientHeight = 554
+                ClientHeight = 538
                 ClientWidth = 632
                 TabOrder = 0
                 object pnInfomation: TPanel
@@ -878,14 +1002,14 @@ object MainForm: TMainForm
                 end
                 object pnChapterList: TPanel
                   Left = 0
-                  Height = 293
+                  Height = 277
                   Top = 261
                   Width = 632
                   Align = alClient
                   BevelOuter = bvNone
                   ChildSizing.HorizontalSpacing = 4
                   ChildSizing.VerticalSpacing = 4
-                  ClientHeight = 293
+                  ClientHeight = 277
                   ClientWidth = 632
                   TabOrder = 2
                   object clbChapterList: TVirtualStringTree
@@ -894,7 +1018,7 @@ object MainForm: TMainForm
                     AnchorSideRight.Control = btChecks
                     AnchorSideBottom.Control = btDownload
                     Left = 0
-                    Height = 203
+                    Height = 187
                     Top = 0
                     Width = 602
                     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -929,7 +1053,7 @@ object MainForm: TMainForm
                     AnchorSideBottom.Control = btReadOnline
                     Left = 502
                     Height = 26
-                    Top = 207
+                    Top = 191
                     Width = 100
                     Anchors = [akLeft, akRight, akBottom]
                     AutoSize = True
@@ -982,7 +1106,7 @@ object MainForm: TMainForm
                     AnchorSideBottom.Side = asrBottom
                     Left = 0
                     Height = 19
-                    Top = 267
+                    Top = 251
                     Width = 498
                     Anchors = [akTop, akLeft, akRight]
                     Caption = 'Add to download list as stopped task'
@@ -998,7 +1122,7 @@ object MainForm: TMainForm
                     AnchorSideBottom.Control = btAddToFavorites
                     Left = 502
                     Height = 26
-                    Top = 237
+                    Top = 221
                     Width = 130
                     Anchors = [akLeft, akRight, akBottom]
                     AutoSize = True
@@ -1097,7 +1221,7 @@ object MainForm: TMainForm
                     AnchorSideRight.Side = asrBottom
                     Left = 502
                     Height = 26
-                    Top = 267
+                    Top = 251
                     Width = 130
                     Anchors = [akRight, akBottom]
                     AutoSize = True
@@ -1147,7 +1271,7 @@ object MainForm: TMainForm
                     AnchorSideBottom.Control = edSaveTo
                     Left = 0
                     Height = 15
-                    Top = 218
+                    Top = 202
                     Width = 41
                     Anchors = [akLeft, akBottom]
                     Caption = 'Save to:'
@@ -1212,7 +1336,7 @@ object MainForm: TMainForm
                     AnchorSideBottom.Control = cbAddAsStopped
                     Left = 0
                     Height = 23
-                    Top = 237
+                    Top = 221
                     Width = 498
                     Anchors = [akTop, akLeft, akRight]
                     ButtonWidth = 23
@@ -1270,7 +1394,7 @@ object MainForm: TMainForm
                     Left = 606
                     Height = 26
                     Hint = 'Split download'
-                    Top = 207
+                    Top = 191
                     Width = 26
                     Anchors = [akTop, akRight, akBottom]
                     Glyph.Data = {
@@ -1317,18 +1441,18 @@ object MainForm: TMainForm
             object tsinfoFilterAdv: TTabSheet
               Caption = 'Filter'
               ChildSizing.TopBottomSpacing = 4
-              ClientHeight = 532
+              ClientHeight = 546
               ClientWidth = 632
               object sbFilter: TScrollBox
                 Left = 0
-                Height = 524
+                Height = 538
                 Top = 4
                 Width = 632
                 HorzScrollBar.Page = 488
                 VertScrollBar.Page = 416
                 Align = alClient
                 BorderStyle = bsNone
-                ClientHeight = 524
+                ClientHeight = 538
                 ClientWidth = 632
                 TabOrder = 0
                 object pnCustomGenre: TPanel
@@ -2315,13 +2439,13 @@ object MainForm: TMainForm
     object tsFavorites: TTabSheet
       Caption = 'Favorites'
       ChildSizing.TopBottomSpacing = 4
-      ClientHeight = 598
+      ClientHeight = 582
       ClientWidth = 845
       object vtFavorites: TVirtualStringTree
         AnchorSideTop.Control = edFavoritesSearch
         AnchorSideTop.Side = asrBottom
         Left = 0
-        Height = 564
+        Height = 548
         Top = 30
         Width = 845
         Align = alBottom

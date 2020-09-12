@@ -204,6 +204,10 @@ msgctxt "frmmain.rs_checking"
 msgid "Checking..."
 msgstr "Memeriksa..."
 
+#: frmmain.rs_custom
+msgid "Custom"
+msgstr ""
+
 #: frmmain.rs_dlgcannotconnecttoserver
 msgid "Cannot connect to the server."
 msgstr "Tidak dapat terhubung ke peladen."
@@ -302,17 +306,9 @@ msgstr ""
 "Bersambung\n"
 "<tidak ada>"
 
-#: frmmain.rs_fiveyears
-msgid "Five years"
-msgstr "Lima tahun"
-
 #: frmmain.rs_fmdalreadyrunning
 msgid "Free Manga Downloader already running!"
 msgstr "Free Manga Downloader sudah berjalan!"
-
-#: frmmain.rs_fouryears
-msgid "Four years"
-msgstr "Empat tahun"
 
 #: frmmain.rs_hintfavoriteproblem
 msgid ""
@@ -363,6 +359,10 @@ msgstr "Situs:"
 msgid "In progress"
 msgstr "Dalam proses"
 
+#: frmmain.rs_last7days
+msgid "Last 7 days"
+msgstr ""
+
 #: frmmain.rs_lblautochecknewchapterminute
 #, object-pascal-format
 msgctxt "frmmain.rs_lblautochecknewchapterminute"
@@ -401,17 +401,9 @@ msgctxt "frmmain.rs_modesearching"
 msgid "Mode: Searching..."
 msgstr "Mode: Mencari..."
 
-#: frmmain.rs_onemonth
-msgid "One month"
-msgstr "Satu bulan"
-
-#: frmmain.rs_oneweek
-msgid "One week"
-msgstr "Satu minggu"
-
-#: frmmain.rs_oneyear
-msgid "One year"
-msgstr "Satu tahun"
+#: frmmain.rs_olderthan6months
+msgid "Older than 6 months"
+msgstr ""
 
 #: frmmain.rs_optioncompress
 msgid ""
@@ -448,10 +440,6 @@ msgstr "Revisi"
 msgid "Selected: %d"
 msgstr "Dipilih: %d"
 
-#: frmmain.rs_sixmonths
-msgid "Six months"
-msgstr "Enam bulan"
-
 #: frmmain.rs_software
 msgid "Software"
 msgstr "Perangkat lunak"
@@ -461,21 +449,13 @@ msgctxt "frmmain.rs_softwarepath"
 msgid "Path to the software (e.g. C:\\MangaDownloader)"
 msgstr "Lokasi ke perangkat lunak (misalnya C:\\MangaDownloader)"
 
-#: frmmain.rs_tenyears
-msgid "Ten years"
-msgstr "Sepuluh tahun"
-
-#: frmmain.rs_threeyears
-msgid "Three years"
-msgstr "Tiga tahun"
+#: frmmain.rs_thismonth
+msgid "This month"
+msgstr ""
 
 #: frmmain.rs_today
 msgid "Today"
 msgstr "Hari ini"
-
-#: frmmain.rs_twoyears
-msgid "Two years"
-msgstr "Dua tahun"
 
 #: frmmain.rs_version
 msgid "Version"
@@ -845,11 +825,18 @@ msgstr "Saring"
 msgid "Reset value"
 msgstr "Atur Ulang"
 
+#: tmainform.btndownloadfiltercustomdateapply.caption
+#, fuzzy
+msgctxt "tmainform.btndownloadfiltercustomdateapply.caption"
+msgid "Apply"
+msgstr "Terapkan"
+
 #: tmainform.btopenlog.caption
 msgid "Open log"
 msgstr "Buka pencatatan"
 
 #: tmainform.btoptionapply.caption
+msgctxt "tmainform.btoptionapply.caption"
 msgid "Apply"
 msgstr "Terapkan"
 
@@ -1386,6 +1373,14 @@ msgstr "Selalu mulai unduhan dari bab yang gagal"
 msgid "Save PNG as JPEG"
 msgstr "Simpan PNG sebagai JPEG"
 
+#: tmainform.dedownloadfiltercustomdatefrom.text
+msgid "deDownloadFilterCustomDateFrom"
+msgstr ""
+
+#: tmainform.dedownloadfiltercustomdateto.text
+msgid "deDownloadFilterCustomDateTo"
+msgstr ""
+
 #: tmainform.edcustomgenres.texthint
 msgid "Input custom genres, separated by comma"
 msgstr "Masukkan genre pilihan, dipisahkan dengan koma"
@@ -1538,6 +1533,14 @@ msgstr "Kesukaan"
 #: tmainform.lbdefaultdownloadpath.caption
 msgid "Choose the default download path:"
 msgstr "Pilih lokasi unduhan asali:"
+
+#: tmainform.lbdownloadfiltercustomdatefrom.caption
+msgid "From:"
+msgstr ""
+
+#: tmainform.lbdownloadfiltercustomdateto.caption
+msgid "To:"
+msgstr ""
 
 #: tmainform.lbdroptargetopacity.caption
 msgid "Opacity"

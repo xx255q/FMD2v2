@@ -200,6 +200,10 @@ msgctxt "frmmain.rs_checking"
 msgid "Checking..."
 msgstr "Checking..."
 
+#: frmmain.rs_custom
+msgid "Custom"
+msgstr ""
+
 #: frmmain.rs_dlgcannotconnecttoserver
 msgid "Cannot connect to the server."
 msgstr "Cannot connect to the server."
@@ -298,17 +302,9 @@ msgstr ""
 "Ongoing\n"
 "<none>"
 
-#: frmmain.rs_fiveyears
-msgid "Five years"
-msgstr "Five years"
-
 #: frmmain.rs_fmdalreadyrunning
 msgid "Free Manga Downloader already running!"
 msgstr "Free Manga Downloader already running!"
-
-#: frmmain.rs_fouryears
-msgid "Four years"
-msgstr "Four years"
 
 #: frmmain.rs_hintfavoriteproblem
 msgid ""
@@ -359,6 +355,10 @@ msgstr "Website:"
 msgid "In progress"
 msgstr "In progress"
 
+#: frmmain.rs_last7days
+msgid "Last 7 days"
+msgstr ""
+
 #: frmmain.rs_lblautochecknewchapterminute
 #, object-pascal-format
 msgctxt "frmmain.rs_lblautochecknewchapterminute"
@@ -397,17 +397,9 @@ msgctxt "frmmain.rs_modesearching"
 msgid "Mode: Searching..."
 msgstr "Mode: Searching..."
 
-#: frmmain.rs_onemonth
-msgid "One month"
-msgstr "One month"
-
-#: frmmain.rs_oneweek
-msgid "One week"
-msgstr "One week"
-
-#: frmmain.rs_oneyear
-msgid "One year"
-msgstr "One year"
+#: frmmain.rs_olderthan6months
+msgid "Older than 6 months"
+msgstr ""
 
 #: frmmain.rs_optioncompress
 msgid ""
@@ -444,10 +436,6 @@ msgstr "Revision"
 msgid "Selected: %d"
 msgstr "Selected: %d"
 
-#: frmmain.rs_sixmonths
-msgid "Six months"
-msgstr "Six months"
-
 #: frmmain.rs_software
 msgid "Software"
 msgstr "Software"
@@ -457,21 +445,13 @@ msgctxt "frmmain.rs_softwarepath"
 msgid "Path to the software (e.g. C:\\MangaDownloader)"
 msgstr "Path to the software (e.g. C:\\MangaDownloader)"
 
-#: frmmain.rs_tenyears
-msgid "Ten years"
-msgstr "Ten years"
-
-#: frmmain.rs_threeyears
-msgid "Three years"
-msgstr "Three years"
+#: frmmain.rs_thismonth
+msgid "This month"
+msgstr ""
 
 #: frmmain.rs_today
 msgid "Today"
 msgstr "Today"
-
-#: frmmain.rs_twoyears
-msgid "Two years"
-msgstr "Two years"
 
 #: frmmain.rs_version
 msgid "Version"
@@ -841,11 +821,18 @@ msgstr "Filter"
 msgid "Reset value"
 msgstr "Reset value"
 
+#: tmainform.btndownloadfiltercustomdateapply.caption
+#, fuzzy
+msgctxt "tmainform.btndownloadfiltercustomdateapply.caption"
+msgid "Apply"
+msgstr "Apply"
+
 #: tmainform.btopenlog.caption
 msgid "Open log"
 msgstr "Open log"
 
 #: tmainform.btoptionapply.caption
+msgctxt "tmainform.btoptionapply.caption"
 msgid "Apply"
 msgstr "Apply"
 
@@ -1382,6 +1369,14 @@ msgstr "Always start task from failed chapters"
 msgid "Save PNG as JPEG"
 msgstr "Save PNG as JPEG"
 
+#: tmainform.dedownloadfiltercustomdatefrom.text
+msgid "deDownloadFilterCustomDateFrom"
+msgstr ""
+
+#: tmainform.dedownloadfiltercustomdateto.text
+msgid "deDownloadFilterCustomDateTo"
+msgstr ""
+
 #: tmainform.edcustomgenres.texthint
 msgid "Input custom genres, separated by comma"
 msgstr "Input custom genres, separated by comma"
@@ -1534,6 +1529,14 @@ msgstr "Favorites"
 #: tmainform.lbdefaultdownloadpath.caption
 msgid "Choose the default download path:"
 msgstr "Choose the default download path:"
+
+#: tmainform.lbdownloadfiltercustomdatefrom.caption
+msgid "From:"
+msgstr ""
+
+#: tmainform.lbdownloadfiltercustomdateto.caption
+msgid "To:"
+msgstr ""
 
 #: tmainform.lbdroptargetopacity.caption
 msgid "Opacity"

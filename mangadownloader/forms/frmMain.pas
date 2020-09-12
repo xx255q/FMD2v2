@@ -25,7 +25,7 @@ uses
   uSilentThread, uMisc, uGetMangaInfosThread, frmDropTarget, frmAccountManager,
   frmWebsiteOptionCustom, frmCustomColor, frmLogger, frmTransferFavorites,
   frmLuaModulesUpdater, CheckUpdate, DBDataProcess,
-  SimpleTranslator, httpsendthread, SimpleException;
+  SimpleTranslator, httpsendthread, DateUtils, SimpleException;
 
 type
 
@@ -33,6 +33,7 @@ type
 
   TMainForm = class(TForm)
     appPropertiesMain: TApplicationProperties;
+    btnDownloadFilterCustomDateApply: TBitBtn;
     btOpenLog: TBitBtn;
     btClearLogFile: TBitBtn;
     btAddToFavorites: TBitBtn;
@@ -79,6 +80,8 @@ type
     ckEnableLogging: TCheckBox;
     cbWebPSaveAs: TComboBox;
     cbPNGCompressionLevel: TComboBox;
+    deDownloadFilterCustomDateFrom: TDateEdit;
+    deDownloadFilterCustomDateTo: TDateEdit;
     edDownloadsSearch: TEditButton;
     edFavoritesSearch: TEditButton;
     edFilterMangaInfoChapters: TEditButton;
@@ -98,6 +101,8 @@ type
     gbOptionsConnectionsUpdateList: TGroupBox;
     gbOptionsConnectionsGeneral: TGroupBox;
     IconDLLeft: TImageList;
+    lbDownloadFilterCustomDateFrom: TLabel;
+    lbDownloadFilterCustomDateTo: TLabel;
     lbOptionMaxFavoriteThreads: TLabel;
     lbOptionDefaultUserAgent: TLabel;
     lbOptionMaxUpdateListThreads: TLabel;
@@ -146,6 +151,7 @@ type
     miChapterListHideDownloaded: TMenuItem;
     miAbortSilentThread: TMenuItem;
     mmChangelog: TMemo;
+    pnDownloadFilterCustomDate: TPanel;
     pnAboutVersion: TPanel;
     pnThumb: TPanel;
     pnInfos: TPanel;
@@ -454,6 +460,7 @@ type
     procedure btDonateClick(Sender: TObject);
     procedure btDownloadSplitClick(Sender: TObject);
     procedure btFavoritesImportClick(Sender: TObject);
+    procedure btnDownloadFilterCustomDateApplyClick(Sender: TObject);
     procedure btOpenLogClick(Sender: TObject);
     procedure btReadOnlineClick(Sender: TObject);
     procedure btMangaListSearchClearClick(Sender: TObject);
@@ -735,8 +742,10 @@ type
     procedure InitCheckboxes;
 
     // download task filters
+    procedure FilterDownloadsByJDN(const lowJDN, highJDN: Integer);
     procedure tvDownloadFilterRefresh(const ResourceChanged: Boolean = False);
     procedure vtDownloadUpdateFilters(const RefreshTree: Boolean = True);
+    procedure FilterDownloadByCustomDate;
     
     procedure vtFavoritesFilterRefresh;
 
@@ -938,15 +947,10 @@ resourcestring
   RS_History = 'History';
   RS_Today = 'Today';
   RS_Yesterday = 'Yesterday';
-  RS_OneWeek = 'One week';
-  RS_OneMonth = 'One month';
-  RS_SixMonths = 'Six months';
-  RS_OneYear = 'One year';
-  RS_TwoYears = 'Two years';
-  RS_ThreeYears = 'Three years';
-  RS_FourYears = 'Four years';
-  RS_FiveYears = 'Five years';
-  RS_TenYears = 'Ten years';
+  RS_Last7days = 'Last 7 days';
+  RS_ThisMonth = 'This month';
+  RS_OlderThan6months = 'Older than 6 months';
+  RS_Custom = 'Custom';
   RS_Import = 'Import';
   RS_Software = 'Software';
   RS_SoftwarePath = 'Path to the software (e.g. C:\MangaDownloader)';
@@ -1170,6 +1174,7 @@ begin
   Application.OnQueryEndSession := @HandleApplicationQueryEndSession;
   Application.OnEndSession := @HandleApplicationEndSession;
 
+  isStartup := True;
   isRunDownloadFilter := False;
   isUpdating := False;
   isPendingExitCounter:=False;
@@ -1947,10 +1952,19 @@ begin
   vtDownload.Repaint;
 end;
 
-procedure TMainForm.tmStartupTimer(Sender: TObject);
+procedure DumpLoadedModules;
 var
   i: Integer;
   s: string;
+begin
+  s:=#10;
+  for i:=0 to Modules.Count-1 do
+    if Modules.Count<>0 then
+      s+=Modules[i].ID+' '+Modules[i].Name+#10;
+  Logger.Send('loaded modules: '+IntToStr(Modules.Count),s);
+end;
+
+procedure TMainForm.tmStartupTimer(Sender: TObject);
 begin
   try
     if Sender=tmStartup then
@@ -1959,6 +1973,8 @@ begin
     //load lua modules
     ScanLuaWebsiteModulesFile;
     AddToAboutStatus('Modules', IntToStr(Modules.Count));
+    if AppParams.IndexOf('--dump-loaded-modules') <> -1 then
+      DumpLoadedModules;
 
     Modules.LoadFromFile;
     WebsiteOptionCustomForm.CreateWebsiteOption;
@@ -1969,28 +1985,15 @@ begin
     LoadMangaOptions;
     LoadOptions;
     ApplyOptions;
-  finally
-    isStartup := False;
-  end;
-
-  if AppParams.IndexOf('--dump-loaded-modules') <> -1 then
-  begin
-    s:=#10;
-    for i:=0 to Modules.Count-1 do
-      if Modules.Count<>0 then
-        s+=Modules[i].ID+' '+Modules[i].Name+#10;
-    Logger.Send('loaded modules: '+IntToStr(Modules.Count),s);
+  except
+    on E: Exception do
+      Logger.SendException('tmStartup Error!', E);
   end;
 
   //restore everything after all modules loaded
   DLManager.Restore;
-  UpdateVtDownload;
-
   FavoriteManager.Restore;
-  UpdateVtFavorites;
 
-  if cbSelectManga.ItemIndex <> -1 then
-    OpenDataDB(TModuleContainer(currentWebsite).ID);
   if OptionAutoCheckLatestVersion then
   begin
     btCheckLatestVersionClick(btCheckLatestVersion);
@@ -2004,6 +2007,14 @@ begin
   DLManager.CheckAndActiveTaskAtStartup;
 
   DoBackupToday;
+
+  isStartup := False;
+  // effective after startup
+  UpdateVtDownload;
+  UpdateVtFavorites;
+
+  if cbSelectManga.ItemIndex <> -1 then
+    OpenDataDB(TModuleContainer(currentWebsite).ID);
 end;
 
 procedure TMainForm.medURLCutClick(Sender: TObject);
@@ -2466,17 +2477,10 @@ begin
     Node := Add(nil, RS_History, 4);
     Add(Node, RS_Today, 8);
     Add(Node, RS_Yesterday, 8);
-    Add(Node, RS_OneWeek, 8);
-    Add(Node, RS_OneMonth, 8);
-    Add(Node, RS_SixMonths, 8);
-    Add(Node, RS_OneYear, 8);
-    Add(Node, RS_TwoYears, 8);
-    Add(Node, RS_ThreeYears, 8);
-    Add(Node, RS_FourYears, 8);
-    Add(Node, RS_FiveYears, 8);
-    Add(Node, RS_TenYears, 8);
-
-    Items[settingsfile.ReadInteger('general', 'DownloadFilterSelect', 0)].Selected := True;
+    Add(Node, RS_Last7days, 8);
+    Add(Node, RS_ThisMonth, 8);
+    Add(Node, RS_OlderThan6months, 8);
+    Add(Node, RS_Custom, 8);
   end;
 end;
 
@@ -2875,6 +2879,11 @@ begin
   end;
 end;
 
+procedure TMainForm.btnDownloadFilterCustomDateApplyClick(Sender: TObject);
+begin
+  FilterDownloadByCustomDate;
+end;
+
 procedure TMainForm.btOpenLogClick(Sender: TObject);
 begin
   FormLogger.Show;
@@ -2942,6 +2951,11 @@ begin
     end;
     Key := VK_UNKNOWN;
   end;
+end;
+
+procedure TMainForm.FilterDownloadByCustomDate;
+begin
+  FilterDownloadsByJDN(DateToJDN(deDownloadFilterCustomDateFrom.Date), DateToJDN(deDownloadFilterCustomDateTo.Date));
 end;
 
 procedure TMainForm.edDownloadsSearchButtonClick(Sender: TObject);
@@ -4011,8 +4025,6 @@ begin
   vtDownloadUpdateFilters(False);
   if OptionShowDownloadsTabOnNewTasks then
     pcMain.ActivePage := tsDownload;
-  settingsfile.WriteInteger('general', 'DownloadFilterSelect',
-    tvDownloadFilter.Selected.AbsoluteIndex);
 end;
 
 procedure TMainForm.UniqueInstanceFMDOtherInstance(Sender: TObject;
@@ -4664,19 +4676,32 @@ begin
         // childs
         Items[7].Text := RS_Today;
         Items[8].Text := RS_Yesterday;
-        Items[9].Text := RS_OneWeek;
-        Items[10].Text := RS_OneMonth;
-        Items[11].Text := RS_SixMonths;
-        Items[12].Text := RS_OneYear;
-        Items[13].Text := RS_TwoYears;
-        Items[14].Text := RS_ThreeYears;
-        Items[15].Text := RS_FourYears;
-        Items[16].Text := RS_FiveYears;
-        Items[17].Text := RS_TenYears;
+        Items[9].Text := RS_Last7days;
+        Items[10].Text := RS_ThisMonth;
+        Items[11].Text := RS_OlderThan6months;
+        Items[12].Text := RS_Custom;
       end;
     finally
       tvDownloadFilter.EndUpdate;
     end;
+end;
+
+procedure TMainForm.FilterDownloadsByJDN(const lowJDN, highJDN: Integer);
+var
+  jdn: Integer;
+  xNode: PVirtualNode;
+begin
+  xNode := vtDownload.GetFirst();
+  while Assigned(xNode) do
+  begin
+    with DLManager.Items[xNode^.Index] do
+    begin
+      jdn := DateToJDN(DownloadInfo.DateAdded);
+      Visible := (jdn >= lowJDN) and (jdn <= highJDN);;
+      vtDownload.IsVisible[xNode] := Visible;
+    end;
+    xNode := vtDownload.GetNext(xNode);
+  end;
 end;
 
 procedure TMainForm.vtDownloadUpdateFilters(const RefreshTree: Boolean);
@@ -4704,24 +4729,6 @@ var
     end;
   end;
 
-  procedure ShowTasksOnCertainDays(const L, H: Integer);
-  var
-    jdn: Integer;
-    xNode: PVirtualNode;
-  begin
-    xNode := vtDownload.GetFirst();
-    while Assigned(xNode) do
-    begin
-      with DLManager.Items[xNode^.Index] do
-      begin
-        jdn := DateToJDN(DownloadInfo.DateAdded);
-        Visible := (jdn >= L) and (jdn <= H);;
-        vtDownload.IsVisible[xNode] := Visible;
-      end;
-      xNode := vtDownload.GetNext(xNode);
-    end;
-  end;
-
   procedure ShowDisabled;
   var
     xNode: PVirtualNode;
@@ -4739,6 +4746,7 @@ var
   end;
 
 begin
+  if isStartup then Exit;
   if tvDownloadFilter.Selected = nil then Exit;
 
   vtDownload.BeginUpdate;
@@ -4747,27 +4755,40 @@ begin
       vtDownload.RootNodeCount := DLManager.Count;
 
     // filter download list
-    if tvDownloadFilter.Selected.AbsoluteIndex > 5 then
-      ACurrentJDN := DateToJDN(Now);
-    case tvDownloadFilter.Selected.AbsoluteIndex of
-      0, 6: ShowTasks;
-      1: ShowTasks([STATUS_FINISH]);
-      2: ShowTasks([STATUS_WAIT, STATUS_PREPARE, STATUS_DOWNLOAD, STATUS_COMPRESS]);
-      3: ShowTasks([STATUS_STOP]);
-      4: ShowTasks([STATUS_PROBLEM, STATUS_FAILED]);
-      5: ShowDisabled;
+    if tvDownloadFilter.Selected.AbsoluteIndex = 12 then // custom date filter
+    begin
+      if pnDownloadFilterCustomDate.Visible = false then
+        pnDownloadFilterCustomDate.Visible := True;
+      FilterDownloadByCustomDate;
+    end
+    else
+    begin
+      if pnDownloadFilterCustomDate.Visible then
+        pnDownloadFilterCustomDate.Visible := False;
+      case tvDownloadFilter.Selected.AbsoluteIndex of
+        0, 6: ShowTasks;
+        1: ShowTasks([STATUS_FINISH]);
+        2: ShowTasks([STATUS_WAIT, STATUS_PREPARE, STATUS_DOWNLOAD, STATUS_COMPRESS]);
+        3: ShowTasks([STATUS_STOP]);
+        4: ShowTasks([STATUS_PROBLEM, STATUS_FAILED]);
+        5: ShowDisabled;
 
-      7: ShowTasksOnCertainDays(ACurrentJDN, ACurrentJDN);
-      8: ShowTasksOnCertainDays(ACurrentJDN - 1, ACurrentJDN);
-      9: ShowTasksOnCertainDays(ACurrentJDN - 7, ACurrentJDN);
-      10: ShowTasksOnCertainDays(ACurrentJDN - 30, ACurrentJDN);
-      11: ShowTasksOnCertainDays(ACurrentJDN - 180, ACurrentJDN);
-      12: ShowTasksOnCertainDays(ACurrentJDN - 365, ACurrentJDN);
-      13: ShowTasksOnCertainDays(ACurrentJDN - 730, ACurrentJDN);
-      14: ShowTasksOnCertainDays(ACurrentJDN - 1095, ACurrentJDN);
-      15: ShowTasksOnCertainDays(ACurrentJDN - 1460, ACurrentJDN);
-      16: ShowTasksOnCertainDays(ACurrentJDN - 1825, ACurrentJDN);
-      17: ShowTasksOnCertainDays(ACurrentJDN - 3650, ACurrentJDN);
+
+        7: begin // today
+             ACurrentJDN := DateToJDN(Now);
+             FilterDownloadsByJDN(ACurrentJDN, ACurrentJDN);
+           end;
+        8: begin // yesterday
+             ACurrentJDN := DateToJDN(Now)-1;
+             FilterDownloadsByJDN(ACurrentJDN, ACurrentJDN);
+           end;
+        9: begin // last 7 days
+             ACurrentJDN := DateToJDN(Now);
+             FilterDownloadsByJDN(ACurrentJDN - 7, ACurrentJDN);
+           end;
+        10: FilterDownloadsByJDN(DateToJDN(StartOfTheMonth(Now)), DateToJDN(Now)); // this month
+        11: FilterDownloadsByJDN(0, DateToJDN(IncMonth(-6))); // older than 6 months
+      end;
     end;
   finally
     vtDownload.EndUpdate;
@@ -5794,6 +5815,12 @@ begin
     ToolBarDownloadLeft.Visible := ReadBool('view', 'ShowDownloadsToolbarLeft', True);
     tbDownloadDeleteCompleted.Visible := ReadBool('view', 'ShowDownloadsToolbarDeleteAll', False);
 
+    // misc form components
+    tvDownloadFilter.Items[ReadInteger('general', 'DownloadFilterSelect', 0)].Selected := True;
+
+    deDownloadFilterCustomDateFrom.Date := ReadDate('DownloadFilter', 'CustomFrom', Now);
+    deDownloadFilterCustomDateTo.Date := ReadDate('DownloadFilter', 'CustomTo', Now);
+
     restorevt(vtDownload, 'vtDownload');
     DLManager.SortColumn := vtDownload.Header.SortColumn;
     DLManager.SortDirection := Boolean(vtDownload.Header.SortDirection);
@@ -5851,6 +5878,12 @@ begin
       WriteInteger('form', 'MainFormWidth', Width);
       WriteInteger('form', 'MainFormHeight', Height);
     end;
+
+    // misc form components
+    WriteInteger('general', 'DownloadFilterSelect', tvDownloadFilter.Selected.AbsoluteIndex);
+
+    WriteDate('DownloadFilter', 'CustomFrom', deDownloadFilterCustomDateFrom.Date);
+    WriteDate('DownloadFilter', 'CustomTo', deDownloadFilterCustomDateTo.Date);
 
     savevt(vtDownload, 'vtDownload');
     savevt(vtFavorites, 'vtFavorites');

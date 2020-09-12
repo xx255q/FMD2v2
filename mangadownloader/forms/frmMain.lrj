@@ -1,6 +1,11 @@
 {"version":1,"strings":[
 {"hash":57972706,"name":"tmainform.caption","sourcebytes":[70,114,101,101,32,77,97,110,103,97,32,68,111,119,110,108,111,97,100,101,114],"value":"Free Manga Downloader"},
 {"hash":240327891,"name":"tmainform.tsdownload.caption","sourcebytes":[68,111,119,110,108,111,97,100,115],"value":"Downloads"},
+{"hash":161788541,"name":"tmainform.dedownloadfiltercustomdatefrom.text","sourcebytes":[100,101,68,111,119,110,108,111,97,100,70,105,108,116,101,114,67,117,115,116,111,109,68,97,116,101,70,114,111,109],"value":"deDownloadFilterCustomDateFrom"},
+{"hash":153724879,"name":"tmainform.dedownloadfiltercustomdateto.text","sourcebytes":[100,101,68,111,119,110,108,111,97,100,70,105,108,116,101,114,67,117,115,116,111,109,68,97,116,101,84,111],"value":"deDownloadFilterCustomDateTo"},
+{"hash":5084682,"name":"tmainform.lbdownloadfiltercustomdatefrom.caption","sourcebytes":[70,114,111,109,58],"value":"From:"},
+{"hash":23338,"name":"tmainform.lbdownloadfiltercustomdateto.caption","sourcebytes":[84,111,58],"value":"To:"},
+{"hash":4749113,"name":"tmainform.btndownloadfiltercustomdateapply.caption","sourcebytes":[65,112,112,108,121],"value":"Apply"},
 {"hash":204655756,"name":"tmainform.tbdownloadresumeall.caption","sourcebytes":[82,101,115,117,109,101,32,65,108,108],"value":"Resume All"},
 {"hash":190989196,"name":"tmainform.tbdownloadstopall.caption","sourcebytes":[83,116,111,112,32,65,108,108],"value":"Stop All"},
 {"hash":235571507,"name":"tmainform.tbdownloaddeletecompleted.caption","sourcebytes":[68,101,108,101,116,101,32,97,108,108,32,99,111,109,112,108,101,116,101,100,32,116,97,115,107,115],"value":"Delete all completed tasks"},
