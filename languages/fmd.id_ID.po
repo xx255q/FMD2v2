@@ -206,7 +206,7 @@ msgstr "Memeriksa..."
 
 #: frmmain.rs_custom
 msgid "Custom"
-msgstr ""
+msgstr "Pilihan"
 
 #: frmmain.rs_dlgcannotconnecttoserver
 msgid "Cannot connect to the server."
@@ -361,7 +361,7 @@ msgstr "Dalam proses"
 
 #: frmmain.rs_last7days
 msgid "Last 7 days"
-msgstr ""
+msgstr "7 hari terakhir"
 
 #: frmmain.rs_lblautochecknewchapterminute
 #, object-pascal-format
@@ -403,7 +403,7 @@ msgstr "Mode: Mencari..."
 
 #: frmmain.rs_olderthan6months
 msgid "Older than 6 months"
-msgstr ""
+msgstr "Lebih lama dari 6 bulan"
 
 #: frmmain.rs_optioncompress
 msgid ""
@@ -451,7 +451,7 @@ msgstr "Lokasi ke perangkat lunak (misalnya C:\\MangaDownloader)"
 
 #: frmmain.rs_thismonth
 msgid "This month"
-msgstr ""
+msgstr "Bulan ini"
 
 #: frmmain.rs_today
 msgid "Today"
@@ -1514,7 +1514,7 @@ msgstr "Umum"
 
 #: tmainform.gboptionsconnectionsupdatelist.caption
 msgid "Update list"
-msgstr ""
+msgstr "Pemutakhiran daftar"
 
 #: tmainform.gboptionsconnectiosfavorites.caption
 #, fuzzy
@@ -1528,11 +1528,11 @@ msgstr "Pilih lokasi unduhan asali:"
 
 #: tmainform.lbdownloadfiltercustomdatefrom.caption
 msgid "From:"
-msgstr ""
+msgstr "Dari:"
 
 #: tmainform.lbdownloadfiltercustomdateto.caption
 msgid "To:"
-msgstr ""
+msgstr "Sampai:"
 
 #: tmainform.lbdroptargetopacity.caption
 msgid "Opacity"
@@ -1734,7 +1734,7 @@ msgstr ""
 
 #: tmainform.lboptionmaxfavoritethreads.caption
 msgid "Max number of favorite check at the same time"
-msgstr ""
+msgstr "Jumlah koneksi pemeriksaan kesukaan pada waktu yang sama"
 
 #: tmainform.lboptionmaxparallel.caption
 msgid "Number of downloaded tasks at the same time"
@@ -1750,7 +1750,7 @@ msgstr "Jumlah koneksi per unduhan pada waktu yang sama"
 
 #: tmainform.lboptionmaxupdatelistthreads.caption
 msgid "Max number of update list threads"
-msgstr ""
+msgstr "Jumlah koneksi pemutakhiran daftar"
 
 #: tmainform.lboptionnewmangatime.caption
 msgid "New manga based on  it's update time (days)"
@@ -2228,7 +2228,7 @@ msgstr "Koneksi"
 
 #: tmainform.tscustomcolor.caption
 msgid "Custom color"
-msgstr "Kustomisasi Warna"
+msgstr "Warna Pilihan"
 
 #: tmainform.tsdialogs.caption
 msgid "Dialogs"
