@@ -144,8 +144,6 @@ type
     // critical section
     procedure Lock;
     procedure LockRelease;
-    procedure SearchEnabledOnVT(Tree: TVirtualStringTree; Key: String);
-    procedure SearchDisabledOnVT(Tree: TVirtualStringTree; Key: String);
 
     property Count: Integer read GetFavoritesCount;
     property CountEnabled: Integer read GetEnabledFavoritesCount;
@@ -576,102 +574,6 @@ begin
     if not Items[i].FEnabled then j := j + 1;
   end;
   Result := j;
-end;
-
-procedure TFavoriteManager.SearchEnabledOnVT(Tree: TVirtualStringTree; Key: String);
-var
-  s: String;
-  node, xnode: PVirtualNode;
-  v: Boolean;
-begin
-  if Tree.TotalCount = 0 then
-    Exit;
-  s := AnsiUpperCase(Key);
-  Tree.BeginUpdate;
-  try
-    node := Tree.GetFirst();
-    if (s <> '') then
-    begin
-      while node <> nil do
-      begin
-        v := Pos(s, AnsiUpperCase(Tree.Text[node, 1])) <> 0;
-        if FavoriteManager[node^.Index].Enabled then
-          Tree.IsVisible[node] := v;
-        if v then
-        begin
-          xnode := node^.Parent;
-          while (xnode <> nil)  and (xnode <> Tree.RootNode) do
-          begin
-            if not (vsVisible in xnode^.States) and (FavoriteManager[node^.Index].Enabled) then
-              Tree.IsVisible[xnode] := True;
-            xnode := xnode^.Parent;
-          end;
-        end;
-        node := Tree.GetNext(node);
-      end;
-    end
-    else
-    begin
-      while node <> nil do
-      begin
-        if (FavoriteManager[node^.Index].Enabled) then
-          Tree.IsVisible[node] := True
-        else
-          Tree.IsVisible[node] := False;
-        node := Tree.GetNext(node);
-      end;
-    end;
-  finally
-    Tree.EndUpdate;
-  end;
-end;
-
-procedure TFavoriteManager.SearchDisabledOnVT(Tree: TVirtualStringTree; Key: String);
-var
-  s: String;
-  node, xnode: PVirtualNode;
-  v: Boolean;
-begin
-  if Tree.TotalCount = 0 then
-    Exit;
-  s := AnsiUpperCase(Key);
-  Tree.BeginUpdate;
-  try
-    node := Tree.GetFirst();
-    if (s <> '') then
-    begin
-      while node <> nil do
-      begin
-        v := Pos(s, AnsiUpperCase(Tree.Text[node, 1])) <> 0;
-        if not FavoriteManager[node^.Index].Enabled then
-          Tree.IsVisible[node] := v;
-        if v then
-        begin
-          xnode := node^.Parent;
-          while (xnode <> nil)  and (xnode <> Tree.RootNode) do
-          begin
-            if not ((vsVisible in xnode^.States) and (FavoriteManager[node^.Index].Enabled)) then
-              Tree.IsVisible[xnode] := True;
-            xnode := xnode^.Parent;
-          end;
-        end;
-        node := Tree.GetNext(node);
-      end;
-    end
-    else
-    begin
-      while node <> nil do
-      begin
-        if not (FavoriteManager[node^.Index].Enabled) then
-          Tree.IsVisible[node] := True
-        else
-          Tree.IsVisible[node] := False;
-        node := Tree.GetNext(node);
-      end;
-    end;
-  finally
-    Tree.EndUpdate;
-  end;
 end;
 
 function TFavoriteManager.GetFavorite(const Index: Integer): TFavoriteContainer;

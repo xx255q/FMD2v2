@@ -20,7 +20,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, LCLType,
   ExtCtrls, ComCtrls, Buttons, Spin, Menus, VirtualTrees, RichMemo, simpleipc,
   lclproc, types, LCLIntf, EditBtn, PairSplitter, MultiLog,
-  FileChannel, FileUtil, LazUTF8Classes, TAGraph, TASources, TASeries, TATools,
+  FileChannel, FileUtil, LazUTF8Classes, LazStringUtils, TAGraph, TASources, TASeries, TATools,
   AnimatedGif, uBaseUnit, uDownloadsManager, uFavoritesManager,
   uSilentThread, uMisc, uGetMangaInfosThread, frmDropTarget, frmAccountManager,
   frmWebsiteOptionCustom, frmCustomColor, frmLogger, frmTransferFavorites,
@@ -747,7 +747,7 @@ type
     procedure vtDownloadUpdateFilters(const RefreshTree: Boolean = True);
     procedure FilterDownloadByCustomDate;
     
-    procedure vtFavoritesFilterRefresh;
+    procedure vtFavoritesFilterCountChange;
 
     procedure AddChapterNameToList;
 
@@ -1549,7 +1549,7 @@ begin
     Node := vtFavorites.GetNextSelected(Node);
   end;
   UpdateVtFavorites;
-  vtFavoritesFilterRefresh;
+  vtFavoritesFilterCountChange;
 end;
 
 procedure TMainForm.miFavoritesRenameClick(Sender: TObject);
@@ -1614,81 +1614,58 @@ end;
 
 procedure TMainForm.rbFavoritesShowAllChange(Sender: TObject);
 var
-  node: PVirtualNode;
+  xNode: PVirtualNode;
 begin
-  if rbFavoritesShowAll.Checked then
-  begin
-    try
-      vtFavorites.BeginUpdate;
-      node := vtFavorites.GetFirst();
-      while Assigned(node) do
-      begin
-        vtFavorites.IsVisible[node] := True;
-	      node := vtFavorites.GetNext(node);
-      end;
-    finally
-      vtFavorites.EndUpdate;
-      btFavoritesCheckNewChapter.Enabled := True;
+  if rbFavoritesShowAll.Checked = False then Exit;
+  if vtFavorites.RootNodeCount = 0 then Exit;
+  vtFavorites.BeginUpdate;
+  try
+    xNode := vtFavorites.GetFirst();
+    while Assigned(xNode) do
+    begin
+      vtFavorites.IsVisible[xNode] := True;
+      xNode := vtFavorites.GetNext(xNode);
     end;
-    
-    if edFavoritesSearch.Text <> '' then
-      SearchOnVT(vtFavorites, edFavoritesSearch.Text, 1);
+  finally
+    vtFavorites.EndUpdate;
   end;
 end;
 
 procedure TMainForm.rbFavoritesShowDisabledChange(Sender: TObject);
 var
-  node: PVirtualNode;
+  xNode: PVirtualNode;
 begin
-  if rbFavoritesShowDisabled.Checked then
-  begin
-    try
-      vtFavorites.BeginUpdate;
-      node := vtFavorites.GetFirst();
-      while Assigned(node) do
-      begin
-        if FavoriteManager[node^.Index].Enabled then
-          vtFavorites.IsVisible[node] := False
-        else
-          vtFavorites.IsVisible[node] := True;
-          
-	      node := vtFavorites.GetNext(node);
-      end;
-      
-      if edFavoritesSearch.Text <> '' then
-        SearchOnlyVisibleOnVT(vtFavorites, edFavoritesSearch.Text, 1);
-    finally
-      vtFavorites.EndUpdate;
-      btFavoritesCheckNewChapter.Enabled := False;
+  if rbFavoritesShowDisabled.Checked = False then Exit;
+  if vtFavorites.RootNodeCount = 0 then Exit;
+  vtFavorites.BeginUpdate;
+  try
+    xNode := vtFavorites.GetFirst();
+    while Assigned(xNode) do
+    begin
+      vtFavorites.IsVisible[xNode] := not FavoriteManager.Items[xNode^.Index].Enabled;
+      xNode := vtFavorites.GetNext(xNode);
     end;
+  finally
+    vtFavorites.EndUpdate;
   end;
 end;
 
 procedure TMainForm.rbFavoritesShowEnabledChange(Sender: TObject);
 var
-  node: PVirtualNode;
+  xNode: PVirtualNode;
 begin
-  if rbFavoritesShowEnabled.Checked then
-  begin
-    try
-      vtFavorites.BeginUpdate;
-      node := vtFavorites.GetFirst();
-      while Assigned(node) do
-      begin
-        if FavoriteManager[node^.Index].Enabled then
-          vtFavorites.IsVisible[node] := True
-        else
-          vtFavorites.IsVisible[node] := False;
-          
-	      node := vtFavorites.GetNext(node);
-      end;
-      
-      if edFavoritesSearch.Text <> '' then
-        SearchOnlyVisibleOnVT(vtFavorites, edFavoritesSearch.Text, 1);
-    finally
-      vtFavorites.EndUpdate;
-      btFavoritesCheckNewChapter.Enabled := False;
+  if rbFavoritesShowEnabled.Checked = False then Exit;
+  if vtFavorites.RootNodeCount = 0 then Exit;
+  vtFavorites.BeginUpdate;
+  try
+    xNode := vtFavorites.GetFirst();
+    while Assigned(xNode) do
+    begin
+      vtFavorites.IsVisible[xNode] := FavoriteManager.Items[xNode^.Index].Enabled;
+      xNode := vtFavorites.GetNext(xNode);
     end;
+  finally
+    vtFavorites.EndUpdate;
   end;
 end;
 
@@ -2636,7 +2613,7 @@ begin
       s,
       mangaInfo.Link);
     UpdateVtFavorites;
-    vtFavoritesFilterRefresh;
+    vtFavoritesFilterCountChange;
     btAddToFavorites.Enabled := False;
     if OptionShowFavoritesTabOnNewManga then
     begin
@@ -2881,7 +2858,12 @@ end;
 
 procedure TMainForm.btnDownloadFilterCustomDateApplyClick(Sender: TObject);
 begin
-  FilterDownloadByCustomDate;
+  vtDownload.BeginUpdate;
+  try
+    FilterDownloadByCustomDate;
+  finally
+    vtDownload.EndUpdate;
+  end;
 end;
 
 procedure TMainForm.btOpenLogClick(Sender: TObject);
@@ -2964,30 +2946,66 @@ begin
 end;
 
 procedure TMainForm.edDownloadsSearchChange(Sender: TObject);
+var
+  xNode: PVirtualNode;
+  S: String;
 begin
-  SearchOnVT(vtDownload, edDownloadsSearch.Text);
+  if vtDownload.RootNodeCount = 0 then Exit;
+  vtDownload.BeginUpdate;
+  try
+    xNode := vtDownload.GetFirst();
+    if edDownloadsSearch.Text = '' then
+      while Assigned(xNode) do
+      begin
+        vtDownload.IsFiltered[xNode] := False;
+        xNode := vtDownload.GetNext(xNode);
+      end
+    else
+    begin
+      S := UpperCase(edDownloadsSearch.Text);
+      while Assigned(xNode) do
+      begin
+        vtDownload.IsFiltered[xNode] := Pos(S, UpperCase(DLManager.Items[xNode^.Index].DownloadInfo.Title)) = 0;
+        xNode := vtDownload.GetNext(xNode);
+      end;
+    end;
+  finally
+    vtDownload.EndUpdate;
+  end;
 end;
 
 procedure TMainForm.edFavoritesSearchButtonClick(Sender: TObject);
 begin
   edFavoritesSearch.Clear;
-  
-  if rbFavoritesShowAll.Checked then
-    rbFavoritesShowAllChange(nil)
-  else if rbFavoritesShowEnabled.Checked then
-    rbFavoritesShowEnabledChange(nil)
-  else
-    rbFavoritesShowDisabledChange(nil);
 end;
 
 procedure TMainForm.edFavoritesSearchChange(Sender: TObject);
+var
+  xNode: PVirtualNode;
+  S: String;
 begin
-  if rbFavoritesShowAll.Checked then
-    SearchOnVT(vtFavorites, edFavoritesSearch.Text, 1)
-  else if rbFavoritesShowEnabled.Checked then
-    FavoriteManager.SearchEnabledOnVT(vtFavorites, edFavoritesSearch.Text)
-  else
-    FavoriteManager.SearchDisabledOnVT(vtFavorites, edFavoritesSearch.Text)
+  if vtFavorites.RootNodeCount = 0 then Exit;
+  vtFavorites.BeginUpdate;
+  try
+    xNode := vtFavorites.GetFirst();
+    if edFavoritesSearch.Text = '' then
+      while Assigned(xNode) do
+      begin
+        vtFavorites.IsFiltered[xNode] := False;
+        xNode := vtFavorites.GetNext(xNode);
+      end
+    else
+    begin
+      S := UpperCase(edFavoritesSearch.Text);
+      while Assigned(xNode) do
+      begin
+        vtFavorites.IsFiltered[xNode] := Pos(S, UpperCase(FavoriteManager.Items[xNode^.Index].FavoriteInfo.Title)) = 0;
+        xNode := vtFavorites.GetNext(xNode);
+      end;
+    end;
+  finally
+    vtFavorites.EndUpdate;
+  end;
 end;
 
 procedure TMainForm.edFilterMangaInfoChaptersButtonClick(Sender: TObject);
@@ -3218,7 +3236,7 @@ begin
   end;
   FavoriteManager.Backup;
   UpdateVtFavorites;
-  vtFavoritesFilterRefresh;
+  vtFavoritesFilterCountChange;
 end;
 
 procedure TMainForm.miFavoritesChangeCurrentChapterClick(Sender: TObject);
@@ -4023,8 +4041,6 @@ end;
 procedure TMainForm.tvDownloadFilterSelectionChanged(Sender: TObject);
 begin
   vtDownloadUpdateFilters(False);
-  if OptionShowDownloadsTabOnNewTasks then
-    pcMain.ActivePage := tsDownload;
 end;
 
 procedure TMainForm.UniqueInstanceFMDOtherInstance(Sender: TObject;
@@ -4637,13 +4653,13 @@ begin
     TCheckBox(pnGenres.Controls[i]).State := cbGrayed;
 end;
 
-procedure TMainForm.vtFavoritesFilterRefresh;
+procedure TMainForm.vtFavoritesFilterCountChange;
 begin
   with FavoriteManager do
   begin
-      rbFavoritesShowAll.Caption := Format('%s (%d)', [RS_FavoritesShowAll, Count]);
-      rbFavoritesShowEnabled.Caption := Format('%s (%d)', [RS_FavoritesShowEnabled, CountEnabled]);
-      rbFavoritesShowDisabled.Caption := Format('%s (%d)', [RS_FavoritesShowDisabled, CountDisabled]);
+    rbFavoritesShowAll.Caption := Format('%s (%d)', [RS_FavoritesShowAll, Count]);
+    rbFavoritesShowEnabled.Caption := Format('%s (%d)', [RS_FavoritesShowEnabled, CountEnabled]);
+    rbFavoritesShowDisabled.Caption := Format('%s (%d)', [RS_FavoritesShowDisabled, CountDisabled]);
   end;
 end;
 
@@ -4697,8 +4713,7 @@ begin
     with DLManager.Items[xNode^.Index] do
     begin
       jdn := DateToJDN(DownloadInfo.DateAdded);
-      Visible := (jdn >= lowJDN) and (jdn <= highJDN);;
-      vtDownload.IsVisible[xNode] := Visible;
+      vtDownload.IsVisible[xNode] := (jdn >= lowJDN) and (jdn <= highJDN);
     end;
     xNode := vtDownload.GetNext(xNode);
   end;
@@ -4712,20 +4727,26 @@ var
   var
     xNode: PVirtualNode;
   begin
-    if (S = []) and (vtDownload.VisibleCount = vtDownload.RootNodeCount) then
-      Exit;
-    xNode := vtDownload.GetFirst();
-    while Assigned(xNode) do
+    if (S = []) then
     begin
-      with DLManager[xNode^.Index] do
+      if vtDownload.VisibleCount <> vtDownload.RootNodeCount then
       begin
-        if S = [] then
-          Visible := True
-        else
-          Visible := Status in S;
-        vtDownload.IsVisible[xNode] := Visible;
+        xNode := vtDownload.GetFirst();
+        while Assigned(xNode) do
+        begin
+          vtDownload.IsVisible[xNode] := True;
+          xNode := vtDownload.GetNext(xNode);
+        end;
       end;
-      xNode := vtDownload.GetNext(xNode);
+    end
+    else
+    begin
+      xNode := vtDownload.GetFirst();
+      while Assigned(xNode) do
+      begin
+        vtDownload.IsVisible[xNode] := DLManager[xNode^.Index].Status in S;
+        xNode := vtDownload.GetNext(xNode);
+      end;
     end;
   end;
 
@@ -4736,59 +4757,54 @@ var
     xNode := vtDownload.GetFirst();
     while Assigned(xNode) do
     begin
-      with DLManager.Items[xNode^.Index] do
-      begin
-        Visible := not Enabled;
-        vtDownload.IsVisible[xNode] := Visible;
-      end;
+      vtDownload.IsVisible[xNode] := not DLManager.Items[xNode^.Index].Enabled;
       xNode := vtDownload.GetNext(xNode);
     end;
   end;
 
 begin
-  if isStartup then Exit;
   if tvDownloadFilter.Selected = nil then Exit;
+
+  if tvDownloadFilter.Selected.AbsoluteIndex = 12 then
+  begin
+    if pnDownloadFilterCustomDate.Visible = False then
+      pnDownloadFilterCustomDate.Visible := True;
+  end
+  else
+  if pnDownloadFilterCustomDate.Visible then
+    pnDownloadFilterCustomDate.Visible := False;
+
+  if isStartup then Exit;
 
   vtDownload.BeginUpdate;
   try
     if vtDownload.RootNodeCount <> DLManager.Count then
       vtDownload.RootNodeCount := DLManager.Count;
-
     // filter download list
-    if tvDownloadFilter.Selected.AbsoluteIndex = 12 then // custom date filter
-    begin
-      if pnDownloadFilterCustomDate.Visible = false then
-        pnDownloadFilterCustomDate.Visible := True;
-      FilterDownloadByCustomDate;
-    end
-    else
-    begin
-      if pnDownloadFilterCustomDate.Visible then
-        pnDownloadFilterCustomDate.Visible := False;
-      case tvDownloadFilter.Selected.AbsoluteIndex of
-        0, 6: ShowTasks;
-        1: ShowTasks([STATUS_FINISH]);
-        2: ShowTasks([STATUS_WAIT, STATUS_PREPARE, STATUS_DOWNLOAD, STATUS_COMPRESS]);
-        3: ShowTasks([STATUS_STOP]);
-        4: ShowTasks([STATUS_PROBLEM, STATUS_FAILED]);
-        5: ShowDisabled;
+    case tvDownloadFilter.Selected.AbsoluteIndex of
+      0, 6: ShowTasks;
+      1: ShowTasks([STATUS_FINISH]);
+      2: ShowTasks([STATUS_WAIT, STATUS_PREPARE, STATUS_DOWNLOAD, STATUS_COMPRESS]);
+      3: ShowTasks([STATUS_STOP]);
+      4: ShowTasks([STATUS_PROBLEM, STATUS_FAILED]);
+      5: ShowDisabled;
 
 
-        7: begin // today
-             ACurrentJDN := DateToJDN(Now);
-             FilterDownloadsByJDN(ACurrentJDN, ACurrentJDN);
-           end;
-        8: begin // yesterday
-             ACurrentJDN := DateToJDN(Now)-1;
-             FilterDownloadsByJDN(ACurrentJDN, ACurrentJDN);
-           end;
-        9: begin // last 7 days
-             ACurrentJDN := DateToJDN(Now);
-             FilterDownloadsByJDN(ACurrentJDN - 7, ACurrentJDN);
-           end;
-        10: FilterDownloadsByJDN(DateToJDN(StartOfTheMonth(Now)), DateToJDN(Now)); // this month
-        11: FilterDownloadsByJDN(0, DateToJDN(IncMonth(-6))); // older than 6 months
-      end;
+      7: begin // today
+           ACurrentJDN := DateToJDN(Now);
+           FilterDownloadsByJDN(ACurrentJDN, ACurrentJDN);
+         end;
+      8: begin // yesterday
+           ACurrentJDN := DateToJDN(Now)-1;
+           FilterDownloadsByJDN(ACurrentJDN, ACurrentJDN);
+         end;
+      9: begin // last 7 days
+           ACurrentJDN := DateToJDN(Now);
+           FilterDownloadsByJDN(ACurrentJDN - 7, ACurrentJDN);
+         end;
+      10: FilterDownloadsByJDN(DateToJDN(StartOfTheMonth(Now)), DateToJDN(Now)); // this month
+      11: FilterDownloadsByJDN(0, DateToJDN(IncMonth(-6))); // older than 6 months
+      12: FilterDownloadByCustomDate; // custom date
     end;
   finally
     vtDownload.EndUpdate;
@@ -4796,8 +4812,6 @@ begin
 
   if RefreshTree then
     tvDownloadFilterRefresh;
-  if edDownloadsSearch.Text <> '' then
-    edDownloadsSearchChange(edDownloadsSearch);
 end;
 
 procedure TMainForm.AddChapterNameToList;
@@ -5743,7 +5757,7 @@ begin
     vtFavorites.BeginUpdate;
     vtFavorites.RootNodeCount := FavoriteManager.Count;
     vtFavorites.EndUpdate;
-    vtFavoritesFilterRefresh;
+    vtFavoritesFilterCountChange;
   end;
 
   if rbFavoritesShowEnabled.Checked then

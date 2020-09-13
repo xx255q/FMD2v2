@@ -165,7 +165,6 @@ type
     procedure SaveToDB(const AOrder: Integer = -1);
     procedure ClearDirty(const AOrder: Integer = -1);
   public
-    Visible: Boolean;
     property Status: TDownloadStatusType read FStatus write SetStatus;
     property Enabled: Boolean read FEnabled write SetEnabled;
   end;
@@ -1153,7 +1152,6 @@ begin
   CustomFileName := OptionFilenameCustomRename;
   FStatus := STATUS_NONE;
   FEnabled := True;
-  Visible := True;
 end;
 
 destructor TTaskContainer.Destroy;
