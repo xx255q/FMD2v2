@@ -372,6 +372,10 @@ msgstr "Strona www:"
 msgid "In progress"
 msgstr "W trakcie"
 
+#: frmmain.rs_last6months
+msgid "Last 6 months"
+msgstr ""
+
 #: frmmain.rs_last7days
 msgid "Last 7 days"
 msgstr ""

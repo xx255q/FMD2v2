@@ -944,13 +944,16 @@ resourcestring
   RS_Checking = 'Checking...';
   RS_AllDownloads = 'All downloads';
   RS_InProgress = 'In progress';
+
   RS_History = 'History';
   RS_Today = 'Today';
   RS_Yesterday = 'Yesterday';
   RS_Last7days = 'Last 7 days';
   RS_ThisMonth = 'This month';
+  RS_Last6months = 'Last 6 months';
   RS_OlderThan6months = 'Older than 6 months';
   RS_Custom = 'Custom';
+
   RS_Import = 'Import';
   RS_Software = 'Software';
   RS_SoftwarePath = 'Path to the software (e.g. C:\MangaDownloader)';
@@ -2456,6 +2459,7 @@ begin
     Add(Node, RS_Yesterday, 8);
     Add(Node, RS_Last7days, 8);
     Add(Node, RS_ThisMonth, 8);
+    Add(Node, RS_Last6months, 8);
     Add(Node, RS_OlderThan6months, 8);
     Add(Node, RS_Custom, 8);
   end;
@@ -4694,8 +4698,9 @@ begin
         Items[8].Text := RS_Yesterday;
         Items[9].Text := RS_Last7days;
         Items[10].Text := RS_ThisMonth;
-        Items[11].Text := RS_OlderThan6months;
-        Items[12].Text := RS_Custom;
+        Items[11].Text := RS_Last6months;
+        Items[12].Text := RS_OlderThan6months;
+        Items[13].Text := RS_Custom;
       end;
     finally
       tvDownloadFilter.EndUpdate;
@@ -4765,7 +4770,7 @@ var
 begin
   if tvDownloadFilter.Selected = nil then Exit;
 
-  if tvDownloadFilter.Selected.AbsoluteIndex = 12 then
+  if tvDownloadFilter.Selected.AbsoluteIndex = 13 then // custom date filter
   begin
     if pnDownloadFilterCustomDate.Visible = False then
       pnDownloadFilterCustomDate.Visible := True;
@@ -4789,7 +4794,6 @@ begin
       4: ShowTasks([STATUS_PROBLEM, STATUS_FAILED]);
       5: ShowDisabled;
 
-
       7: begin // today
            ACurrentJDN := DateToJDN(Now);
            FilterDownloadsByJDN(ACurrentJDN, ACurrentJDN);
@@ -4803,8 +4807,9 @@ begin
            FilterDownloadsByJDN(ACurrentJDN - 7, ACurrentJDN);
          end;
       10: FilterDownloadsByJDN(DateToJDN(StartOfTheMonth(Now)), DateToJDN(Now)); // this month
-      11: FilterDownloadsByJDN(0, DateToJDN(IncMonth(-6))); // older than 6 months
-      12: FilterDownloadByCustomDate; // custom date
+      11: FilterDownloadsByJDN(DateToJDN(IncMonth(Now,-6)), DateToJDN(Now)); // last 6 months
+      12: FilterDownloadsByJDN(0, DateToJDN(IncMonth(Now,-6))-1); // older than 6 months
+      13: FilterDownloadByCustomDate; // custom date
     end;
   finally
     vtDownload.EndUpdate;

@@ -359,6 +359,10 @@ msgstr "Situs:"
 msgid "In progress"
 msgstr "Dalam proses"
 
+#: frmmain.rs_last6months
+msgid "Last 6 months"
+msgstr ""
+
 #: frmmain.rs_last7days
 msgid "Last 7 days"
 msgstr "7 hari terakhir"

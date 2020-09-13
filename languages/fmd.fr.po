@@ -359,6 +359,10 @@ msgstr "Site :"
 msgid "In progress"
 msgstr "En cours"
 
+#: frmmain.rs_last6months
+msgid "Last 6 months"
+msgstr ""
+
 #: frmmain.rs_last7days
 msgid "Last 7 days"
 msgstr ""
