@@ -72,6 +72,7 @@ type
   TFavoriteContainer = class
   private
     FEnabled: Boolean;
+    FManager: TFavoriteManager;
     procedure SetEnabled(AValue: Boolean);
   public
     Tag: Integer;
@@ -79,9 +80,8 @@ type
     NewMangaInfo: TMangaInfo;
     NewMangaInfoChaptersPos: TCardinalList;
     Thread: TFavoriteThread;
-    Manager: TFavoriteManager;
     Status: TFavoriteStatusType;
-    constructor Create;
+    constructor Create(const M: TFavoriteManager);
     destructor Destroy; override;
     procedure SaveToDB(const AOrder: Integer = -1);
     property Enabled: Boolean read FEnabled write SetEnabled;
@@ -97,9 +97,9 @@ type
     FFavoritesDB: TFavoritesDB;
     FSortColumn: Integer;
     FSortDirection, FIsAuto, FIsRunning: Boolean;
+    FEnabledCount: Integer;
+    function GetDisabledCount: Integer; inline;
     function GetFavoritesCount: Integer; inline;
-    function GetEnabledFavoritesCount: Integer; inline;
-    function GetDisabledFavoritesCount: Integer; inline;
     function GetFavorite(const Index: Integer): TFavoriteContainer;
   public
     Items: TFavoriteContainers;
@@ -146,8 +146,8 @@ type
     procedure LockRelease;
 
     property Count: Integer read GetFavoritesCount;
-    property CountEnabled: Integer read GetEnabledFavoritesCount;
-    property CountDisabled: Integer read GetDisabledFavoritesCount;
+    property EnabledCount: Integer read FEnabledCount;
+    property DisabledCount: Integer read GetDisabledCount;
     property SortDirection: Boolean read FSortDirection write FSortDirection;
     property SortColumn: Integer read FSortColumn write FSortColumn;
     property isAuto: Boolean read FIsAuto write FIsAuto;
@@ -179,12 +179,18 @@ procedure TFavoriteContainer.SetEnabled(AValue: Boolean);
 begin
   if FEnabled = AValue then Exit;
   FEnabled := AValue;
+  if FEnabled then
+    Inc(FManager.FEnabledCount)
+  else
+    Dec(FManager.FEnabledCount);
 end;
 
-constructor TFavoriteContainer.Create;
+constructor TFavoriteContainer.Create(const M: TFavoriteManager);
 begin
-  FEnabled := True;
   Tag := 0;
+  FManager := M;
+  FEnabled := True;
+  Inc(FManager.FEnabledCount);
 end;
 
 destructor TFavoriteContainer.Destroy;
@@ -208,11 +214,11 @@ var
   i: Integer;
 begin
   if AOrder = -1 then
-    i := Manager.Items.IndexOf(Self)
+    i := FManager.Items.IndexOf(Self)
   else
     i := AOrder;
   with FavoriteInfo do
-    Manager.FFavoritesDB.Add(
+    FManager.FFavoritesDB.Add(
       i,
       FEnabled,
       ModuleID,
@@ -550,30 +556,9 @@ begin
   Result := Items.Count;
 end;
 
-function TFavoriteManager.GetEnabledFavoritesCount: Integer;
-var
-  i: Integer;
-  j: Integer;
+function TFavoriteManager.GetDisabledCount: Integer;
 begin
-  j := 0;
-  for i := 0 to Items.Count - 1 do
-  begin
-    if Items[i].FEnabled then j := j + 1;
-  end;
-  Result := j;
-end;
-
-function TFavoriteManager.GetDisabledFavoritesCount: Integer;
-var
-  i: Integer;
-  j: Integer;
-begin
-  j := 0;
-  for i := 0 to Items.Count - 1 do
-  begin
-    if not Items[i].FEnabled then j := j + 1;
-  end;
-  Result := j;
+  Result := Items.Count - FEnabledCount;
 end;
 
 function TFavoriteManager.GetFavorite(const Index: Integer): TFavoriteContainer;
@@ -931,9 +916,8 @@ begin
   if IsMangaExist(ATitle, TModuleContainer(AModule).ID) then Exit;
   EnterCriticalsection(CS_Favorites);
   try
-    newfv := Items.Add(TFavoriteContainer.Create);
+    newfv := Items.Add(TFavoriteContainer.Create(Self));
     with Items[newfv] do begin
-      Manager := Self;
       with FavoriteInfo do begin
         Module := AModule;
         Title := ATitle;
@@ -963,9 +947,8 @@ begin
     Exit;
   EnterCriticalsection(CS_Favorites);
   try
-    Items.Add(TFavoriteContainer.Create);
+    Items.Add(TFavoriteContainer.Create(Self));
     with Items.Last do begin
-      Manager := Self;
       with FavoriteInfo do begin
         ModuleID := AWebsite;
         Title := ATitle;
@@ -1038,9 +1021,8 @@ begin
         FFavoritesDB.Table.First;
         while not FFavoritesDB.Table.EOF do
         begin
-          with Items[Items.Add(TFavoriteContainer.Create)], FFavoritesDB.Table do
+          with Items[Items.Add(TFavoriteContainer.Create(Self))], FFavoritesDB.Table do
             begin
-              Manager                            := Self;
               Status                             := STATUS_IDLE;
               Enabled                            := Fields[f_enabled].AsBoolean;
               FavoriteInfo.ModuleID              := Fields[f_moduleid].AsString;
@@ -1117,7 +1099,7 @@ function CompareFavoriteContainer(const Item1, Item2: TFavoriteContainer): Integ
   function GetStr(ARow: TFavoriteContainer): String;
   begin
     with ARow.FavoriteInfo do
-      case ARow.Manager.SortColumn of
+      case ARow.FManager.SortColumn of
         1: Result := Title;
         2: Result := currentChapter;
         3: Result := Website;
@@ -1130,7 +1112,7 @@ function CompareFavoriteContainer(const Item1, Item2: TFavoriteContainer): Integ
   function GetDateTime(ARow: TFavoriteContainer): TDateTime;
   begin
     with ARow.FavoriteInfo do
-      case ARow.Manager.SortColumn of
+      case ARow.FManager.SortColumn of
         5: Result := DateAdded;
         6: Result := DateLastChecked;
         7: Result := DateLastUpdated;
@@ -1140,16 +1122,16 @@ function CompareFavoriteContainer(const Item1, Item2: TFavoriteContainer): Integ
   end;
 
 begin
-  if (Item1.Manager.SortColumn >= 5) and (Item1.Manager.SortColumn <= 7) then
+  if (Item1.FManager.SortColumn >= 5) and (Item1.FManager.SortColumn <= 7) then
   begin
-    if Item1.Manager.SortDirection then
+    if Item1.FManager.SortDirection then
       Result := CompareDateTime(GetDateTime(Item2), GetDateTime(Item1))
     else
       Result := CompareDateTime(GetDateTime(Item1), GetDateTime(Item2));
   end
   else
   begin
-    if Item1.Manager.SortDirection then
+    if Item1.FManager.SortDirection then
       Result := NaturalCompareStr(GetStr(Item2), GetStr(Item1))
     else
       Result := NaturalCompareStr(GetStr(Item1), GetStr(Item2));

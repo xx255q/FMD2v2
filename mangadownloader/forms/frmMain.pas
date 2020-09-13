@@ -4662,8 +4662,8 @@ begin
   with FavoriteManager do
   begin
     rbFavoritesShowAll.Caption := Format('%s (%d)', [RS_FavoritesShowAll, Count]);
-    rbFavoritesShowEnabled.Caption := Format('%s (%d)', [RS_FavoritesShowEnabled, CountEnabled]);
-    rbFavoritesShowDisabled.Caption := Format('%s (%d)', [RS_FavoritesShowDisabled, CountDisabled]);
+    rbFavoritesShowEnabled.Caption := Format('%s (%d)', [RS_FavoritesShowEnabled, EnabledCount]);
+    rbFavoritesShowDisabled.Caption := Format('%s (%d)', [RS_FavoritesShowDisabled, DisabledCount]);
   end;
 end;
 
