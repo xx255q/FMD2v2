@@ -361,7 +361,7 @@ msgstr "Dalam proses"
 
 #: frmmain.rs_last6months
 msgid "Last 6 months"
-msgstr ""
+msgstr "6 bulan terakhir"
 
 #: frmmain.rs_last7days
 msgid "Last 7 days"
