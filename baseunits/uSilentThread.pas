@@ -331,65 +331,70 @@ begin
     with MainForm do
     begin
       // add a new download task
-      d := DLManager.AddTask;
-      d.DownloadInfo.Module := Module;
+      DLManager.Lock;
+      try
+        d := DLManager.AddTask;
+        d.DownloadInfo.Module := Module;
 
-      if Trim(Title) = '' then
-        Title := Info.MangaInfo.Title;
-      for i := 0 to Info.MangaInfo.NumChapter - 1 do
-      begin
-        // generate folder name
-        s := CustomRename(OptionChapterCustomRename,
-                          Module.Name,
-                          Title,
-                          info.MangaInfo.Authors,
-                          Info.MangaInfo.Artists,
-                          Info.MangaInfo.ChapterNames.Strings[i],
-                          Format('%.4d', [i + 1]),
-                          OptionChangeUnicodeCharacter,
-                          OptionChangeUnicodeCharacterStr);
-        d.ChapterNames.Add(s);
-        d.chapterLinks.Add(
-          Info.MangaInfo.ChapterLinks.Strings[i]);
+        if Trim(Title) = '' then
+          Title := Info.MangaInfo.Title;
+        for i := 0 to Info.MangaInfo.NumChapter - 1 do
+        begin
+          // generate folder name
+          s := CustomRename(OptionChapterCustomRename,
+                            Module.Name,
+                            Title,
+                            info.MangaInfo.Authors,
+                            Info.MangaInfo.Artists,
+                            Info.MangaInfo.ChapterNames.Strings[i],
+                            Format('%.4d', [i + 1]),
+                            OptionChangeUnicodeCharacter,
+                            OptionChangeUnicodeCharacterStr);
+          d.ChapterNames.Add(s);
+          d.chapterLinks.Add(
+            Info.MangaInfo.ChapterLinks.Strings[i]);
+        end;
+
+        if cbAddAsStopped.Checked then
+        begin
+          d.downloadInfo.Status := Format('[%d/%d] %s',[0,d.ChapterLinks.Count,RS_Stopped]);
+          d.Status := STATUS_STOP;
+        end
+        else
+        begin
+          d.downloadInfo.Status := Format('[%d/%d] %s',[0,d.ChapterLinks.Count,RS_Waiting]);
+          d.Status := STATUS_WAIT;
+        end;
+
+        d.currentDownloadChapterPtr := 0;
+        d.downloadInfo.Link := URL;
+        d.downloadInfo.Title := Title;
+        d.downloadInfo.DateAdded := Now;
+        d.downloadInfo.DateLastDownloaded := Now;
+
+        if FSavePath = '' then
+        begin
+          FillSaveTo;
+	        OverrideSaveTo(d.DownloadInfo.Module);
+          FSavePath := edSaveTo.Text;
+          // save to
+          if OptionGenerateMangaFolder then
+            FSavePath := AppendPathDelim(FSavePath) + CustomRename(
+              OptionMangaCustomRename,
+              Module.Name,
+              Title,
+              info.MangaInfo.Authors,
+              info.MangaInfo.Artists,
+              '',
+              '',
+              OptionChangeUnicodeCharacter,
+              OptionChangeUnicodeCharacterStr);
+        end;
+        d.downloadInfo.SaveTo := FSavePath;
+        d.DBInsert;
+      finally
+        DLManager.Unlock;
       end;
-
-      if cbAddAsStopped.Checked then
-      begin
-        d.Status := STATUS_STOP;
-        d.downloadInfo.Status := Format('[%d/%d] %s',[0,d.ChapterLinks.Count,RS_Stopped]);
-      end
-      else
-      begin
-        d.downloadInfo.Status := Format('[%d/%d] %s',[0,d.ChapterLinks.Count,RS_Waiting]);
-        d.Status := STATUS_WAIT;
-      end;
-
-      d.currentDownloadChapterPtr := 0;
-      d.downloadInfo.Link := URL;
-      d.downloadInfo.Title := Title;
-      d.downloadInfo.DateAdded := Now;
-      d.downloadInfo.DateLastDownloaded := Now;
-
-      if FSavePath = '' then
-      begin
-        FillSaveTo;
-	OverrideSaveTo(d.DownloadInfo.Module);
-        FSavePath := edSaveTo.Text;
-        // save to
-        if OptionGenerateMangaFolder then
-          FSavePath := AppendPathDelim(FSavePath) + CustomRename(
-            OptionMangaCustomRename,
-            Module.Name,
-            Title,
-            info.MangaInfo.Authors,
-            info.MangaInfo.Artists,
-            '',
-            '',
-            OptionChangeUnicodeCharacter,
-            OptionChangeUnicodeCharacterStr);
-      end;
-      d.downloadInfo.SaveTo := FSavePath;
-      d.DBInsert;
 
       UpdateVtDownload;
       DLManager.CheckAndActiveTask(False);

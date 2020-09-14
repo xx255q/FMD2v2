@@ -676,7 +676,6 @@ var
   LNCResult: TNewChapterResult = ncrCancel;
   newChapterListStr: String = '';
   removeListStr: String = '';
-  newdl: LongInt;
 begin
   if isDlgCounter then Exit;
   if (Self.DLManager = nil) and Assigned(DLManager) then
@@ -783,61 +782,62 @@ begin
           while DLManager.isRunningBackup do
             Sleep(100);
 
-          for i := 0 to Items.Count - 1 do
+          DLManager.Lock;
+          try
+            for i := 0 to Items.Count - 1 do
             with Items[i] do
               if Assigned(NewMangaInfo) and
                 (NewMangaInfoChaptersPos.Count > 0) then
-                try
-                  EnterCriticalSection(DLManager.CS_Task);
-                  newdl := DLManager.Items.Add(TTaskContainer.Create);
-                  with DLManager.Items[newdl] do
+              begin
+                with DLManager.AddTask do
+                begin
+                  Manager := DLManager;
+                  CurrentDownloadChapterPtr := 0;
+                  DownloadInfo.Module := FavoriteInfo.Module;
+                  DownloadInfo.Link := FavoriteInfo.Link;
+                  DownloadInfo.Title := FavoriteInfo.Title;
+                  DownloadInfo.SaveTo := FavoriteInfo.SaveTo;
+                  DownloadInfo.DateAdded := Now;
+                  DownloadInfo.DateLastDownloaded := Now;
+
+                  for j := 0 to NewMangaInfoChaptersPos.Count - 1 do
                   begin
-                    Manager := DLManager;
-                    CurrentDownloadChapterPtr := 0;
-                    DownloadInfo.Module := FavoriteInfo.Module;
-                    DownloadInfo.Link := FavoriteInfo.Link;
-                    DownloadInfo.Title := FavoriteInfo.Title;
-                    DownloadInfo.SaveTo := FavoriteInfo.SaveTo;
-                    DownloadInfo.DateAdded := Now;
-                    DownloadInfo.DateLastDownloaded := Now;
-
-                    for j := 0 to NewMangaInfoChaptersPos.Count - 1 do
-                    begin
-                      ChapterLinks.Add(NewMangaInfo.ChapterLinks[NewMangaInfoChaptersPos[j]]);
-                      ChapterNames.Add(CustomRename(
-                        OptionChapterCustomRename,
-                        FavoriteInfo.Website,
-                        FavoriteInfo.Title,
-                        NewMangaInfo.Authors,
-                        NewMangaInfo.Artists,
-                        NewMangaInfo.ChapterNames[NewMangaInfoChaptersPos[j]],
-                        Format('%.4d', [NewMangaInfoChaptersPos[j] + 1]),
-                        OptionChangeUnicodeCharacter,
-                        OptionChangeUnicodeCharacterStr));
-                    end;
-
-                    if LNCResult = ncrDownload then
-                    begin
-                      DownloadInfo.Status := Format('[%d/%d] %s',[0,ChapterLinks.Count,RS_Waiting]);
-                      Status := STATUS_WAIT;
-                    end
-                    else
-                    begin
-                      DownloadInfo.Status := Format('[%d/%d] %s',[0,ChapterLinks.Count,RS_Stopped]);
-                      Status := STATUS_STOP;
-                    end;
-                    SaveToDB(newdl);
-                    // add to downloaded chapter list
-                    FavoriteInfo.downloadedChapterList := MergeCaseInsensitive([FavoriteInfo.DownloadedChapterList, chapterLinks.Text]);
-                    // add to downloaded chapter list in downloadmanager
-                    DLManager.DownloadedChapters.Chapters[FavoriteInfo.ModuleID, FavoriteInfo.Link] := chapterLinks.Text;
+                    ChapterLinks.Add(NewMangaInfo.ChapterLinks[NewMangaInfoChaptersPos[j]]);
+                    ChapterNames.Add(CustomRename(
+                      OptionChapterCustomRename,
+                      FavoriteInfo.Website,
+                      FavoriteInfo.Title,
+                      NewMangaInfo.Authors,
+                      NewMangaInfo.Artists,
+                      NewMangaInfo.ChapterNames[NewMangaInfoChaptersPos[j]],
+                      Format('%.4d', [NewMangaInfoChaptersPos[j] + 1]),
+                      OptionChangeUnicodeCharacter,
+                      OptionChangeUnicodeCharacterStr));
                   end;
-                  // free unused objects
-                  FreeAndNil(NewMangaInfo);
-                  FreeAndNil(NewMangaInfoChaptersPos);
-                finally
-                  LeaveCriticalSection(DLManager.CS_Task);
+
+                  if LNCResult = ncrDownload then
+                  begin
+                    DownloadInfo.Status := Format('[%d/%d] %s',[0,ChapterLinks.Count,RS_Waiting]);
+                    Status := STATUS_WAIT;
+                  end
+                  else
+                  begin
+                    DownloadInfo.Status := Format('[%d/%d] %s',[0,ChapterLinks.Count,RS_Stopped]);
+                    Status := STATUS_STOP;
+                  end;
+                  DBInsert;
+                  // add to downloaded chapter list
+                  FavoriteInfo.downloadedChapterList := MergeCaseInsensitive([FavoriteInfo.DownloadedChapterList, chapterLinks.Text]);
+                  // add to downloaded chapter list in downloadmanager
+                  DLManager.DownloadedChapters.Chapters[FavoriteInfo.ModuleID, FavoriteInfo.Link] := chapterLinks.Text;
                 end;
+                // free unused objects
+                FreeAndNil(NewMangaInfo);
+                FreeAndNil(NewMangaInfoChaptersPos);
+              end;
+          finally
+            DLManager.Unlock;
+          end;
 
           Backup;
           if LNCResult = ncrDownload then

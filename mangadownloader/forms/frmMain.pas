@@ -2559,32 +2559,37 @@ begin
           l:=links.Count-k
         else
           l:=p;
-        with DLManager.AddTask do
-        begin
-          for j:=1 to l do
+        DLManager.Lock;
+        try
+          with DLManager.AddTask do
           begin
-            ChapterLinks.Add(links[k]);
-            ChapterNames.Add(names[k]);
-            Inc(k);
+            for j:=1 to l do
+            begin
+              ChapterLinks.Add(links[k]);
+              ChapterNames.Add(names[k]);
+              Inc(k);
+            end;
+            if cbAddAsStopped.Checked then
+            begin
+              DownloadInfo.Status:=Format('[%d/%d] %s',[0,ChapterLinks.Count,RS_Stopped]);
+              Status:=STATUS_STOP;
+            end
+            else
+            begin
+              DownloadInfo.Status:=Format('[%d/%d] %s',[0,ChapterLinks.Count,RS_Waiting]);
+              Status:=STATUS_WAIT;
+            end;
+            DownloadInfo.ModuleID:=mangaInfo.ModuleID;
+            DownloadInfo.Link:=mangaInfo.Link;
+            DownloadInfo.Title:=mangaInfo.Title;
+            DownloadInfo.DateAdded:=Now;
+            DownloadInfo.DateLastDownloaded:=Now;
+            DownloadInfo.SaveTo:=s;
+            CurrentDownloadChapterPtr:=0;
+            DBInsert;
           end;
-          if cbAddAsStopped.Checked then
-          begin
-            DownloadInfo.Status:=Format('[%d/%d] %s',[0,ChapterLinks.Count,RS_Stopped]);
-            Status:=STATUS_STOP;
-          end
-          else
-          begin
-            DownloadInfo.Status:=Format('[%d/%d] %s',[0,ChapterLinks.Count,RS_Waiting]);
-            Status:=STATUS_WAIT;
-          end;
-          DownloadInfo.ModuleID:=mangaInfo.ModuleID;
-          DownloadInfo.Link:=mangaInfo.Link;
-          DownloadInfo.Title:=mangaInfo.Title;
-          DownloadInfo.DateAdded:=Now;
-          DownloadInfo.DateLastDownloaded:=Now;
-          DownloadInfo.SaveTo:=s;
-          CurrentDownloadChapterPtr:=0;
-          DBInsert;
+        finally
+          DLManager.Unlock;
         end;
         if OptionSortDownloadsWhenAddingNewDownloadTasks then
           DLManager.Sort(DLManager.SortColumn);
