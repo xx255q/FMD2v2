@@ -202,7 +202,7 @@ msgstr "Checking..."
 
 #: frmmain.rs_custom
 msgid "Custom"
-msgstr ""
+msgstr "Custom"
 
 #: frmmain.rs_dlgcannotconnecttoserver
 msgid "Cannot connect to the server."
@@ -357,11 +357,11 @@ msgstr "In progress"
 
 #: frmmain.rs_last6months
 msgid "Last 6 months"
-msgstr ""
+msgstr "Last 6 months"
 
 #: frmmain.rs_last7days
 msgid "Last 7 days"
-msgstr ""
+msgstr "Last 7 days"
 
 #: frmmain.rs_lblautochecknewchapterminute
 #, object-pascal-format
@@ -403,7 +403,7 @@ msgstr "Mode: Searching..."
 
 #: frmmain.rs_olderthan6months
 msgid "Older than 6 months"
-msgstr ""
+msgstr "Older than 6 months"
 
 #: frmmain.rs_optioncompress
 msgid ""
@@ -451,7 +451,7 @@ msgstr "Path to the software (e.g. C:\\MangaDownloader)"
 
 #: frmmain.rs_thismonth
 msgid "This month"
-msgstr ""
+msgstr "This month"
 
 #: frmmain.rs_today
 msgid "Today"
@@ -826,7 +826,6 @@ msgid "Reset value"
 msgstr "Reset value"
 
 #: tmainform.btndownloadfiltercustomdateapply.caption
-#, fuzzy
 msgctxt "tmainform.btndownloadfiltercustomdateapply.caption"
 msgid "Apply"
 msgstr "Apply"
@@ -1501,23 +1500,20 @@ msgid "Renaming"
 msgstr "Renaming"
 
 #: tmainform.gboptionsconnectionsdownloads.caption
-#, fuzzy
 msgctxt "tmainform.gboptionsconnectionsdownloads.caption"
 msgid "Downloads"
 msgstr "Downloads"
 
 #: tmainform.gboptionsconnectionsgeneral.caption
-#, fuzzy
 msgctxt "tmainform.gboptionsconnectionsgeneral.caption"
 msgid "General"
 msgstr "General"
 
 #: tmainform.gboptionsconnectionsupdatelist.caption
 msgid "Update list"
-msgstr ""
+msgstr "Update list"
 
 #: tmainform.gboptionsconnectiosfavorites.caption
-#, fuzzy
 msgctxt "tmainform.gboptionsconnectiosfavorites.caption"
 msgid "Favorites"
 msgstr "Favorites"
@@ -1528,11 +1524,11 @@ msgstr "Choose the default download path:"
 
 #: tmainform.lbdownloadfiltercustomdatefrom.caption
 msgid "From:"
-msgstr ""
+msgstr "From:"
 
 #: tmainform.lbdownloadfiltercustomdateto.caption
 msgid "To:"
-msgstr ""
+msgstr "To:"
 
 #: tmainform.lbdroptargetopacity.caption
 msgid "Opacity"
@@ -1734,7 +1730,7 @@ msgstr ""
 
 #: tmainform.lboptionmaxfavoritethreads.caption
 msgid "Max number of favorite check at the same time"
-msgstr ""
+msgstr "Max number of favorite check at the same time"
 
 #: tmainform.lboptionmaxparallel.caption
 msgid "Number of downloaded tasks at the same time"
@@ -1750,7 +1746,7 @@ msgstr "Number of downloaded files per task at the same time"
 
 #: tmainform.lboptionmaxupdatelistthreads.caption
 msgid "Max number of update list threads"
-msgstr ""
+msgstr "Max number of update list threads"
 
 #: tmainform.lboptionnewmangatime.caption
 msgid "New manga based on  it's update time (days)"
@@ -2490,7 +2486,7 @@ msgstr "&Update"
 
 #: tupdatedialogform.caption
 msgid "New Version Found"
-msgstr ""
+msgstr "New Version Found"
 
 #: tupdatedialogform.lbmessage.caption
 msgid ""
@@ -2678,4 +2674,3 @@ msgstr "Updating list"
 #, object-pascal-format
 msgid "Can not load WebP codec library \"%s\". Check your installation."
 msgstr "Can not load WebP codec library \"%s\". Check your installation."
-
