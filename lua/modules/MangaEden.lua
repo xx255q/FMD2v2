@@ -74,18 +74,23 @@ function GetNameAndLink()
 	end
 end
 
+function BeforeDownloadImage()
+	HTTP.Headers.Values['Referer'] = ' ' .. MaybeFillHost(MODULE.RootURL, TASK.ChapterLinks[TASK.CurrentDownloadChapterPtr])
+	return true
+end
+
 function Init()
-	function AddWebsiteModule(id, website, rooturl, category)
+	function AddWebsiteModule(id, name, url, cat)
 		local m = NewWebsiteModule()
-		m.ID=id
-		m.Category=category
-		m.Name=website
-		m.RootURL=rooturl
-		m.LastUpdated='May 17, 2019'
-		m.OnGetInfo='GetInfo'
-		m.OnGetPageNumber='GetPageNumber'
-		m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
-		m.OnGetNameAndLink='GetNameAndLink'
+		m.ID                        = id
+		m.Name                      = name
+		m.RootURL                   = url
+		m.Category                  = cat
+		m.OnGetInfo                 = 'GetInfo'
+		m.OnGetPageNumber           = 'GetPageNumber'
+		m.OnGetDirectoryPageNumber  = 'GetDirectoryPageNumber'
+		m.OnGetNameAndLink          = 'GetNameAndLink'
+		m.OnBeforeDownloadImage     = 'BeforeDownloadImage'
 	end
 	AddWebsiteModule('d040b868cc844649aee94abf758267a1', 'MangaEden', 'http://www.mangaeden.com', 'English')
 	AddWebsiteModule('8aafeb82bfda4aeda5c1b6cd8e96016a', 'MangaEden_IT', 'http://www.mangaeden.com', 'Italian')
