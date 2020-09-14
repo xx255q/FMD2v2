@@ -15,6 +15,7 @@ type
   protected
     procedure DoInternalDisconnect; override;
   public
+    procedure ExecuteSQL(const asql: string);
     property Handle read GetHandle;
     property Statements;
   end;
@@ -52,7 +53,6 @@ type
     procedure GetRecordCount; virtual;
     procedure SetRecordCount(const AValue: Integer); virtual;
     procedure IncRecordCount(const N: Integer = 1);
-    procedure Vacuum; virtual;
   public
     constructor Create;
     destructor Destroy; override;
@@ -63,6 +63,7 @@ type
     procedure Refresh(RecheckDataCount: Boolean = False); virtual;
     procedure Commit; virtual;
     procedure CommitRetaining; virtual;
+    procedure Vacuum; virtual;
     procedure Save; virtual;
     function Connected: Boolean; inline;
     property Connection: TSQLite3ConnectionH read FConn;
@@ -152,6 +153,11 @@ begin
     checkerror(sqlite3_close_v2(lhandle));
     ReleaseSQLite;
   end;
+end;
+
+procedure TSQLite3ConnectionH.ExecuteSQL(const asql: string);
+begin
+  execsql(asql);
 end;
 
 { TSQliteData }

@@ -331,7 +331,7 @@ begin
     with MainForm do
     begin
       // add a new download task
-      d := DLManager.Items[DLManager.AddTask];
+      d := DLManager.AddTask;
       d.DownloadInfo.Module := Module;
 
       if Trim(Title) = '' then
@@ -389,7 +389,7 @@ begin
             OptionChangeUnicodeCharacterStr);
       end;
       d.downloadInfo.SaveTo := FSavePath;
-      d.SaveToDB;
+      d.DBInsert;
 
       UpdateVtDownload;
       DLManager.CheckAndActiveTask(False);

@@ -2075,14 +2075,19 @@ var
   Node: PVirtualNode;
 begin
   if vtDownload.SelectedCount = 0 then Exit;
-  Node := vtDownload.GetFirstSelected();
-  while Assigned(Node) do
-  begin
-    if Sender = miDownloadEnable then
-      DLManager.EnableTask(Node^.Index)
-    else
-      DLManager.DisableTask(Node^.Index);
-    Node := vtDownload.GetNextSelected(Node);
+  DLManager.Lock;
+  try
+    Node := vtDownload.GetFirstSelected();
+    while Assigned(Node) do
+    begin
+      if Sender = miDownloadEnable then
+        DLManager.EnableTask(Node^.Index)
+      else
+        DLManager.DisableTask(Node^.Index);
+      Node := vtDownload.GetNextSelected(Node);
+    end;
+  finally
+    DLManager.Unlock;
   end;
   UpdateVtDownload;
 end;
@@ -2123,8 +2128,8 @@ begin
       mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
       Exit;
   vtDownload.BeginUpdate;
+  DLManager.Lock;
   try
-    EnterCriticalSection(DLManager.CS_Task);
     // stop selected nodes
     xNode := vtDownload.GetPreviousSelected(nil);
     while Assigned(xNode) do
@@ -2183,7 +2188,7 @@ begin
       xNode := vtDownload.GetPreviousSelected(xNode);
     end;
   finally
-    LeaveCriticalSection(DLManager.CS_Task);
+    DLManager.Unlock;
   end;
   vtDownload.RootNodeCount := DLManager.Items.Count;
   vtDownload.EndUpdate;
@@ -2470,7 +2475,7 @@ var
   links,names:TStrings;
   node:PVirtualNode;
   s:String;
-  c,p,r,i,j,k,l, newdl:Integer;
+  c,p,r,i,j,k,l:Integer;
 begin
   if clbChapterList.CheckedCount = 0 then
     Exit;
@@ -2543,8 +2548,7 @@ begin
           l:=links.Count-k
         else
           l:=p;
-        newdl := DLManager.AddTask;
-        with DLManager[newdl] do
+        with DLManager.AddTask do
         begin
           for j:=1 to l do
           begin
@@ -2569,7 +2573,7 @@ begin
           DownloadInfo.DateLastDownloaded:=Now;
           DownloadInfo.SaveTo:=s;
           CurrentDownloadChapterPtr:=0;
-          SaveToDB(newdl);
+          DBInsert;
         end;
         if OptionSortDownloadsWhenAddingNewDownloadTasks then
           DLManager.Sort(DLManager.SortColumn);
@@ -3548,10 +3552,15 @@ var
   xNode: PVirtualNode;
 begin
   if vtDownload.SelectedCount > 0 then begin
-    xNode := vtDownload.GetFirstSelected();
-    while Assigned(xNode) do begin
-      DLManager.SetTaskActive(xNode^.Index);
-      xNode := vtDownload.GetNextSelected(xNode);
+    DLManager.Lock;
+    try
+      xNode := vtDownload.GetFirstSelected();
+      while Assigned(xNode) do begin
+        DLManager.SetTaskActive(xNode^.Index);
+        xNode := vtDownload.GetNextSelected(xNode);
+      end;
+    finally
+      DLManager.Unlock;
     end;
     DLManager.CheckAndActiveTask();
     UpdateVtDownload;
@@ -3563,10 +3572,15 @@ var
   xNode: PVirtualNode;
 begin
   if vtDownload.SelectedCount > 0 then begin
-    xNode := vtDownload.GetFirstSelected();
-    while Assigned(xNode) do begin
-      DLManager.StopTask(xNode^.Index, False);
-      xNode := vtDownload.GetNextSelected(xNode);
+    DLManager.Lock;
+    try
+      xNode := vtDownload.GetFirstSelected();
+      while Assigned(xNode) do begin
+        DLManager.StopTask(xNode^.Index, False);
+        xNode := vtDownload.GetNextSelected(xNode);
+      end;
+    finally
+      DLManager.Unlock;
     end;
     DLManager.CheckAndActiveTask();
     UpdateVtDownload;
@@ -4159,7 +4173,7 @@ begin
   nIndex:=NextIndex;
   vtDownload.BeginUpdate;
   ConTemp:=TTaskContainers.Create;
-  EnterCriticalSection(DLManager.CS_Task);
+  DLManager.Lock;
   try
     i:=0;
     cNode:=vtDownload.GetFirstSelected();
@@ -4201,8 +4215,11 @@ begin
 
     if Mode=dmAbove then
       vtDownload.FocusedNode:=cNode;
+
+    // todo: consider dbupdateorder queue in timer
+    DLManager.DBUpdateOrder;
   finally
-    LeaveCriticalSection(DLManager.CS_Task);
+    DLManager.Unlock;
   end;
   ConTemp.Free;
   vtDownload.EndUpdate;

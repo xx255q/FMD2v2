@@ -12,39 +12,11 @@ type
   { TDownloadsDB }
 
   TDownloadsDB = class(TSQliteData)
-  private
-    FCommitCount: Integer;
-    FAutoCommitCount: Integer;
-    procedure SetAutoCommitCount(AValue: Integer);
   public
+    Guardian: TRTLCriticalSection;
     constructor Create(const AFilename: String);
-    procedure InternalAdd(
-      const Aenabled:Boolean;
-      const Aorder,Ataskstatus,Achapterptr,Anumberofpages,Acurrentpage:Integer;
-      const Amoduleid,Alink,Atitle,Astatus,Aprogress,Asaveto:String;
-      const Adateadded:TDateTime;
-      const Achapterslinks,Achaptersnames,Apagelinks,Apagecontainerlinks,Afilenames,Acustomfilenames,Achaptersstatus:String); inline;
-    procedure InternalUpdate(
-      const Adlid:Integer;
-      const Aenabled:Boolean;
-      const Aorder,Ataskstatus,Achapterptr,Anumberofpages,Acurrentpage:Integer;
-      const Amoduleid,Alink,Atitle,Astatus,Aprogress,Asaveto:String;
-      const Adatelastdownloaded:TDateTime;
-      const Achapterslinks,Achaptersnames,Apagelinks,Apagecontainerlinks,Afilenames,Acustomfilenames,Achaptersstatus:String); inline;
-    procedure InternalUpdateOrderEnabled(const Adlid,AOrder:Integer;const Aenabled:Boolean);
-    procedure InternalUpdateOrder(const Adlid,AOrder:Integer);
-    procedure InternalUpdateEnabled(const Adlid:Integer;const Aenabled:Boolean);
-    function Add(
-      var Adlid:Integer;
-      const Aenabled:Boolean;
-      const Aorder,Ataskstatus,Achapterptr,Anumberofpages,Acurrentpage:Integer;
-      const Amoduleid,Alink,Atitle,Astatus,Aprogress,Asaveto:String;
-      const Adateadded:TDateTime;
-      const Achapterslinks,Achaptersnames,Apagelinks,Apagecontainerlinks,Afilenames,Acustomfilenames,Achaptersstatus:String):Boolean;
-    procedure Delete(const ADlId: Integer);
+    destructor Destroy; override;
     procedure Commit; override;
-    procedure Close; override;
-    property AutoCommitCount: Integer read FAutoCommitCount write SetAutoCommitCount;
   end;
 
 const
@@ -75,20 +47,14 @@ implementation
 
 { TDownloadsDB }
 
-procedure TDownloadsDB.SetAutoCommitCount(AValue: Integer);
-begin
-  if FAutoCommitCount = AValue then Exit;
-  FAutoCommitCount := AValue;
-end;
-
 constructor TDownloadsDB.Create(const AFilename: String);
 begin
   inherited Create;
-  FCommitCount := 0;
-  FAutoCommitCount := 300;
+  InitCriticalSection(Guardian);
   Filename := AFilename;
   TableName := 'downloads';
   Table.PacketRecords := 1;
+  Table.UniDirectional:=False;
   CreateParams :=
     '"id" INTEGER PRIMARY KEY,' +
     '"enabled" BOOLEAN,' +
@@ -116,149 +82,18 @@ begin
   SelectParams := 'SELECT ' + FieldsParams + ' FROM '+QuotedStrD(TableName)+' ORDER BY "order"';
 end;
 
-procedure TDownloadsDB.InternalAdd(
-  const Aenabled:Boolean;
-  const Aorder,Ataskstatus,Achapterptr,Anumberofpages,Acurrentpage:Integer;
-  const Amoduleid,Alink,Atitle,Astatus,Aprogress,Asaveto:String;
-  const Adateadded:TDateTime;
-  const Achapterslinks,Achaptersnames,Apagelinks,Apagecontainerlinks,Afilenames,Acustomfilenames,Achaptersstatus:String);
+destructor TDownloadsDB.Destroy;
 begin
-  Connection.ExecuteDirect('INSERT INTO "downloads" ("enabled","order","taskstatus","chapterptr","numberofpages","currentpage","moduleid","link","title","status","progress","saveto","dateadded","datelastdownloaded","chapterslinks","chaptersnames","pagelinks","pagecontainerlinks","filenames","customfilenames","chaptersstatus")' +
-    ' VALUES (' +
-    QuotedStr(Aenabled) + ', ' +
-    QuotedStr(Aorder) + ', ' +
-    QuotedStr(Ataskstatus) + ', ' +
-    QuotedStr(Achapterptr) + ', ' +
-    QuotedStr(Anumberofpages) + ', ' +
-    QuotedStr(Acurrentpage) + ', ' +
-    QuotedStr(Amoduleid) + ', ' +
-    QuotedStr(Alink) + ', ' +
-    QuotedStr(Atitle) + ', ' +
-    QuotedStr(Astatus) + ', ' +
-    QuotedStr(Aprogress) + ', ' +
-    QuotedStr(Asaveto) + ', ' +
-    QuotedStr(Adateadded) + ', ' +
-    QuotedStr(Adateadded) + ', ' +
-    QuotedStr(Achapterslinks) + ', ' +
-    QuotedStr(Achaptersnames) + ', ' +
-    QuotedStr(Apagelinks) + ', ' +
-    QuotedStr(Apagecontainerlinks) + ', ' +
-    QuotedStr(Afilenames) + ', ' +
-    QuotedStr(Acustomfilenames) + ', ' +
-    QuotedStr(Achaptersstatus) +
-    ')');
-end;
-
-procedure TDownloadsDB.InternalUpdate(
-  const Adlid:Integer;
-  const Aenabled:Boolean;
-  const Aorder,Ataskstatus,Achapterptr,Anumberofpages,Acurrentpage:Integer;
-  const Amoduleid,Alink,Atitle,Astatus,Aprogress,Asaveto:String;
-  const Adatelastdownloaded:TDateTime;
-  const Achapterslinks,Achaptersnames,Apagelinks,Apagecontainerlinks,Afilenames,Acustomfilenames,Achaptersstatus:String);
-begin
-  Connection.ExecuteDirect('UPDATE "downloads" SET ' +
-    '"enabled"=' +            QuotedStr(Aenabled) + ', ' +
-    '"order"=' +              QuotedStr(Aorder) + ', ' +
-    '"taskstatus"=' +         QuotedStr(Ataskstatus) + ', ' +
-    '"chapterptr"=' +         QuotedStr(Achapterptr) + ', ' +
-    '"numberofpages"=' +      QuotedStr(Anumberofpages) + ', ' +
-    '"currentpage"=' +        QuotedStr(Acurrentpage) + ', ' +
-    '"moduleid"=' +           QuotedStr(Amoduleid) + ', ' +
-    '"link"=' +               QuotedStr(Alink) + ', ' +
-    '"title"=' +              QuotedStr(Atitle) + ', ' +
-    '"status"=' +             QuotedStr(Astatus) + ', ' +
-    '"progress"=' +           QuotedStr(Aprogress) + ', ' +
-    '"saveto"=' +             QuotedStr(Asaveto) + ', ' +
-    '"datelastdownloaded"=' + QuotedStr(Adatelastdownloaded) + ', ' +
-    '"chapterslinks"=' +      QuotedStr(Achapterslinks) + ', ' +
-    '"chaptersnames"=' +      QuotedStr(Achaptersnames) + ', ' +
-    '"pagelinks"=' +          QuotedStr(Apagelinks) + ', ' +
-    '"pagecontainerlinks"=' + QuotedStr(Apagecontainerlinks) + ', ' +
-    '"filenames"=' +          QuotedStr(Afilenames) + ', ' +
-    '"customfilenames"=' +    QuotedStr(Acustomfilenames) + ', ' +
-    '"chaptersstatus"=' +     QuotedStr(Achaptersstatus) +
-    ' WHERE "id"=' + QuotedStr(Adlid));
-end;
-
-procedure TDownloadsDB.InternalUpdateOrderEnabled(const Adlid, AOrder: Integer;
-  const Aenabled: Boolean);
-begin
-  Connection.ExecuteDirect('UPDATE "downloads" SET ' +
-    '"enabled"=' +            QuotedStr(Aenabled) + ', ' +
-    '"order"=' +              QuotedStr(Aorder) +
-    ' WHERE "id"=' +        QuotedStr(Adlid));
-end;
-
-procedure TDownloadsDB.InternalUpdateOrder(const Adlid, AOrder: Integer);
-begin
-  Connection.ExecuteDirect('UPDATE "downloads" SET ' +
-    '"order"=' +       QuotedStr(AOrder)+
-    ' WHERE "id"=' + QuotedStr(Adlid));
-end;
-
-procedure TDownloadsDB.InternalUpdateEnabled(const Adlid: Integer;
-  const Aenabled: Boolean);
-begin
-  Connection.ExecuteDirect('UPDATE "downloads" SET ' +
-    '"enabled"='     + QuotedStr(Aenabled)+
-    ' WHERE "id"=' + QuotedStr(Adlid));
-end;
-
-function TDownloadsDB.Add(
-  var Adlid:Integer;
-  const Aenabled:Boolean;
-  const Aorder,Ataskstatus,Achapterptr,Anumberofpages,Acurrentpage:Integer;
-  const Amoduleid,Alink,Atitle,Astatus,Aprogress,Asaveto:String;
-  const Adateadded:TDateTime;
-  const Achapterslinks,Achaptersnames,Apagelinks,Apagecontainerlinks,Afilenames,Acustomfilenames,Achaptersstatus:String):Boolean;
-begin
-  Result := False;
-  if not Connection.Connected then Exit;
-  try
-    if Adlid = -1 then
-    begin
-      InternalAdd(Aenabled,Aorder,Ataskstatus,Achapterptr,Anumberofpages,Acurrentpage,Amoduleid,
-        Alink,Atitle,Astatus,Aprogress,Asaveto,Adateadded,Achapterslinks,Achaptersnames,Apagelinks,
-        Apagecontainerlinks,Afilenames,Acustomfilenames,Achaptersstatus);
-      Adlid := Connection.GetInsertID;
-    end
-    else
-      InternalUpdate(Adlid,Aenabled,Aorder,Ataskstatus,Achapterptr,Anumberofpages,Acurrentpage,Amoduleid,
-        Alink,Atitle,Astatus,Aprogress,Asaveto,Adateadded,Achapterslinks,Achaptersnames,Apagelinks,
-        Apagecontainerlinks,Afilenames,Acustomfilenames,Achaptersstatus);
-    Inc(FCommitCount);
-    if FCommitCount >= FAutoCommitCount then
-      Commit;
-    Result := True;
-  except
-    on E: Exception do
-      SendLogException(ClassName + '.Add failed!', E);
-  end;
-end;
-
-procedure TDownloadsDB.Delete(const ADlId: Integer);
-begin
-  if ADlId = -1 then Exit;
-  if not Connection.Connected then Exit;
-  try
-    Connection.ExecuteDirect(
-      'DELETE FROM "downloads" WHERE "id"=' + QuotedStr(ADlId));
-    Inc(FCommitCount);
-    if FCommitCount >= FAutoCommitCount then
-      Commit;
-  except
-    on E: Exception do
-      SendLogException(ClassName + '.Delete failed!', E);
-  end;
+  DoneCriticalSection(Guardian);
+  inherited Destroy;
 end;
 
 procedure TDownloadsDB.Commit;
 begin
   if not Connection.Connected then Exit;
+  EnterCriticalSection(Guardian);
   try
     Transaction.Commit;
-    FCommitCount := 0;
   except
     on E: Exception do
       begin
@@ -266,13 +101,7 @@ begin
         SendLogException(ClassName + '.Commit failed! Rollback!', E);
       end;
   end;
-end;
-
-procedure TDownloadsDB.Close;
-begin
-  if FCommitCount <> 0 then
-    Commit;
-  inherited Close;
+  LeaveCriticalSection(Guardian);
 end;
 
 end.
