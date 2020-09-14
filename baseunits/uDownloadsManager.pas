@@ -185,6 +185,7 @@ type
     FDownloadsDB: TDownloadsDB;
     tempSQL: string;
     tempSQLcount: integer;
+    updateOrderCount: Integer;
     procedure AddItemsActiveTask(const Item: TTaskContainer);
     procedure RemoveItemsActiveTask(const Item: TTaskContainer);
     function GetTask(const TaskId: Integer): TTaskContainer;
@@ -234,6 +235,7 @@ type
     procedure DBAppendSQL(const SQL:string); inline;
     procedure DBExecSQL;
     procedure DBUpdateOrder;
+    procedure UpdateOrder; inline;
 
     // These methods relate to highlight downloaded chapters.
     procedure GetDownloadedChaptersState(const AModuleID, ALink: String;
@@ -1400,6 +1402,8 @@ begin
   isRunningBackupDownloadedChaptersList := False;
   isReadyForExit := False;
   tempSQL:='';
+  tempSQLcount:=0;
+  updateOrderCount:=0;
 
   InitCriticalSection(CS_StatusCount);
   for ds := Low(StatusCount) to High(StatusCount) do
@@ -1485,7 +1489,8 @@ begin
   Lock;
   try
     //Logger.Send('TDownloadManager.Backup');
-    DBExecSQL;;
+    DBUpdateOrder;
+    DBExecSQL;
     FDownloadsDB.Commit;
   finally
     Unlock;
@@ -1523,6 +1528,7 @@ const
 var
   i: Integer;
 begin
+  if updateOrderCount=0 then Exit;
   for i := 0 to Items.Count-1 do
   with Items[i] do begin
     if i<>Order then
@@ -1535,6 +1541,12 @@ begin
     end;
   end;
   if tempSQLcount>0 then DBExecSQL;
+  updateOrderCount:=0;
+end;
+
+procedure TDownloadManager.UpdateOrder;
+begin
+  Inc(updateOrderCount);
 end;
 
 procedure TDownloadManager.DBExecSQL;
@@ -1904,8 +1916,8 @@ begin
   finally
     LeaveCriticalSection(CS_Task);
   end;
-  // todo: consider move dbupdateorder inside timer
-  DBUpdateOrder;
+
+  UpdateOrder;
 end;
 
 end.

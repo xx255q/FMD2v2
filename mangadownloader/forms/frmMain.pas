@@ -721,8 +721,10 @@ type
 
     // timer schedule
     Timer1Hour: TTimer;
+    TimerBackup: TTimer;
 
     procedure OnTimer1Hour(Sender:TObject);
+    procedure OnTimerBackup(Sender:TObject);
 
     // embed form
     procedure EmbedForm(const AForm: TForm; const AParent: TWinControl);
@@ -1324,6 +1326,14 @@ begin
     Enabled:=True;
   end;
 
+  TimerBackup:=TTimer.Create(Self);
+  with Timer1Hour do
+  begin
+    OnTimer:=@OnTimerBackup;
+    Interval:=1000*60*10;
+    Enabled:=True;
+  end;
+
   Self.Caption := Self.Caption + ' v' + FMD_VERSION_STRING;
   AddToAboutStatus(RS_Version, FMD_VERSION_STRING, pnAboutVersion);
   if REVISION_NUMBER <> '' then
@@ -1388,6 +1398,7 @@ begin
   if Assigned(SelfUpdaterThread) then SelfUpdaterThread.WaitFor;
 
   Timer1Hour.Enabled := False;
+  TimerBackup.Enabled := False;
   tmRefreshDownloadsInfo.Enabled := False;
   tmCheckFavorites.Enabled := False;
   tmAnimateMangaInfo.Enabled := False;
@@ -2707,6 +2718,12 @@ end;
 procedure TMainForm.OnTimer1Hour(Sender: TObject);
 begin
   DoBackupToday;
+end;
+
+procedure TMainForm.OnTimerBackup(Sender: TObject);
+begin
+  // todo: optimize backup
+  DLManager.Backup;
 end;
 
 procedure TMainForm.EmbedForm(const AForm: TForm; const AParent: TWinControl);
@@ -4217,7 +4234,7 @@ begin
       vtDownload.FocusedNode:=cNode;
 
     // todo: consider dbupdateorder queue in timer
-    DLManager.DBUpdateOrder;
+    DLManager.UpdateOrder;
   finally
     DLManager.Unlock;
   end;
