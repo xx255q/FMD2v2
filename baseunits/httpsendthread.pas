@@ -448,8 +448,11 @@ end;
 
 procedure THTTPSendThread.OnOwnerTerminate(Sender: TObject);
 begin
-  Sock.Tag := 1;
-  Sock.CloseSocket;
+  try
+    Sock.Tag := 1;
+    Sock.CloseSocket;
+  except
+  end;
   if Assigned(FOwnerCustomTerminate) then
     FOwnerCustomTerminate(Sender);
 end;
