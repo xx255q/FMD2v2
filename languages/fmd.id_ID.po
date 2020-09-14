@@ -868,6 +868,9 @@ msgid "Visit my blog"
 msgstr "Kunjungi blog"
 
 #: tmainform.caption
+#, fuzzy
+#| msgid "Free Manga Downloader"
+msgctxt "tmainform.caption"
 msgid "Free Manga Downloader"
 msgstr "Free Manga Downloader"
 
@@ -2589,18 +2592,17 @@ msgid "&Remove"
 msgstr "&Hapus"
 
 #: ufavoritesmanager.rs_dlgcompletedmangacaption
-#, object-pascal-format
-msgid "Found %d completed manga"
-msgstr "Ditemukan %d komik yang tamat"
+msgid "Found completed manga(s)"
+msgstr "Ditemukan komik yang sudah tamat"
 
 #: ufavoritesmanager.rs_dlgfavoritescheckisrunning
 msgid "Favorites check is running!"
 msgstr "Pemeriksaan kesukaan sedang berjalan!"
 
 #: ufavoritesmanager.rs_dlgnewchaptercaption
-#, object-pascal-format
-msgid "%d manga(s) have new chapter(s)"
-msgstr "Ditemukan %d bab baru"
+msgctxt "ufavoritesmanager.rs_dlgnewchaptercaption"
+msgid "Found new chapter(s)"
+msgstr "Ditemukan bab baru"
 
 #: ufavoritesmanager.rs_favoritehasnewchapter
 #, object-pascal-format
@@ -2608,8 +2610,9 @@ msgid "%s <%s> has %d new chapter(s)."
 msgstr "%s <%s> memiliki %d bab baru."
 
 #: ufavoritesmanager.rs_lblmangawillberemoved
-msgid "Completed manga will be removed:"
-msgstr "Komik yang sudah tamat akan dihapus:"
+#, object-pascal-format
+msgid "%d completed manga(s) will be removed:"
+msgstr "%d yang sudah tamat akan dihapus:"
 
 #: ufavoritesmanager.rs_lblnewchapterfound
 #, object-pascal-format
@@ -2683,4 +2686,3 @@ msgstr "Memutakhirkan daftar"
 #, object-pascal-format
 msgid "Can not load WebP codec library \"%s\". Check your installation."
 msgstr "Tidak dapat memuat pustaka kodek WebP \"%s\". Periksa instalasi Anda."
-

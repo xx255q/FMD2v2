@@ -157,14 +157,14 @@ type
 
 resourcestring
   RS_DlgFavoritesCheckIsRunning = 'Favorites check is running!';
-  RS_DlgNewChapterCaption = '%d manga(s) have new chapter(s)';
+  RS_DlgNewChapterCaption = 'Found new chapter(s)';
   RS_LblNewChapterFound = 'Found %d new chapter from %d manga(s):';
   RS_FavoriteHasNewChapter = '%s <%s> has %d new chapter(s).';
   RS_BtnDownload = '&Download';
   RS_BtnAddToQueue = '&Add to queue';
   RS_BtnCancel = '&Cancel';
-  RS_DlgCompletedMangaCaption = 'Found %d completed manga';
-  RS_LblMangaWillBeRemoved = 'Completed manga will be removed:';
+  RS_DlgCompletedMangaCaption = 'Found completed manga(s)';
+  RS_LblMangaWillBeRemoved = '%d completed manga(s) will be removed:';
   RS_BtnRemove = '&Remove';
   RS_BtnCheckFavorites = 'Check for new chapter';
 
@@ -721,8 +721,8 @@ begin
       begin
         with TNewChapter.Create(MainForm) do
           try
-            Caption := Format(RS_DlgCompletedMangaCaption, [numOfCompleted]);
-            lbNotification.Caption := RS_LblMangaWillBeRemoved;
+            Caption := RS_DlgCompletedMangaCaption;
+            lbNotification.Caption := Format(RS_LblMangaWillBeRemoved, [numOfCompleted]);
             mmMemo.Lines.Text := Trim(removeListStr);
             btDownload.Caption := RS_BtnRemove;
             btCancel.Caption := RS_BtnCancel;
@@ -761,7 +761,7 @@ begin
         else
           with TNewChapter.Create(MainForm) do
             try
-              Caption := Format(RS_DlgNewChapterCaption, [numOfNewChapters]);
+              Caption := RS_DlgNewChapterCaption;
               lbNotification.Caption :=
                 Format(RS_LblNewChapterFound, [numOfNewChapters, numOfMangaNewChapters]);
               mmMemo.Lines.Text := Trim(newChapterListStr);

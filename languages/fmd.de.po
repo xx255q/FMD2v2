@@ -866,6 +866,9 @@ msgid "Visit my blog"
 msgstr "Besuche meinen Blog"
 
 #: tmainform.caption
+#, fuzzy
+#| msgid "Free Manga Downloader"
+msgctxt "tmainform.caption"
 msgid "Free Manga Downloader"
 msgstr "Free Manga Downloader"
 
@@ -2597,8 +2600,9 @@ msgid "&Remove"
 msgstr "&Entfernen"
 
 #: ufavoritesmanager.rs_dlgcompletedmangacaption
-#, object-pascal-format
-msgid "Found %d completed manga"
+#, fuzzy, badformat
+#| msgid "Found %d completed manga"
+msgid "Found completed manga(s)"
 msgstr "Fand %d fertige Manga(s)"
 
 #: ufavoritesmanager.rs_dlgfavoritescheckisrunning
@@ -2606,8 +2610,10 @@ msgid "Favorites check is running!"
 msgstr "Favoriten werden überprüft!"
 
 #: ufavoritesmanager.rs_dlgnewchaptercaption
-#, object-pascal-format
-msgid "%d manga(s) have new chapter(s)"
+#, fuzzy, badformat
+#| msgid "%d manga(s) have new chapter(s)"
+msgctxt "ufavoritesmanager.rs_dlgnewchaptercaption"
+msgid "Found new chapter(s)"
 msgstr "%d Manga(s) haben neue Kapitel"
 
 #: ufavoritesmanager.rs_favoritehasnewchapter
@@ -2616,7 +2622,9 @@ msgid "%s <%s> has %d new chapter(s)."
 msgstr "%s <%s> hat %d neue(s) Kapitel."
 
 #: ufavoritesmanager.rs_lblmangawillberemoved
-msgid "Completed manga will be removed:"
+#, object-pascal-format, fuzzy, badformat
+#| msgid "Completed manga will be removed:"
+msgid "%d completed manga(s) will be removed:"
 msgstr "Fertige Mangas werden entfernt:"
 
 #: ufavoritesmanager.rs_lblnewchapterfound
