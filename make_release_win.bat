@@ -3,6 +3,7 @@ REM lazbuild must be in environment variable LAZ or set it here
 REM SET LAZ=C:\lazarus
 TITLE=FMD Release
 SET cdir=%CD%
+SET arg1=%1
 CD /D "%cdir%"
 SET update_file=latest_version.json
 SET repodl=https://github.com/dazedcat19/FMD2/releases/download/
@@ -12,12 +13,15 @@ SET luaver=lua54
 ECHO ^{>%update_file%
 ECHO   "_comment": "automatically build with make_release_win.bat",>>%update_file%
 
-REM CALL :makerelease i386-win32 Win32 "Win32 Debug" --no-write-project
-CALL :makerelease i386-win32 Win32 Win32 --no-write-project
-ECHO   ,>>%update_file%
-REM CALL :makerelease x86_64-win64 Win64 "Win64 Debug" --no-write-project
-CALL :makerelease x86_64-win64 Win64 Win64 --no-write-project
-
+if "%arg1%"=="debug" (
+  CALL :makerelease i386-win32 Win32 "Win32 Debug" --no-write-project
+  ECHO   ,>>%update_file%
+  CALL :makerelease x86_64-win64 Win64 "Win64 Debug" --no-write-project
+) ELSE (
+  CALL :makerelease i386-win32 Win32 Win32 --no-write-project
+  ECHO   ,>>%update_file%
+  CALL :makerelease x86_64-win64 Win64 Win64 --no-write-project
+)
 ECHO ^}>>%update_file%
 
 PAUSE
