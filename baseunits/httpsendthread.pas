@@ -557,33 +557,33 @@ var
 begin
   amethod:=Method;
   aurl:=URL;
-  if Assigned(OnBeforeHTTPMethod) then
-    OnBeforeHTTPMethod(Self, amethod, aurl);
-  SetHTTPCookies;
-  Result := inherited HTTPMethod(amethod, aurl);
-  if FEnabledCookies then
-    ParseHTTPCookies
-  else
-    Cookies.Clear;
-  if Assigned(OnAfterHTTPMethod) then
-    OnAfterHTTPMethod(Self, amethod, aurl);
+  try
+    if Assigned(OnBeforeHTTPMethod) then
+      OnBeforeHTTPMethod(Self, amethod, aurl);
+    SetHTTPCookies;
+    Result := inherited HTTPMethod(amethod, aurl);
+    if FEnabledCookies then
+      ParseHTTPCookies
+    else
+      Cookies.Clear;
+    if Assigned(OnAfterHTTPMethod) then
+      OnAfterHTTPMethod(Self, amethod, aurl);
+  except
+  end;
 end;
 
 function THTTPSendThread.HTTPRequest(const Method, URL: String; const Response: TObject): Boolean;
 begin
   Result := False;
+  if ThreadTerminated then Exit;
   if ConnectionsQueue<>nil then
-  begin
     ConnectionsQueue.AddConnection;
-    try
-      if not ThreadTerminated then
-        Result := DefaultHTTPRequest(Method, URL, Response);
-    finally
-      ConnectionsQueue.DoneConnection;
-    end;
-  end
-  else
+  try
     Result := DefaultHTTPRequest(Method, URL, Response);
+  except
+  end;
+  if ConnectionsQueue<>nil then
+    ConnectionsQueue.DoneConnection;
 end;
 
 function THTTPSendThread.DefaultHTTPRequest(const Method, URL: String; const Response: TObject): Boolean;
