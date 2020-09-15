@@ -2600,21 +2600,19 @@ msgid "&Remove"
 msgstr "&Entfernen"
 
 #: ufavoritesmanager.rs_dlgcompletedmangacaption
-#, fuzzy, badformat
 #| msgid "Found %d completed manga"
 msgid "Found completed manga(s)"
-msgstr "Fand %d fertige Manga(s)"
+msgstr ""
 
 #: ufavoritesmanager.rs_dlgfavoritescheckisrunning
 msgid "Favorites check is running!"
 msgstr "Favoriten werden überprüft!"
 
 #: ufavoritesmanager.rs_dlgnewchaptercaption
-#, fuzzy, badformat
 #| msgid "%d manga(s) have new chapter(s)"
 msgctxt "ufavoritesmanager.rs_dlgnewchaptercaption"
 msgid "Found new chapter(s)"
-msgstr "%d Manga(s) haben neue Kapitel"
+msgstr ""
 
 #: ufavoritesmanager.rs_favoritehasnewchapter
 #, object-pascal-format
@@ -2622,10 +2620,10 @@ msgid "%s <%s> has %d new chapter(s)."
 msgstr "%s <%s> hat %d neue(s) Kapitel."
 
 #: ufavoritesmanager.rs_lblmangawillberemoved
-#, object-pascal-format, fuzzy, badformat
+#, object-pascal-format
 #| msgid "Completed manga will be removed:"
 msgid "%d completed manga(s) will be removed:"
-msgstr "Fertige Mangas werden entfernt:"
+msgstr ""
 
 #: ufavoritesmanager.rs_lblnewchapterfound
 #, object-pascal-format
@@ -2699,4 +2697,3 @@ msgstr "Liste erneuern"
 #, object-pascal-format
 msgid "Can not load WebP codec library \"%s\". Check your installation."
 msgstr "Kann WebP Codec \"%s nicht laden. Überprüfen sie ihre Installation."
-
