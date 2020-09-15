@@ -13,7 +13,7 @@ SET luaver=lua54
 ECHO ^{>%update_file%
 ECHO   "_comment": "automatically build with make_release_win.bat",>>%update_file%
 
-if "%arg1%"=="debug" (
+IF "%arg1%"=="debug" (
   CALL :makerelease i386-win32 Win32 "Win32 Debug" --no-write-project
   ECHO   ,>>%update_file%
   CALL :makerelease x86_64-win64 Win64 "Win64 Debug" --no-write-project
@@ -33,31 +33,32 @@ SET tdir=%cdir%\bin\%~1
 SET rdir=%cdir%\Release
 SET odir=%rdir%\%~1
 
-echo.
-echo Building Updater %~1 --build-mode="%~2"
-echo ----------------------------------------------------
+ECHO.
+ECHO Building Updater %~1 --build-mode="%~2"
+ECHO ----------------------------------------------------
 DEL /F "%tdir%\updater.exe" 2>nul
 DEL /F "%tdir%\updater.dbg" 2>nul
 SET lbuild=%LAZ%\lazbuild --build-mode="%~2" %~4
-echo %lbuild% "%cdir%\updaterslim\updater.lpi"
+ECHO %lbuild% "%cdir%\updaterslim\updater.lpi"
 %lbuild% "%cdir%\updaterslim\updater.lpi"
 
-echo.
-echo Building FMD %~1 --build-mode="%~3"
-echo ----------------------------------------------------
+ECHO.
+ECHO Building FMD %~1 --build-mode="%~3"
+ECHO ----------------------------------------------------
 DEL /F "%tdir%\fmd.exe" 2>nul
 DEL /F "%tdir%\fmd.dbg" 2>nul
 SET lbuild=%LAZ%\lazbuild --build-mode="%~3" %~4
-echo %lbuild% "%cdir%\mangadownloader\md.lpi"
+ECHO %lbuild% "%cdir%\mangadownloader\md.lpi"
 %lbuild% "%cdir%\mangadownloader\md.lpi"
 
 CALL :getfileversion "%tdir%\fmd.exe"
+IF "%fverb%"=="0.0.0.0" (GOTO :builderror)
 SET oname=fmd_%fverb%_%~1.7z
 RMDIR /S /Q "%odir%"
 MKDIR "%odir%"
-call :copycdir config
-call :copycdir images
-call :copycdir licenses
+CALL :copycdir config
+CALL :copycdir images
+CALL :copycdir licenses
 XCOPY /C /F /Y "%cdir%\languages\*.po" "%odir%\languages\"
 XCOPY /E /C /F /Y "%cdir%\dist\%~1" "%odir%\"
 IF "%luaver%" == "lua54" (
@@ -104,3 +105,9 @@ FOR /F "Tokens=1* Delims==" %%A IN (
 ) DO FOR /F "Tokens=*" %%C IN ("%%B") DO SET "fverb=%%C"
 FOR /F "delims=. tokens=1-3" %%i IN ("%fverb%") DO SET fver=%%i.%%j.%%k
 GOTO :EOF
+
+:builderror
+ECHO ----------------------------------------------------------
+ECHO Build error!
+PAUSE
+EXIT /B 1
