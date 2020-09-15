@@ -11,7 +11,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, LazFileUtils, FMDOptions, MultiLog, sqlite3conn,
-  sqlite3backup, sqlite3dyn, sqldb, DB, RegExpr;
+  sqlite3backup, sqlite3dyn, sqldb, DB, RegExpr, SQLiteData;
 
 type
 
@@ -20,7 +20,7 @@ type
   TDBDataProcess = class(TObject)
   private
     FGuardian: TRTLCriticalSection;
-    FConn: TSQLite3Connection;
+    FConn: TSQLite3ConnectionH;
     FTrans: TSQLTransaction;
     FQuery: TSQLQuery;
     FRegxp: TRegExpr;
@@ -116,7 +116,7 @@ type
     property Value[const RecIndex, FieldIndex: Integer]: String read GetValue; default;
     property ValueInt[const RecIndex, FieldIndex: Integer]: Integer read GetValueInt;
     property LinkCount: Integer read GetLinkCount;
-    property Connection: TSQLite3Connection read FConn;
+    property Connection: TSQLite3ConnectionH read FConn;
     property Transaction: TSQLTransaction read FTrans;
     property Table: TSQLQuery read FQuery;
   end;
@@ -311,27 +311,12 @@ end;
 
 procedure TDBDataProcess.GetRecordCount;
 var
-  bsql, s: String;
-  queryopen: Boolean;
+  bsql: String;
 begin
-  FRecordCount := 0;
-  queryopen := FQuery.Active;
-  if queryopen then FQuery.Close;
-  bsql := Trim(FQuery.SQL.Text);
-  if UpperCase(LeftStr(bsql, 8)) = 'SELECT *' then
-  begin
-    s := 'SELECT COUNT("link") as recordcount' + Copy(bsql, 9, Length(bsql));
-    FQuery.SQL.Text := s;
-    FQuery.Open;
-    if FQuery.Active then
-    begin
-      FRecordCount := FQuery.Fields[0].AsInteger;
-      FQuery.Close;
-    end;
-  end;
-  FQuery.SQL.Text := bsql;
-  if FQuery.Active <> queryopen then
-    FQuery.Active := queryopen;
+  FRecordCount:=0;
+  bsql:=Trim(FQuery.SQL.Text);
+  if UpperCase(LeftStr(bsql,8))='SELECT *' then
+    FRecordCount:=StrToIntDef(FConn.ExecQuery('SELECT COUNT("link") '+copy(bsql,9,length(bsql))),0);
 end;
 
 procedure TDBDataProcess.AddSQLCond(const sqltext: String; useOR: Boolean);
@@ -550,7 +535,7 @@ constructor TDBDataProcess.Create;
 begin
   inherited Create;
   InitCriticalSection(FGuardian);
-  FConn := TSQLite3Connection.Create(nil);
+  FConn := TSQLite3ConnectionH.Create(nil);
   FTrans := TSQLTransaction.Create(nil);
   FQuery := TSQLQuery.Create(nil);
   FConn.Transaction := FTrans;
