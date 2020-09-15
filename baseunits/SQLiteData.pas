@@ -15,7 +15,9 @@ type
   protected
     procedure DoInternalDisconnect; override;
   public
-    procedure ExecuteSQL(const asql: string);
+    procedure ExecuteSQL(const asql: string); inline;
+    function ExecQuery(const asql: string): string; inline;
+    function ExecuteQuery(const asql: string): TArrayStringArray; inline;
     property Handle read GetHandle;
     property Statements;
   end;
@@ -158,6 +160,29 @@ end;
 procedure TSQLite3ConnectionH.ExecuteSQL(const asql: string);
 begin
   execsql(asql);
+end;
+
+function execquerycallback(adata: pointer; ncols: longint;
+  avalues: PPchar; anames: PPchar):longint; cdecl;
+var
+ i: integer;
+ p: PString;
+begin
+  p:=PString(adata);
+  for i:=0 to ncols-1 do
+    p^+=StrPas(avalues[i]);
+  result:=0;
+end;
+
+function TSQLite3ConnectionH.ExecQuery(const asql: string): string;
+begin
+  SetLength(Result,0);
+  checkerror(sqlite3_exec(Handle,pchar(asql),@execquerycallback,@result,nil));
+end;
+
+function TSQLite3ConnectionH.ExecuteQuery(const asql: string): TArrayStringArray;
+begin
+  Result:=stringsquery(asql);
 end;
 
 { TSQliteData }
