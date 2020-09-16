@@ -163,12 +163,13 @@ type
     procedure IncReadCount(const ACount: Integer); inline;
     // manager must be locked
     procedure DBInsert; inline;
-    procedure DBUpdate; inline;
     procedure DBUpdateEnabled; inline;
     procedure DBUpdateStatus; inline;
-    procedure DBUpdateStatusSafe;
     procedure DBUpdateSaveTo; inline;
     procedure DBUpdateCustomFileNamesTo; inline;
+    // safe without locked
+    procedure DBUpdate; inline;
+    procedure DBUpdateStatusSafe;
   public
     property Status: TDownloadStatusType read FStatus write SetStatus;
     property Enabled: Boolean read FEnabled write SetEnabled;
@@ -183,8 +184,6 @@ type
     FSortDirection: Boolean;
     FSortColumn: Integer;
     FDownloadsDB: TDownloadsDB;
-    tempSQL: string;
-    tempSQLcount: integer;
     updateOrderCount: Integer;
     procedure AddItemsActiveTask(const Item: TTaskContainer);
     procedure RemoveItemsActiveTask(const Item: TTaskContainer);
@@ -232,8 +231,6 @@ type
     procedure Backup;
     procedure Restore;
     // execute direct, should use lock/unlock with caution
-    procedure DBAppendSQL(const SQL:string); inline;
-    procedure DBExecSQL;
     procedure DBUpdateOrder;
     procedure UpdateOrder; inline;
 
@@ -1219,10 +1216,7 @@ end;
 
 procedure TTaskContainer.DBUpdate;
 begin
-  // todo: update task to db only necessary
-  EnterCriticalSection(Manager.FDownloadsDB.Guardian);
-  try
-    Manager.DBAppendSQL('UPDATE "downloads" SET ' +
+  Manager.FDownloadsDB.AppendSQLSafe('UPDATE "downloads" SET ' +
     '"taskstatus"=''' +       IntToStr(Integer(Status)) +
     ''',"chapterptr"=''' +    IntToStr(CurrentDownloadChapterPtr) +
     ''',"numberofpages"=''' + IntToStr(PageNumber) +
@@ -1235,20 +1229,17 @@ begin
     ',"filenames"=' +          QuotedStr(FileNames.Text) +
     ',"chaptersstatus"=' +     QuotedStr(ChaptersStatus.Text) +
     ' WHERE "id"=''' +DlId+''';');
-  finally
-    LeaveCriticalSection(Manager.FDownloadsDB.Guardian);
-  end;
 end;
 
 procedure TTaskContainer.DBUpdateEnabled;
 begin
-  Manager.DBAppendSQL('UPDATE "downloads" SET "enabled"='''+BoolToStr(FEnabled,'1','0')+
+  Manager.FDownloadsDB.AppendSQL('UPDATE "downloads" SET "enabled"='''+BoolToStr(FEnabled,'1','0')+
   ''' WHERE "id"='''+DlId+''';');
 end;
 
 procedure TTaskContainer.DBUpdateStatus;
 begin
-  Manager.DBAppendSQL(
+  Manager.FDownloadsDB.AppendSQL(
   'UPDATE "downloads" SET "taskstatus"='''+IntToStr(Integer(Status))+
   ''',"status"='+QuotedStr(DownloadInfo.Status) +
   ' WHERE "id"='''+DlId+''';');
@@ -1267,27 +1258,17 @@ end;
 procedure TTaskContainer.DBUpdateSaveTo;
 begin
   // todo: update saveto
-  EnterCriticalSection(Manager.FDownloadsDB.Guardian);
-  try
-    Manager.DBAppendSQL(
+  Manager.FDownloadsDB.AppendSQLSafe(
     'UPDATE "downloads" SET "saveto"='+QuotedStr(DownloadInfo.SaveTo) +
     ' WHERE "id"=''' +DlId+''';');
-  finally
-    LeaveCriticalSection(Manager.FDownloadsDB.Guardian);
-  end;
 end;
 
 procedure TTaskContainer.DBUpdateCustomFileNamesTo;
 begin
   // todo: update customfilenames format
-  EnterCriticalSection(Manager.FDownloadsDB.Guardian);
-  try
-    Manager.DBAppendSQL(
+  Manager.FDownloadsDB.AppendSQLSafe(
     'UPDATE "downloads" SET "customfilenames"='+QuotedStr(CustomFileName) +
     ' WHERE "id"=''' +DlId+''';');
-  finally
-    LeaveCriticalSection(Manager.FDownloadsDB.Guardian);
-  end;
 end;
 
 { TDownloadManager }
@@ -1401,8 +1382,6 @@ begin
   isRunningBackup := False;
   isRunningBackupDownloadedChaptersList := False;
   isReadyForExit := False;
-  tempSQL:='';
-  tempSQLcount:=0;
   updateOrderCount:=0;
 
   InitCriticalSection(CS_StatusCount);
@@ -1490,7 +1469,6 @@ begin
   try
     //Logger.Send('TDownloadManager.Backup');
     DBUpdateOrder;
-    DBExecSQL;
     FDownloadsDB.Commit;
   finally
     Unlock;
@@ -1506,20 +1484,10 @@ end;
 
 procedure TDownloadManager.Unlock;
 begin
-  DBExecSQL;
+  FDownloadsDB.FlushSQL;
   isRunningBackup := False;
   LeaveCriticalSection(FDownloadsDB.Guardian);
   LeaveCriticalSection(CS_Task);
-end;
-
-procedure TDownloadManager.DBAppendSQL(const SQL: string);
-const
-  MAX_SQL_QUEUE=99;
-begin
-  tempSQL+=SQL;
-  Inc(tempSQLcount);
-  if tempSQLcount>MAX_SQL_QUEUE then
-    DBExecSQL;
 end;
 
 procedure TDownloadManager.DBUpdateOrder;
@@ -1534,30 +1502,19 @@ begin
     if i<>Order then
     begin
       Order:=i;
-      tempSQL+='UPDATE "downloads" SET "order"='''+IntToStr(Order)+''' WHERE "id"='''+DlId+''';';
-      Inc(tempSQLcount);
-      if tempSQLcount>MAXSQLCOUNT then
-        DBExecSQL;
+      FDownloadsDB.tempSQL+='UPDATE "downloads" SET "order"='''+IntToStr(Order)+''' WHERE "id"='''+DlId+''';';
+      Inc(FDownloadsDB.tempSQLcount);
+      if FDownloadsDB.tempSQLcount>MAXSQLCOUNT then
+        FDownloadsDB.FlushSQL;
     end;
   end;
-  if tempSQLcount>0 then DBExecSQL;
+  if FDownloadsDB.tempSQLcount>0 then FDownloadsDB.FlushSQL;
   updateOrderCount:=0;
 end;
 
 procedure TDownloadManager.UpdateOrder;
 begin
   Inc(updateOrderCount);
-end;
-
-procedure TDownloadManager.DBExecSQL;
-begin
-  if tempSQL<>'' then
-  begin
-    //Logger.Send('DBExecSQL',tempSQL);
-    FDownloadsDB.Connection.ExecuteSQL(tempSQL);
-    tempSQL:='';
-    tempSQLcount:=0;
-  end;
 end;
 
 procedure TDownloadManager.GetDownloadedChaptersState(const AModuleID,
@@ -1787,7 +1744,7 @@ end;
 
 procedure TDownloadManager.FreeAndDelete(const TaskId: Integer);
 begin
-  tempSQL+='DELETE FROM "downloads" WHERE "id"='''+Items[TaskId].DlId+''';';
+  FDownloadsDB.AppendSQL('DELETE FROM "downloads" WHERE "id"='''+Items[TaskId].DlId+''';');
   Items[TaskID].Free;
   Items.Delete(taskID);
 end;

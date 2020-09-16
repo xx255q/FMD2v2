@@ -11,12 +11,9 @@ type
 
   { TDownloadsDB }
 
-  TDownloadsDB = class(TSQliteData)
+  TDownloadsDB = class(TSQLiteDataWA)
   public
-    Guardian: TRTLCriticalSection;
     constructor Create(const AFilename: String);
-    destructor Destroy; override;
-    procedure Commit; override;
   end;
 
 const
@@ -53,8 +50,6 @@ begin
   InitCriticalSection(Guardian);
   Filename := AFilename;
   TableName := 'downloads';
-  Table.PacketRecords := 1;
-  Table.UniDirectional:=False;
   CreateParams :=
     '"id" INTEGER PRIMARY KEY,' +
     '"enabled" BOOLEAN,' +
@@ -80,28 +75,6 @@ begin
     '"chaptersstatus" TEXT';
   FieldsParams := '"id","enabled","order","taskstatus","chapterptr","numberofpages","currentpage","moduleid","link","title","status","progress","saveto","dateadded","datelastdownloaded","chapterslinks","chaptersnames","pagelinks","pagecontainerlinks","filenames","customfilenames","chaptersstatus"';
   SelectParams := 'SELECT ' + FieldsParams + ' FROM '+QuotedStrD(TableName)+' ORDER BY "order"';
-end;
-
-destructor TDownloadsDB.Destroy;
-begin
-  DoneCriticalSection(Guardian);
-  inherited Destroy;
-end;
-
-procedure TDownloadsDB.Commit;
-begin
-  if not Connection.Connected then Exit;
-  EnterCriticalSection(Guardian);
-  try
-    Transaction.Commit;
-  except
-    on E: Exception do
-      begin
-        Transaction.Rollback;
-        SendLogException(ClassName + '.Commit failed! Rollback!', E);
-      end;
-  end;
-  LeaveCriticalSection(Guardian);
 end;
 
 end.

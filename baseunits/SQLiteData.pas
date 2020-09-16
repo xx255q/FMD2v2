@@ -82,6 +82,24 @@ type
     property OnError: TExceptionEvent read FOnError write SetOnError;
   end;
 
+  { TSQLiteDataWA }
+
+  TSQLiteDataWA = class(TSQliteData)
+  public
+    tempSQL: String;
+    tempSQLcount: Integer;
+    maxSQLqueue: Integer;
+    Guardian: TRTLCriticalSection;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    procedure AppendSQL(const SQL:string); inline;
+    procedure AppendSQLSafe(const SQL:string); inline;
+    procedure FlushSQL; inline;
+    procedure FlushSQLSafe; inline;
+    procedure Commit; override;
+  end;
+
 function QuotedStr(const S: Integer): String; overload; inline;
 function QuotedStr(const S: Boolean): String; overload; inline;
 function QuotedStr(const S: TDateTime): String; overload; inline;
@@ -131,6 +149,75 @@ end;
 function QuotedStrD(const S: Integer): String;
 begin
   Result := AnsiQuotedStr(IntToStr(S), '"');
+end;
+
+{ TSQLiteDataWA }
+
+constructor TSQLiteDataWA.Create;
+begin
+  inherited Create;
+  InitCriticalSection(Guardian);
+  maxSQLqueue:=99;
+  Table.PacketRecords:=1;
+  Table.UniDirectional:=False;
+end;
+
+destructor TSQLiteDataWA.Destroy;
+begin
+  DoneCriticalSection(Guardian);
+  inherited Destroy;
+end;
+
+procedure TSQLiteDataWA.AppendSQL(const SQL: string);
+begin
+  tempSQL+=SQL;
+  Inc(tempSQLcount);
+  if tempSQLcount>maxSQLqueue then
+    FlushSQL;
+end;
+
+procedure TSQLiteDataWA.AppendSQLSafe(const SQL: string);
+begin
+  EnterCriticalSection(Guardian);
+  try
+    AppendSQL(SQL);
+  finally
+    LeaveCriticalSection(Guardian);
+  end;
+end;
+
+procedure TSQLiteDataWA.FlushSQL;
+begin
+  if tempSQLcount>0 then
+  begin
+    Connection.ExecuteSQL(tempSQL);
+    tempSQL:='';
+    tempSQLcount:=0;
+  end;
+end;
+
+procedure TSQLiteDataWA.FlushSQLSafe;
+begin
+  EnterCriticalSection(Guardian);
+  try
+    FlushSQL;
+  finally
+    LeaveCriticalSection(Guardian);
+  end;
+end;
+
+procedure TSQLiteDataWA.Commit;
+begin
+  if not Connection.Connected then Exit;
+  EnterCriticalSection(Guardian);
+  try
+    FlushSQL;
+    Transaction.Commit;
+  except
+    on E: Exception do
+      Transaction.Rollback;
+  end;
+  LeaveCriticalSection(Guardian);
 end;
 
 { TSQLite3ConnectionH }
@@ -295,13 +382,7 @@ end;
 
 procedure TSQliteData.GetRecordCount;
 begin
-  if FQuery.Active then
-  begin
-    FQuery.Last;
-    FRecordCount := FQuery.RecordCount;
-    FQuery.Refresh;
-  end
-  else FRecordCount := 0;
+  FRecordCount:=StrToIntDef(FConn.ExecQuery('SELECT COUNT(*) FROM'+QuotedStrD(FTableName)+';'),0);
 end;
 
 procedure TSQliteData.SetRecordCount(const AValue: Integer);
