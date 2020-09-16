@@ -28,8 +28,8 @@ type
   public
     MetaDataType: TMetaDataType;
     Module: TModuleContainer;
-    Title,
-    URL,
+    Title: String;
+    URL: String;
     SaveTo: String;
     constructor Create(const AType: TMetaDataType;
       const AModule: TModuleContainer; const ATitle, AURL, ASaveTo: String);
@@ -40,38 +40,21 @@ type
   { TSilentThread }
 
   TSilentThread = class(TBaseThread)
-  protected
-    FSavePath: String;
-    Info: TMangaInformation;
-    Freconnect: Cardinal;
+  private
+    FManager: TSilentThreadManager;
+    FInfo: TMangaInformation;
     // manga information from main thread
-    Module: TModuleContainer;
-    Title,
-    URL: String;
-    procedure MainThreadAfterChecking; virtual;
+    FType: TMetaDataType;
+    FModule: TModuleContainer;
+    FTitle: String;
+    FURL: String;
+    FSaveTo: String;
+  protected
+    procedure SyncDownloadAll;
+    procedure SyncAddToFavorite;
     procedure Execute; override;
   public
-    Manager: TSilentThreadManager;
-    constructor Create;
-    destructor Destroy; override;
-    property SaveTo: String read FSavePath write FSavePath;
-  end;
-
-  { TSilentAddToFavThread }
-
-  TSilentAddToFavThread = class(TSilentThread)
-  protected
-    procedure MainThreadAfterChecking; override;
-  end;
-
-  { TSilentThreadManagerThread }
-
-  TSilentThreadManagerThread = class(TBaseThread)
-  protected
-    procedure Checkout;
-    procedure Execute; override;
-  public
-    Manager: TSilentThreadManager;
+    constructor Create(const AManager: TSilentThreadManager);
     destructor Destroy; override;
   end;
 
@@ -82,16 +65,18 @@ type
 
   TSilentThreadManager = class
   private
-    FCS_META: TRTLCriticalSection;
-    FCS_THREADS: TRTLCriticalSection;
+    FMetaDatasGuardian: TRTLCriticalSection;
+    FThreadsGuardian: TRTLCriticalSection;
+    FMetaDatas: TSilentThreadMetaDatas;
+    FThreads: TSilentThreads;
     FLockAdd: Boolean;
-    FManagerThread: TSilentThreadManagerThread;
-    function GetCount: Integer;
-    procedure StartManagerThread;
-    procedure Checkout(const AIndex: Integer);
+    function GetCount: Integer; inline;
+    procedure StartThread;
+  protected
+    procedure AddThread(const T: TSilentThread);
+    procedure RemoveThread(const T: TSilentThread);
+    function GetMetaData(const T: TSilentThread): Boolean;
   public
-    MetaDatas: TSilentThreadMetaDatas;
-    Threads: TSilentThreads;
     procedure Add(const AType: TMetaDataType; const AModule: TModuleContainer; const ATitle, AURL: String; const ASaveTo: String = '');
     procedure StopAll(const WaitFor: Boolean = True);
     procedure UpdateLoadStatus;
@@ -110,118 +95,77 @@ implementation
 uses
   frmMain, FMDVars;
 
-{ TSilentThreadManagerThread }
-
-procedure TSilentThreadManagerThread.Checkout;
-var
-  i: Integer;
-begin
-  if Terminated then Exit;
-  if Manager.MetaDatas.Count = 0 then Exit;
-  with Manager do
-  begin
-    i := 0;
-    while i < MetaDatas.Count do
-    begin
-      if Terminated then Break;
-      with MetaDatas[i] do
-        if (Threads.Count < OptionMaxBackgroundLoadThreads) then
-          Manager.Checkout(i)
-        else
-          Inc(i);
-    end;
-  end;
-end;
-
-procedure TSilentThreadManagerThread.Execute;
-begin
-  if Manager = nil then Exit;
-  Self.Checkout;
-  with manager do
-    while (not Terminated) and (MetaDatas.Count > 0) do
-    begin
-      Sleep(HeartBeatRate);
-      while (not Terminated) and (Threads.Count >= OptionMaxBackgroundLoadThreads) do
-        Sleep(HeartBeatRate);
-      Self.Checkout;
-    end;
-end;
-
-destructor TSilentThreadManagerThread.Destroy;
-begin
-  Manager.FManagerThread := nil;
-  inherited Destroy;
-end;
-
 { TSilentThreadManager }
 
 function TSilentThreadManager.GetCount: Integer;
 begin
-  Result := MetaDatas.Count + Threads.Count;
+  Result := FMetaDatas.Count + FThreads.Count;
 end;
 
-procedure TSilentThreadManager.StartManagerThread;
+procedure TSilentThreadManager.StartThread;
 begin
-  if FManagerThread = nil then
-  begin
-    FManagerThread := TSilentThreadManagerThread.Create;
-    FManagerThread.Manager := Self;
-    FManagerThread.Start;
-  end;
+  if FThreads.Count=0 then
+    TSilentThread.Create(Self);
 end;
 
 procedure TSilentThreadManager.Add(const AType: TMetaDataType;
   const AModule: TModuleContainer; const ATitle, AURL: String;
   const ASaveTo: String);
 begin
-  if not ((AType = MD_AddToFavorites) and
-    (FavoriteManager.IsMangaExist(ATitle, AModule.ID))) then
-  begin
-    EnterCriticalsection(FCS_META);
-    try
-      MetaDatas.Add(TSilentThreadMetaData.Create(
-        AType, AModule, ATitle, AURL, ASaveTo));
-      if not FLockAdd then
-      begin
-        StartManagerThread;
-        UpdateLoadStatus;
-      end;
-    finally
-      LeaveCriticalsection(FCS_META);
-    end;
-    if OptionSortDownloadsWhenAddingNewDownloadTasks then
-      DLManager.Sort(DLManager.SortColumn);
+  if (AType=MD_AddToFavorites) and (FavoriteManager.IsMangaExist(ATitle,AModule.ID)) then Exit;
+  EnterCriticalsection(FMetaDatasGuardian);
+  try
+    FMetaDatas.Add(TSilentThreadMetaData.Create(
+      AType, AModule, ATitle, AURL, ASaveTo));
+    if not FLockAdd then
+      StartThread;
+  finally
+    LeaveCriticalsection(FMetaDatasGuardian);
   end;
 end;
 
-procedure TSilentThreadManager.Checkout(const AIndex: Integer);
-var
-  m: TSilentThreadMetaData;
-  t: TSilentThread;
+procedure TSilentThreadManager.AddThread(const T: TSilentThread);
 begin
-  if (AIndex < 0) or (AIndex >= MetaDatas.Count) then Exit;
-  m := MetaDatas[AIndex];
-  EnterCriticalsection(FCS_THREADS);
+  EnterCriticalSection(FThreadsGuardian);
   try
-    t := nil;
-    case m.MetaDataType of
-      MD_DownloadAll: t := TSilentThread.Create;
-      MD_AddToFavorites: t := TSilentAddToFavThread.Create;
-    end;
-    if Assigned(t) then
-    begin
-      Threads.Add(t);
-      t.Manager := Self;
-      t.Module := m.Module;
-      t.Title := m.Title;
-      t.URL := m.URL;
-      t.SaveTo := m.SaveTo;
-      t.Start;
-      m.Free;
-      MetaDatas.Delete(AIndex);
-    end;
+    FThreads.Add(T);
   finally
-    LeaveCriticalsection(FCS_THREADS);
+    LeaveCriticalSection(FThreadsGuardian);
+  end;
+end;
+
+procedure TSilentThreadManager.RemoveThread(const T: TSilentThread);
+begin
+  EnterCriticalSection(FThreadsGuardian);
+  try
+    FThreads.Remove(T);
+  finally
+    LeaveCriticalSection(FThreadsGuardian);
+  end;
+end;
+
+function TSilentThreadManager.GetMetaData(const T: TSilentThread): Boolean;
+var
+  M: TSilentThreadMetaData;
+begin
+  Result:=False;
+  EnterCriticalSection(FMetaDatasGuardian);
+  try
+    if FMetaDatas.Count=0 then Exit;
+    if FThreads.Count>OptionMaxBackgroundLoadThreads then Exit;
+    M:=FMetaDatas.Items[0];
+    FMetaDatas.Delete(0);
+    T.FType:=M.MetaDataType;
+    T.FModule:=M.Module;
+    T.FTitle:=M.Title;
+    T.FURL:=M.URL;
+    T.FSaveTo:=M.SaveTo;
+    M.Free;
+    Result:=True;
+    if (FMetaDatas.Count>0) and (FThreads.Count<OptionMaxBackgroundLoadThreads) then
+      TSilentThread.Create(Self);
+  finally
+    LeaveCriticalSection(FMetaDatasGuardian);
   end;
 end;
 
@@ -230,41 +174,38 @@ var
   i: Integer;
 begin
   if Count = 0 then Exit;
-  EnterCriticalsection(FCS_META);
+
+  EnterCriticalsection(FThreadsGuardian);
   try
-    if MetaDatas.Count > 0 then
+    if FThreads.Count > 0 then
+      for i := 0 to FThreads.Count - 1 do
+        FThreads[i].Terminate;
+  finally
+    LeaveCriticalsection(FThreadsGuardian);
+  end;
+
+  EnterCriticalsection(FMetaDatasGuardian);
+  try
+    if FMetaDatas.Count > 0 then
     begin
-      for i := 0 to MetaDatas.Count - 1 do
-        MetaDatas[i].Free;
-      MetaDatas.Clear;
+      for i := 0 to FMetaDatas.Count - 1 do
+        FMetaDatas[i].Free;
+      FMetaDatas.Clear;
     end;
   finally
-    LeaveCriticalsection(FCS_META);
+    LeaveCriticalsection(FMetaDatasGuardian);
   end;
-  if Assigned(FManagerThread) then
-  begin
-    FManagerThread.Terminate;
-    if WaitFor then
-      FManagerThread.WaitFor;
-  end;
-  EnterCriticalsection(FCS_THREADS);
-  try
-    if Threads.Count > 0 then
-      for i := 0 to Threads.Count - 1 do
-        Threads[i].Terminate;
-  finally
-    LeaveCriticalsection(FCS_THREADS);
-  end;
+
   if WaitFor then
-    while Threads.Count < 0 do
-      sleep(32);
+    while FThreads.Count>0 do
+      Sleep(HeartBeatRate);
 end;
 
 procedure TSilentThreadManager.UpdateLoadStatus;
 begin
   if Count > 0 then
     MainForm.sbMain.Panels[1].Text :=
-      Format(RS_SilentThreadLoadStatus, [Threads.Count, Count])
+      Format(RS_SilentThreadLoadStatus, [FThreads.Count, Count])
   else
     MainForm.sbMain.Panels[1].Text := '';
 end;
@@ -277,30 +218,27 @@ end;
 procedure TSilentThreadManager.EndAdd;
 begin
   FLockAdd := False;
-  if MetaDatas.Count > 0 then
-  begin
-    StartManagerThread;
-    UpdateLoadStatus;
-  end;
+  if FMetaDatas.Count > 0 then
+    StartThread;
 end;
 
 constructor TSilentThreadManager.Create;
 begin
   inherited Create;
-  InitCriticalSection(FCS_META);
-  InitCriticalSection(FCS_THREADS);
+  InitCriticalSection(FMetaDatasGuardian);
+  InitCriticalSection(FThreadsGuardian);
   FLockAdd := False;
-  MetaDatas := TSilentThreadMetaDatas.Create;
-  Threads := TSilentThreads.Create;
+  FMetaDatas := TSilentThreadMetaDatas.Create;
+  FThreads := TSilentThreads.Create;
 end;
 
 destructor TSilentThreadManager.Destroy;
 begin
   StopAll(True);
-  MetaDatas.Free;
-  Threads.Free;
-  DoneCriticalsection(FCS_THREADS);
-  DoneCriticalsection(FCS_META);
+  FMetaDatas.Free;
+  FThreads.Free;
+  DoneCriticalsection(FThreadsGuardian);
+  DoneCriticalsection(FMetaDatasGuardian);
   inherited Destroy;
 end;
 
@@ -319,13 +257,13 @@ end;
 
 { TSilentThread }
 
-procedure TSilentThread.MainThreadAfterChecking;
+procedure TSilentThread.SyncDownloadAll;
 var
   d: TTaskContainer;
   s: String;
   i: Integer;
 begin
-  if Info.MangaInfo.NumChapter = 0 then
+  if FInfo.MangaInfo.NumChapter = 0 then
     Exit;
   try
     with MainForm do
@@ -334,25 +272,25 @@ begin
       DLManager.Lock;
       try
         d := DLManager.AddTask;
-        d.DownloadInfo.Module := Module;
+        d.DownloadInfo.Module := FModule;
 
-        if Trim(Title) = '' then
-          Title := Info.MangaInfo.Title;
-        for i := 0 to Info.MangaInfo.NumChapter - 1 do
+        if Trim(FTitle) = '' then
+          FTitle := FInfo.MangaInfo.Title;
+        for i := 0 to FInfo.MangaInfo.NumChapter - 1 do
         begin
           // generate folder name
           s := CustomRename(OptionChapterCustomRename,
-                            Module.Name,
-                            Title,
-                            info.MangaInfo.Authors,
-                            Info.MangaInfo.Artists,
-                            Info.MangaInfo.ChapterNames.Strings[i],
+                            FModule.Name,
+                            FTitle,
+                            FInfo.MangaInfo.Authors,
+                            FInfo.MangaInfo.Artists,
+                            FInfo.MangaInfo.ChapterNames.Strings[i],
                             Format('%.4d', [i + 1]),
                             OptionChangeUnicodeCharacter,
                             OptionChangeUnicodeCharacterStr);
           d.ChapterNames.Add(s);
           d.chapterLinks.Add(
-            Info.MangaInfo.ChapterLinks.Strings[i]);
+            FInfo.MangaInfo.ChapterLinks.Strings[i]);
         end;
 
         if cbAddAsStopped.Checked then
@@ -367,30 +305,30 @@ begin
         end;
 
         d.currentDownloadChapterPtr := 0;
-        d.downloadInfo.Link := URL;
-        d.downloadInfo.Title := Title;
+        d.downloadInfo.Link := FURL;
+        d.downloadInfo.Title := FTitle;
         d.downloadInfo.DateAdded := Now;
         d.downloadInfo.DateLastDownloaded := Now;
 
-        if FSavePath = '' then
+        if FSaveTo = '' then
         begin
           FillSaveTo;
 	        OverrideSaveTo(d.DownloadInfo.Module);
-          FSavePath := edSaveTo.Text;
+          FSaveTo := edSaveTo.Text;
           // save to
           if OptionGenerateMangaFolder then
-            FSavePath := AppendPathDelim(FSavePath) + CustomRename(
+            FSaveTo := AppendPathDelim(FSaveTo) + CustomRename(
               OptionMangaCustomRename,
-              Module.Name,
-              Title,
-              info.MangaInfo.Authors,
-              info.MangaInfo.Artists,
+              FModule.Name,
+              FTitle,
+              FInfo.MangaInfo.Authors,
+              FInfo.MangaInfo.Artists,
               '',
               '',
               OptionChangeUnicodeCharacter,
               OptionChangeUnicodeCharacterStr);
         end;
-        d.downloadInfo.SaveTo := FSavePath;
+        d.downloadInfo.SaveTo := FSaveTo;
         d.DBInsert;
       finally
         DLManager.Unlock;
@@ -400,13 +338,59 @@ begin
       DLManager.CheckAndActiveTask(False);
 
       // save downloaded chapters
-      if Info.MangaInfo.ChapterLinks.Count > 0 then
+      if FInfo.MangaInfo.ChapterLinks.Count > 0 then
       begin
-        DLManager.DownloadedChapters.Chapters[Info.MangaInfo.ModuleID, URL]:=
-          Info.MangaInfo.ChapterLinks.Text;
-        FavoriteManager.AddToDownloadedChaptersList(Info.MangaInfo.ModuleID,
-          URL, Info.MangaInfo.ChapterLinks);
+        DLManager.DownloadedChapters.Chapters[FInfo.MangaInfo.ModuleID, FURL]:=
+          FInfo.MangaInfo.ChapterLinks.Text;
+        FavoriteManager.AddToDownloadedChaptersList(FInfo.MangaInfo.ModuleID,
+          FURL, FInfo.MangaInfo.ChapterLinks);
       end;
+    end;
+  except
+    on E: Exception do
+      MainForm.ExceptionHandler(Self, E);
+  end;
+end;
+
+procedure TSilentThread.SyncAddToFavorite;
+var
+  s: String;
+begin
+  try
+    with MainForm do
+    begin
+      if Trim(FTitle) = '' then
+        FTitle := FInfo.MangaInfo.Title;
+      if FSaveTo = '' then
+      begin
+        FillSaveTo;
+	OverrideSaveTo(FModule);
+        s := edSaveTo.Text;
+      end
+      else
+        s := FSaveTo;
+      if OptionGenerateMangaFolder then
+        s := AppendPathDelim(s) + CustomRename(
+          OptionMangaCustomRename,
+          FModule.Name,
+          FTitle,
+          FInfo.MangaInfo.Authors,
+          FInfo.MangaInfo.Artists,
+          '',
+          '',
+          OptionChangeUnicodeCharacter,
+          OptionChangeUnicodeCharacterStr);
+      if Trim(FTitle) = '' then
+        FTitle := FInfo.MangaInfo.Title;
+      FavoriteManager.Add(
+        FModule,
+        FTitle,
+        FInfo.MangaInfo.Status,
+        IntToStr(FInfo.MangaInfo.NumChapter),
+        FInfo.MangaInfo.ChapterLinks.Text,
+        s,
+        FURL);
+      UpdateVtFavorites;
     end;
   except
     on E: Exception do
@@ -416,87 +400,39 @@ end;
 
 procedure TSilentThread.Execute;
 begin
-  Synchronize(Manager.UpdateLoadStatus);
-  try
-    Info.Module := Module;
-    Info.MangaInfo.Title := Title;
-    if Info.GetInfoFromURL(URL) = NO_ERROR then
-      if not Terminated then
-        Synchronize(MainThreadAfterChecking);
-  except
-    on E: Exception do
-      MainForm.ExceptionHandler(Self, E);
+  while FManager.GetMetaData(Self) do
+  begin
+    Synchronize(FManager.UpdateLoadStatus);
+    try
+      FInfo.Module := FModule;
+      FInfo.MangaInfo.Title := FTitle;
+      if (FInfo.GetInfoFromURL(FURL)=NO_ERROR) and not(Terminated) then
+      case FType of
+        MD_DownloadAll: Synchronize(SyncDownloadAll);
+        MD_AddToFavorites: Synchronize(SyncAddToFavorite);
+      end;
+    except
+      on E: Exception do
+        MainForm.ExceptionHandler(Self, E);
+    end;
   end;
 end;
 
-constructor TSilentThread.Create;
+constructor TSilentThread.Create(const AManager: TSilentThreadManager);
 begin
-  inherited Create(True);
-  Freconnect := 3;
-  SaveTo := '';
-  Info := TMangaInformation.Create(Self);
+  inherited Create(False);
+  FInfo:=TMangaInformation.Create(Self);
+  FManager:=AManager;
+  FManager.AddThread(Self);
 end;
 
 destructor TSilentThread.Destroy;
 begin
-  EnterCriticalsection(Manager.FCS_THREADS);
-  try
-    Manager.Threads.Remove(Self);
-  finally
-    LeaveCriticalsection(Manager.FCS_THREADS);
-  end;
-  Info.Free;
+  FManager.RemoveThread(Self);
   if not isExiting then
-    Synchronize(Manager.UpdateLoadStatus);
+    Synchronize(FManager.UpdateLoadStatus);
+  FInfo.Free;
   inherited Destroy;
-end;
-
-{ TSilentAddToFavThread }
-
-procedure TSilentAddToFavThread.MainThreadAfterChecking;
-var
-  s: String;
-begin
-  try
-    with MainForm do
-    begin
-      if Trim(Title) = '' then
-        Title := Info.MangaInfo.Title;
-      if FSavePath = '' then
-      begin
-        FillSaveTo;
-	OverrideSaveTo(Module);
-        s := edSaveTo.Text;
-      end
-      else
-        s := FSavePath;
-      if OptionGenerateMangaFolder then
-        s := AppendPathDelim(s) + CustomRename(
-          OptionMangaCustomRename,
-          Module.Name,
-          Title,
-          info.MangaInfo.Authors,
-          info.MangaInfo.Artists,
-          '',
-          '',
-          OptionChangeUnicodeCharacter,
-          OptionChangeUnicodeCharacterStr);
-      if Trim(Title) = '' then
-        Title := Info.MangaInfo.Title;
-      FavoriteManager.Add(
-        Module,
-        Title,
-        info.MangaInfo.Status,
-        IntToStr(Info.MangaInfo.NumChapter),
-        info.MangaInfo.ChapterLinks.Text,
-        s,
-        URL);
-      UpdateVtFavorites;
-    end;
-  except
-    on E: Exception do
-      MainForm.ExceptionHandler(Self, E);
-  end;
 end;
 
 end.
