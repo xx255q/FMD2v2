@@ -1828,10 +1828,6 @@ msgctxt "tmainform.midownloadviewmangainfo.caption"
 msgid "View manga info"
 msgstr ""
 
-#: tmainform.mifavoriteschangecurrentchapter.caption
-msgid "Change \"Current chapter\""
-msgstr ""
-
 #: tmainform.mifavoriteschangesaveto.caption
 msgid "Change \"Save to\""
 msgstr ""

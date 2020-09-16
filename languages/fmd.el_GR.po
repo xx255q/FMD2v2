@@ -1988,10 +1988,6 @@ msgctxt "tmainform.midownloadviewmangainfo.caption"
 msgid "View manga info"
 msgstr "Προβολή πληροφοριών manga"
 
-#: tmainform.mifavoriteschangecurrentchapter.caption
-msgid "Change \"Current chapter\""
-msgstr "Αλλαγή \"Τρέχοντος κεφαλαίου\""
-
 #: tmainform.mifavoriteschangesaveto.caption
 msgid "Change \"Save to\""
 msgstr "Αλλαγή \"Αποθήκευσης σε\""
