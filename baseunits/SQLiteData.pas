@@ -178,12 +178,14 @@ end;
 
 procedure TSQLiteDataWA.AppendSQLSafe(const SQL: string);
 begin
-  EnterCriticalSection(Guardian);
-  try
+  if TryEnterCriticalSection(Guardian)<>0 then
+    try
+      AppendSQL(SQL);
+    finally
+      LeaveCriticalSection(Guardian);
+    end
+  else
     AppendSQL(SQL);
-  finally
-    LeaveCriticalSection(Guardian);
-  end;
 end;
 
 procedure TSQLiteDataWA.FlushSQL;
@@ -198,12 +200,14 @@ end;
 
 procedure TSQLiteDataWA.FlushSQLSafe;
 begin
-  EnterCriticalSection(Guardian);
-  try
+  if TryEnterCriticalSection(Guardian)<>0 then
+    try
+      FlushSQL;
+    finally
+      LeaveCriticalSection(Guardian);
+    end
+  else
     FlushSQL;
-  finally
-    LeaveCriticalSection(Guardian);
-  end;
 end;
 
 procedure TSQLiteDataWA.Commit;
