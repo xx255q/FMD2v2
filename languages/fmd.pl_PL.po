@@ -1532,15 +1532,9 @@ msgctxt "tmainform.gboptionsconnectionsgeneral.caption"
 msgid "General"
 msgstr "Główne"
 
-#: tmainform.gboptionsconnectionsupdatelist.caption
-msgid "Update list"
+#: tmainform.gboptionsconnectiosmiscellaneous.caption
+msgid "Miscellaneous"
 msgstr ""
-
-#: tmainform.gboptionsconnectiosfavorites.caption
-#, fuzzy
-msgctxt "tmainform.gboptionsconnectiosfavorites.caption"
-msgid "Favorites"
-msgstr "Ulubione"
 
 #: tmainform.lbdefaultdownloadpath.caption
 msgid "Choose the default download path:"
@@ -1791,6 +1785,10 @@ msgstr ""
 "\n"
 "Notka:\n"
 "Nazwa folderu z mangą musi mieć przynajmniej %MANGA%.\n"
+
+#: tmainform.lboptionmaxbackgroundloudthreads.caption
+msgid "Max number of background load threads"
+msgstr ""
 
 #: tmainform.lboptionmaxfavoritethreads.caption
 msgid "Max number of favorite check at the same time"

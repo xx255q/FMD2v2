@@ -1517,15 +1517,9 @@ msgctxt "tmainform.gboptionsconnectionsgeneral.caption"
 msgid "General"
 msgstr "Genel"
 
-#: tmainform.gboptionsconnectionsupdatelist.caption
-msgid "Update list"
+#: tmainform.gboptionsconnectiosmiscellaneous.caption
+msgid "Miscellaneous"
 msgstr ""
-
-#: tmainform.gboptionsconnectiosfavorites.caption
-#, fuzzy
-msgctxt "tmainform.gboptionsconnectiosfavorites.caption"
-msgid "Favorites"
-msgstr "Favoriler"
 
 #: tmainform.lbdefaultdownloadpath.caption
 msgid "Choose the default download path:"
@@ -1736,6 +1730,10 @@ msgstr ""
 "\n"
 "Not:\n"
 "Manga klasörü adı en azından %MANGA% içermelidir."
+
+#: tmainform.lboptionmaxbackgroundloudthreads.caption
+msgid "Max number of background load threads"
+msgstr ""
 
 #: tmainform.lboptionmaxfavoritethreads.caption
 msgid "Max number of favorite check at the same time"

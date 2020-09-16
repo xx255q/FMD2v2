@@ -1519,15 +1519,9 @@ msgctxt "tmainform.gboptionsconnectionsgeneral.caption"
 msgid "General"
 msgstr "Umum"
 
-#: tmainform.gboptionsconnectionsupdatelist.caption
-msgid "Update list"
-msgstr "Pemutakhiran daftar"
-
-#: tmainform.gboptionsconnectiosfavorites.caption
-#, fuzzy
-msgctxt "tmainform.gboptionsconnectiosfavorites.caption"
-msgid "Favorites"
-msgstr "Kesukaan"
+#: tmainform.gboptionsconnectiosmiscellaneous.caption
+msgid "Miscellaneous"
+msgstr ""
 
 #: tmainform.lbdefaultdownloadpath.caption
 msgid "Choose the default download path:"
@@ -1738,6 +1732,10 @@ msgstr ""
 "\n"
 "Catatan:\n"
 "Nama direktori komik setidaknya harus memiliki %MANGA%."
+
+#: tmainform.lboptionmaxbackgroundloudthreads.caption
+msgid "Max number of background load threads"
+msgstr ""
 
 #: tmainform.lboptionmaxfavoritethreads.caption
 msgid "Max number of favorite check at the same time"
@@ -2686,3 +2684,4 @@ msgstr "Memutakhirkan daftar"
 #, object-pascal-format
 msgid "Can not load WebP codec library \"%s\". Check your installation."
 msgstr "Tidak dapat memuat pustaka kodek WebP \"%s\". Periksa instalasi Anda."
+

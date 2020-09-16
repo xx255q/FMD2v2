@@ -1517,15 +1517,9 @@ msgctxt "tmainform.gboptionsconnectionsgeneral.caption"
 msgid "General"
 msgstr "Allgemeines"
 
-#: tmainform.gboptionsconnectionsupdatelist.caption
-msgid "Update list"
+#: tmainform.gboptionsconnectiosmiscellaneous.caption
+msgid "Miscellaneous"
 msgstr ""
-
-#: tmainform.gboptionsconnectiosfavorites.caption
-#, fuzzy
-msgctxt "tmainform.gboptionsconnectiosfavorites.caption"
-msgid "Favorites"
-msgstr "Favoriten"
 
 #: tmainform.lbdefaultdownloadpath.caption
 msgid "Choose the default download path:"
@@ -1736,6 +1730,10 @@ msgstr ""
 "\n"
 "Note:\n"
 "Manga Ordnername muss mindest %MANGA% haben."
+
+#: tmainform.lboptionmaxbackgroundloudthreads.caption
+msgid "Max number of background load threads"
+msgstr ""
 
 #: tmainform.lboptionmaxfavoritethreads.caption
 msgid "Max number of favorite check at the same time"
@@ -2600,7 +2598,6 @@ msgid "&Remove"
 msgstr "&Entfernen"
 
 #: ufavoritesmanager.rs_dlgcompletedmangacaption
-#| msgid "Found %d completed manga"
 msgid "Found completed manga(s)"
 msgstr ""
 
@@ -2609,7 +2606,6 @@ msgid "Favorites check is running!"
 msgstr "Favoriten werden überprüft!"
 
 #: ufavoritesmanager.rs_dlgnewchaptercaption
-#| msgid "%d manga(s) have new chapter(s)"
 msgctxt "ufavoritesmanager.rs_dlgnewchaptercaption"
 msgid "Found new chapter(s)"
 msgstr ""
@@ -2621,7 +2617,6 @@ msgstr "%s <%s> hat %d neue(s) Kapitel."
 
 #: ufavoritesmanager.rs_lblmangawillberemoved
 #, object-pascal-format
-#| msgid "Completed manga will be removed:"
 msgid "%d completed manga(s) will be removed:"
 msgstr ""
 
@@ -2697,3 +2692,4 @@ msgstr "Liste erneuern"
 #, object-pascal-format
 msgid "Can not load WebP codec library \"%s\". Check your installation."
 msgstr "Kann WebP Codec \"%s nicht laden. Überprüfen sie ihre Installation."
+

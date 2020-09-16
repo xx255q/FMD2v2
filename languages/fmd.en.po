@@ -863,7 +863,6 @@ msgid "Visit my blog"
 msgstr "Visit my blog"
 
 #: tmainform.caption
-#| msgid "Free Manga Downloader"
 msgctxt "tmainform.caption"
 msgid "Free Manga Downloader"
 msgstr "Free Manga Downloader"
@@ -1511,14 +1510,9 @@ msgctxt "tmainform.gboptionsconnectionsgeneral.caption"
 msgid "General"
 msgstr "General"
 
-#: tmainform.gboptionsconnectionsupdatelist.caption
-msgid "Update list"
-msgstr "Update list"
-
-#: tmainform.gboptionsconnectiosfavorites.caption
-msgctxt "tmainform.gboptionsconnectiosfavorites.caption"
-msgid "Favorites"
-msgstr "Favorites"
+#: tmainform.gboptionsconnectiosmiscellaneous.caption
+msgid "Miscellaneous"
+msgstr ""
 
 #: tmainform.lbdefaultdownloadpath.caption
 msgid "Choose the default download path:"
@@ -1729,6 +1723,10 @@ msgstr ""
 "\n"
 "Note:\n"
 "Manga folder name must have at least %MANGA%."
+
+#: tmainform.lboptionmaxbackgroundloudthreads.caption
+msgid "Max number of background load threads"
+msgstr ""
 
 #: tmainform.lboptionmaxfavoritethreads.caption
 msgid "Max number of favorite check at the same time"
@@ -2582,7 +2580,6 @@ msgid "&Remove"
 msgstr "&Remove"
 
 #: ufavoritesmanager.rs_dlgcompletedmangacaption
-#| msgid "Found %d completed manga"
 msgid "Found completed manga(s)"
 msgstr "Found completed manga(s)"
 
@@ -2591,7 +2588,6 @@ msgid "Favorites check is running!"
 msgstr "Favorites check is running!"
 
 #: ufavoritesmanager.rs_dlgnewchaptercaption
-#| msgid "%d manga(s) have new chapter(s)"
 msgctxt "ufavoritesmanager.rs_dlgnewchaptercaption"
 msgid "Found new chapter(s)"
 msgstr "Found new chapter(s)"
@@ -2603,7 +2599,6 @@ msgstr "%s <%s> has %d new chapter(s)."
 
 #: ufavoritesmanager.rs_lblmangawillberemoved
 #, object-pascal-format
-#| msgid "Completed manga will be removed:"
 msgid "%d completed manga(s) will be removed:"
 msgstr "%d completed manga(s) will be removed:"
 
@@ -2679,3 +2674,4 @@ msgstr "Updating list"
 #, object-pascal-format
 msgid "Can not load WebP codec library \"%s\". Check your installation."
 msgstr "Can not load WebP codec library \"%s\". Check your installation."
+

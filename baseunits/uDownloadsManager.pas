@@ -1533,8 +1533,8 @@ begin
   with Items[i] do begin
     if i<>Order then
     begin
-      Order := i;
-      tempSQL+='UPDATE "downloads" SET "order"='''+IntToStr(i)+''' WHERE "id"='''+DlId+''';';
+      Order:=i;
+      tempSQL+='UPDATE "downloads" SET "order"='''+IntToStr(Order)+''' WHERE "id"='''+DlId+''';';
       Inc(tempSQLcount);
       if tempSQLcount>MAXSQLCOUNT then
         DBExecSQL;

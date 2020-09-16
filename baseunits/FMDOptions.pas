@@ -129,6 +129,7 @@ var
   OptionConnectionTimeout: Integer = 30;
   OptionMaxFavoriteThreads: Integer = 1;
   OptionMaxUpdateListThreads: Integer = 1;
+  OptionMaxBackgroundLoadThreads: Integer = 1;
   OptionMaxParallel: Integer = 1;
   OptionMaxThreads: Integer = 1;
   OptionMaxRetry: Integer = 5;

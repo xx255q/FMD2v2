@@ -13,7 +13,6 @@ object MainForm: TMainForm
   OnDestroy = FormDestroy
   OnWindowStateChange = FormWindowStateChange
   ShowHint = True
-  LCLVersion = '2.1.0.0'
   object pcMain: TPageControl
     Left = 2
     Height = 610
@@ -3260,7 +3259,7 @@ object MainForm: TMainForm
             object gbOptionsConnectionsGeneral: TGroupBox
               Left = 4
               Height = 233
-              Top = 279
+              Top = 278
               Width = 812
               Align = alTop
               AutoSize = True
@@ -3271,7 +3270,7 @@ object MainForm: TMainForm
               ChildSizing.VerticalSpacing = 4
               ClientHeight = 213
               ClientWidth = 808
-              TabOrder = 3
+              TabOrder = 2
               object seOptionConnectionTimeout: TSpinEdit
                 AnchorSideLeft.Control = gbOptionsConnectionsGeneral
                 AnchorSideTop.Control = gbOptionsConnectionsGeneral
@@ -3531,7 +3530,7 @@ object MainForm: TMainForm
               ChildSizing.VerticalSpacing = 4
               ClientHeight = 137
               ClientWidth = 808
-              TabOrder = 2
+              TabOrder = 1
               object seOptionRetryFailedTask: TSpinEdit
                 AnchorSideLeft.Control = gbOptionsConnectionsDownloads
                 AnchorSideTop.Control = seOptionMaxRetry
@@ -3652,24 +3651,24 @@ object MainForm: TMainForm
                 TabOrder = 4
               end
             end
-            object gbOptionsConnectiosFavorites: TGroupBox
+            object gbOptionsConnectiosMiscellaneous: TGroupBox
               Left = 4
-              Height = 51
+              Height = 105
               Top = 169
               Width = 812
               Align = alTop
               AutoSize = True
-              Caption = 'Favorites'
+              Caption = 'Miscellaneous'
               ChildSizing.LeftRightSpacing = 4
               ChildSizing.TopBottomSpacing = 4
               ChildSizing.HorizontalSpacing = 4
               ChildSizing.VerticalSpacing = 4
-              ClientHeight = 31
+              ClientHeight = 85
               ClientWidth = 808
               TabOrder = 0
               object seOptionMaxFavoriteThreads: TSpinEdit
-                AnchorSideLeft.Control = gbOptionsConnectiosFavorites
-                AnchorSideTop.Control = gbOptionsConnectiosFavorites
+                AnchorSideLeft.Control = gbOptionsConnectiosMiscellaneous
+                AnchorSideTop.Control = gbOptionsConnectiosMiscellaneous
                 Left = 4
                 Height = 23
                 Top = 4
@@ -3694,22 +3693,6 @@ object MainForm: TMainForm
                 ParentColor = False
                 ParentFont = False
               end
-            end
-            object gbOptionsConnectionsUpdateList: TGroupBox
-              Left = 4
-              Height = 51
-              Top = 224
-              Width = 812
-              Align = alTop
-              AutoSize = True
-              Caption = 'Update list'
-              ChildSizing.LeftRightSpacing = 4
-              ChildSizing.TopBottomSpacing = 4
-              ChildSizing.HorizontalSpacing = 4
-              ChildSizing.VerticalSpacing = 4
-              ClientHeight = 31
-              ClientWidth = 808
-              TabOrder = 1
               object lbOptionMaxUpdateListThreads: TLabel
                 AnchorSideLeft.Control = seOptionMaxUpdateListThreads
                 AnchorSideLeft.Side = asrBottom
@@ -3717,24 +3700,53 @@ object MainForm: TMainForm
                 AnchorSideTop.Side = asrCenter
                 Left = 60
                 Height = 15
-                Top = 8
+                Top = 35
                 Width = 182
                 Caption = 'Max number of update list threads'
                 ParentColor = False
                 ParentFont = False
               end
               object seOptionMaxUpdateListThreads: TSpinEdit
-                AnchorSideLeft.Control = gbOptionsConnectionsUpdateList
-                AnchorSideTop.Control = gbOptionsConnectionsUpdateList
+                AnchorSideLeft.Control = gbOptionsConnectiosMiscellaneous
+                AnchorSideTop.Control = seOptionMaxFavoriteThreads
+                AnchorSideTop.Side = asrBottom
                 Left = 4
                 Height = 23
-                Top = 4
+                Top = 31
                 Width = 52
                 MaxValue = 32
                 MinValue = 1
                 ParentFont = False
                 ParentShowHint = False
-                TabOrder = 0
+                TabOrder = 1
+                Value = 1
+              end
+              object lbOptionMaxBackgroundLoudThreads: TLabel
+                AnchorSideLeft.Control = seOptionMaxBackgroundLoadThreads
+                AnchorSideLeft.Side = asrBottom
+                AnchorSideTop.Control = seOptionMaxBackgroundLoadThreads
+                AnchorSideTop.Side = asrCenter
+                Left = 60
+                Height = 15
+                Top = 62
+                Width = 217
+                Caption = 'Max number of background load threads'
+                ParentColor = False
+                ParentFont = False
+              end
+              object seOptionMaxBackgroundLoadThreads: TSpinEdit
+                AnchorSideLeft.Control = gbOptionsConnectiosMiscellaneous
+                AnchorSideTop.Control = seOptionMaxUpdateListThreads
+                AnchorSideTop.Side = asrBottom
+                Left = 4
+                Height = 23
+                Top = 58
+                Width = 52
+                MaxValue = 32
+                MinValue = 1
+                ParentFont = False
+                ParentShowHint = False
+                TabOrder = 2
                 Value = 1
               end
             end

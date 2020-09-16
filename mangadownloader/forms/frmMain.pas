@@ -97,8 +97,7 @@ type
     edWebsitesSearch: TEditButton;
     gbImageConversion: TGroupBox;
     gbOptionsConnectionsDownloads: TGroupBox;
-    gbOptionsConnectiosFavorites: TGroupBox;
-    gbOptionsConnectionsUpdateList: TGroupBox;
+    gbOptionsConnectiosMiscellaneous: TGroupBox;
     gbOptionsConnectionsGeneral: TGroupBox;
     IconDLLeft: TImageList;
     lbDownloadFilterCustomDateFrom: TLabel;
@@ -106,6 +105,7 @@ type
     lbOptionMaxFavoriteThreads: TLabel;
     lbOptionDefaultUserAgent: TLabel;
     lbOptionMaxUpdateListThreads: TLabel;
+    lbOptionMaxBackgroundLoudThreads: TLabel;
     lbPNGCompressionLevel: TLabel;
     lbJPEGQuality: TLabel;
     lbWebPSaveAs: TLabel;
@@ -183,6 +183,7 @@ type
     sbGeneralSettings: TScrollBox;
     seOptionMaxFavoriteThreads: TSpinEdit;
     seOptionMaxUpdateListThreads: TSpinEdit;
+    seOptionMaxBackgroundLoadThreads: TSpinEdit;
     seOptionRetryFailedTask: TSpinEdit;
     seJPEGQuality: TSpinEdit;
     spThumb: TSplitter;
@@ -5146,11 +5147,10 @@ begin
     seOptionRetryFailedTask.Value := ReadInteger('connections', 'NumberOfAutoRetryFailedTask', OptionRetryFailedTask);
     ckOptionsAlwaysStartTaskFromFailedChapters.Checked := ReadBool('connections', 'AlwaysStartFromFailedChapters', OptionAlwaysStartTaskFromFailedChapters);
 
-    // connection favorites
+    // connection misc
     seOptionMaxFavoriteThreads.Value := ReadInteger('connections', 'MaxFavoriteThreads', OptionMaxFavoriteThreads);
-
-    // connection update list
-    seOptionMaxUpdateListThreads.Value := ReadInteger('connecions', 'MaxUpdateListThreads', OptionMaxUpdateListThreads);
+    seOptionMaxUpdateListThreads.Value := ReadInteger('connections', 'MaxUpdateListThreads', OptionMaxUpdateListThreads);
+    seOptionMaxBackgroundLoadThreads.Value := ReadInteger('connections', 'MaxBackgroundLoadThreads', OptionMaxBackgroundLoadThreads);
 
     // connection general
     seOptionConnectionTimeout.Value := ReadInteger('connections', 'ConnectionTimeout', OptionConnectionTimeout);
@@ -5284,11 +5284,10 @@ begin
       WriteInteger('connections', 'NumberOfAutoRetryFailedTask', seOptionRetryFailedTask.Value);
       WriteBool('connections', 'AlwaysRetruFailedChaptersOnStart', ckOptionsAlwaysStartTaskFromFailedChapters.Checked);
 
-      // connections favorite
+      // connections misc
       WriteInteger('connections', 'MaxFavoriteThreads', seOptionMaxFavoriteThreads.Value);
-
-      // connections update list
       WriteInteger('connections', 'MaxUpdateListThreads', seOptionMaxUpdateListThreads.Value);
+      WriteInteger('connections', 'MaxBackgroundLoadThreads', seOptionMaxBackgroundLoadThreads.Value);
 
       // connections general
       WriteInteger('connections', 'ConnectionTimeout', seOptionConnectionTimeout.Value);
@@ -5462,11 +5461,10 @@ begin
     OptionRetryFailedTask := seOptionRetryFailedTask.Value;
     OptionAlwaysStartTaskFromFailedChapters := ckOptionsAlwaysStartTaskFromFailedChapters.Checked;
 
-    // connections favorites
+    // connections misc
     OptionMaxFavoriteThreads := seOptionMaxFavoriteThreads.Value;
-
-    // connections update list
     OptionMaxUpdateListThreads := seOptionMaxUpdateListThreads.Value;
+    OptionMaxBackgroundLoadThreads := seOptionMaxBackgroundLoadThreads.Value;
 
     // connections general
     OptionConnectionTimeout := seOptionConnectionTimeout.Value;

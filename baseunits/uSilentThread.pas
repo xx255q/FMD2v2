@@ -125,7 +125,7 @@ begin
     begin
       if Terminated then Break;
       with MetaDatas[i] do
-        if (Threads.Count < OptionMaxThreads) then
+        if (Threads.Count < OptionMaxBackgroundLoadThreads) then
           Manager.Checkout(i)
         else
           Inc(i);
@@ -141,7 +141,7 @@ begin
     while (not Terminated) and (MetaDatas.Count > 0) do
     begin
       Sleep(HeartBeatRate);
-      while (not Terminated) and (Threads.Count >= OptionMaxThreads) do
+      while (not Terminated) and (Threads.Count >= OptionMaxBackgroundLoadThreads) do
         Sleep(HeartBeatRate);
       Self.Checkout;
     end;
