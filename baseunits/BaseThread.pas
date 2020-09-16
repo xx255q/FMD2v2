@@ -17,7 +17,12 @@ type
     function GetTerminated: Boolean;
   protected
     procedure CallOnCustomTerminate; inline;
+    {$ifdef FPC_FULLVERSION>30202}
     procedure TerminatedSet; override;
+    {$else}
+  public
+    procedure Terminate;
+    {$endif}
   public
     constructor Create(CreateSuspended: Boolean = True);
     destructor Destroy; override;
@@ -39,8 +44,14 @@ begin
   FOnCustomTerminate(Self);
 end;
 
+{$ifdef FPC_FULLVERSION>=30202}
 procedure TBaseThread.TerminatedSet;
 begin
+{$else}
+procedure TBaseThread.Terminate;
+begin
+  inherited Terminate;
+{$endif}
   if Assigned(FOnCustomTerminate) then
     FOnCustomTerminate(Self);
 end;
