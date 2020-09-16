@@ -106,11 +106,12 @@ type
     procedure TerminateCurrent(Sender: TObject);
   public
     Flag: TFlagType;
+    Manager: TDownloadManager;
     // container (for storing information)
     Container: TTaskContainer;
     // download threads
     Threads: TDownloadThreads;
-    constructor Create;
+    constructor Create(const C: TTaskContainer);
     destructor Destroy; override;
     function GetFileName(const AWorkId: Integer): String;
     property CurrentWorkingDir: String read FCurrentWorkingDir write SetCurrentWorkingDir;
@@ -127,6 +128,7 @@ type
     FStatus: TDownloadStatusType;
     FEnabled,
     FDirty: Boolean;
+    function GetRunnning: Boolean; inline;
     procedure SetEnabled(AValue: Boolean);
     procedure SetStatus(AValue: TDownloadStatusType);
   public
@@ -149,7 +151,6 @@ type
     DownCounter,
     PageNumber: Integer;
 
-    ThreadState: Boolean;
     ChapterNames,
     ChapterLinks,
     ChaptersStatus,
@@ -173,6 +174,7 @@ type
   public
     property Status: TDownloadStatusType read FStatus write SetStatus;
     property Enabled: Boolean read FEnabled write SetEnabled;
+    property Running: Boolean read GetRunnning;
   end;
 
   TTaskContainers = specialize TFPGList<TTaskContainer>;
@@ -184,7 +186,7 @@ type
     FSortDirection: Boolean;
     FSortColumn: Integer;
     FDownloadsDB: TDownloadsDB;
-    updateOrderCount: Integer;
+    FUpdateOrderCount: Integer;
     procedure AddItemsActiveTask(const Item: TTaskContainer);
     procedure RemoveItemsActiveTask(const Item: TTaskContainer);
     function GetTask(const TaskId: Integer): TTaskContainer;
@@ -196,6 +198,7 @@ type
     procedure IncStatusCount(const Status: TDownloadStatusType);
     // it has no data validation, only StartTask after all data check passed
     procedure StartTask(const taskID: Integer);
+    procedure DBUpdateOrder;
   public
     CS_Task,
     CS_ItemsActiveTask: TRTLCriticalSection;
@@ -230,8 +233,6 @@ type
     procedure Unlock;
     procedure Backup;
     procedure Restore;
-    // execute direct, should use lock/unlock with caution
-    procedure DBUpdateOrder;
     procedure UpdateOrder; inline;
 
     // These methods relate to highlight downloaded chapters.
@@ -255,10 +256,8 @@ type
     procedure StopAllTasks;
     // Stop all download task inside a task before terminate the program.
     procedure StopAllDownloadTasksForExit;
-    // Free then delete task without any check, use with caution
-    procedure FreeAndDelete(const TaskId: Integer);
-    // Remove a task from list.
-    procedure RemoveTask(const TaskID: Integer);
+    // Delete directly, must inside lock/unlock
+    procedure Delete(const TaskId: Integer);
     // Remove all finished tasks.
     procedure RemoveAllFinishedTasks;
     // check status of task
@@ -489,9 +488,14 @@ end;
 
 // ----- TTaskThread -----
 
-constructor TTaskThread.Create;
+constructor TTaskThread.Create(const C: TTaskContainer);
 begin
-  inherited Create(True);
+  inherited Create(False);
+  Container:=C;
+  Container.TaskThread:=Self;
+  Container.Manager.AddItemsActiveTask(Container);
+  TModuleContainer(Container.DownloadInfo.Module).IncActiveTaskCount;
+
   InitCriticalSection(ThreadsGuardian);
   InitCriticalSection(GetWorkIdGuardian);
   Threads := TDownloadThreads.Create;
@@ -507,17 +511,13 @@ end;
 
 destructor TTaskThread.Destroy;
 begin
-  Container.DownloadInfo.DateLastDownloaded := Now;
-
-  TerminateThreads;
   WaitForThreads;
-
-  TModuleContainer(Container.DownloadInfo.Module).DecActiveTaskCount;
   with Container do
   begin
-    ThreadState := False;
+    DownloadInfo.DateLastDownloaded := Now;
+    TModuleContainer(DownloadInfo.Module).DecActiveTaskCount;
     Manager.RemoveItemsActiveTask(Container);
-    TaskThread := nil;
+    TaskThread:=nil;
     if not (IsForDelete or Manager.isReadyForExit) then
     begin
       Container.ReadCount := 0;
@@ -903,7 +903,6 @@ var
 var
   i: Integer;
 begin
-  Container.ThreadState := True;
   Container.DownloadInfo.DateLastDownloaded := Now;
   Container.DownloadInfo.TransferRate := FormatByteSize(Container.ReadCount, true);
   try
@@ -912,7 +911,7 @@ begin
     if Trim(Container.CustomFileName) = '' then
       Container.CustomFileName := DEFAULT_FILENAME_CUSTOMRENAME;
 
-    while container.ChaptersStatus.Count < Container.CurrentDownloadChapterPtr - 1 do
+    while Container.ChaptersStatus.Count < Container.CurrentDownloadChapterPtr - 1 do
       Container.ChaptersStatus.Add('D');
     while Container.ChaptersStatus.Count < Container.ChapterLinks.Count do
       Container.ChaptersStatus.Add('P');
@@ -1086,7 +1085,7 @@ begin
          (FailedRetryCount < OptionRetryFailedTask) then
       begin
         Container.CurrentDownloadChapterPtr := FirstFailedChapters;
-        if container.CurrentDownloadChapterPtr <> -1 then
+        if Container.CurrentDownloadChapterPtr <> -1 then
           Inc(FailedRetryCount)
         else
           Container.CurrentDownloadChapterPtr := Container.ChapterLinks.Count;
@@ -1144,6 +1143,11 @@ begin
   end;
 end;
 
+function TTaskContainer.GetRunnning: Boolean;
+begin
+  Result:=TaskThread<>nil;
+end;
+
 constructor TTaskContainer.Create;
 begin
   inherited Create;
@@ -1151,7 +1155,6 @@ begin
   FDirty := False;
   DlId := '';
   InitCriticalSection(CS_Container);
-  ThreadState := False;
   ChapterLinks := TStringList.Create;
   ChapterNames := TStringList.Create;
   ChaptersStatus := TStringList.Create;
@@ -1382,7 +1385,7 @@ begin
   isRunningBackup := False;
   isRunningBackupDownloadedChaptersList := False;
   isReadyForExit := False;
-  updateOrderCount:=0;
+  FUpdateOrderCount:=0;
 
   InitCriticalSection(CS_StatusCount);
   for ds := Low(StatusCount) to High(StatusCount) do
@@ -1496,7 +1499,7 @@ const
 var
   i: Integer;
 begin
-  if updateOrderCount=0 then Exit;
+  if FUpdateOrderCount=0 then Exit;
   for i := 0 to Items.Count-1 do
   with Items[i] do begin
     if i<>Order then
@@ -1509,12 +1512,12 @@ begin
     end;
   end;
   if FDownloadsDB.tempSQLcount>0 then FDownloadsDB.FlushSQL;
-  updateOrderCount:=0;
+  InterlockedExchange(FUpdateOrderCount,0);
 end;
 
 procedure TDownloadManager.UpdateOrder;
 begin
-  Inc(updateOrderCount);
+  InterlockedIncrement(FUpdateOrderCount);
 end;
 
 procedure TDownloadManager.GetDownloadedChaptersState(const AModuleID,
@@ -1563,7 +1566,7 @@ begin
   try
     tcount := 0;
     for i := 0 to Items.Count - 1 do
-      if Items[i].ThreadState then
+      if Items[i].Running then
         Inc(tcount);
 
     // item with missing module should be already checked by CheckAndActiveTaskAtStartup
@@ -1607,7 +1610,7 @@ end;
 procedure TDownloadManager.SetTaskActive(const taskID: Integer);
 begin
   with Items[taskID] do
-    if not(ThreadState or (Status in [STATUS_FINISH, STATUS_WAIT])) and Enabled and Assigned(DownloadInfo.Module) then
+    if not(Running or (Status in [STATUS_FINISH, STATUS_WAIT])) and Enabled and Assigned(DownloadInfo.Module) then
     begin
       DownloadInfo.Status := Format('[%d/%d] %s',[CurrentDownloadChapterPtr+1,ChapterLinks.Count,RS_Waiting]);
       Status := STATUS_WAIT;
@@ -1653,14 +1656,7 @@ end;
 
 procedure TDownloadManager.StartTask(const taskID: Integer);
 begin
-  with Items[taskID] do
-  begin
-    TModuleContainer(DownloadInfo.Module).IncActiveTaskCount;
-    TaskThread := TTaskThread.Create;
-    TaskThread.Container := Items[taskID];
-    AddItemsActiveTask(TaskThread.Container);
-    TaskThread.Start;
-  end;
+  TTaskThread.Create(Items[taskID]);
 end;
 
 procedure TDownloadManager.StopTask(const taskID: Integer;
@@ -1674,7 +1670,7 @@ begin
       Status := STATUS_STOP;
       DBUpdateStatus;
     end
-    else if ThreadState then
+    else if Running then
     begin
       TaskThread.Terminate;
       if isWaitFor then
@@ -1694,7 +1690,7 @@ begin
   try
     for i := 0 to Items.Count - 1 do
       with Items[i] do
-        if (Status <> STATUS_FINISH) and Assigned(DownloadInfo.Module) and (not ThreadState) and Enabled then
+        if (Status <> STATUS_FINISH) and Assigned(DownloadInfo.Module) and (not Running) and Enabled then
         begin
           DownloadInfo.Status := Format('[%d/%d] %s',[CurrentDownloadChapterPtr+1,ChapterLinks.Count,RS_Waiting]);
           Status := STATUS_WAIT;
@@ -1730,11 +1726,11 @@ begin
     try
       for i := 0 to Items.Count - 1 do
         with Items[i] do
-          if ThreadState then
+          if Running then
             TaskThread.Terminate;
       for i := 0 to Items.Count - 1 do
         with Items[i] do
-          if ThreadState then
+          if Running then
             TaskThread.WaitFor;
     finally
       isReadyForExit := False;
@@ -1742,27 +1738,11 @@ begin
   end;
 end;
 
-procedure TDownloadManager.FreeAndDelete(const TaskId: Integer);
+procedure TDownloadManager.Delete(const TaskId: Integer);
 begin
   FDownloadsDB.AppendSQL('DELETE FROM "downloads" WHERE "id"='''+Items[TaskId].DlId+''';');
   Items[TaskID].Free;
   Items.Delete(taskID);
-end;
-
-procedure TDownloadManager.RemoveTask(const TaskID: Integer);
-begin
-  EnterCriticalSection(CS_Task);
-  try
-    with Items[TaskID] do
-      if ThreadState then begin
-        TaskThread.Terminate;
-        TaskThread.WaitFor;
-      end;
-    FreeAndDelete(TaskID);
-  finally
-    LeaveCriticalSection(CS_Task);
-  end;
-  CheckAndActiveTask;
 end;
 
 procedure TDownloadManager.RemoveAllFinishedTasks;
@@ -1770,13 +1750,13 @@ var
   i: Integer;
 begin
   if Items.Count = 0 then Exit;
-  EnterCriticalsection(CS_Task);
+  Lock;
   try
     for i := Items.Count - 1 downto 0 do
       if Items[i].Status = STATUS_FINISH then
-        FreeAndDelete(i);
+        Delete(i);
   finally
-    LeaveCriticalsection(CS_Task);
+    Unlock;
   end;
 end;
 
@@ -1810,7 +1790,7 @@ procedure TDownloadManager.DisableTask(const TaskId: Integer);
 begin
   with Items[TaskId] do
   begin
-    if ThreadState then
+    if Running then
       StopTask(TaskId, False);
     if Enabled then
     begin
