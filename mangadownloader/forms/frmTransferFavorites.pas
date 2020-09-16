@@ -222,6 +222,8 @@ var
   dc: String;
   t: TFavoriteContainer;
 begin
+  FavoriteManager.Lock;
+  try
   Node := vtFavs.GetFirst();
   while Assigned(Node) do
   begin
@@ -245,7 +247,7 @@ begin
           Data^.NewLink);
       end;
       t := FavoriteManager.Items.Last;
-      FavoriteManager.FreeAndDelete(Data^.Fav);
+      FavoriteManager.Remove(Data^.Fav);
       Data^.Fav := t;
       if ckClearDownloadedChapters.Checked then
         t.Tag := 100; // get new chapterlist
@@ -253,6 +255,9 @@ begin
     Node := vtFavs.GetNext(Node);
   end;
   ModalResult := mrOK;
+  finally
+    FavoriteManager.Unlock;
+  end;
 end;
 
 procedure TTransferFavoritesForm.cbWebsitesEditingDone(Sender: TObject);

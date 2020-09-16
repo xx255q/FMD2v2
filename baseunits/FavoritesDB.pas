@@ -11,26 +11,19 @@ type
 
   { TFavoritesDB }
 
-  TFavoritesDB = class(TSQliteData)
-  private
-    FCommitCount: Integer;
-    FAutoCommitCount: Integer;
-    procedure SetAutoCommitCount(AValue: Integer);
+  TFavoritesDB = class(TSQLiteDataWA)
   public
     constructor Create(const AFilename: String);
-    procedure InternalUpdate(const AOrder:Integer;const AEnabled:Boolean;
-      const AModuleID,ALink,ATitle,AStatus,ACurrentChapter,ADownloadedChapterList,ASaveTo: String;
-      const ADateLastChecked,ADateLastUpdated: TDateTime); inline;
-    procedure InternalAdd(const AOrder:Integer;const AEnabled:Boolean;
-      const AModuleID,ALink,ATitle,AStatus,ACurrentChapter,ADownloadedChapterList,ASaveTo: String;
-      const ADateAdded: TDateTime); inline;
-    function Add(const AOrder:Integer;const AEnabled:Boolean;
+    procedure Add(const Aid:String;const AOrder:Integer;const AEnabled:Boolean;
       const AModuleID,ALink,ATitle,AStatus,ACurrentChapter,ADownloadedChapterList,ASaveTo:String;
-      const ADateAdded: TDateTime):Boolean;
-    procedure Delete(const AWebsite, ALink: String);
-    procedure Commit; override;
-    procedure Close; override;
-    property AutoCommitCount: Integer read FAutoCommitCount write SetAutoCommitCount;
+      const ADateAdded:TDateTime); inline;
+    procedure Update(const Aid:String;const AStatus,ACurrentChapter,ADownloadedChapterList:String;
+      const ADateLastUpdated:TDateTime); inline;
+    procedure UpdateTitle(const Aid,Atitle:String); inline;
+    procedure UpdateEnabled(const Aid:String;const AEnabled:Boolean); inline;
+    procedure UpdateDateLastChecked(const Aid:String;const ADateLastChecked:TDateTime);
+    procedure UpdateSaveTo(const Aid,ASaveTo:String);
+    procedure Delete(const Aid:String); inline;
   end;
 
 const
@@ -52,20 +45,11 @@ implementation
 
 { TFavoritesDB }
 
-procedure TFavoritesDB.SetAutoCommitCount(AValue: Integer);
-begin
-  if FAutoCommitCount = AValue then Exit;
-  FAutoCommitCount := AValue;
-end;
-
 constructor TFavoritesDB.Create(const AFilename: String);
 begin
   inherited Create;
-  FCommitCount := 0;
-  FAutoCommitCount := 500;
   Filename := AFilename;
   TableName := 'favorites';
-  Table.PacketRecords := 1;
   CreateParams :=
     '"id" VARCHAR(3000) NOT NULL PRIMARY KEY,' +
     '"order" INTEGER,' +
@@ -84,100 +68,61 @@ begin
   SelectParams := 'SELECT ' + FieldsParams + ' FROM ' + QuotedStrD(TableName) + ' ORDER BY "order"';
 end;
 
-procedure TFavoritesDB.InternalUpdate(const AOrder: Integer; const AEnabled: Boolean;
+procedure TFavoritesDB.Add(const Aid: String; const AOrder: Integer; const AEnabled: Boolean;
   const AModuleID, ALink, ATitle, AStatus, ACurrentChapter, ADownloadedChapterList,
-  ASaveTo: String; const ADateLastChecked, ADateLastUpdated: TDateTime);
+  ASaveTo: String; const ADateAdded: TDateTime);
 begin
-  Connection.ExecuteDirect('UPDATE "favorites" SET ' +
-    '"order"='+QuotedStr(AOrder)+', '+
-    '"enabled"='+QuotedStr(AEnabled)+', '+
-    '"title"='+QuotedStr(ATitle)+', '+
-    '"status"='+QuotedStr(AStatus)+', '+
-    '"currentchapter"='+QuotedStr(ACurrentChapter)+', '+
-    '"downloadedchapterlist"='+QuotedStr(ADownloadedChapterList)+', '+
-    '"saveto"='+QuotedStr(ASaveTo)+', '+
-    '"datelastchecked"='+QuotedStr(Adatelastchecked)+', '+
-    '"datelastupdated"='+QuotedStr(Adatelastupdated)+
-    ' WHERE "id"='+QuotedStr(LowerCase(AModuleID+ALink)));
-end;
-
-procedure TFavoritesDB.InternalAdd(const AOrder: Integer; const AEnabled: Boolean; const AModuleID,
-  ALink, ATitle, AStatus, ACurrentChapter, ADownloadedChapterList, ASaveTo: String;
-  const ADateAdded: TDateTime);
-begin
-  Connection.ExecuteDirect('INSERT OR REPLACE INTO "favorites" (' +
+  AppendSQL('INSERT OR REPLACE INTO "favorites" (' +
     FieldsParams +
     ') VALUES (' +
-    QuotedStr(LowerCase(AModuleID + ALink)) + ', ' +
-    QuotedStr(AOrder) + ', ' +
-    QuotedStr(AEnabled) + ', ' +
-    QuotedStr(AModuleID) + ', ' +
-    QuotedStr(ALink) + ', ' +
-    QuotedStr(ATitle) + ', ' +
-    QuotedStr(AStatus) + ', ' +
-    QuotedStr(ACurrentChapter)  + ', ' +
-    QuotedStr(ADownloadedChapterList) + ', ' +
+    QuotedStr(Aid) + ',' +
+    QuotedStr(AOrder) + ',' +
+    QuotedStr(AEnabled) + ',' +
+    QuotedStr(AModuleID) + ',' +
+    QuotedStr(ALink) + ',' +
+    QuotedStr(ATitle) + ',' +
+    QuotedStr(AStatus) + ',' +
+    QuotedStr(ACurrentChapter)  + ',' +
+    QuotedStr(ADownloadedChapterList) + ',' +
     QuotedStr(ASaveTo) + ',' +
     QuotedStr(ADateAdded) + ',' +
     QuotedStr(ADateAdded) + ',' +
-    QuotedStr(ADateAdded) + ')');
+    QuotedStr(ADateAdded) + ');');
 end;
 
-function TFavoritesDB.Add(const AOrder: Integer; const AEnabled: Boolean; const AModuleID, ALink,
-  ATitle, AStatus, ACurrentChapter, ADownloadedChapterList, ASaveTo: String;
-  const ADateAdded: TDateTime): Boolean;
+procedure TFavoritesDB.Update(const Aid: String; const AStatus, ACurrentChapter,
+  ADownloadedChapterList: String; const ADateLastUpdated: TDateTime);
 begin
-  Result := False;
-  if (AModuleID = '') or (ALink = '') then Exit;
-  if not Connection.Connected then Exit;
-  try
-    InternalAdd(AOrder,AEnabled,AModuleID,ALink,ATitle,AStatus,ACurrentChapter,ADownloadedChapterList,ASaveTo,ADateAdded);
-    Result := True;
-    Inc(FCommitCount);
-    if FCommitCount >= FAutoCommitCount then
-      Commit;
-  except
-    on E: Exception do
-      SendLogException(ClassName + '.Add failed!', E);
-  end;
+  AppendSQL('UPDATE "favorites" SET "status"='+QuotedStr(AStatus)+
+    ',"currentchapter"='+QuotedStr(ACurrentChapter)+
+    ',"downloadedchapterlist"='+QuotedStr(ADownloadedChapterList)+
+    ',"datelastupdated"='+QuotedStr(ADateLastUpdated)+
+    ' WHERE "id"='+QuotedStr(Aid)+';');
 end;
 
-procedure TFavoritesDB.Delete(const AWebsite, ALink: String);
+procedure TFavoritesDB.UpdateTitle(const Aid, Atitle: String);
 begin
-  if (AWebsite = '') or (ALink = '') then Exit;
-  if not Connection.Connected then Exit;
-  try
-    Connection.ExecuteDirect(
-      'DELETE FROM "favorites" WHERE "id"=' + QuotedStr(LowerCase(AWebsite + ALink)));
-    Inc(FCommitCount);
-    if FCommitCount >= FAutoCommitCount then
-      Commit;
-  except
-    on E: Exception do
-      SendLogException(ClassName + '.Delete failed!', E);
-  end;
+  AppendSQLSafe('UPDATE "favorites" SET "title"='+QuotedStr(Atitle)+' WHERE "id"='+QuotedStr(Aid)+';');
 end;
 
-procedure TFavoritesDB.Commit;
+procedure TFavoritesDB.UpdateEnabled(const Aid: String; const AEnabled: Boolean);
 begin
-  if not Connection.Connected then Exit;
-  try
-    Transaction.Commit;
-    FCommitCount := 0;
-  except
-    on E: Exception do
-      begin
-        Transaction.Rollback;
-        SendLogException(ClassName + '.Commit failed! Rollback!', E);
-      end;
-  end;
+  AppendSQL('UPDATE "favorites" SET "enabled"='+QuotedStr(AEnabled)+' WHERE "id"='+QuotedStr(Aid)+';');
 end;
 
-procedure TFavoritesDB.Close;
+procedure TFavoritesDB.UpdateDateLastChecked(const Aid: String; const ADateLastChecked: TDateTime);
 begin
-  if FCommitCount <> 0 then
-    Commit;
-  inherited Close;
+  AppendSQL('UPDATE "favorites" SET "datelastchecked"='+QuotedStr(ADateLastChecked)+' WHERE "id"='+QuotedStr(Aid)+';');
+end;
+
+procedure TFavoritesDB.UpdateSaveTo(const Aid, ASaveTo: String);
+begin
+  AppendSQL('UPDATE "favorites" SET "saveto"='+QuotedStr(ASaveTo)+' WHERE "id"='+QuotedStr(Aid)+';');
+end;
+
+procedure TFavoritesDB.Delete(const Aid: String);
+begin
+  AppendSQL('DELETE FROM "favorites" WHERE "id"='+QuotedStr(aid)+';');
 end;
 
 end.

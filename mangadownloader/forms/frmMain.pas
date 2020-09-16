@@ -373,7 +373,6 @@ type
     miDownloadOpenFolder: TMenuItem;
     miFavoritesDelete: TMenuItem;
     miMangaListAddToFavorites: TMenuItem;
-    miFavoritesChangeCurrentChapter: TMenuItem;
     miFavoritesChangeSaveTo: TMenuItem;
     miDownloadDeleteCompleted: TMenuItem;
     miDownloadStop: TMenuItem;
@@ -570,7 +569,6 @@ type
 
     procedure miFavoritesDeleteClick(Sender: TObject);
     procedure miMangaListAddToFavoritesClick(Sender: TObject);
-    procedure miFavoritesChangeCurrentChapterClick(Sender: TObject);
     procedure miFavoritesChangeSaveToClick(Sender: TObject);
 
     procedure miChapterListCheckSelectedClick(Sender: TObject);
@@ -1581,7 +1579,7 @@ begin
     if InputQuery('', RS_InfoTitle, tt) then
     begin
       t.FavoriteInfo.Title := tt;
-      t.SaveToDB();
+      t.DBUpdateTitle;
     end;
   end;
 end;
@@ -2147,7 +2145,7 @@ begin
     while Assigned(xNode) do
     begin
       with DLManager.Items[xNode^.Index] do
-        if ThreadState then
+        if Running then
         begin
           TaskThread.IsForDelete := True;
           TaskThread.Terminate;
@@ -2161,7 +2159,7 @@ begin
       Exclude(xNode^.States, vsSelected);
       with DLManager.Items[xNode^.Index] do
       begin
-        if ThreadState then
+        if Running then
           TaskThread.WaitFor;
         if (Sender = miDownloadDeleteTaskData) or (Sender = miDownloadDeleteTaskDataFavorite)
           and (ChapterNames.Count > 0) then
@@ -2188,14 +2186,14 @@ begin
               if SameText(DLManager[xNode^.Index].DownloadInfo.Link, FavoriteManager[i].FavoriteInfo.Link)
                 and SameText(DLManager[xNode^.Index].DownloadInfo.ModuleID, FavoriteManager[i].FavoriteInfo.ModuleID) then
                 begin
-                  FavoriteManager.FreeAndDelete(i);
+                  FavoriteManager.Delete(i);
                   Break;
                 end;
             end;
           finally
-            FavoriteManager.LockRelease;
+            FavoriteManager.Unlock;
           end;
-        DLManager.FreeAndDelete(xNode^.Index);
+        DLManager.Delete(xNode^.Index);
       end;
       xNode := vtDownload.GetPreviousSelected(xNode);
     end;
@@ -2216,30 +2214,35 @@ var
   ic, jc: TTaskContainer;
   // merge all finished tasks that have same manga name, website and directory
 begin
-  i:=DLManager.Count-1;
-  while i>0 do begin
-    ic:=DLManager.Items[i];
-    if ic.Status=STATUS_FINISH then
-    begin
-      j:=i-1;
-      while j>0 do begin
-        jc:=DLManager.Items[j];
-        if (i<>j) and
-          (jc.Status = STATUS_FINISH) and
-          SameText(ic.DownloadInfo.title,jc.DownloadInfo.title) and
-          SameText(ic.DownloadInfo.ModuleID,jc.DownloadInfo.ModuleID) and
-          SameText(ic.DownloadInfo.saveTo,jc.DownloadInfo.saveTo) then
-        begin
-          ic.ChapterLinks.Text:=jc.ChapterLinks.Text+ic.ChapterLinks.Text;
-          ic.ChapterNames.Text:=jc.ChapterNames.Text+ic.ChapterNames.Text;
-          ic.DownloadInfo.DateAdded:=jc.DownloadInfo.DateAdded;
-          DLManager.RemoveTask(j);
-          Dec(i);
+  DLManager.Lock;
+  try
+    i:=DLManager.Count-1;
+    while i>0 do begin
+      ic:=DLManager.Items[i];
+      if ic.Status=STATUS_FINISH then
+      begin
+        j:=i-1;
+        while j>0 do begin
+          jc:=DLManager.Items[j];
+          if (i<>j) and
+            (jc.Status = STATUS_FINISH) and
+            SameText(ic.DownloadInfo.title,jc.DownloadInfo.title) and
+            SameText(ic.DownloadInfo.ModuleID,jc.DownloadInfo.ModuleID) and
+            SameText(ic.DownloadInfo.saveTo,jc.DownloadInfo.saveTo) then
+          begin
+            ic.ChapterLinks.Text:=jc.ChapterLinks.Text+ic.ChapterLinks.Text;
+            ic.ChapterNames.Text:=jc.ChapterNames.Text+ic.ChapterNames.Text;
+            ic.DownloadInfo.DateAdded:=jc.DownloadInfo.DateAdded;
+            DLManager.Delete(j);
+            Dec(i);
+          end;
+          Dec(j);
         end;
-        Dec(j);
       end;
+      Dec(i);
     end;
-    Dec(i);
+  finally
+    DLManager.Unlock;
   end;
   UpdateVtDownload;
 end;
@@ -2730,6 +2733,7 @@ procedure TMainForm.OnTimerBackup(Sender: TObject);
 begin
   // todo: optimize backup
   DLManager.Backup;
+  FavoriteManager.Backup;
 end;
 
 procedure TMainForm.EmbedForm(const AForm: TForm; const AParent: TWinControl);
@@ -3259,40 +3263,19 @@ begin
     if MessageDlg('', RS_DlgRemoveFavorite, mtConfirmation, [mbYes, mbNo], 0) = mrNo then
       Exit;
 
-  xNode := vtFavorites.GetLast();
-  while Assigned(xNode) do begin
-    if vtFavorites.Selected[xNode] then
-      FavoriteManager.Remove(xNode^.Index, False);
-    xNode := vtFavorites.GetPreviousSelected(xNode);
+  FavoriteManager.Lock;
+  try
+    xNode := vtFavorites.GetLast();
+    while Assigned(xNode) do begin
+      if vtFavorites.Selected[xNode] then
+        FavoriteManager.Delete(xNode^.Index);
+      xNode := vtFavorites.GetPreviousSelected(xNode);
+    end;
+  finally
+    FavoriteManager.Unlock;
   end;
-  FavoriteManager.Backup;
   UpdateVtFavorites;
   vtFavoritesFilterCountChange;
-end;
-
-procedure TMainForm.miFavoritesChangeCurrentChapterClick(Sender: TObject);
-var
-  s: String;
-  i: Integer;
-begin
-  if FavoriteManager.isRunning then
-  begin
-    MessageDlg('', RS_DlgFavoritesCheckIsRunning,
-      mtInformation, [mbYes, mbNo], 0);
-    Exit;
-  end;
-  if not Assigned(vtFavorites.FocusedNode) then
-    Exit;
-  s := FavoriteManager.Items[vtFavorites.FocusedNode^.Index].FavoriteInfo.currentChapter;
-  repeat
-    if InputQuery('', RS_DlgTypeInNewChapter, s) then
-  until TryStrToInt(s, i);
-  if s <> FavoriteManager.Items[vtFavorites.FocusedNode^.Index].FavoriteInfo.currentChapter then
-  begin
-    FavoriteManager.Items[vtFavorites.FocusedNode^.Index].FavoriteInfo.currentChapter := s;
-    UpdateVtFavorites;
-    FavoriteManager.Backup;
-  end;
 end;
 
 procedure TMainForm.miFavoritesChangeSaveToClick(Sender: TObject);
@@ -3301,13 +3284,14 @@ var
   s1: String;
   s2: String;
   Node: PVirtualNode;
+  F: TFavoriteContainer;
 begin
+  if vtFavorites.SelectedCount = 0 then Exit;
   if FavoriteManager.isRunning then
   begin
     MessageDlg('', RS_DlgFavoritesCheckIsRunning, mtInformation, [mbYes, mbNo], 0);
     Exit;
   end;
-  if vtFavorites.SelectedCount = 0 then Exit;
   s := '';
 
   if (vtFavorites.SelectedCount = 1) and Assigned(vtFavorites.FocusedNode) then
@@ -3316,13 +3300,20 @@ begin
       dePath.Directory := FavoriteManager.Items[vtFavorites.FocusedNode^.Index].FavoriteInfo.SaveTo;
       if ShowModal = mrOK then
         s := dePath.Directory;
-      finally
+    finally
       Free;
     end;
     
     if s <> '' then
     begin
-      FavoriteManager.Items[vtFavorites.FocusedNode^.Index].FavoriteInfo.SaveTo := s;
+      FavoriteManager.Lock;
+      try
+        F:=FavoriteManager.Items[vtFavorites.FocusedNode^.Index];
+        F.FavoriteInfo.SaveTo:=s;
+        F.DBUpdateSaveTo;
+      finally
+        FavoriteManager.Unlock;
+      end;
       UpdateVtFavorites;
       FavoriteManager.Backup;
     end;
@@ -3333,37 +3324,44 @@ begin
       dePath.Directory := '';
       if ShowModal = mrOK then
         s := dePath.Directory;
-      finally
+    finally
       Free;
     end;
     
     if s <> '' then
     begin
-      Node := vtFavorites.GetFirstSelected();
-      while Assigned(Node) do
-      begin
-        s1 := '';
-        s2 := '';
-        if (length(s) = 2) and (pos(':', s) > 0) then
+      FavoriteManager.Lock;
+      try
+        Node := vtFavorites.GetFirstSelected();
+        while Assigned(Node) do
         begin
-          s1 := FavoriteManager.Items[Node^.Index].FavoriteInfo.SaveTo;
-          s2 := s1;
-          if pos(':', s1) > 0 then
+          F:=FavoriteManager.Items[Node^.Index];
+          s1 := '';
+          s2 := '';
+          if (length(s) = 2) and (pos(':', s) > 0) then
           begin
-            s1 := Copy(s1, 0, 2);
-            FavoriteManager.Items[Node^.Index].FavoriteInfo.SaveTo := StringReplace(s2, s1, s, [rfIgnoreCase]);
-          end;
-        end
-        else
-        begin
-          s1 := Copy(s, length(s), 1);
-          s2 := RemoveSymbols(FavoriteManager.Items[Node^.Index].FavoriteInfo.Title);
-          if s1 = '\' then
-            FavoriteManager.Items[Node^.Index].FavoriteInfo.SaveTo := s + s2
+            s1 := F.FavoriteInfo.SaveTo;
+            s2 := s1;
+            if pos(':', s1) > 0 then
+            begin
+              s1 := Copy(s1, 0, 2);
+              F.FavoriteInfo.SaveTo := StringReplace(s2, s1, s, [rfIgnoreCase]);
+            end;
+          end
           else
-            FavoriteManager.Items[Node^.Index].FavoriteInfo.SaveTo := s + '\' + s2;
+          begin
+            s1 := Copy(s, length(s), 1);
+            s2 := RemoveSymbols(F.FavoriteInfo.Title);
+            if s1 = '\' then
+              F.FavoriteInfo.SaveTo := s + s2
+            else
+              F.FavoriteInfo.SaveTo := s + '\' + s2;
+          end;
+          F.DBUpdateSaveTo;
+          Node := vtFavorites.GetNextSelected(Node);
         end;
-        Node := vtFavorites.GetNextSelected(Node);
+      finally
+        FavoriteManager.Unlock;
       end;
       UpdateVtFavorites;
       FavoriteManager.Backup;
@@ -3594,20 +3592,19 @@ procedure TMainForm.miDownloadStopClick(Sender: TObject);
 var
   xNode: PVirtualNode;
 begin
-  if vtDownload.SelectedCount > 0 then begin
-    DLManager.Lock;
-    try
-      xNode := vtDownload.GetFirstSelected();
-      while Assigned(xNode) do begin
-        DLManager.StopTask(xNode^.Index, False);
-        xNode := vtDownload.GetNextSelected(xNode);
-      end;
-    finally
-      DLManager.Unlock;
+  if vtDownload.SelectedCount = 0 then Exit;
+  DLManager.Lock;
+  try
+    xNode := vtDownload.GetFirstSelected();
+    while Assigned(xNode) do begin
+      DLManager.StopTask(xNode^.Index, False);
+      xNode := vtDownload.GetNextSelected(xNode);
     end;
-    DLManager.CheckAndActiveTask();
-    UpdateVtDownload;
+  finally
+    DLManager.Unlock;
   end;
+  DLManager.CheckAndActiveTask();
+  UpdateVtDownload;
 end;
 
 procedure TMainForm.miMangaListDeleteClick(Sender: TObject);

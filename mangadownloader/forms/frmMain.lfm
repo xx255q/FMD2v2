@@ -30,6 +30,7 @@ object MainForm: TMainForm
       ClientHeight = 582
       ClientWidth = 845
       object psDownloads: TPairSplitter
+        Cursor = crDefault
         Left = 0
         Height = 574
         Top = 4
@@ -543,6 +544,7 @@ object MainForm: TMainForm
       ClientHeight = 582
       ClientWidth = 845
       object psInfo: TPairSplitter
+        Cursor = crDefault
         Left = 0
         Height = 574
         Top = 4
@@ -5442,11 +5444,6 @@ object MainForm: TMainForm
       ImageIndex = 9
       SubMenuImages = IconList
       OnClick = miFavoritesDeleteClick
-    end
-    object miFavoritesChangeCurrentChapter: TMenuItem
-      Caption = 'Change "Current chapter"'
-      Visible = False
-      OnClick = miFavoritesChangeCurrentChapterClick
     end
     object miFavoritesChangeSaveTo: TMenuItem
       Caption = 'Change "Save to"'
