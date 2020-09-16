@@ -1,6 +1,7 @@
 @ECHO OFF
-REM lazbuild must be in environment variable LAZ or set it here
-REM SET LAZ=C:\lazarus
+REM lazbuild must be in path LAZ_DIR or set it here
+REM SET LAZ_DIR=C:\lazarus
+SET lazbuild="%LAZ_DIR%\lazbuild"
 TITLE=FMD Release
 SET cdir=%CD%
 SET arg1=%1
@@ -38,8 +39,7 @@ ECHO Building Updater %~1 --build-mode="%~2"
 ECHO ----------------------------------------------------
 DEL /F "%tdir%\updater.exe" 2>nul
 DEL /F "%tdir%\updater.dbg" 2>nul
-SET lbuild=%LAZ%\lazbuild --build-mode="%~2" %~4
-ECHO %lbuild% "%cdir%\updaterslim\updater.lpi"
+SET lbuild=%lazbuild% --build-mode="%~2" %~4
 %lbuild% "%cdir%\updaterslim\updater.lpi"
 
 ECHO.
@@ -47,8 +47,7 @@ ECHO Building FMD %~1 --build-mode="%~3"
 ECHO ----------------------------------------------------
 DEL /F "%tdir%\fmd.exe" 2>nul
 DEL /F "%tdir%\fmd.dbg" 2>nul
-SET lbuild=%LAZ%\lazbuild --build-mode="%~3" %~4
-ECHO %lbuild% "%cdir%\mangadownloader\md.lpi"
+SET lbuild=%lazbuild% --build-mode="%~3" %~4
 %lbuild% "%cdir%\mangadownloader\md.lpi"
 
 CALL :getfileversion "%tdir%\fmd.exe"
