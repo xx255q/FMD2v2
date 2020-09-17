@@ -118,7 +118,7 @@ begin
   windows.SetEnvironmentVariable('PATH',pchar(evpath));
   {$endif}
 
-  Application.Title := 'Free Manga Downloader';
+  Application.Title:='Free Manga Downloader';
   RequireDerivedFormResource:=True;
   Logger.ThreadSafe:=True;
   Logger.Enabled:=EnableLogging;
@@ -166,7 +166,7 @@ begin
   if FileExists(FMD_DIRECTORY + DLLWebPName) then
     DLLWebPName := FMD_DIRECTORY + DLLWebPName;
 
-  Application.Scaled := True;
+  Application.Scaled:=True;
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
   Application.Run;

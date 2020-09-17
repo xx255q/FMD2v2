@@ -166,11 +166,8 @@ type
     procedure DBInsert; inline;
     procedure DBUpdateEnabled; inline;
     procedure DBUpdateStatus; inline;
-    procedure DBUpdateSaveTo; inline;
-    procedure DBUpdateCustomFileNamesTo; inline;
     // safe without locked
     procedure DBUpdate; inline;
-    procedure DBUpdateStatusSafe;
   public
     property Status: TDownloadStatusType read FStatus write SetStatus;
     property Enabled: Boolean read FEnabled write SetEnabled;
@@ -1191,87 +1188,55 @@ end;
 
 procedure TTaskContainer.DBInsert;
 begin
-  Manager.FDownloadsDB.Connection.ExecuteSQL('INSERT INTO "downloads" ("enabled","order","taskstatus","chapterptr","numberofpages","currentpage","moduleid","link","title","status","progress","saveto","dateadded","datelastdownloaded","chapterslinks","chaptersnames","pagelinks","pagecontainerlinks","filenames","customfilenames","chaptersstatus")' +
-    ' VALUES (''' +
-    BoolToStr(FEnabled,'1','0') + ''',''' +
-    IntToStr(Order) + ''',''' +
-    IntToStr(Integer(Status)) + ''',''' +
-    IntToStr(CurrentDownloadChapterPtr) + ''',''' +
-    IntToStr(PageNumber) + ''',''' +
-    IntToStr(CurrentPageNumber) + ''',''' +
-    DownloadInfo.ModuleID + ''',' +
-    QuotedStr(DownloadInfo.Link) + ',' +
-    QuotedStr(DownloadInfo.Title) + ',' +
-    QuotedStr(DownloadInfo.Status) + ',' +
-    QuotedStr(DownloadInfo.Progress) + ',' +
-    QuotedStr(DownloadInfo.SaveTo) + ',' +
-    QuotedStr(DownloadInfo.DateAdded) + ',' +
-    QuotedStr(DownloadInfo.DateLastDownloaded) + ',' +
-    QuotedStr(ChapterLinks.Text) + ',' +
-    QuotedStr(ChapterNames.Text) + ',' +
-    QuotedStr(PageLinks.Text) + ',' +
-    QuotedStr(PageContainerLinks.Text) + ',' +
-    QuotedStr(FileNames.Text) + ',' +
-    QuotedStr(CustomFileName) + ',' +
-    QuotedStr(ChaptersStatus.Text) + ');');
-  DlId:=IntToStr(Manager.FDownloadsDB.Connection.GetInsertID);
+  DlId:=Manager.FDownloadsDB.Add(
+    FEnabled,
+    Order,
+    Integer(Status),
+    CurrentDownloadChapterPtr,
+    PageNumber,
+    CurrentPageNumber,
+    DownloadInfo.ModuleID,
+    DownloadInfo.Link,
+    DownloadInfo.Title,
+    DownloadInfo.Status,
+    DownloadInfo.Progress,
+    DownloadInfo.SaveTo,
+    DownloadInfo.DateAdded,
+    DownloadInfo.DateLastDownloaded,
+    ChapterLinks.Text,
+    ChapterNames.Text,
+    PageLinks.Text,
+    PageContainerLinks.Text,
+    FileNames.Text,
+    CustomFileName,
+    ChaptersStatus.Text);
 end;
 
 procedure TTaskContainer.DBUpdate;
 begin
-  Manager.FDownloadsDB.AppendSQLSafe('UPDATE "downloads" SET ' +
-    '"taskstatus"=''' +       IntToStr(Integer(Status)) +
-    ''',"chapterptr"=''' +    IntToStr(CurrentDownloadChapterPtr) +
-    ''',"numberofpages"=''' + IntToStr(PageNumber) +
-    ''',"currentpage"=''' +   IntToStr(CurrentPageNumber) +
-    ''',"status"=' +           QuotedStr(DownloadInfo.Status) +
-    ',"progress"=' +           QuotedStr(DownloadInfo.Progress) +
-    ',"datelastdownloaded"=' + QuotedStr(DownloadInfo.DateLastDownloaded) +
-    ',"pagelinks"=' +          QuotedStr(PageLinks.Text) +
-    ',"pagecontainerlinks"=' + QuotedStr(PageContainerLinks.Text) +
-    ',"filenames"=' +          QuotedStr(FileNames.Text) +
-    ',"chaptersstatus"=' +     QuotedStr(ChaptersStatus.Text) +
-    ' WHERE "id"=''' +DlId+''';');
+  Manager.FDownloadsDB.Update(
+    DlId,
+    Integer(Status),
+    CurrentDownloadChapterPtr,
+    PageNumber,
+    CurrentPageNumber,
+    DownloadInfo.Status,
+    DownloadInfo.Progress,
+    DownloadInfo.DateLastDownloaded,
+    PageLinks.Text,
+    PageContainerLinks.Text,
+    FileNames.Text,
+    ChaptersStatus.Text);
 end;
 
 procedure TTaskContainer.DBUpdateEnabled;
 begin
-  Manager.FDownloadsDB.AppendSQL('UPDATE "downloads" SET "enabled"='''+BoolToStr(FEnabled,'1','0')+
-  ''' WHERE "id"='''+DlId+''';');
+  Manager.FDownloadsDB.UpdateEnabled(DlId,FEnabled);
 end;
 
 procedure TTaskContainer.DBUpdateStatus;
 begin
-  Manager.FDownloadsDB.AppendSQL(
-  'UPDATE "downloads" SET "taskstatus"='''+IntToStr(Integer(Status))+
-  ''',"status"='+QuotedStr(DownloadInfo.Status) +
-  ' WHERE "id"='''+DlId+''';');
-end;
-
-procedure TTaskContainer.DBUpdateStatusSafe;
-begin
-  EnterCriticalSection(Manager.FDownloadsDB.Guardian);
-  try
-    DBUpdateStatus;
-  finally
-    LeaveCriticalSection(Manager.FDownloadsDB.Guardian);
-  end;
-end;
-
-procedure TTaskContainer.DBUpdateSaveTo;
-begin
-  // todo: update saveto
-  Manager.FDownloadsDB.AppendSQLSafe(
-    'UPDATE "downloads" SET "saveto"='+QuotedStr(DownloadInfo.SaveTo) +
-    ' WHERE "id"=''' +DlId+''';');
-end;
-
-procedure TTaskContainer.DBUpdateCustomFileNamesTo;
-begin
-  // todo: update customfilenames format
-  Manager.FDownloadsDB.AppendSQLSafe(
-    'UPDATE "downloads" SET "customfilenames"='+QuotedStr(CustomFileName) +
-    ' WHERE "id"=''' +DlId+''';');
+  Manager.FDownloadsDB.UpdateStatus(DlId,Integer(Status),DownloadInfo.Status);
 end;
 
 { TDownloadManager }
@@ -1741,7 +1706,7 @@ end;
 
 procedure TDownloadManager.Delete(const TaskId: Integer);
 begin
-  FDownloadsDB.AppendSQL('DELETE FROM "downloads" WHERE "id"='''+Items[TaskId].DlId+''';');
+  FDownloadsDB.Delete(Items[TaskId].DlId);
   Items[TaskID].Free;
   Items.Delete(taskID);
 end;
