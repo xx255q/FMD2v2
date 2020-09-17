@@ -52,7 +52,7 @@ uses
 
 procedure TGetMangaInfosThread.MainThreadSyncInfos;
 begin
-  FInfo.SyncInfoToData(DataProcess);
+  FInfo.SyncInfoToData(dataProcess);
   dataProcess.Commit;
 end;
 
@@ -70,7 +70,7 @@ var
       FInfo.MangaInfo.Link := FLink;
       FInfo.MangaInfo.Title := FTitle;
       data := MainForm.vtMangaList.GetNodeData(FNode);
-      if Assigned(FNode) and (MainForm.cbSelectManga.ItemIndex<>-1) and
+      if Assigned(data) and (MainForm.cbSelectManga.ItemIndex<>-1) and
         (m = TModuleContainer(MainForm.cbSelectManga.Items.Objects[MainForm.cbSelectManga.ItemIndex])) then
       begin
         if FInfo.MangaInfo.Title = '' then
@@ -98,9 +98,8 @@ var
       if (FInfo.MangaInfo.Title <> '') and (FInfo.MangaInfo.Title <> FTitle) then
         FTitle := FInfo.MangaInfo.Title;
 
-      if Assigned(data) then
-      begin
-        if dataProcess.WebsiteLoaded(m.ID) then //todo: use tmodulecontainer
+      data := MainForm.vtMangaList.GetNodeData(FNode);
+      if Assigned(data) and dataProcess.WebsiteLoaded(m.ID) then //todo: use tmodulecontainer
         begin
           if not(m.InformationAvailable) then
           begin
@@ -117,7 +116,6 @@ var
           if not (Terminated or isExiting) then
             Synchronize(MainThreadSyncInfos);
         end;
-      end;
       Result := True;
     except
       on E: Exception do
