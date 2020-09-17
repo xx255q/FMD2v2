@@ -1439,6 +1439,7 @@ begin
     DBUpdateOrder;
     FDownloadsDB.Commit;
     DownloadedChapters.Commit;
+    DownloadedChapters.Refresh;
   finally
     UnLock;
   end;
