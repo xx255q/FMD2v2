@@ -150,7 +150,7 @@ type
     procedure Sort(const AColumn: Integer);
     // critical section
     procedure Lock; inline;
-    procedure Unlock; inline;
+    procedure UnLock; inline;
     procedure UpdateOrder; inline;
 
     property Count: Integer read GetFavoritesCount;
@@ -459,7 +459,7 @@ begin
           Status := STATUS_IDLE;
       end;
   finally
-    FManager.Unlock;
+    FManager.UnLock;
   end;
 
   if (not Terminated) and (not isDlgCounter) then
@@ -902,7 +902,7 @@ begin
                 FreeAndNil(NewMangaInfoChaptersPos);
               end;
           finally
-            DLManager.Unlock;
+            DLManager.UnLock;
           end;
 
           if LNCResult = ncrDownload then
@@ -934,7 +934,7 @@ begin
           FreeAndNil(NewMangaInfoChaptersPos);
         end;
   finally
-    Unlock;
+    UnLock;
   end;
   Backup;
 end;
@@ -999,7 +999,7 @@ begin
     F.Status:=STATUS_IDLE;
     F.DBInsert;
   finally
-    Unlock;
+    UnLock;
   end;
   if not isRunning then
     Sort(SortColumn);
@@ -1055,7 +1055,7 @@ begin
         FFavoritesDB.Table.Next;
       end;
     finally
-      Unlock;
+      UnLock;
     end;
     isRunningRestore:=False;
   finally
@@ -1070,7 +1070,7 @@ begin
     DBUpdateOrder;
     FFavoritesDB.Commit;
   finally
-    Unlock;
+    UnLock;
   end;
 end;
 
@@ -1157,7 +1157,7 @@ begin
   EnterCriticalSection(FFavoritesDB.Guardian);
 end;
 
-procedure TFavoriteManager.Unlock;
+procedure TFavoriteManager.UnLock;
 begin
   LeaveCriticalSection(FFavoritesDB.Guardian);
   LeaveCriticalsection(FGuardian);

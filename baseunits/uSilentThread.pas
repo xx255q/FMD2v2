@@ -331,7 +331,7 @@ begin
         d.downloadInfo.SaveTo := FSaveTo;
         d.DBInsert;
       finally
-        DLManager.Unlock;
+        DLManager.UnLock;
       end;
 
       UpdateVtDownload;

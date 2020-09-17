@@ -256,7 +256,7 @@ begin
   end;
   ModalResult := mrOK;
   finally
-    FavoriteManager.Unlock;
+    FavoriteManager.UnLock;
   end;
 end;
 

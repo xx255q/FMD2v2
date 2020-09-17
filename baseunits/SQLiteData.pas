@@ -159,7 +159,7 @@ begin
   InitCriticalSection(Guardian);
   maxSQLqueue:=99;
   Table.PacketRecords:=1;
-  Table.UniDirectional:=False;
+  Table.UniDirectional:=True;
 end;
 
 destructor TSQLiteDataWA.Destroy;
@@ -530,6 +530,8 @@ procedure TSQliteData.Commit;
 begin
   if not FConn.Connected then Exit;
   try
+    if FQuery.Active then
+      FQuery.ApplyUpdates;
     Transaction.Commit;
   except
     Transaction.Rollback;

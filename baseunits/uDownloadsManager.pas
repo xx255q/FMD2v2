@@ -230,7 +230,7 @@ type
 
     // DB access
     procedure Lock;
-    procedure Unlock;
+    procedure UnLock;
     procedure Backup;
     procedure Restore;
     procedure UpdateOrder; inline;
@@ -1473,8 +1473,9 @@ begin
     //Logger.Send('TDownloadManager.Backup');
     DBUpdateOrder;
     FDownloadsDB.Commit;
+    DownloadedChapters.Commit;
   finally
-    Unlock;
+    UnLock;
   end;
 end;
 
@@ -1485,7 +1486,7 @@ begin
   isRunningBackup := True;
 end;
 
-procedure TDownloadManager.Unlock;
+procedure TDownloadManager.UnLock;
 begin
   FDownloadsDB.FlushSQL;
   isRunningBackup := False;
@@ -1697,7 +1698,7 @@ begin
           DBUpdateStatus;
         end;
   finally
-    Unlock;
+    UnLock;
   end;
   CheckAndActiveTask;
 end;
@@ -1712,7 +1713,7 @@ begin
     for i := 0 to Items.Count - 1 do
       StopTask(i, False, False);
   finally
-    Unlock;
+    UnLock;
   end;
 end;
 
@@ -1756,7 +1757,7 @@ begin
       if Items[i].Status = STATUS_FINISH then
         Delete(i);
   finally
-    Unlock;
+    UnLock;
   end;
 end;
 

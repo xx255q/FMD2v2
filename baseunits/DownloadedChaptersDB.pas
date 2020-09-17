@@ -5,7 +5,7 @@ unit DownloadedChaptersDB;
 interface
 
 uses
-  Classes, SysUtils, SQLiteData, uBaseUnit, LazFileUtils;
+  Classes, SysUtils, SQLiteData, uBaseUnit, SQLDB, LazFileUtils;
 
 type
 
@@ -13,12 +13,17 @@ type
 
   TDownloadedChaptersDB = class(TSQliteData)
   private
-    locklocate: TRTLCriticalSection;
+    FGuardian: TRTLCriticalSection;
     function GetChapters(const AModuleID, ALink: String): String;
     procedure SetChapters(const AModuleID, ALink: String; AValue: String);
+  protected
+    procedure Lock; inline;
+    procedure UnLock; inline;
   public
     constructor Create;
     destructor Destroy; override;
+    function Open: Boolean;
+    procedure Commit; override;
     procedure Delete(const AModuleID, ALink: String);
     property Chapters[const AModuleID, ALink: String]: String read GetChapters write SetChapters;
   end;
@@ -41,13 +46,13 @@ function TDownloadedChaptersDB.GetChapters(const AModuleID, ALink: String
 begin
   Result := '';
   if not Connected then Exit;
-  EnterCriticalsection(locklocate);
+  Lock;
   with Table do
     try
       if Locate('id', LowerCase(AModuleID+ALink), []) then
         Result := Fields[1].AsString;
     finally
-      LeaveCriticalsection(locklocate);
+      UnLock;
     end;
 end;
 
@@ -56,7 +61,7 @@ procedure TDownloadedChaptersDB.SetChapters(const AModuleID, ALink: String;
 begin
   if AValue = '' then Exit;
   if not Connected then Exit;
-  EnterCriticalsection(locklocate);
+  Lock;
   with Table do
     try
       if Locate('id', LowerCase(AModuleID+ALink), []) then
@@ -76,15 +81,28 @@ begin
         CancelUpdates;
       end;
     finally
-      LeaveCriticalsection(locklocate);
+      UnLock;
     end;
+end;
+
+procedure TDownloadedChaptersDB.Lock;
+begin
+  EnterCriticalSection(FGuardian);
+end;
+
+procedure TDownloadedChaptersDB.UnLock;
+begin
+  LeaveCriticalSection(FGuardian);
 end;
 
 constructor TDownloadedChaptersDB.Create;
 begin
   inherited Create;
-  InitCriticalSection(locklocate);
+  InitCriticalSection(FGuardian);
   AutoApplyUpdates := True;
+  Table.Options:=Table.Options-[sqoAutoCommit];
+  Table.PacketRecords:=1;
+  Table.UniDirectional:=False;
   TableName := 'downloadedchapters';
   CreateParams :=
     '"id" VARCHAR(3000) NOT NULL PRIMARY KEY,' +
@@ -95,20 +113,35 @@ end;
 
 destructor TDownloadedChaptersDB.Destroy;
 begin
+  DoneCriticalsection(FGuardian);
   inherited Destroy;
-  DoneCriticalsection(locklocate);
+end;
+
+function TDownloadedChaptersDB.Open: Boolean;
+begin
+  Result:=inherited Open(True,False);
+end;
+
+procedure TDownloadedChaptersDB.Commit;
+begin
+  Lock;
+  try
+    inherited Commit;
+  finally
+    UnLock;
+  end;
 end;
 
 procedure TDownloadedChaptersDB.Delete(const AModuleID, ALink: String);
 begin
   if not Connected then Exit;
-  EnterCriticalsection(locklocate);
+  Lock;
   with Table do
     try
       if Locate('id', LowerCase(AModuleID+ALink), []) then
         Delete;
     finally
-      LeaveCriticalsection(locklocate);
+      UnLock;
     end;
 end;
 

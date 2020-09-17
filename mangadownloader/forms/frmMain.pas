@@ -2097,7 +2097,7 @@ begin
       Node := vtDownload.GetNextSelected(Node);
     end;
   finally
-    DLManager.Unlock;
+    DLManager.UnLock;
   end;
   UpdateVtDownload;
 end;
@@ -2191,14 +2191,14 @@ begin
                 end;
             end;
           finally
-            FavoriteManager.Unlock;
+            FavoriteManager.UnLock;
           end;
         DLManager.Delete(xNode^.Index);
       end;
       xNode := vtDownload.GetPreviousSelected(xNode);
     end;
   finally
-    DLManager.Unlock;
+    DLManager.UnLock;
   end;
   vtDownload.RootNodeCount := DLManager.Items.Count;
   vtDownload.EndUpdate;
@@ -2242,7 +2242,7 @@ begin
       Dec(i);
     end;
   finally
-    DLManager.Unlock;
+    DLManager.UnLock;
   end;
   UpdateVtDownload;
 end;
@@ -2593,7 +2593,7 @@ begin
             DBInsert;
           end;
         finally
-          DLManager.Unlock;
+          DLManager.UnLock;
         end;
         if OptionSortDownloadsWhenAddingNewDownloadTasks then
           DLManager.Sort(DLManager.SortColumn);
@@ -3272,7 +3272,7 @@ begin
       xNode := vtFavorites.GetPreviousSelected(xNode);
     end;
   finally
-    FavoriteManager.Unlock;
+    FavoriteManager.UnLock;
   end;
   UpdateVtFavorites;
   vtFavoritesFilterCountChange;
@@ -3312,7 +3312,7 @@ begin
         F.FavoriteInfo.SaveTo:=s;
         F.DBUpdateSaveTo;
       finally
-        FavoriteManager.Unlock;
+        FavoriteManager.UnLock;
       end;
       UpdateVtFavorites;
       FavoriteManager.Backup;
@@ -3361,7 +3361,7 @@ begin
           Node := vtFavorites.GetNextSelected(Node);
         end;
       finally
-        FavoriteManager.Unlock;
+        FavoriteManager.UnLock;
       end;
       UpdateVtFavorites;
       FavoriteManager.Backup;
@@ -3581,7 +3581,7 @@ begin
         xNode := vtDownload.GetNextSelected(xNode);
       end;
     finally
-      DLManager.Unlock;
+      DLManager.UnLock;
     end;
     DLManager.CheckAndActiveTask();
     UpdateVtDownload;
@@ -3601,7 +3601,7 @@ begin
       xNode := vtDownload.GetNextSelected(xNode);
     end;
   finally
-    DLManager.Unlock;
+    DLManager.UnLock;
   end;
   DLManager.CheckAndActiveTask();
   UpdateVtDownload;
@@ -4239,7 +4239,7 @@ begin
     // todo: consider dbupdateorder queue in timer
     DLManager.UpdateOrder;
   finally
-    DLManager.Unlock;
+    DLManager.UnLock;
   end;
   ConTemp.Free;
   vtDownload.EndUpdate;
