@@ -830,7 +830,6 @@ msgid "Reset value"
 msgstr "Atur Ulang"
 
 #: tmainform.btndownloadfiltercustomdateapply.caption
-#, fuzzy
 msgctxt "tmainform.btndownloadfiltercustomdateapply.caption"
 msgid "Apply"
 msgstr "Terapkan"
@@ -868,8 +867,6 @@ msgid "Visit my blog"
 msgstr "Kunjungi blog"
 
 #: tmainform.caption
-#, fuzzy
-#| msgid "Free Manga Downloader"
 msgctxt "tmainform.caption"
 msgid "Free Manga Downloader"
 msgstr "Free Manga Downloader"
@@ -1508,20 +1505,18 @@ msgid "Renaming"
 msgstr "Mengubah nama"
 
 #: tmainform.gboptionsconnectionsdownloads.caption
-#, fuzzy
 msgctxt "tmainform.gboptionsconnectionsdownloads.caption"
 msgid "Downloads"
 msgstr "Unduhan"
 
 #: tmainform.gboptionsconnectionsgeneral.caption
-#, fuzzy
 msgctxt "tmainform.gboptionsconnectionsgeneral.caption"
 msgid "General"
 msgstr "Umum"
 
 #: tmainform.gboptionsconnectiosmiscellaneous.caption
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Lain-lain"
 
 #: tmainform.lbdefaultdownloadpath.caption
 msgid "Choose the default download path:"
@@ -1735,7 +1730,7 @@ msgstr ""
 
 #: tmainform.lboptionmaxbackgroundloudthreads.caption
 msgid "Max number of background load threads"
-msgstr ""
+msgstr "Jumlah koneksi muat latar belakang"
 
 #: tmainform.lboptionmaxfavoritethreads.caption
 msgid "Max number of favorite check at the same time"
