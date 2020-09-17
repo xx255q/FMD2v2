@@ -49,6 +49,7 @@ Some other external 3rd party tools and libraries are used as well:
 [![Lua](https://img.shields.io/badge/Lua-5.4.0-Blue.svg)](http://www.lua.org/download)  
 [![OpenSSL](https://img.shields.io/badge/OpenSSL-1.1.1g-Blue.svg)](https://www.openssl.org/)  
 [![SQLite](https://img.shields.io/badge/SQLite-3.33.0-Blue.svg)](https://www.sqlite.org/)  
+[![Brotli](https://img.shields.io/badge/Brotli.svg)](https://www.brotli.org/)  
   
 These tools and libraries are not part of the source. You have to either download pre-compiled binaries, compile them yourself or just copy them from the latest FMD releases.  
   
