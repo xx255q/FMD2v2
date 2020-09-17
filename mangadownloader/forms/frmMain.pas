@@ -5831,6 +5831,8 @@ procedure TMainForm.LoadFormInformation;
     end;
   end;
 
+var
+  index: LongInt;
 begin
   with settingsfile do
   begin
@@ -5869,7 +5871,13 @@ begin
     tbDownloadDeleteCompleted.Visible := ReadBool('view', 'ShowDownloadsToolbarDeleteAll', False);
 
     // misc form components
-    tvDownloadFilter.Items[ReadInteger('general', 'DownloadFilterSelect', 0)].Selected := True;
+    if tvDownloadFilter.Items.Count>0 then
+    begin
+      index:=ReadInteger('general', 'DownloadFilterSelect', 0);
+      if index>=tvDownloadFilter.Items.Count then
+        index:=0;
+      tvDownloadFilter.Items[index].Selected := True;
+    end;
 
     deDownloadFilterCustomDateFrom.Date := ReadDate('DownloadFilter', 'CustomFrom', Now);
     deDownloadFilterCustomDateTo.Date := ReadDate('DownloadFilter', 'CustomTo', Now);
