@@ -594,14 +594,16 @@ function THTTPSendThread.DefaultHTTPRequest(const Method, URL: String; const Res
     if Result then Sock.Tag := 0;
   end;
 
+type TContentEncoding = (ceNone, ceGzip, ceBrotli);
+
 var
   counter: Integer = 0;
   redirectcounter: Integer = 0;
   s, h, p: String;
   HTTPHeader: TStringList;
   dstream: TMemoryStream;
-  enc_br: Boolean = False;
-  enc_gzip: Boolean = False;
+  content_encoding: TContentEncoding;
+
 begin
   Result := False;
   FURL := TrimRight(TrimLeftSet(URL, [':', '/', #0..' ']));
@@ -670,24 +672,29 @@ begin
   end;
 
   // decompress data
-  s := LowerCase(Headers.Values['Content-Encoding']);
-  enc_br := s.Contains('br');
-  if not enc_br then
-    enc_gzip := s.Contains('gzip') or s.Contains('deflate');
-  if (enc_br and (Document.Size > 2)) or
-     (enc_gzip and (Document.Size > 20)) then
+  if Document.Size>0 then
   begin
-    dstream := TMemoryStream.Create;
-    try
-      if enc_br then
-        BrotliDecodeStream(Document, dstream)
-      else
-        unzipStream(Document, dstream);
-      Document.Clear;
-      Document.LoadFromStream(dstream);
-    except
+    content_encoding:=ceNone;
+    s := LowerCase(Headers.Values['Content-Encoding']);
+    if s.Contains('br') then
+      content_encoding:=ceBrotli
+    else if s.Contains('gzip') or s.Contains('deflate') then
+      content_encoding:=ceGzip;
+    if content_encoding<>ceNone then
+    begin
+      dstream := TMemoryStream.Create;
+      try
+        case content_encoding of
+          ceGzip: unzipStream(Document, dstream);
+          ceBrotli: BrotliDecodeStream(Document, dstream);
+          else;
+        end;
+        Document.Clear;
+        Document.LoadFromStream(dstream);
+      except
+      end;
+      dstream.Free;
     end;
-    dstream.Free;
   end;
 
   // response
