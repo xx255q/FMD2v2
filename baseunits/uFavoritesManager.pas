@@ -624,7 +624,7 @@ begin
     end;
   end;
   if FFavoritesDB.tempSQLcount>0 then FFavoritesDB.FlushSQL;
-  InterlockedExchange(FUpdateOrderCount,0);
+  FUpdateOrderCount:=0;
 end;
 
 constructor TFavoriteManager.Create;
@@ -1010,6 +1010,7 @@ begin
   FFavoritesDB.Delete(Items[Pos].Fid);
   Items[Pos].Free;
   Items.Delete(Pos);
+  UpdateOrder;
 end;
 
 procedure TFavoriteManager.Remove(const T: TFavoriteContainer);
@@ -1017,6 +1018,7 @@ begin
   FFavoritesDB.Delete(T.Fid);
   T.Free;
   Items.Remove(T);
+  UpdateOrder;
 end;
 
 procedure TFavoriteManager.Restore;
@@ -1145,10 +1147,10 @@ begin
   try
     SortColumn := AColumn;
     Items.Sort(CompareFavoriteContainer);
+    UpdateOrder;
   finally
     LeaveCriticalSection(FGuardian);
   end;
-  UpdateOrder;
 end;
 
 procedure TFavoriteManager.Lock;
@@ -1165,7 +1167,7 @@ end;
 
 procedure TFavoriteManager.UpdateOrder;
 begin
-  InterlockedIncrement(FUpdateOrderCount);
+  Inc(FUpdateOrderCount);
 end;
 
 end.

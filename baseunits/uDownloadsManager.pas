@@ -1479,12 +1479,12 @@ begin
     end;
   end;
   if FDownloadsDB.tempSQLcount>0 then FDownloadsDB.FlushSQL;
-  InterlockedExchange(FUpdateOrderCount,0);
+  FUpdateOrderCount:=0;
 end;
 
 procedure TDownloadManager.UpdateOrder;
 begin
-  InterlockedIncrement(FUpdateOrderCount);
+  Inc(FUpdateOrderCount);
 end;
 
 procedure TDownloadManager.GetDownloadedChaptersState(const AModuleID,
@@ -1710,6 +1710,7 @@ begin
   FDownloadsDB.Delete(Items[TaskId].DlId);
   Items[TaskID].Free;
   Items.Delete(taskID);
+  UpdateOrder;
 end;
 
 procedure TDownloadManager.RemoveAllFinishedTasks;
@@ -1817,11 +1818,11 @@ begin
   try
     SortColumn := AColumn;
     Items.Sort(@CompareTaskContainer);
+    UpdateOrder;
   finally
     LeaveCriticalSection(CS_Task);
   end;
 
-  UpdateOrder;
 end;
 
 end.
