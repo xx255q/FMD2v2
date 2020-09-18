@@ -764,7 +764,7 @@ var
 begin
   if Tree.TotalCount = 0 then
     Exit;
-  s := AnsiUpperCase(Key);
+  s := UpperCase(Key);
   Tree.BeginUpdate;
   try
     node := Tree.GetFirst();
@@ -772,15 +772,15 @@ begin
     begin
       while node <> nil do
       begin
-        v := Pos(s, AnsiUpperCase(Tree.Text[node, Column])) <> 0;
-        Tree.IsVisible[node] := v;
+        v := Pos(s, UpperCase(Tree.Text[node, Column])) <> 0;
+        Tree.IsFiltered[node]:=not v;
         if v then
         begin
           xnode := node^.Parent;
           while (xnode <> nil)  and (xnode <> Tree.RootNode) do
           begin
-            if not (vsVisible in xnode^.States) then
-              Tree.IsVisible[xnode] := True;
+            if (vsFiltered in xnode^.States) then
+              Tree.IsFiltered[xnode] := False;
             xnode := xnode^.Parent;
           end;
         end;
@@ -791,8 +791,8 @@ begin
     begin
       while node <> nil do
       begin
-        if not (vsVisible in node^.States) then
-          Tree.IsVisible[node] := True;
+        if (vsFiltered in node^.States) then
+          Tree.IsFiltered[node] := False;
         node := Tree.GetNext(node);
       end;
     end;
