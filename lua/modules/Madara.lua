@@ -376,6 +376,7 @@ function Init()
 	AddWebsiteModule('f31e7a36050c424291c839f0a02d92a4', 'ApollComics', 'https://apollcomics.xyz')
 	AddWebsiteModule('404bb1f54c374a53bd850afdd6f873b3', 'ToonilyNet', 'https://toonily.net')
 	AddWebsiteModule('ae84d6cc416a473d85cf9fa416305378', 'SkyManga', 'https://skymanga.co')
+	AddWebsiteModule('c22df90060eb4d44b7baf89791745d5c', 'ManhuasWorld', 'https://manhuasworld.com')
 
 	cat = 'Arabic-Scanlation'
 	AddWebsiteModule('7bda2905b61c49d1976777e9f2356361', '3asqOrg', 'https://3asq.org')
