@@ -20,7 +20,7 @@ uses
   {$endif}
   SysUtils, Classes, Graphics, LazFileUtils, LConvEncoding,
   strutils, dateutils, variants, base64, fpjson, jsonparser, jsonscanner,
-  fgl, RegExpr, synautil, httpsend, blcksock,
+  fgl, RegExpr, synautil, httpsend,
   synacode, MultiLog, FPimage, GZIPUtils, uMisc, httpsendthread, FMDOptions,
   ImgInfos, NaturalSortUnit,
   MemBitmap, FPWritePNG, zstream, FPReadPNG, VirtualTrees;
@@ -430,13 +430,11 @@ function BlendColor(FG, BG: TColor; T: Byte): TColor;
 
 // VT extras
 procedure SearchOnVT(Tree: TVirtualStringTree; Key: String; Column: Integer = 0);
-procedure SearchOnlyVisibleOnVT(Tree: TVirtualStringTree; Key: String; Column: Integer = 0);
 
 // Remove Unicode
 function ReplaceUnicodeChar(const S, ReplaceStr: String): String;
 // Check a directory to see if it's empty (return TRUE) or not
 function IsDirectoryEmpty(const ADir: String): Boolean;
-function CheckRedirect(const HTTP: THTTPSend): String;
 function CorrectFilePath(const APath: String): String;
 function CorrectURL(const URL: String): String;
 procedure CheckPath(const S: String);
@@ -461,12 +459,6 @@ procedure ParseJSONArray(const S, Path: String; var OutArray: TStringList);
 //convert charset to utf8
 function ConvertCharsetToUTF8(S: String): String; overload;
 procedure ConvertCharsetToUTF8(S: TStrings); overload;
-
-// encode/decode
-function Base64Encode(const s: String): String; overload;
-function Base64Decode(const s: String): String; overload;
-function Base64Encode(const TheStream: TStream): Boolean ; overload;
-function Base64Decode(const TheStream: TStream): Boolean ; overload;
 
 // basic encrypt/decrypt string
 function EncryptString(const s:String):String;
@@ -504,9 +496,6 @@ procedure RemoveDuplicateStrings(Strs: array of TStringList; RemIndex: Integer =
 function MergeCaseInsensitive(Strs: array of String): String; overload;
 function MergeCaseInsensitive(Strs: array of TStrings): String; overload;
 
-procedure CleanHTMLComments(const Str: TStringList);
-function FixHTMLTagQuote(const s: String): String;
-function FixCommonBrokenHTML(const s: String): String;
 function URLDecode(const s: String): String;
 function HTMLDecode(const AStr: String): String;
 
@@ -538,14 +527,9 @@ function TrimChar(const Source: String; const Chars: TSysCharSet): String;
 function TrimLeftChar(const Source: String; const Chars: TSysCharSet): String;
 function TrimRightChar(const Source: String; const Chars: TSysCharSet): String;
 
-function PrepareSummaryForHint(const Source: String; MaxLength: Integer = 80): String;
-procedure AddCommaString(var Dest: String; S: String);
-
 function StringOfString(c: String; l: Integer): String;
 function IncStr(const S: String; N: Integer = 1): String; overload;
 function IncStr(const I: Integer; N: Integer = 1): String; overload; inline;
-function StringIn(const AText: String; const AValues: array of String): Boolean;
-function TextIn(const AText: String; const AValues: array of String): Boolean;
 
 //get heaader value from THTTPSend.Headers
 function GetHeaderValue(const AHeaders: TStrings; HName: String): String;
@@ -581,15 +565,6 @@ procedure CustomGenres(var output: TStringList; input: String);
 function GoogleResultURL(const AURL: String): String;
 procedure GoogleResultURLs(const AURLs: TStrings);
 
-// deal with sourceforge URL.
-function SourceForgeURL(URL: String): String;
-function GetPage(const AHTTP: THTTPSend; var output: TObject; URL: String;
-  const Reconnect: Integer = 0; Method: String = 'GET'): Boolean; overload;
-function GetPage(var output: TObject; URL: String; const Reconnect: Integer = 0): Boolean;
-  overload; inline;
-// Get url from a bitly url.
-function GetURLFromBitly(const URL: String): String;
-
 // convert webp
 function WebPToPNGStream(const AStream: TMemoryStream; const ALevel: Tcompressionlevel = clfastest): Boolean;
 function WebPToJPEGStream(const AStream: TMemoryStream; const AQuality: Integer = 80): Boolean;
@@ -600,14 +575,6 @@ function PNGToJPEGStream(const AStream: TMemoryStream; const AQuality: Integer =
 // try to save tmemorystream to file, return the saved filename if success, otherwise return empty string
 function SaveImageStreamToFile(Stream: TMemoryStream; Path, FileName: String; Age: LongInt = 0): String; overload;
 function SaveImageStreamToFile(AHTTP: THTTPSend; Path, FileName: String): String; overload;
-
-
-// detect and save image from base64 string
-function SaveImageBase64StringToFile(const S, Path, FileName: String): Boolean;
-
-// Download an image from url and save it to a specific location.
-function DownloadAndSaveImage(const AHTTP: THTTPSendThread; const AURL, APath, AFileName: String; var ASavedFileName: String): Boolean; overload;
-function DownloadAndSaveImage(const AHTTP: THTTPSendThread; const AURL, APath, AFileName: String): Boolean; overload;
 
 // check file exist with known extensions. AFilename is a filename without extensions
 function ImageFileExists(const AFileName: String): Boolean;
@@ -636,7 +603,6 @@ procedure QuickSortNaturalPart(var Alist: TStringList; Separator: String;
   PartIndex: Integer);
 
 function GetStringPart(const S, Sep: String; PartIndex: Integer): String;
-
 
 function GetCurrentJDN: Longint;
 function DateToJDN(const year, month, day: Word): Longint; overload;
@@ -828,51 +794,6 @@ begin
         if not (vsVisible in node^.States) then
           Tree.IsVisible[node] := True;
         node := Tree.GetNext(node);
-      end;
-    end;
-  finally
-    Tree.EndUpdate;
-  end;
-end;
-
-procedure SearchOnlyVisibleOnVT(Tree: TVirtualStringTree; Key: String; Column: Integer);
-var
-  s: String;
-  node, xnode: PVirtualNode;
-  v: Boolean;
-begin
-  if Tree.TotalCount = 0 then
-    Exit;
-  s := AnsiUpperCase(Key);
-  Tree.BeginUpdate;
-  try
-    node := Tree.GetFirstVisible();
-    if s <> '' then
-    begin
-      while node <> nil do
-      begin
-        v := Pos(s, AnsiUpperCase(Tree.Text[node, Column])) <> 0;
-        Tree.IsVisible[node] := v;
-        if v then
-        begin
-          xnode := node^.Parent;
-          while (xnode <> nil)  and (xnode <> Tree.RootNode) do
-          begin
-            if not (vsVisible in xnode^.States) then
-              Tree.IsVisible[xnode] := True;
-            xnode := xnode^.Parent;
-          end;
-        end;
-        node := Tree.GetNextVisible(node);
-      end;
-    end
-    else
-    begin
-      while node <> nil do
-      begin
-        if not (vsVisible in node^.States) then
-          Tree.IsVisible[node] := True;
-        node := Tree.GetNextVisible(node);
       end;
     end;
   finally
@@ -1329,26 +1250,6 @@ begin
   end;
 end;
 
-function FixHTMLTagQuote(const s: String): String;
-begin
-  Result := s;
-  if Length(Result) > 2 then
-  begin
-    Result := StringReplace(Result, '=''', '="', [rfReplaceAll]);
-    Result := StringReplace(Result, ''' ', '" ', [rfReplaceAll]);
-    Result := StringReplace(Result, '''>', '">', [rfReplaceAll]);
-    Result := StringReplace(Result, '''/>', '"/>', [rfReplaceAll]);
-  end;
-end;
-
-function FixCommonBrokenHTML(const s: String): String;
-begin
-  Result := s;
-  Result := StringReplace(Result, '="width="', '="width:', [rfReplaceAll]);
-  Result := StringReplace(Result, '"target="', 'target="', [rfReplaceAll]);
-  Result := StringReplace(Result, 'rel=''''', '', [rfReplaceAll]);
-end;
-
 function URLDecode(const s: String): String;
 var
   sAnsi: String;
@@ -1559,23 +1460,6 @@ begin
   end;
 end;
 
-procedure CleanHTMLComments(const Str: TStringList);
-var
-  i: Integer;
-begin
-  if Str.Count > 0 then
-  begin
-    Str.BeginUpdate;
-    for i := 0 to Str.Count - 1 do
-    begin
-      Str[i] := TrimLeft(Str[i]);
-      if (Pos('<!', Str[i]) = 1) or (Pos('-->', Str[i]) = 1) then
-        Str[i] := '';
-    end;
-    Str.EndUpdate;
-  end;
-end;
-
 function CorrectPathSys(const Path: String): String;
 {$IFDEF WINDOWS}
 var
@@ -1632,26 +1516,6 @@ begin
   Result := IntToStr(I + N);
 end;
 
-function StringIn(const AText: String; const AValues: array of String): Boolean;
-var
-  i: Integer;
-begin
-  for i := Low(AValues) to High(AValues) do
-    if AValues[i] = AText then
-      Exit(True);
-  Result := False;
-end;
-
-function TextIn(const AText: String; const AValues: array of String): Boolean;
-var
-  i: Integer;
-begin
-  for i := Low(AValues) to High(AValues) do
-    if SameText(AValues[i], AText) then
-      Exit(True);
-  Result := False;
-end;
-
 function GetHeaderValue(const AHeaders: TStrings; HName: String): String;
 var
   i, p: Integer;
@@ -1669,75 +1533,6 @@ begin
             Length(AHeaders.Strings[i]) - p - 1);
       end;
     end;
-  end;
-end;
-
-function Base64Encode(const s: String): String;
-begin
-  if s = '' then Exit(s);
-  Result := EncodeStringBase64(s);
-end;
-
-function Base64Decode(const s: String): String;
-begin
-  if s = '' then Exit(s);
-  Result := DecodeStringBase64(s);
-end;
-
-function Base64Encode(const TheStream: TStream): Boolean;
-var
-  OutStream: TMemoryStream;
-  Encoder: TBase64EncodingStream;
-begin
-  Result := False;
-  if TheStream = nil then Exit;
-  if TheStream.Size = 0 then Exit;
-  OutStream := TMemoryStream.Create;
-  try
-    Encoder := TBase64EncodingStream.Create(OutStream);
-    try
-      TheStream.Position := 0;
-      Encoder.CopyFrom(TheStream, TheStream.Size);
-      Encoder.Flush;
-      TheStream.Position := 0;
-      TheStream.Size := 0;
-      OutStream.Position := 0;
-      TheStream.CopyFrom(OutStream, OutStream.Size);
-      Result := True;
-    finally
-      Encoder.Free;
-    end;
-  finally
-    OutStream.Free;
-  end;
-end;
-
-function Base64Decode(const TheStream: TStream): Boolean;
-var
-  Decoder: TBase64DecodingStream;
-  InStream: TMemoryStream;
-begin
-  Result := False;
-  if TheStream = nil then Exit;
-  if TheStream.Size = 0 then Exit;
-  InStream := TMemoryStream.Create;
-  try
-    TheStream.Position := 0;
-    InStream.CopyFrom(TheStream, TheStream.Size);
-    try
-      InStream.Position := 0;
-      Decoder := TBase64DecodingStream.Create(InStream);
-      if Decoder.Size > 0 then begin
-        TheStream.Position := 0;
-        TheStream.Size := 0;
-        TheStream.CopyFrom(Decoder, Decoder.Size);
-        Result := True;
-      end;
-    except
-    end;
-    Decoder.Free;
-  finally
-    InStream.Free;
   end;
 end;
 
@@ -2564,98 +2359,6 @@ begin
   end;
 end;
 
-function PrepareSummaryForHint(const Source: String; MaxLength: Integer = 80): String;
-var
-  i, j: Integer;
-begin
-  Result := Source;
-  i := 1;
-  j := 1;
-  repeat
-    if (j > MaxLength) and (Result[i] = ' ') then
-    begin
-      Insert(#10#13, Result, i);
-      Inc(i, 2);
-      j := 1;
-    end;
-    Inc(j);
-    Inc(i);
-  until i >= Length(Result);
-  Result := StringReplace(Result, '\n', #10, [rfReplaceAll, rfIgnoreCase]);
-  Result := StringReplace(Result, '\r', #13, [rfReplaceAll, rfIgnoreCase]);
-  Result := TrimLeft(TrimRight(Result));
-end;
-
-procedure AddCommaString(var Dest: String; S: String);
-begin
-  S := Trim(TrimChar(Trim(S), [',', ' ']));
-  if (S = '') or (S = ',') then Exit;
-  if Dest = '' then
-    Dest := S
-  else
-    Dest := Dest + ', ' + S;
-end;
-
-function CheckRedirect(const HTTP: THTTPSend): String;
-var
-  lineHeader: String;
-  i: Byte;
-begin
-  Result := '';
-  i := 0;
-  while (Result = '') and (i < HTTP.Headers.Count) do
-  begin
-    lineHeader := HTTP.Headers[I];
-    if Pos('Location: ', lineHeader) = 1 then
-      Result := Copy(lineHeader, 11, Length(lineHeader));
-    Inc(i);
-  end;
-end;
-
-function SFDirectLinkURL(URL: String; Document: TMemoryStream): String;
-{
-Transform this part of the body:
-<noscript>
-<meta http-equiv="refresh" content="5; url=http://downloads.sourceforge.net/project/base64decoder/base64decoder/version%202.0/b64util.zip?r=&amp;ts=1329648745&amp;use_mirror=kent">
-</noscript>
-into a valid URL:
-http://downloads.sourceforge.net/project/base64decoder/base64decoder/version%202.0/b64util.zip?r=&amp;ts=1329648745&amp;use_mirror=kent
-}
-const
-  Refresh = '<meta http-equiv="refresh"';
-  URLMarker = 'url=';
-var
-  Counter: Integer;
-  HTMLBody: TStringList;
-  RefreshStart: Integer;
-  URLStart: Integer;
-begin
-  HTMLBody := TStringList.Create;
-  try
-    HTMLBody.LoadFromStream(Document);
-    for Counter := 0 to HTMLBody.Count - 1 do
-    begin
-      // This line should be between noscript tags and give the direct download locations:
-      RefreshStart := Ansipos(Refresh, HTMLBody[Counter]);
-      if RefreshStart > 0 then
-      begin
-        URLStart := AnsiPos(URLMarker, HTMLBody[Counter]) + Length(URLMarker);
-        if URLStart > RefreshStart then
-        begin
-          // Look for closing "
-          URL := Copy(HTMLBody[Counter],
-            URLStart,
-            PosEx('"', HTMLBody[Counter], URLStart + 1) - URLStart);
-          Break;
-        end;
-      end;
-    end;
-  finally
-    HTMLBody.Free;
-  end;
-  Result := URL;
-end;
-
 function GoogleResultURL(const AURL: String): String;
 begin
   Result := AURL;
@@ -2676,387 +2379,6 @@ begin
   finally
     Free;
   end;
-end;
-
-function SourceForgeURL(URL: String): String;
-  // Detects sourceforge download and tries to deal with
-  // redirection, and extracting direct download link.
-  // Thanks to
-  // Ocye: http://lazarus.freepascal.org/index.php/topic,13425.msg70575.html#msg70575
-const
-  SFProjectPart = '//sourceforge.net/projects/';
-  SFFilesPart = '/files/';
-  SFDownloadPart = '/download';
-var
-  HTTPSender: THTTPSend;
-  i, j: Integer;
-  FoundCorrectURL: Boolean;
-  SFDirectory: String; //Sourceforge directory
-  SFDirectoryBegin: Integer;
-  SFFileBegin: Integer;
-  SFFilename: String; //Sourceforge name of file
-  SFProject: String;
-  SFProjectBegin: Integer;
-label
-  loop;
-begin
-  // Detect SourceForge download; e.g. from URL
-  //          1         2         3         4         5         6         7         8         9
-  // 1234557890123456789012345578901234567890123455789012345678901234557890123456789012345578901234567890
-  // http://sourceforge.net/projects/base64decoder/files/base64decoder/version%202.0/b64util.zip/download
-  //                                 ^^^project^^^       ^^^directory............^^^ ^^^file^^^
-  FoundCorrectURL := True; //Assume not a SF download
-  i := Pos(SFProjectPart, URL);
-  if i > 0 then
-  begin
-    // Possibly found project; now extract project, directory and filename parts.
-    SFProjectBegin := i + Length(SFProjectPart);
-    j := PosEx(SFFilesPart, URL, SFProjectBegin);
-    if (j > 0) then
-    begin
-      SFProject := Copy(URL, SFProjectBegin, j - SFProjectBegin);
-      SFDirectoryBegin := PosEx(SFFilesPart, URL, SFProjectBegin) + Length(SFFilesPart);
-      if SFDirectoryBegin > 0 then
-      begin
-        // Find file
-        // URL might have trailing arguments... so: search for first
-        // /download coming up from the right, but it should be after
-        // /files/
-        i := RPos(SFDownloadPart, URL);
-        // Now look for previous / so we can make out the file
-        // This might perhaps be the trailing / in /files/
-        SFFileBegin := RPosEx('/', URL, i - 1) + 1;
-
-        if SFFileBegin > 0 then
-        begin
-          SFFilename := Copy(URL, SFFileBegin, i - SFFileBegin);
-          //Include trailing /
-          SFDirectory := Copy(URL, SFDirectoryBegin, SFFileBegin - SFDirectoryBegin);
-          FoundCorrectURL := False;
-        end;
-      end;
-    end;
-  end;
-
-  if not FoundCorrectURL then
-  begin
-    try
-      // Rewrite URL if needed for Sourceforge download redirection
-      // Detect direct link in HTML body and get URL from that
-      loop:
-        HTTPSender := THTTPSend.Create;
-      //Who knows, this might help:
-      HTTPSender.UserAgent := UserAgentCURL;
-      while not FoundCorrectURL do
-      begin
-        HTTPSender.HTTPMethod('GET', URL);
-        case HTTPSender.Resultcode of
-          301, 302, 307:
-          begin
-            for i := 0 to HTTPSender.Headers.Count - 1 do
-              if (Pos('Location: ', HTTPSender.Headers.Strings[i]) > 0) or
-                (Pos('location: ', HTTPSender.Headers.Strings[i]) > 0) then
-              begin
-                j := Pos('use_mirror=', HTTPSender.Headers.Strings[i]);
-                if j > 0 then
-                  URL :=
-                    'http://' + RightStr(HTTPSender.Headers.Strings[i],
-                    length(HTTPSender.Headers.Strings[i]) - j - 10) +
-                    '.dl.sourceforge.net/project/' +
-                    SFProject + '/' + SFDirectory + SFFilename
-                else
-                  URL := StringReplace(
-                    HTTPSender.Headers.Strings[i], 'Location: ', '', []);
-                HTTPSender.Clear;//httpsend
-                FoundCorrectURL := True;
-                Break; //out of rewriting loop
-              end;
-          end;
-          100..200:
-          begin
-            //Assume a sourceforge timer/direct link page
-            URL := SFDirectLinkURL(URL, HTTPSender.Document); //Find out
-            FoundCorrectURL := True; //We're done by now
-          end;
-          else
-          begin
-            HTTPSender.Free;
-            goto loop;
-          end;
-        end;//case
-      end;  //while
-    finally
-      HTTPSender.Free;
-    end;
-  end;
-  Result := URL;
-end;
-
-function GetPage(const AHTTP: THTTPSend; var output: TObject; URL: String;
-  const Reconnect: Integer; Method: String): Boolean;
-  // If AHTTP <> nil, we will use it as http sender. Otherwise we create a new
-  // instance.
-var
-  HTTP: THTTPSend;
-  HTTPHeader: TStringList;
-  counter: Integer;
-  s: String;
-  meth: String;
-  mstream: TMemoryStream;
-
-  procedure HTTPClear;
-  begin
-    if Assigned(HTTP) then
-      with HTTP do
-      begin
-        RangeStart := 0;
-        RangeEnd := 0;
-        Headers.Clear;
-      end;
-  end;
-
-  procedure preTerminate;
-  begin
-    HTTPHeader.Free;
-    if AHTTP = nil then
-      HTTP.Free;
-  end;
-
-  function checkTerminate: Boolean;
-  begin
-    Result := HTTP.Sock.Tag = 1; //terminate via THTTPSendThread;
-    if Result then
-    begin
-      HTTP.Sock.Tag := 0;
-      preTerminate;
-    end;
-  end;
-
-label
-  globReturn;
-
-begin
-  Result := False;
-  if Trim(URL) = '' then Exit;
-
-  URL := FixURL(URL);
-  URL := EncodeURL(DecodeURL(URL));
-
-  HTTPHeader := TStringList.Create;
-  HTTPHeader.NameValueSeparator := ':';
-  if AHTTP <> nil then
-  begin
-    if LeftStr(AHTTP.Headers.Text, 5) <> 'HTTP/' then
-      HTTPHeader.Text := AHTTP.Headers.Text;
-    HTTP := AHTTP;
-    HTTPClear;
-  end
-  else
-  begin
-    HTTP := THTTPSend.Create;
-    HTTP.Timeout := DefaultTimeout;
- //   HTTP.Sock.ConnectionTimeout := DefaultTimeout;
-    HTTP.Sock.SetTimeout(DefaultTimeout);
-  end;
-  HTTP.Headers.NameValueSeparator := ':';
-
-  globReturn:
-
-    if DefaultProxyType = 'HTTP' then
-    begin
-      HTTP.ProxyHost := DefaultProxyHost;
-      HTTP.ProxyPort := DefaultProxyPort;
-      HTTP.ProxyUser := DefaultProxyUser;
-      HTTP.ProxyPass := DefaultProxyPass;
-    end
-    else
-    if (DefaultProxyType = 'SOCKS4') or (DefaultProxyType = 'SOCKS5') then
-    begin
-      if DefaultProxyType = 'SOCKS4' then
-        HTTP.Sock.SocksType := ST_Socks4
-      else
-      if DefaultProxyType = 'SOCKS5' then
-        HTTP.Sock.SocksType := ST_Socks5;
-      HTTP.Sock.SocksIP := DefaultProxyHost;
-      HTTP.Sock.SocksPort := DefaultProxyPort;
-      HTTP.Sock.SocksUsername := DefaultProxyUser;
-      http.Sock.SocksPassword := DefaultProxyPass;
-    end
-    else
-    begin
-      HTTP.Sock.SocksIP := DefaultProxyHost;
-      HTTP.Sock.SocksPort := DefaultProxyPort;
-      HTTP.Sock.SocksUsername := DefaultProxyUser;
-      http.Sock.SocksPassword := DefaultProxyPass;
-      HTTP.ProxyHost := DefaultProxyHost;
-      HTTP.ProxyPort := DefaultProxyPort;
-      HTTP.ProxyUser := DefaultProxyUser;
-      HTTP.ProxyPass := DefaultProxyPass;
-    end;
-
-  HTTPHeader.Values['DNT'] := ' 1';
-  HTTPHeader.Values['Accept'] := ' text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
-  HTTPHeader.Values['Accept-Charset'] := ' UTF-8';
-  HTTPHeader.Values['Accept-Language'] := ' en-US,en;q=0.8';
-  HTTP.Protocol := '1.1';
-  HTTP.KeepAlive := False;
-  if (HTTP.UserAgent = '') or (HTTP.UserAgent = UserAgentSynapse) then
-    HTTP.UserAgent := DefaultUserAgent;
-  if OptionHTTPUseGzip then
-    HTTPHeader.Values['Accept-Encoding'] := ' gzip, deflate';
-
-  //Method
-  if Method <> '' then meth := Method
-  else meth := 'GET';
-  if HTTP.Sock.Tag = 100 then //POST form
-    meth := 'POST';
-  if meth = 'POST' then
-    HTTP.MimeType := 'application/x-www-form-urlencoded; charset=UTF-8'
-  else
-  begin
-    HTTP.Document.Clear;
-    HTTP.RangeStart := 0;
-    HTTP.RangeEnd := 0;
-  end;
-
-  //User-Agent
-  if Trim(HTTPHeader.Values['User-Agent']) <> '' then
-  begin
-    HTTP.UserAgent := Trim(HTTPHeader.Values['User-Agent']);
-    HTTPHeader.Delete(HTTPHeader.IndexOfName('User-Agent'));
-  end;
-  //MimeType
-  if Trim(HTTPHeader.Values['Content-Type']) <> '' then
-  begin
-    HTTP.MimeType := Trim(HTTPHeader.Values['Content-Type']);
-    HTTPHeader.Delete(HTTPHeader.IndexOfName('Content-Type'));
-  end;
-
-  if (Pos('imgmega.com/', URL) > 0) then
-  begin
-    s := ReplaceRegExpr('^.*\w+\.\w+/(\w+)/.*$', URL, '$1', True);
-    s := 'op=view&id=' + s + '&pre=1&next=Continue+to+image...';
-    meth := 'POST';
-    HTTP.Document.Clear;
-    HTTP.Document.Position := 0;
-    HTTP.Document.Write(PChar(s)^, Length(s));
-    HTTP.MimeType := 'application/x-www-form-urlencoded';
-  end;
-
-  if checkTerminate then Exit;
-  HTTP.Headers.Text := HTTPHeader.Text;
-  counter := 0;
-  while (not HTTP.HTTPMethod(meth, URL)) or (HTTP.ResultCode > 500) do
-  begin
-    if checkTerminate then Exit;
-    if (Reconnect > -1) and (Reconnect <= counter) then
-    begin
-      preTerminate;
-      Exit;
-    end;
-    Inc(Counter);
-    HTTPClear;
-    HTTP.Headers.Text := HTTPHeader.Text;
-  end;
-
-  while (HTTP.ResultCode > 300) and (HTTP.ResultCode < 400) do
-  begin
-    if checkTerminate then Exit;
-    HTTPHeader.Values['Referer'] := ' ' + URL;
-    s := Trim(HTTP.Headers.Values['Location']);
-    if s <> '' then
-    begin
-      with TRegExpr.Create do
-        try
-          Expression := REGEX_HOST;
-          if Replace(s, '$1', True) = '' then
-          begin
-            if s[1] <> '/' then
-              s := '/' + s;
-            URL := Replace(URL, '$1$2$3', True) + s;
-          end
-          else
-            URL := s;
-        finally
-          Free;
-        end;
-    end;
-
-    HTTP.Clear;
-    HTTP.Headers.Text := HTTPHeader.Text;
-    counter := 0;
-    while (not HTTP.HTTPMethod('GET', URL)) or (HTTP.ResultCode > 500) do
-    begin
-      if checkTerminate then Exit;
-      if (Reconnect > -1) and (Reconnect <= counter) then
-      begin
-        preTerminate;
-        Exit;
-      end;
-      Inc(counter);
-      HTTP.Clear;
-      HTTP.Headers.Text := HTTPHeader.Text;
-    end;
-  end;
-
-  if HTTP.ResultCode <> 404 then
-  begin
-    // Decompress the html file
-    s := LowerCase(HTTP.Headers.Values['Content-Encoding']);
-    if (Pos('gzip', s) <> 0) or (Pos('deflate', s) <> 0) then
-    begin
-      mstream := TMemoryStream.Create;
-      try
-        GZIPUtils.unzipStream(HTTP.Document, mstream);
-        HTTP.Document.Clear;
-        HTTP.Document.LoadFromStream(mstream);
-      except
-      end;
-      mstream.Free;
-    end;
-    try
-      if output is TStringList then
-        TStringList(output).LoadFromStream(HTTP.Document)
-      else
-      if output is TPicture then
-        TPicture(output).LoadFromStream(HTTP.Document)
-      else
-      if output is TStream then
-        HTTP.Document.SaveToStream(TStream(output));
-    except
-      on E: Exception do
-        SendLogException('GetPage.WriteOutput.Error!', E);
-    end;
-    Result := True;
-  end
-  else
-    Result := False;
-
-  preTerminate;
-end;
-
-function GetPage(var output: TObject; URL: String; const Reconnect: Integer
-  ): Boolean;
-begin
-  Result := GetPage(nil, output, URL, Reconnect);
-end;
-
-function GetURLFromBitly(const URL: String): String;
-var
-  i: Integer;
-  httpSource: TStringList;
-begin
-  Result := '';
-  httpSource := TStringList.Create;
-  GetPage(TObject(httpSource), URL, 4);
-  if httpSource.Count > 0 then
-    for i := 0 to httpSource.Count do
-      if Pos(';url=', httpSource.Strings[i]) > 0 then
-      begin
-        Result := GetString(httpSource.Strings[i], ';url=', '&amp;');
-        Break;
-      end;
-  httpSource.Free;
 end;
 
 function WebPToPNGStream(const AStream: TMemoryStream;
@@ -3204,46 +2526,6 @@ begin
   if s <> '' then
     lastmodified := DateTimeToFileDate(DecodeRfcDateTime(s));
   Result := SaveImageStreamToFile(AHTTP.Document, Path, FileName, lastmodified);
-end;
-
-function SaveImageBase64StringToFile(const S, Path, FileName: String): Boolean;
-var
-  ES: String;
-  i: Integer;
-  MS: TMemoryStream;
-begin
-  Result := False;
-  if S = '' then Exit;
-  ES := AnsiLowerCase(Copy(S, 1, 100));
-  if Pos('data:image/', ES) <> 1 then Exit;
-  i := Pos('base64,', ES);
-  if i = 0 then Exit;
-  ES := Base64Decode(Copy(S, i + 7, Length(S)));
-  MS := TMemoryStream.Create;
-  try
-    MS.Write(ES[1], Length(ES));
-    Result := SaveImageStreamToFile(MS, Path, FileName) <> '';
-  finally
-    MS.Free;
-  end;
-end;
-
-function DownloadAndSaveImage(const AHTTP: THTTPSendThread; const AURL, APath,
-  AFileName: String; var ASavedFileName: String): Boolean;
-begin
-  Result := False;
-  if AHTTP.GET(AURL) then
-  begin
-    ASavedFileName := SaveImageStreamToFile(AHTTP, APath, AFileName);
-    Result := ASavedFileName <> '';
-  end;
-end;
-
-function DownloadAndSaveImage(const AHTTP: THTTPSendThread; const AURL, APath, AFileName: String): Boolean;
-begin
-  Result := False;
-  if AHTTP.GET(AURL) then
-    Result := SaveImageStreamToFile(AHTTP, APath, AFileName) <> '';
 end;
 
 function ImageFileExists(const AFileName: String): Boolean;
