@@ -220,10 +220,6 @@ const
 
   HTTPDateTimeFormatStr = 'ddd, dd mmm yyyy hh:nn:ss';
 
-  // EN: Param seperator
-  SEPERATOR  = '!%~';
-  SEPERATOR2 = '~%!';
-
   // common regex to split host/url
   REGEX_HOST = '(?ig)^(\w+://)?([^/]*\.\w+)?(\:\d+)?(/?.*)$';
 
@@ -546,21 +542,6 @@ function GetString(const Source, sStart, sEnd: String): String;
 function Find(const S: String; var List: TStringList; out index: Integer): Boolean;
 function FindStrQuick(const s: String; var AStrings: TStringList): Boolean;
 
-// Get param from input
-procedure GetParams(const output: TStrings; input: String); overload;
-procedure GetParams(var output: TCardinalList; input: String); overload;
-procedure GetParams(var output: TList; input: String); overload;
-function ExtractParam(const output: TStrings; input, sep: String;
-  WhiteSp: Boolean = True): Integer;
-function GetParams(const input: String): String; overload; inline;
-
-function RemoveDuplicateNumbersInString(const AString: String): String;
-// Set param from input
-function SetParams(input: TObject): String; overload;
-function SetParams(const input: array of String): String; overload;
-
-procedure CustomGenres(var output: TStringList; input: String);
-
 //parse google result urls
 function GoogleResultURL(const AURL: String): String;
 procedure GoogleResultURLs(const AURLs: TStrings);
@@ -592,11 +573,6 @@ function Merge2Image(const Directory, ImgName1, ImgName2, FinalName: String; con
 function GetMimeType(const imgFileName: String): String;
 
 // sort
-procedure QuickSortChapters(var chapterList, linkList: TStringList);
-procedure QuickSortData(var merge: TStringList);
-// This method uses to sort the data. Use when we load all the lists.
-procedure QuickSortDataWithWebID(var merge: TStringList; const webIDList: TByteList);
-
 function NaturalCompareStr(Str1, Str2: String): Integer; inline;
 function NaturalCustomSort(List: TStringList; Index1, Index2: Integer): Integer; inline;
 procedure QuickSortNaturalPart(var Alist: TStringList; Separator: String;
@@ -604,10 +580,9 @@ procedure QuickSortNaturalPart(var Alist: TStringList; Separator: String;
 
 function GetStringPart(const S, Sep: String; PartIndex: Integer): String;
 
-function GetCurrentJDN: Longint;
-function DateToJDN(const year, month, day: Word): Longint; overload;
-function DateToJDN(const date: TDate): Longint; overload;
-function JDNToDate(const JDN: Longint): TDate;
+function DateToJDN(const date: TDate): Integer;
+function GetCurrentJDN: Integer;
+function JDNToDate(const JDN: Integer): TDate;
 
 {function  ConvertInt32ToStr(const aValue: Cardinal)  : String;
 function  ConvertStrToInt32(const aStr  : String): Cardinal;}
@@ -1893,150 +1868,6 @@ begin
     Result := False;
 end;
 
-procedure GetParams(const output: TStrings; input: String);
-var
-  l: Integer;
-begin
-  repeat
-    l := Pos(SEPERATOR, input);
-    if l <> 0 then
-    begin
-      output.Add(LeftStr(input, l - 1));
-      input := RightStr(input, Length(input) - l - Length(SEPERATOR) + 1);
-    end;
-  until l = 0;
-end;
-
-procedure GetParams(var output: TCardinalList; input: String);
-var
-  l: Integer;
-begin
-  repeat
-    l := Pos(SEPERATOR, input);
-    if l <> 0 then
-    begin
-      output.Add(StrToInt(LeftStr(input, l - 1)));
-      input := RightStr(input, Length(input) - l - Length(SEPERATOR) + 1);
-    end;
-  until l = 0;
-end;
-
-procedure GetParams(var output: TList; input: String);
-var
-  l: Integer;
-begin
-  repeat
-    l := Pos(SEPERATOR, input);
-    if l <> 0 then
-    begin
-      output.Add(Pointer(StrToInt(LeftStr(input, l - 1))));
-      input := RightStr(input, Length(input) - l - Length(SEPERATOR) + 1);
-    end;
-  until l = 0;
-end;
-
-function ExtractParam(const output: TStrings; input, sep: String;
-  WhiteSp: Boolean): Integer;
-var
-  l, lse: Integer;
-  s: String;
-begin
-  Result := 0;
-  if sep = '' then
-    sep := ',';
-  lse := Length(sep);
-  repeat
-    l := Pos(sep, input);
-    if l <> 0 then
-    begin
-      s := LeftStr(input, l - 1);
-      if (Length(s) > 0) or WhiteSp then
-      begin
-        Inc(Result);
-        output.Add(s);
-      end;
-      input := RightStr(input, Length(input) - l - lse + 1);
-    end;
-  until l = 0;
-  if Length(input) > 0 then
-    output.Add(input);
-end;
-
-function GetParams(const input: String): String;
-begin
-  Result := StringReplace(input, SEPERATOR, LineEnding, [rfReplaceAll]);
-end;
-
-function RemoveDuplicateNumbersInString(const AString: String): String;
-var
-  i, j: Integer;
-  list: TList;
-begin
-  Result := AString;
-  if AString = '' then
-    Exit;
-  list := TList.Create;
-  GetParams(list, AString);
-  i := 0;
-  while i < list.Count do
-  begin
-    j := i;
-    while j < list.Count do
-    begin
-      if (i <> j) and (list.Items[i] = list.Items[j]) then
-        list.Delete(j)
-      else
-        Inc(j);
-    end;
-    Inc(i);
-  end;
-  Result := '';
-  for i := 0 to list.Count - 1 do
-    Result := Result + IntToStr(Integer(list.Items[i])) + SEPERATOR;
-  list.Free;
-end;
-
-function SetParams(input: TObject): String;
-var
-  i: Integer;
-begin
-  Result := '';
-  if input is TStringList then
-  begin
-    if TStringList(input).Count = 0 then
-      Exit;
-    for i := 0 to TStringList(input).Count - 1 do
-      Result := Result + TStringList(input).Strings[i] + SEPERATOR;
-  end
-  else
-  if input is TCardinalList then
-  begin
-    if TCardinalList(input).Count = 0 then
-      Exit;
-    for i := 0 to TCardinalList(input).Count - 1 do
-      Result := Result + IntToStr(TCardinalList(input).Items[i]) + SEPERATOR;
-  end
-  else
-  if input is TByteList then
-  begin
-    if TByteList(input).Count = 0 then
-      Exit;
-    for i := 0 to TByteList(input).Count - 1 do
-      Result := Result + IntToStr(TByteList(input).Items[i]) + SEPERATOR;
-  end;
-end;
-
-function SetParams(const input: array of String): String;
-var
-  i: Integer;
-begin
-  Result := '';
-  if Length(input) = 0 then
-    Exit;
-  for i := 0 to Length(input) - 1 do
-    Result := Result + input[i] + SEPERATOR;
-end;
-
 function FixWhiteSpace(const S: String): String;
 const
   R: array [0..1] of string = (
@@ -2241,32 +2072,6 @@ begin
       end;
     end;
   end;
-end;
-
-procedure CustomGenres(var output: TStringList; input: String);
-var
-  s: String = '';
-  i: Integer;
-begin
-  if Length(input) = 0 then
-    Exit;
-  for i := 1 to Length(input) do
-  begin
-    if (input[i] = ',') or (input[i] = ';') then
-    begin
-      TrimLeft(TrimRight(s));
-      if Length(s) <> 0 then
-      begin
-        output.Add(s);
-        s := '';
-      end;
-    end
-    else
-      s := s + input[i];
-  end;
-  TrimLeft(TrimRight(s));
-  if Length(s) <> 0 then
-    output.Add(s);
 end;
 
 function CommonStringFilter(const Source: String): String;
@@ -2666,145 +2471,6 @@ begin
   end;
 end;
 
-procedure QuickSortChapters(var chapterList, linkList: TStringList);
-
-  procedure QSort(L, R: Integer);
-  var
-    i, j: Integer;
-    X: String;
-  begin
-    X := chapterList.Strings[(L + R) div 2];
-    i := L;
-    j := R;
-    while i <= j do
-    begin
-      while StrComp(PChar(chapterList.Strings[i]), PChar(X)) < 0 do
-        Inc(i);
-      while StrComp(PChar(chapterList.Strings[j]), PChar(X)) > 0 do
-        Dec(j);
-      if i <= j then
-      begin
-        chapterList.Exchange(i, j);
-        linkList.Exchange(i, j);
-        Inc(i);
-        if j > 0 then
-          Dec(j);
-      end;
-    end;
-    if L < j then
-      QSort(L, j);
-    if i < R then
-      QSort(i, R);
-  end;
-
-begin
-  if chapterList.Count <= 2 then
-    Exit;
-  QSort(0, chapterList.Count - 1);
-end;
-
-procedure QuickSortData(var merge: TStringList);
-var
-  names, output: TStringList;
-
-  procedure QSort(L, R: Integer);
-  var
-    i, j: Integer;
-    X: String;
-  begin
-    X := names.Strings[(L + R) div 2];
-    i := L;
-    j := R;
-    while i <= j do
-    begin
-      while StrComp(PChar(names.Strings[i]), PChar(X)) < 0 do
-        Inc(i);
-      while StrComp(PChar(names.Strings[j]), PChar(X)) > 0 do
-        Dec(j);
-      if i <= j then
-      begin
-        names.Exchange(i, j);
-        merge.Exchange(i, j);
-        Inc(i);
-        if j > 0 then
-          Dec(j);
-      end;
-    end;
-    if L < j then
-      QSort(L, j);
-    if i < R then
-      QSort(i, R);
-  end;
-
-var
-  i: Integer;
-
-begin
-  names := TStringList.Create;
-  output := TStringList.Create;
-  for i := 0 to merge.Count - 1 do
-  begin
-    output.Clear;
-    GetParams(output, merge.Strings[i]);
-    names.Add(output.Strings[DATA_PARAM_TITLE]);
-  end;
-  QSort(0, names.Count - 1);
-  output.Free;
-  names.Free;
-end;
-
-// this procedure is similar to QuickSortData except it sort the siteID as well
-procedure QuickSortDataWithWebID(var merge: TStringList; const webIDList: TByteList);
-var
-  names, output: TStringList;
-
-  procedure QSort(L, R: Integer);
-  var
-    i, j: Integer;
-    X: String;
-  begin
-    X := names.Strings[(L + R) div 2];
-    i := L;
-    j := R;
-    while i <= j do
-    begin
-      while StrComp(PChar(names.Strings[i]), PChar(X)) < 0 do
-        Inc(i);
-      while StrComp(PChar(names.Strings[j]), PChar(X)) > 0 do
-        Dec(j);
-      if i <= j then
-      begin
-        names.Exchange(i, j);
-        merge.Exchange(i, j);
-        webIDList.Exchange(i, j);
-        Inc(i);
-        if j > 0 then
-          Dec(j);
-      end;
-    end;
-    if L < j then
-      QSort(L, j);
-    if i < R then
-      QSort(i, R);
-  end;
-
-var
-  i: Integer;
-
-begin
-  names := TStringList.Create;
-  output := TStringList.Create;
-  for i := 0 to merge.Count - 1 do
-  begin
-    output.Clear;
-    GetParams(output, merge.Strings[i]);
-    names.Add(output.Strings[DATA_PARAM_TITLE]);
-  end;
-  QSort(0, names.Count - 1);
-  output.Free;
-  names.Free;
-end;
-
 function NaturalCompareStr(Str1, Str2: String): Integer;
 begin
   Result := NaturalSortUnit.UTF8LogicalCompareText(Str1, Str2);
@@ -2894,10 +2560,12 @@ begin
   Result := Copy(S, lpos, rpos - lpos - Length(Sep));
 end;
 
-function DateToJDN(const year, month, day: Word): Longint;
+function DateToJDN(const date: TDate): Integer;
 var
-  a, y, m: Longint;
+  day, month, year: Word;
+  a, y, m: Integer;
 begin
+  DecodeDate(date, year, month, day);
   a := (14 - month) div 12;
   y := year + 4800 - a;
   m := month + (12 * a) - 3;
@@ -2905,15 +2573,7 @@ begin
     (y div 400) - 32045) - 0.5);
 end;
 
-function DateToJDN(const date: TDate): Longint;
-var
-  day, month, year: Word;
-begin
-  DecodeDate(date, year, month, day);
-  Result := DateToJDN(year, month, day);
-end;
-
-function JDNToDate(const JDN: Longint): TDate;
+function JDNToDate(const JDN: Integer): TDate;
 var
   a, b, c, d, e, m: Longint;
   day, month, year: Word;
@@ -2930,12 +2590,9 @@ begin
   Result := EncodeDate(year, month, day);
 end;
 
-function GetCurrentJDN: Longint;
-var
-  day, month, year: Word;
+function GetCurrentJDN: Integer;
 begin
-  DecodeDate(Now, year, month, day);
-  Result := DateToJDN(year, month, day);
+  Result := DateToJDN(Now);
 end;
 
 procedure TransferMangaInfo(var dest: TMangaInfo; const Source: TMangaInfo);
