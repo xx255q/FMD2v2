@@ -3078,7 +3078,7 @@ end;
 
 procedure TMainForm.edWebsitesSearchChange(Sender: TObject);
 begin
-  SearchOnVT(vtOptionMangaSiteSelection, edWebsitesSearch.Text);
+  FilterVST(vtOptionMangaSiteSelection, edWebsitesSearch.Text);
 end;
 
 procedure TMainForm.HandleApplicationQueryEndSession(var Cancel: Boolean);

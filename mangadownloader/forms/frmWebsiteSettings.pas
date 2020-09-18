@@ -67,7 +67,7 @@ end;
 
 procedure TWebsiteSettingsForm.edSearchChange(Sender: TObject);
 begin
-  SearchOnVT(vtWebsite, edSearch.Text);
+  FilterVST(vtWebsite, edSearch.Text);
 end;
 
 procedure TWebsiteSettingsForm.edSearchPropertyButtonClick(Sender: TObject);
@@ -77,7 +77,7 @@ end;
 
 procedure TWebsiteSettingsForm.edSearchPropertyChange(Sender: TObject);
 begin
-  SearchOnVT(SettingsView, edSearchProperty.Text);
+  FilterVST(SettingsView, edSearchProperty.Text);
 end;
 
 procedure TWebsiteSettingsForm.edSearchButtonClick(Sender: TObject);

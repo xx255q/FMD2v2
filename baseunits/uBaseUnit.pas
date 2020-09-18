@@ -429,7 +429,7 @@ type
 function BlendColor(FG, BG: TColor; T: Byte): TColor;
 
 // VT extras
-procedure SearchOnVT(Tree: TVirtualStringTree; Key: String; Column: Integer = 0);
+procedure FilterVST(Tree: TVirtualStringTree; Key: String; Column: Integer = 0);
 
 // Remove Unicode
 function ReplaceUnicodeChar(const S, ReplaceStr: String): String;
@@ -756,7 +756,7 @@ begin
     MixByte(Byte(C1), Byte(C2));
 end;
 
-procedure SearchOnVT(Tree: TVirtualStringTree; Key: String; Column: Integer);
+procedure FilterVST(Tree: TVirtualStringTree; Key: String; Column: Integer);
 var
   s: String;
   node, xnode: PVirtualNode;
