@@ -261,7 +261,7 @@ begin
     if AIncludeProtocol then
     begin
       if iproto<>'' then ihost:=iproto+'://'+ihost
-      else ihost:='http://'+ihost;
+      else ihost:='https://'+ihost;
     end;
     if AIncludePort and (iport<>'') then
       ihost:=ihost+':'+iport;
@@ -610,6 +610,8 @@ begin
   FURL := TrimRight(TrimLeftSet(URL, [':', '/', #0..' ']));
   if FURL = '' then Exit;
   FURL := MaybeEncodeURL(FURL);
+  if Pos('://',FURL)=0 then
+    FURL:='https://'+FURL;
   if Pos('HTTP/', Headers.Text) = 1 then Reset;
   NormalizeHeaders;
   HTTPHeader := TStringList.Create;
