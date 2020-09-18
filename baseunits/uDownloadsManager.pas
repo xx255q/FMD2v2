@@ -362,7 +362,8 @@ begin
   // download image
   savedFilename := '';
 
-  HTTP.Clear;
+  HTTP.Reset;
+  HTTP.AcceptImage;
 
   if Assigned(TModuleContainer(Task.Container.DownloadInfo.Module).OnDownloadImage) and
     (Task.Container.PageNumber = Task.Container.PageContainerLinks.Count) and

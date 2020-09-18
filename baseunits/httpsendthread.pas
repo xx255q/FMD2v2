@@ -110,6 +110,7 @@ type
     procedure GetProxy(var ProxyType, Host, Port, User, Pass: String);
     procedure SetNoProxy;
     procedure SetDefaultProxy;
+    procedure AcceptImage; inline;
     procedure Reset;
     procedure ResetBasic;
     procedure ClearCookies; inline;
@@ -896,12 +897,17 @@ begin
   SetProxy(DefaultProxyType, DefaultProxyHost, DefaultProxyPort, DefaultProxyUser, DefaultProxyPass);
 end;
 
+procedure THTTPSendThread.AcceptImage;
+begin
+  Headers.Values['Accept'] := 'image/webp,*/*';
+end;
+
 procedure THTTPSendThread.Reset;
 begin
   ResetBasic;
   Headers.Values['DNT'] := '1';
   Headers.Values['Upgrade-Insecure-Requests'] := '1';
-  Headers.Values['Accept'] := 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8';
+  Headers.Values['Accept'] := 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8';
   Headers.Values['Accept-Language'] := 'en-US,en;q=0.5';
   Headers.Values['Accept-Charset'] := 'utf-8';
 end;
