@@ -1750,7 +1750,7 @@ msgstr "Jumlah koneksi per unduhan pada waktu yang sama"
 
 #: tmainform.lboptionmaxupdatelistthreads.caption
 msgid "Max number of update list threads"
-msgstr "Jumlah koneksi pemutakhiran daftar"
+msgstr "Jumlah koneksi pemutakhiran daftar komik"
 
 #: tmainform.lboptionnewmangatime.caption
 msgid "New manga based on  it's update time (days)"
@@ -2601,7 +2601,7 @@ msgstr "%s <%s> memiliki %d bab baru."
 #: ufavoritesmanager.rs_lblmangawillberemoved
 #, object-pascal-format
 msgid "%d completed manga(s) will be removed:"
-msgstr "%d yang sudah tamat akan dihapus:"
+msgstr "%d komik yang sudah tamat akan dihapus:"
 
 #: ufavoritesmanager.rs_lblnewchapterfound
 #, object-pascal-format
