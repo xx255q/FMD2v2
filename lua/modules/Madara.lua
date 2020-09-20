@@ -284,7 +284,7 @@ function Init()
 
 	cat = 'English-Scanlation'
 	AddWebsiteModule('f17a22a1a24640ecb2ae4f51c47a45c8', 'TrashScanlations', 'https://trashscanlations.com')
-	AddWebsiteModule('5a19d20a9731446489df49fd01c7cf77', 'ChibiManga', 'http://www.cmreader.info')
+	AddWebsiteModule('5a19d20a9731446489df49fd01c7cf77', 'ChibiManga', 'https://www.cmreader.info')
 	AddWebsiteModule('8f7396a288e947bba73556c9b0ec41d4', 'ZinManga', 'https://zinmanga.com')
 	AddWebsiteModule('6812a5f225734ae5acd4b851d66a1450', 'SiXiangScans','http://www.sixiangscans.com')
 	AddWebsiteModule('bb35ade3f2bd46b1a6617756eddafb8d', 'NinjaScans', 'https://ninjascans.com')
