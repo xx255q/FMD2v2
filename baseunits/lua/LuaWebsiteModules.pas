@@ -281,7 +281,7 @@ begin
     end;
 end;
 
-function DoGetPageNumber(const ADownloadThread: TDownloadThread;
+function DoGetPageNumber(const ATaskThread: TTaskThread;
   const AURL: String; const AModule: TModuleContainer): Boolean;
 var
   L: TLuaWebsiteModuleHandler;
@@ -290,8 +290,8 @@ begin
   with TLuaWebsiteModule(AModule.LuaModule) do
     try
       L := GetLuaWebsiteModuleHandler(AModule);
-      L.LoadObject('TASK', ADownloadThread.Task.Container, @luaDownloadTaskMetaTable);
-      L.LoadObject('HTTP', ADownloadThread.HTTP, @luaHTTPSendThreadAddMetaTable);
+      L.LoadObject('TASK', ATaskThread.Container, @luaDownloadTaskMetaTable);
+      L.LoadObject('HTTP', ATaskThread.HTTP, @luaHTTPSendThreadAddMetaTable);
       luaPushStringGlobal(L.Handle, 'URL', AURL);
 
       L.CallFunction(OnGetPageNumber);

@@ -40,7 +40,7 @@ type
     const AModule: TModuleContainer): Byte;
 
   TOnTaskStart = function(const ATask: TTaskContainer; const AModule: TModuleContainer): Boolean;
-  TOnGetPageNumber = function(const ADownloadThread: TDownloadThread;
+  TOnGetPageNumber = function(const ATaskThread: TTaskThread;
     const AURL: String; const AModule: TModuleContainer): Boolean;
   TOnGetImageURL = function(const ADownloadThread: TDownloadThread;
     const AURL: String; const AModule: TModuleContainer): Boolean;
