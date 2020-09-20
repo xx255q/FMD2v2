@@ -72,6 +72,7 @@ type
 
   THTTPSendThread = class(THTTPSend)
   private
+    FRunning: Boolean;
     FURL: String;
     FOwner: TBaseThread;
     FRetryCount: Integer;
@@ -104,7 +105,8 @@ type
     procedure AddServerCookies(const AURL, ACookies: String; const AServerDate: TDateTime); inline;
     function GetLastModified: TDateTime;
     function GetOriginalFileName: String;
-    function ThreadTerminated: Boolean;
+    function ThreadTerminated: Boolean; inline;
+    procedure Stop; inline;
     procedure RemoveCookie(const CookieName: String);
     procedure SetProxy(const ProxyType, Host, Port, User, Pass: String);
     procedure GetProxy(var ProxyType, Host, Port, User, Pass: String);
@@ -125,6 +127,7 @@ type
     property MaxRedirect: Integer read FMaxRedirect write FMaxRedirect;
     property LastURL: String read FURL;
     property EnabledCookies: Boolean read FEnabledCookies write FEnabledCookies;
+    property Running: Boolean read FRunning;
   public
     OnBeforeHTTPMethod: THTTPMethodEvent;
     OnAfterHTTPMethod: THTTPMethodEvent;
@@ -449,11 +452,7 @@ end;
 
 procedure THTTPSendThread.OnOwnerTerminate(Sender: TObject);
 begin
-  try
-    Sock.Tag := 1;
-    Sock.CloseSocket;
-  except
-  end;
+  Stop;
   if Assigned(FOwnerCustomTerminate) then
     FOwnerCustomTerminate(Sender);
 end;
@@ -497,6 +496,7 @@ end;
 constructor THTTPSendThread.Create(const AOwner: TBaseThread);
 begin
   inherited Create;
+  FRunning:=False;
   LuaHandler := nil;
   KeepAlive := True;
   if Trim(DefaultUserAgent) <> '' then
@@ -559,6 +559,7 @@ begin
   amethod:=Method;
   aurl:=URL;
   try
+    FRunning:=True;
     if Assigned(OnBeforeHTTPMethod) then
       OnBeforeHTTPMethod(Self, amethod, aurl);
     SetHTTPCookies;
@@ -571,6 +572,7 @@ begin
       OnAfterHTTPMethod(Self, amethod, aurl);
   except
   end;
+  FRunning:=False;
 end;
 
 function THTTPSendThread.HTTPRequest(const Method, URL: String; const Response: TObject): Boolean;
@@ -805,6 +807,15 @@ begin
     Result := FOwner.IsTerminated
   else
     Result := False;
+end;
+
+procedure THTTPSendThread.Stop;
+begin
+  try
+    Sock.Tag := 1;
+    Sock.CloseSocket;
+  except
+  end;
 end;
 
 procedure THTTPSendThread.RemoveCookie(const CookieName: String);
