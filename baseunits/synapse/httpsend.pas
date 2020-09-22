@@ -392,6 +392,7 @@ var
   UsingProxy: boolean;
   l: TStringList;
   x: integer;
+  UnknownPort: Boolean;
 begin
   {initial values}
   Result := False;
@@ -478,14 +479,19 @@ begin
     s := '[' + Host + ']'
   else
     s := Host;
-  if FAddPortNumberToHost
-    and (((Port <> '80') and (UpperCase(Prot) = 'HTTP'))
-    or ((Port <> '443') and (UpperCase(Prot) = 'HTTPS'))) then
+  UnknownPort := (((Port <> '80') and (UpperCase(Prot) = 'HTTP'))
+    or ((Port <> '443') and (UpperCase(Prot) = 'HTTPS')));
+  if FAddPortNumberToHost and UnknownPort then
     FHeaders.Insert(0, 'Host: ' + s + ':' + Port)
   else
     FHeaders.Insert(0, 'Host: ' + s);
   if UsingProxy then
-    URI := Prot + '://' + s + ':' + Port + URI;
+  begin
+    if UnknownPort then
+      URI := Prot + '://' + s + ':' + Port + URI
+    else
+      URI := Prot + '://' + s  + URI;
+  end;
   if URI = '/*' then
     URI := '*';
   if FProtocol = '0.9' then
