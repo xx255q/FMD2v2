@@ -31,7 +31,7 @@ function GetInfo()
 		if (id == '74674292e13c496699b8c5e4efd4b583')	-- mangakakalot
 			or (id == 'ed4175a390e74aedbe4b4f622f3767c6')	-- mangakakalots
 		then
-			MANGAINFO.Title     = x.XPathString('//div[@class="manga-info-pic"]/img/@alt')
+			MANGAINFO.Title     = x.XPathString('//meta[@property="og:title"]/@content'):gsub(' Manga %- Mangakakalot.*$','')
 			MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//div[@class="manga-info-pic"]/img/@src'))
 			MANGAINFO.Authors   = x.XPathStringAll('//ul[@class="manga-info-text"]/li[contains(., "Author")]/a')
 			MANGAINFO.Genres    = x.XPathStringAll('//ul[@class="manga-info-text"]/li[contains(., "Genre")]/a')
