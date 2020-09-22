@@ -4,6 +4,9 @@ https://github.com/fmd-project-team/FMD
 Changelog:
 ([!] Important, [+] Addition, [-] Removal, [*] Fix/Change, [?] Feedback needed)
 
+2.0.25.0 (23.09.2020)
+[*] Various changes and bug fixes
+
 2.0.24.0 (17.09.2020)
 [*] Various changes and bug fixes
 
