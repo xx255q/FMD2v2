@@ -1021,6 +1021,10 @@ msgstr "Hapus data lokal duplikat saat memutakhirkan daftar komik"
 msgid "Use proxy"
 msgstr "Gunakan proxy"
 
+#: tmainform.cboptionvacuumdatabasesonexit.caption
+msgid "Vacuum databases on exit"
+msgstr ""
+
 #: tmainform.cbpngcompressionlevel.text
 msgctxt "tmainform.cbpngcompressionlevel.text"
 msgid "Fastest"

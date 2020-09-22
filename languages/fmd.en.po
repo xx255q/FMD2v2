@@ -1017,6 +1017,10 @@ msgstr "Remove duplicate local data when updating manga list"
 msgid "Use proxy"
 msgstr "Use proxy"
 
+#: tmainform.cboptionvacuumdatabasesonexit.caption
+msgid "Vacuum databases on exit"
+msgstr ""
+
 #: tmainform.cbpngcompressionlevel.text
 msgctxt "tmainform.cbpngcompressionlevel.text"
 msgid "Fastest"

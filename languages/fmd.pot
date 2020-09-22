@@ -956,6 +956,10 @@ msgstr ""
 msgid "Use proxy"
 msgstr ""
 
+#: tmainform.cboptionvacuumdatabasesonexit.caption
+msgid "Vacuum databases on exit"
+msgstr ""
+
 #: tmainform.cbpngcompressionlevel.text
 msgid "Fastest"
 msgstr ""

@@ -1014,6 +1014,10 @@ msgstr "Κατάργηση διπλότυπων τοπικών δεδομένω�
 msgid "Use proxy"
 msgstr "Χρήση διακομιστή μεσολάβησης"
 
+#: tmainform.cboptionvacuumdatabasesonexit.caption
+msgid "Vacuum databases on exit"
+msgstr ""
+
 #: tmainform.cbpngcompressionlevel.text
 msgctxt "tmainform.cbpngcompressionlevel.text"
 msgid "Fastest"

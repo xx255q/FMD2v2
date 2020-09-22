@@ -1024,6 +1024,10 @@ msgstr "Supprimer les doublons locaux lors de la mise à jour du catalogue"
 msgid "Use proxy"
 msgstr "Utiliser un proxy"
 
+#: tmainform.cboptionvacuumdatabasesonexit.caption
+msgid "Vacuum databases on exit"
+msgstr ""
+
 #: tmainform.cbpngcompressionlevel.text
 msgctxt "tmainform.cbpngcompressionlevel.text"
 msgid "Fastest"

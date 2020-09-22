@@ -67,6 +67,7 @@ type
     cbOptionShowDownloadToolbar: TCheckBox;
     cbOptionShowDownloadToolbarLeft: TCheckBox;
     cbOptionShowDownloadToolbarDeleteAll: TCheckBox;
+    cbOptionVacuumDatabasesOnExit: TCheckBox;
     cbOptionUpdateListNoMangaInfo: TCheckBox;
     cbOptionDigitVolume: TCheckBox;
     cbOptionDigitChapter: TCheckBox;
@@ -1428,16 +1429,15 @@ end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
+  SilentThreadManager.Free;
+  DLManager.Free;
+  FavoriteManager.Free;
+  dataProcess.Free;
+
   SetLength(ChapterList, 0);
-  FreeAndNil(mangaInfo);
-
-  FreeAndNil(SilentThreadManager);
-  FreeAndNil(DLManager);
-  FreeAndNil(FavoriteManager);
-  FreeAndNil(dataProcess);
-
-  FreeAndNil(gifWaiting);
-  FreeAndNil(mangaCover);
+  mangaInfo.Free;
+  gifWaiting.Free;
+  mangaCover.Free;
 
   if isNormalExit then
     Logger.Send(QuotedStrd(Application.Title)+' exit normally [PID:'+IntToStr(GetProcessID)+']')
@@ -1971,6 +1971,10 @@ begin
     WebsiteSettingsForm.LoadWebsiteSettings;
     AccountManagerForm.LoadAccounts;
 
+    //restore everything after all modules loaded
+    DLManager.Restore;
+    FavoriteManager.Restore;
+
     //load settings_file
     LoadMangaOptions;
     LoadOptions;
@@ -1980,9 +1984,6 @@ begin
       Logger.SendException('tmStartup Error!', E);
   end;
 
-  //restore everything after all modules loaded
-  DLManager.Restore;
-  FavoriteManager.Restore;
 
   if OptionAutoCheckLatestVersion then
   begin
@@ -5107,6 +5108,7 @@ begin
     miChapterListHighlight.Checked := ReadBool('general', 'HighlightDownloadedChapters', True);
     miChapterListAscending.Checked := ReadBool('general', 'SortChapterListAscending', True);
     miChapterListDescending.Checked := not miChapterListAscending.Checked;
+    cbOptionVacuumDatabasesOnExit.Checked := ReadBool('general', 'VacuumDatabasesOnExit', False);
 
     // view
     cbOptionShowDownloadToolbar.Checked := ReadBool('view', 'ShowDownloadsToolbar', True);
@@ -5262,6 +5264,7 @@ begin
       WriteBool('general', 'AddAsStopped', cbAddAsStopped.Checked);
       WriteBool('general', 'HighlightNewManga', miHighlightNewManga.Checked);
       WriteBool('general', 'HighlightDownloadedChapters', miChapterListHighlight.Checked);
+      WriteBool('general', 'VacuumDatabasesOnExit', cbOptionVacuumDatabasesOnExit.Checked);
 
       // view
       WriteBool('view', 'ShowDownloadsToolbar', cbOptionShowDownloadToolbar.Checked);
@@ -5398,12 +5401,12 @@ begin
       if cbSelectManga.Items.Count > 0 then
       begin
         cbSelectManga.ItemIndex := 0;
-	// Disable download manga list dialog when applying options:
-	b := cbOptionShowDownloadMangalistDialog.Checked;
-	cbOptionShowDownloadMangalistDialog.Checked := False;
+        // Disable download manga list dialog when applying options:
+  	    b := cbOptionShowDownloadMangalistDialog.Checked;
+	      cbOptionShowDownloadMangalistDialog.Checked := False;
         cbSelectMangaEditingDone(cbSelectManga);
-	// Revert state back to like it was before:
-	cbOptionShowDownloadMangalistDialog.Checked := b;
+	      // Revert state back to like it was before:
+	      cbOptionShowDownloadMangalistDialog.Checked := b;
       end
       else
       begin
@@ -5437,6 +5440,8 @@ begin
     OptionEnableLoadCover := cbOptionEnableLoadCover.Checked;
     OptionDeleteCompletedTasksOnClose := cbOptionDeleteCompletedTasksOnClose.Checked;
     OptionSortDownloadsWhenAddingNewDownloadTasks := cbOptionSortDownloadsWhenAddingNewDownloadTasks.Checked;
+    DLManager.DB.AutoVacuum:=cbOptionVacuumDatabasesOnExit.Checked;
+    FavoriteManager.DB.AutoVacuum:=cbOptionVacuumDatabasesOnExit.Checked;
 
     //view
     ToolBarDownload.Visible := cbOptionShowDownloadToolbar.Checked;

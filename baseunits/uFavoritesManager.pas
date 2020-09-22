@@ -161,6 +161,7 @@ type
     property isAuto: Boolean read FIsAuto write FIsAuto;
     property isRunning: Boolean read FIsRunning write FIsRunning;
     property Favorite[const Index: Integer]: TFavoriteContainer read GetFavorite; default;
+    property DB: TFavoritesDB read FFavoritesDB;
   end;
 
 resourcestring

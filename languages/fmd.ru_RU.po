@@ -1021,6 +1021,10 @@ msgstr "Удалять повторяющиеся локальные данны�
 msgid "Use proxy"
 msgstr "Использовать прокси"
 
+#: tmainform.cboptionvacuumdatabasesonexit.caption
+msgid "Vacuum databases on exit"
+msgstr ""
+
 #: tmainform.cbpngcompressionlevel.text
 msgctxt "tmainform.cbpngcompressionlevel.text"
 msgid "Fastest"

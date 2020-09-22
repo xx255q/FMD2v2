@@ -1033,6 +1033,10 @@ msgstr "Usuwanie zduplikowane lokalne dane podczas aktualizacji listy mang"
 msgid "Use proxy"
 msgstr "Użyj proxy"
 
+#: tmainform.cboptionvacuumdatabasesonexit.caption
+msgid "Vacuum databases on exit"
+msgstr ""
+
 #: tmainform.cbpngcompressionlevel.text
 msgctxt "tmainform.cbpngcompressionlevel.text"
 msgid "Fastest"

@@ -272,6 +272,7 @@ type
     property SortColumn: Integer read FSortColumn write FSortColumn;
     property TransferRate: Integer read GetTransferRate;
     property Task[const TaskId: Integer]: TTaskContainer read GetTask; default;
+    property DB: TDownloadsDB read FDownloadsDB;
   end;
 
 resourcestring
@@ -1359,24 +1360,28 @@ begin
   inherited Create;
   InitCriticalSection(CS_Task);
   InitCriticalSection(CS_ItemsActiveTask);
-  ForceDirectories(USERDATA_FOLDER);
-  DownloadedChapters := TDownloadedChaptersDB.Create;
-  DownloadedChapters.Filename := DOWNLOADEDCHAPTERSDB_FILE;
-  DownloadedChapters.OnError := @MainForm.ExceptionHandler;
-  DownloadedChapters.Open;
+  InitCriticalSection(CS_StatusCount);
 
-  Items := TTaskContainers.Create;
-  ItemsActiveTask := TTaskContainers.Create;
   isFinishTaskAccessed := False;
   isRunningBackup := False;
   isRunningBackupDownloadedChaptersList := False;
   isReadyForExit := False;
   FUpdateOrderCount:=0;
 
-  InitCriticalSection(CS_StatusCount);
   for ds := Low(StatusCount) to High(StatusCount) do
     StatusCount[ds] := 0;
   DisabledCount := 0;
+
+  Items := TTaskContainers.Create;
+  ItemsActiveTask := TTaskContainers.Create;
+
+  ForceDirectories(USERDATA_FOLDER);
+  DownloadedChapters := TDownloadedChaptersDB.Create;
+  DownloadedChapters.AutoVacuum:=False;
+  DownloadedChapters.Filename := DOWNLOADEDCHAPTERSDB_FILE;
+  DownloadedChapters.OnError := @MainForm.ExceptionHandler;
+  DownloadedChapters.Open;
+
   FDownloadsDB := TDownloadsDB.Create(DOWNLOADSDB_FILE);
   FDownloadsDB.Open(False, False);
 end;

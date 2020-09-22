@@ -1023,6 +1023,10 @@ msgstr "Manga listesini güncellerken çift yerel veriyi kaldır"
 msgid "Use proxy"
 msgstr "Proxy kullan"
 
+#: tmainform.cboptionvacuumdatabasesonexit.caption
+msgid "Vacuum databases on exit"
+msgstr ""
+
 #: tmainform.cbpngcompressionlevel.text
 msgctxt "tmainform.cbpngcompressionlevel.text"
 msgid "Fastest"
