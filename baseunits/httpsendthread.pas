@@ -765,12 +765,15 @@ end;
 
 procedure THTTPSendThread.MergeCookies(const ACookies: String);
 var
-  s: String;
+  v,s: String;
 begin
-  for s in ACookies.Split(';') do
+  for v in ACookies.Split(';') do
   begin
+    s:=v.Trim;
     if Pos('=', s) > 0 then
-      Cookies.Values[Trim(SeparateLeft(s,'='))] := Trim(SeparateRight(s,'='));
+      Cookies.Values[Trim(SeparateLeft(s,'='))] := Trim(SeparateRight(s,'='))
+    else if Cookies.IndexOf(s)=-1 then
+      Cookies.Add(s);
   end;
 end;
 
@@ -920,7 +923,7 @@ begin
   ResetBasic;
   Headers.Values['DNT'] := '1';
   Headers.Values['Upgrade-Insecure-Requests'] := '1';
-  Headers.Values['Accept'] := 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8';
+  Headers.Values['Accept'] := 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8';
   Headers.Values['Accept-Language'] := 'en-US,en;q=0.5';
   Headers.Values['Accept-Charset'] := 'utf-8';
 end;
