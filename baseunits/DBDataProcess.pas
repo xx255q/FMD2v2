@@ -316,7 +316,7 @@ begin
   FRecordCount:=0;
   bsql:=Trim(FQuery.SQL.Text);
   if UpperCase(LeftStr(bsql,8))='SELECT *' then
-    FRecordCount:=StrToIntDef(FConn.ExecQuery('SELECT COUNT("link") '+copy(bsql,9,length(bsql))),0);
+    FRecordCount:=StrToIntDef(FConn.ExecuteQuery('SELECT COUNT("link") '+copy(bsql,9,length(bsql))),0);
 end;
 
 procedure TDBDataProcess.AddSQLCond(const sqltext: String; useOR: Boolean);

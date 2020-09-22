@@ -1377,7 +1377,6 @@ begin
 
   ForceDirectories(USERDATA_FOLDER);
   DownloadedChapters := TDownloadedChaptersDB.Create;
-  DownloadedChapters.AutoVacuum:=False;
   DownloadedChapters.Filename := DOWNLOADEDCHAPTERSDB_FILE;
   DownloadedChapters.OnError := @MainForm.ExceptionHandler;
   DownloadedChapters.Open;
@@ -1487,8 +1486,6 @@ begin
 end;
 
 procedure TDownloadManager.DBUpdateOrder;
-const
-  MAXSQLCOUNT=999;
 var
   i: Integer;
 begin
@@ -1498,9 +1495,9 @@ begin
     if i<>Order then
     begin
       Order:=i;
-      FDownloadsDB.tempSQL+='UPDATE "downloads" SET "order"='''+IntToStr(Order)+''' WHERE "id"='''+DlId+''';';
+      FDownloadsDB.tempSQL+='UPDATE "downloads" SET "order"='+PrepSQLValue(Order)+' WHERE "id"='''+DlId+''';';
       Inc(FDownloadsDB.tempSQLcount);
-      if FDownloadsDB.tempSQLcount>MAXSQLCOUNT then
+      if FDownloadsDB.tempSQLcount>MAX_BIG_SQL_FLUSH then
         FDownloadsDB.FlushSQL;
     end;
   end;

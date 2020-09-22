@@ -100,28 +100,28 @@ function TDownloadsDB.Add(
   ): String;
 begin
   Connection.ExecuteSQL(
-    'INSERT INTO "downloads" ("enabled","order","taskstatus","chapterptr","numberofpages","currentpage","moduleid","link","title","status","progress","saveto","dateadded","datelastdownloaded","chapterslinks","chaptersnames","pagelinks","pagecontainerlinks","filenames","customfilenames","chaptersstatus") VALUES (''' +
-    BoolToStr(Aenabled,'1','0') + ''',''' +
-    IntToStr(Aorder) + ''',''' +
-    IntToStr(Ataskstatus) + ''',''' +
-    IntToStr(Achapterptr) + ''',''' +
-    IntToStr(Anumberofpages) + ''',''' +
-    IntToStr(Acurrentpage) + ''',''' +
-    Amoduleid + ''',' +
-    QuotedStr(Alink) + ',' +
-    QuotedStr(Atitle) + ',' +
-    QuotedStr(Astatus) + ',' +
-    QuotedStr(Aprogress) + ',' +
-    QuotedStr(Asaveto) + ',' +
-    QuotedStr(Adateadded) + ',' +
-    QuotedStr(Adatelastdownloaded) + ',' +
-    QuotedStr(Achapterslinks) + ',' +
-    QuotedStr(Achaptersnames) + ',' +
-    QuotedStr(Apagelinks) + ',' +
-    QuotedStr(Apagecontainerlinks) + ',' +
-    QuotedStr(Afilenames) + ',' +
-    QuotedStr(Acustomfilenames) + ',' +
-    QuotedStr(Achaptersstatus) + ');');
+    'INSERT INTO "downloads" ("enabled","order","taskstatus","chapterptr","numberofpages","currentpage","moduleid","link","title","status","progress","saveto","dateadded","datelastdownloaded","chapterslinks","chaptersnames","pagelinks","pagecontainerlinks","filenames","customfilenames","chaptersstatus") VALUES (' +
+    PrepSQLValue(Aenabled) + ',' +
+    PrepSQLValue(Aorder) + ',' +
+    PrepSQLValue(Ataskstatus) + ',' +
+    PrepSQLValue(Achapterptr) + ',' +
+    PrepSQLValue(Anumberofpages) + ',' +
+    PrepSQLValue(Acurrentpage) + ',' +
+    PrepSQLValue(Amoduleid) + ',' +
+    PrepSQLValue(Alink) + ',' +
+    PrepSQLValue(Atitle) + ',' +
+    PrepSQLValue(Astatus) + ',' +
+    PrepSQLValue(Aprogress) + ',' +
+    PrepSQLValue(Asaveto) + ',' +
+    PrepSQLValue(Adateadded) + ',' +
+    PrepSQLValue(Adatelastdownloaded) + ',' +
+    PrepSQLValue(Achapterslinks) + ',' +
+    PrepSQLValue(Achaptersnames) + ',' +
+    PrepSQLValue(Apagelinks) + ',' +
+    PrepSQLValue(Apagecontainerlinks) + ',' +
+    PrepSQLValue(Afilenames) + ',' +
+    PrepSQLValue(Acustomfilenames) + ',' +
+    PrepSQLValue(Achaptersstatus) + ');');
   Result:=IntToStr(sqlite3_last_insert_rowid(Connection.Handle));
 end;
 
@@ -133,28 +133,29 @@ procedure TDownloadsDB.Update(
   const Apagelinks,Apagecontainerlinks,Afilenames,Achaptersstatus:String
   );
 begin
-  AppendSQLSafe('UPDATE "downloads" SET "taskstatus"=''' +IntToStr(Ataskstatus) +
-    ''',"chapterptr"=''' +     IntToStr(Achapterptr) +
-    ''',"numberofpages"=''' +  IntToStr(Anumberofpages) +
-    ''',"currentpage"=''' +    IntToStr(Acurrentpage) +
-    ''',"status"=' +           QuotedStr(Astatus) +
-    ',"progress"=' +           QuotedStr(Aprogress) +
-    ',"datelastdownloaded"=' + QuotedStr(Adatelastdownloaded) +
-    ',"pagelinks"=' +          QuotedStr(Apagelinks) +
-    ',"pagecontainerlinks"=' + QuotedStr(Apagecontainerlinks) +
-    ',"filenames"=' +          QuotedStr(Afilenames) +
-    ',"chaptersstatus"=' +     QuotedStr(Achaptersstatus) +
+  AppendSQLSafe('UPDATE "downloads" SET "taskstatus"=' +
+    PrepSQLValue(Ataskstatus) +
+    ',"chapterptr"=' +         PrepSQLValue(Achapterptr) +
+    ',"numberofpages"=' +      PrepSQLValue(Anumberofpages) +
+    ',"currentpage"=' +        PrepSQLValue(Acurrentpage) +
+    ',"status"=' +             PrepSQLValue(Astatus) +
+    ',"progress"=' +           PrepSQLValue(Aprogress) +
+    ',"datelastdownloaded"=' + PrepSQLValue(Adatelastdownloaded) +
+    ',"pagelinks"=' +          PrepSQLValue(Apagelinks) +
+    ',"pagecontainerlinks"=' + PrepSQLValue(Apagecontainerlinks) +
+    ',"filenames"=' +          PrepSQLValue(Afilenames) +
+    ',"chaptersstatus"=' +     PrepSQLValue(Achaptersstatus) +
     ' WHERE "id"='''+Aid+''';');
 end;
 
 procedure TDownloadsDB.UpdateEnabled(const Aid:String;const Aenabled:Boolean);
 begin
-  AppendSQL('UPDATE "downloads" SET "enabled"='''+BoolToStr(Aenabled,'1','0')+''' WHERE "id"='''+Aid+''';');
+  AppendSQL('UPDATE "downloads" SET "enabled"='+PrepSQLValue(Aenabled)+' WHERE "id"='''+Aid+''';');
 end;
 
 procedure TDownloadsDB.UpdateStatus(const Aid:String;const Ataskstatus:Integer;const Astatus:String);
 begin
-  AppendSQL('UPDATE "downloads" SET "taskstatus"='''+IntToStr(Ataskstatus)+''',"status"='+QuotedStr(Astatus)+' WHERE "id"='''+Aid+''';');
+  AppendSQL('UPDATE "downloads" SET "taskstatus"='+PrepSQLValue(Ataskstatus)+',"status"='+PrepSQLValue(Astatus)+' WHERE "id"='''+Aid+''';');
 end;
 
 procedure TDownloadsDB.Delete(const Aid:String);

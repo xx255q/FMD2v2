@@ -17,11 +17,11 @@ type
     procedure Add(const Aid:String;const AOrder:Integer;const AEnabled:Boolean;
       const AModuleID,ALink,ATitle,AStatus,ACurrentChapter,ADownloadedChapterList,ASaveTo:String;
       const ADateAdded:TDateTime); inline;
-    procedure Update(const Aid:String;const AStatus,ACurrentChapter,ADownloadedChapterList:String;
-      const ADateLastUpdated:TDateTime); inline;
+    procedure UpdateLastUpdated(const Aid,ADownloadedChapterList:String;const ADateLastUpdated:TDateTime); inline;
+    procedure UpdateOrder(const Aid:String;const Aorder:Integer); inline;
     procedure UpdateTitle(const Aid,Atitle:String); inline;
     procedure UpdateEnabled(const Aid:String;const AEnabled:Boolean); inline;
-    procedure UpdateDateLastChecked(const Aid:String;const ADateLastChecked:TDateTime);
+    procedure UpdateLastChecked(const Aid,Astatus,AcurrentChapter:String;const ADateLastChecked:TDateTime);
     procedure UpdateSaveTo(const Aid,ASaveTo:String);
     procedure Delete(const Aid:String); inline;
   end;
@@ -72,57 +72,60 @@ procedure TFavoritesDB.Add(const Aid: String; const AOrder: Integer; const AEnab
   const AModuleID, ALink, ATitle, AStatus, ACurrentChapter, ADownloadedChapterList,
   ASaveTo: String; const ADateAdded: TDateTime);
 begin
-  AppendSQL('INSERT OR REPLACE INTO "favorites" (' +
-    FieldsParams +
-    ') VALUES (' +
-    QuotedStr(Aid) + ',' +
-    QuotedStr(AOrder) + ',' +
-    QuotedStr(AEnabled) + ',' +
-    QuotedStr(AModuleID) + ',' +
-    QuotedStr(ALink) + ',' +
-    QuotedStr(ATitle) + ',' +
-    QuotedStr(AStatus) + ',' +
-    QuotedStr(ACurrentChapter)  + ',' +
-    QuotedStr(ADownloadedChapterList) + ',' +
-    QuotedStr(ASaveTo) + ',' +
-    QuotedStr(ADateAdded) + ',' +
-    QuotedStr(ADateAdded) + ',' +
-    QuotedStr(ADateAdded) + ');');
+  AppendSQL('INSERT OR REPLACE INTO "favorites" ('+FieldsParams+') VALUES ('+
+    PrepSQLValue(Aid) + ',' +
+    PrepSQLValue(AOrder) + ',' +
+    PrepSQLValue(AEnabled) + ',' +
+    PrepSQLValue(AModuleID) + ',' +
+    PrepSQLValue(ALink) + ',' +
+    PrepSQLValue(ATitle) + ',' +
+    PrepSQLValue(AStatus) + ',' +
+    PrepSQLValue(ACurrentChapter)  + ',' +
+    PrepSQLValue(ADownloadedChapterList) + ',' +
+    PrepSQLValue(ASaveTo) + ',' +
+    PrepSQLValue(ADateAdded) + ',' +
+    PrepSQLValue(ADateAdded) + ',' +
+    PrepSQLValue(ADateAdded) + ');');
 end;
 
-procedure TFavoritesDB.Update(const Aid: String; const AStatus, ACurrentChapter,
-  ADownloadedChapterList: String; const ADateLastUpdated: TDateTime);
+procedure TFavoritesDB.UpdateLastUpdated(const Aid,ADownloadedChapterList:String;const ADateLastUpdated:TDateTime);
 begin
-  AppendSQL('UPDATE "favorites" SET "status"='+QuotedStr(AStatus)+
-    ',"currentchapter"='+QuotedStr(ACurrentChapter)+
-    ',"downloadedchapterlist"='+QuotedStr(ADownloadedChapterList)+
-    ',"datelastupdated"='+QuotedStr(ADateLastUpdated)+
-    ' WHERE "id"='+QuotedStr(Aid)+';');
+  AppendSQL('UPDATE "favorites" SET "downloadedchapterlist"='+PrepSQLValue(ADownloadedChapterList)+
+    ',"datelastupdated"='+PrepSQLValue(ADateLastUpdated)+
+    ' WHERE "id"='+PrepSQLValue(Aid)+';');
+end;
+
+procedure TFavoritesDB.UpdateOrder(const Aid:String;const Aorder:Integer);
+begin
+  AppendSQL('UPDATE "favorites" SET "Order"='+PrepSQLValue(Aorder)+' WHERE "id"='+PrepSQLValue(Aid)+';');
 end;
 
 procedure TFavoritesDB.UpdateTitle(const Aid, Atitle: String);
 begin
-  AppendSQLSafe('UPDATE "favorites" SET "title"='+QuotedStr(Atitle)+' WHERE "id"='+QuotedStr(Aid)+';');
+  AppendSQLSafe('UPDATE "favorites" SET "title"='+PrepSQLValue(Atitle)+' WHERE "id"='+PrepSQLValue(Aid)+';');
 end;
 
 procedure TFavoritesDB.UpdateEnabled(const Aid: String; const AEnabled: Boolean);
 begin
-  AppendSQL('UPDATE "favorites" SET "enabled"='+QuotedStr(AEnabled)+' WHERE "id"='+QuotedStr(Aid)+';');
+  AppendSQL('UPDATE "favorites" SET "enabled"='+PrepSQLValue(AEnabled)+' WHERE "id"='+PrepSQLValue(Aid)+';');
 end;
 
-procedure TFavoritesDB.UpdateDateLastChecked(const Aid: String; const ADateLastChecked: TDateTime);
+procedure TFavoritesDB.UpdateLastChecked(const Aid,Astatus,AcurrentChapter:String;const ADateLastChecked:TDateTime);
 begin
-  AppendSQL('UPDATE "favorites" SET "datelastchecked"='+QuotedStr(ADateLastChecked)+' WHERE "id"='+QuotedStr(Aid)+';');
+  AppendSQL('UPDATE "favorites" SET "status"='+PrepSQLValue(Astatus)+
+   ',"currentchapter"='+PrepSQLValue(AcurrentChapter)+
+   ',"datelastchecked"='+PrepSQLValue(ADateLastChecked)+
+   ' WHERE "id"='+PrepSQLValue(Aid)+';');
 end;
 
 procedure TFavoritesDB.UpdateSaveTo(const Aid, ASaveTo: String);
 begin
-  AppendSQL('UPDATE "favorites" SET "saveto"='+QuotedStr(ASaveTo)+' WHERE "id"='+QuotedStr(Aid)+';');
+  AppendSQL('UPDATE "favorites" SET "saveto"='+PrepSQLValue(ASaveTo)+' WHERE "id"='+PrepSQLValue(Aid)+';');
 end;
 
 procedure TFavoritesDB.Delete(const Aid: String);
 begin
-  AppendSQL('DELETE FROM "favorites" WHERE "id"='+QuotedStr(aid)+';');
+  AppendSQL('DELETE FROM "favorites" WHERE "id"='+PrepSQLValue(aid)+';');
 end;
 
 end.

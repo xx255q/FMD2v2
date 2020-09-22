@@ -13,7 +13,7 @@ interface
 uses
   Classes, SysUtils, fgl, Dialogs, ExtCtrls,
   LazFileUtils, uBaseUnit, uData, uDownloadsManager, WebsiteModules, FMDOptions,
-  httpsendthread, FavoritesDB, BaseThread, MultiLog, SimpleException, VirtualTrees;
+  httpsendthread, FavoritesDB, BaseThread, SQLiteData, MultiLog, SimpleException, VirtualTrees;
 
 type
   TFavoriteManager = class;
@@ -91,7 +91,7 @@ type
     procedure DBUpdateEnabled; inline;
     procedure DBUpdateDateLastChecked; inline;
     procedure DBUpdateSaveTo; inline;
-    procedure DBUpdate; inline;
+    procedure DBUpdateLastUpdated; inline;
   published
     property Enabled: Boolean read FEnabled write SetEnabled;
   end;
@@ -252,7 +252,8 @@ end;
 
 procedure TFavoriteContainer.DBUpdateDateLastChecked;
 begin
-  FManager.FFavoritesDB.UpdateDateLastChecked(Fid,FavoriteInfo.DateLastChecked);
+  with FavoriteInfo do
+    FManager.FFavoritesDB.UpdateLastChecked(Fid,Status,CurrentChapter,DateLastChecked);
 end;
 
 procedure TFavoriteContainer.DBUpdateSaveTo;
@@ -260,10 +261,10 @@ begin
   FManager.FFavoritesDB.UpdateSaveTo(Fid,FavoriteInfo.SaveTo);
 end;
 
-procedure TFavoriteContainer.DBUpdate;
+procedure TFavoriteContainer.DBUpdateLastUpdated;
 begin
   with FavoriteInfo do
-    FManager.FFavoritesDB.Update(Fid,Status,CurrentChapter,DownloadedChapterList,DateLastUpdated);
+    FManager.FFavoritesDB.UpdateLastUpdated(Fid,DownloadedChapterList,DateLastUpdated);
 end;
 
 { TFavoriteThread }
@@ -493,7 +494,10 @@ begin
 
   // reset the ui
   if not isExiting then
+  begin
+    FManager.Backup;
     Synchronize(SyncFinishChecking);
+  end;
 end;
 
 procedure TFavoriteTask.UpdateBtnCaption(Cap: String);
@@ -607,8 +611,6 @@ begin
 end;
 
 procedure TFavoriteManager.DBUpdateOrder;
-const
-  MAXSQLCOUNT=999;
 var
   i: Integer;
 begin
@@ -618,9 +620,9 @@ begin
     if i<>FOrder then
     begin
       FOrder:=i;
-      FFavoritesDB.tempSQL+='UPDATE "favorites" SET "order"='''+IntToStr(FOrder)+''' WHERE "id"='+QuotedStr(Fid)+';';
+      FFavoritesDB.tempSQL+='UPDATE "favorites" SET "order"='+PrepSQLValue(FOrder)+' WHERE "id"='+PrepSQLValue(Fid)+';';
       Inc(FFavoritesDB.tempSQLcount);
-      if FFavoritesDB.tempSQLcount>MAXSQLCOUNT then
+      if FFavoritesDB.tempSQLcount>MAX_BIG_SQL_FLUSH then
         FFavoritesDB.FlushSQL;
     end;
   end;
@@ -897,7 +899,7 @@ begin
                   // add to downloaded chapter list in downloadmanager
                   DLManager.DownloadedChapters.Chapters[FavoriteInfo.ModuleID, FavoriteInfo.Link] := chapterLinks.Text;
                 end;
-                DBUpdate;
+                DBUpdateLastUpdated;
                 // free unused objects
                 FreeAndNil(NewMangaInfo);
                 FreeAndNil(NewMangaInfoChaptersPos);
@@ -937,7 +939,6 @@ begin
   finally
     UnLock;
   end;
-  Backup;
 end;
 
 function TFavoriteManager.LocateManga(const ATitle, AWebsite: String): TFavoriteContainer;

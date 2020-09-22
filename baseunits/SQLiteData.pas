@@ -5,7 +5,7 @@ unit SQLiteData;
 interface
 
 uses
-  SysUtils, Classes, LazFileUtils, strutils, sqlite3conn, sqldb, SQLite3Dyn;
+  SysUtils, Classes, LazFileUtils, MultiLog, strutils, sqlite3conn, sqldb, DB, SQLite3Dyn;
 
 type
 
@@ -14,10 +14,10 @@ type
   TSQLite3ConnectionH = class(TSQLite3Connection)
   protected
     procedure DoInternalDisconnect; override;
+    procedure sqlite3_handlerror;
   public
     procedure ExecuteSQL(const asql: string); inline;
-    function ExecQuery(const asql: string): string; inline;
-    function ExecuteQuery(const asql: string): TArrayStringArray; inline;
+    function ExecuteQuery(const asql: string): string; inline;
     property Handle read GetHandle;
     property Statements;
   end;
@@ -82,6 +82,11 @@ type
     property OnError: TExceptionEvent read FOnError write SetOnError;
   end;
 
+const
+  MAX_SQL_FLUSH=(1 shl 8)-1;
+  MAX_BIG_SQL_FLUSH=(1 shl {$ifdef CPU64}14{$else}12{$endif})-1;
+
+type
   { TSQLiteDataWA }
 
   TSQLiteDataWA = class(TSQliteData)
@@ -100,24 +105,14 @@ type
     procedure Commit; override;
   end;
 
-function QuotedStr(const S: Integer): String; overload; inline;
-function QuotedStr(const S: Boolean): String; overload; inline;
-function QuotedStr(const S: TDateTime): String; overload; inline;
 function QuotedStrD(const S: String): String; overload; inline;
-function QuotedStrD(const S: Integer): String; overload; inline;
+
+function PrepSQLValue(const V: String): String; overload; inline;
+function PrepSQLValue(const V: Integer): String; overload; inline;
+function PrepSQLValue(const V: Boolean): String; overload; inline;
+function PrepSQLValue(const V: TDateTime): String; overload; inline;
 
 implementation
-
-
-function QuotedStr(const S: Integer): String;
-begin
-  Result := AnsiQuotedStr(IntToStr(S), '''');
-end;
-
-function QuotedStr(const S: Boolean): String;
-begin
-  Result := AnsiQuotedStr(BoolToStr(S, '1', '0'), '''');
-end;
 
 function ToStrZeroPad(const i, len: Word): String;
 begin
@@ -126,29 +121,34 @@ begin
     Result:=StringOfChar('0',len-Length(Result))+Result;
 end;
 
-function DateTimeToSQLiteDateTime(const D: TDateTime): String;
-var
-  Year, Month, Day, Hour, Minute, Second, MiliSecond: word;
-begin
-  DecodeDate(D, Year, Month, Day);
-  DecodeTime(D, Hour, Minute, Second, MiliSecond);
-  Result := ToStrZeroPad(Year,4)+'-'+ToStrZeroPad(Month,2)+'-'+ToStrZeroPad(Day,2)+' '+
-            ToStrZeroPad(Hour,2)+':'+ToStrZeroPad(Minute,2)+':'+ToStrZeroPad(Second,2)+'.'+ToStrZeroPad(MiliSecond,3);
-end;
-
-function QuotedStr(const S: TDateTime): String;
-begin
-  Result := AnsiQuotedStr(DateTimeToSQLiteDateTime(S), '''');
-end;
-
 function QuotedStrD(const S: String): String;
 begin
   Result := AnsiQuotedStr(S, '"');
 end;
 
-function QuotedStrD(const S: Integer): String;
+function PrepSQLValue(const V: String): String;
 begin
-  Result := AnsiQuotedStr(IntToStr(S), '"');
+  Result:=AnsiQuotedStr(V,'''');
+end;
+
+function PrepSQLValue(const V: Integer): String;
+begin
+  Result:=IntToStr(V);
+end;
+
+function PrepSQLValue(const V: Boolean): String;
+begin
+  Result:=BoolToStr(V,'1','0');
+end;
+
+function PrepSQLValue(const V: TDateTime): String;
+var
+  Year,Month,Day,Hour,Minute,Second,MiliSecond:word;
+begin
+  DecodeDate(V,Year,Month,Day);
+  DecodeTime(V,Hour,Minute,Second,MiliSecond);
+  Result:=''''+ToStrZeroPad(Year,4)+'-'+ToStrZeroPad(Month,2)+'-'+ToStrZeroPad(Day,2)+' '+
+          ToStrZeroPad(Hour,2)+':'+ToStrZeroPad(Minute,2)+':'+ToStrZeroPad(Second,2)+'.'+ToStrZeroPad(MiliSecond,3)+'''';
 end;
 
 { TSQLiteDataWA }
@@ -157,7 +157,7 @@ constructor TSQLiteDataWA.Create;
 begin
   inherited Create;
   InitCriticalSection(Guardian);
-  maxSQLqueue:=99;
+  maxSQLqueue:=MAX_SQL_FLUSH;
   Table.PacketRecords:=1;
   Table.UniDirectional:=True;
 end;
@@ -192,7 +192,7 @@ procedure TSQLiteDataWA.FlushSQL;
 begin
   if tempSQLcount>0 then
   begin
-    Connection.ExecuteSQL(tempSQL);
+    Connection.ExecuteSQL(tempsql);
     tempSQL:='';
     tempSQLcount:=0;
   end;
@@ -248,32 +248,92 @@ begin
   end;
 end;
 
-procedure TSQLite3ConnectionH.ExecuteSQL(const asql: string);
-begin
-  execsql(asql);
-end;
-
-function execquerycallback(adata: pointer; ncols: longint;
-  avalues: PPchar; anames: PPchar):longint; cdecl;
+procedure TSQLite3ConnectionH.sqlite3_handlerror;
 var
- i: integer;
- p: PString;
+  ErrMsg: string;
+  ErrCode: integer;
 begin
-  p:=PString(adata);
-  for i:=0 to ncols-1 do
-    p^+=StrPas(avalues[i]);
-  result:=0;
+  ErrMsg:=strpas(sqlite3_errmsg(Handle));
+  ErrCode:=sqlite3_extended_errcode(Handle);
+  Logger.SendCallStack(Self.ClassName+' Error '+IntToStr(ErrCode)+': '+ErrMsg);
 end;
 
-function TSQLite3ConnectionH.ExecQuery(const asql: string): string;
+procedure TSQLite3ConnectionH.ExecuteSQL(const asql: string);
+var
+  zSql: PAnsiChar;
+  zSqlend: PAnsiChar;
+  zLeftover: PAnsiChar;
+  pStmt: psqlite3_stmt;
+  rc: Integer;
 begin
-  SetLength(Result,0);
-  checkerror(sqlite3_exec(Handle,pchar(asql),@execquerycallback,@result,nil));
+  zSql:=PAnsiChar(asql);
+  zSqlend:=zSql+Length(asql);
+  zLeftover:=nil;
+  rc:=SQLITE_OK;
+
+  while (rc=SQLITE_OK) and (zSql<zSqlEnd) do
+  begin
+    pStmt:=nil;
+    rc:=sqlite3_prepare_v2(Handle,zSql,zSqlend-zSql,@pStmt,@zLeftover);
+    if rc<>SQLITE_OK then
+      sqlite3_handlerror
+    else
+    try
+      rc:=sqlite3_step(pStmt);
+      if (rc<>SQLITE_DONE) and (rc<>SQLITE_ROW) then
+        sqlite3_handlerror
+      else
+      begin
+        zSql:=zLeftover;
+        rc:=SQLITE_OK;
+      end;
+    finally
+      sqlite3_finalize(pStmt);
+    end;
+  end;
 end;
 
-function TSQLite3ConnectionH.ExecuteQuery(const asql: string): TArrayStringArray;
+function TSQLite3ConnectionH.ExecuteQuery(const asql: string): string;
+var
+  zSql: PAnsiChar;
+  zSqlend: PAnsiChar;
+  zLeftover: PAnsiChar;
+  pStmt: psqlite3_stmt;
+  rc: Integer;
+  i: Integer;
 begin
-  Result:=stringsquery(asql);
+  Result:='';
+  zSql:=PAnsiChar(asql);
+  zSqlend:=zSql+Length(asql);
+  zLeftover:=nil;
+  rc:=SQLITE_OK;
+
+  while (rc=SQLITE_OK) and (zSql<zSqlEnd) do
+  begin
+    pStmt:=nil;
+    rc:=sqlite3_prepare_v2(Handle,zSql,zSqlend-zSql,@pStmt,@zLeftover);
+    if (rc<>SQLITE_OK) then
+      sqlite3_handlerror
+    else
+    try
+      while True do
+      begin
+        rc:=sqlite3_step(pStmt);
+        for i:=0 to sqlite3_column_count(pStmt)-1 do
+          Result+=sqlite3_column_text(pStmt,i);
+        if rc<>SQLITE_ROW then Break;
+      end;
+      if rc<>SQLITE_DONE then
+        sqlite3_handlerror
+      else
+      begin
+        zSql:=zLeftover;
+        rc:=SQLITE_OK;
+      end;
+    finally
+      sqlite3_finalize(pStmt);
+    end;
+  end;
 end;
 
 { TSQliteData }
@@ -386,7 +446,7 @@ end;
 
 procedure TSQliteData.GetRecordCount;
 begin
-  FRecordCount:=StrToIntDef(FConn.ExecQuery('SELECT COUNT(*) FROM'+QuotedStrD(FTableName)+';'),0);
+  FRecordCount:=StrToIntDef(FConn.ExecuteQuery('SELECT COUNT(*) FROM'+QuotedStrD(FTableName)+';'),0);
 end;
 
 procedure TSQliteData.SetRecordCount(const AValue: Integer);
