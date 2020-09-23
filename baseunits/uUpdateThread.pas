@@ -97,6 +97,7 @@ type
   public
     procedure Lock; inline;
     procedure Unlock; inline;
+    procedure UpdateStatusFormatted(AStatusText: String);
   public
     ThreadsGuardian: TRTLCriticalSection;
     isFinishSearchingForNewManga, isDoneUpdateNecessary: Boolean;
@@ -604,6 +605,18 @@ begin
   begin
     FStatusText := AStatusText;
     FNeedRepaint := True;
+  end;
+end;
+
+procedure TUpdateListManagerThread.UpdateStatusFormatted(AStatusText: String);
+begin
+  Lock;
+  try
+    FStatusText := RS_UpdatingList + Format(' [%d/%d] %s | [T:%d] [%d/%d] ',
+      [websitePtr, websites.Count, module.Name, Threads.Count, workPtr, FCurrentGetInfoLimit]) + AStatusText;
+    FNeedRepaint := True;
+  finally
+    Unlock;
   end;
 end;
 
