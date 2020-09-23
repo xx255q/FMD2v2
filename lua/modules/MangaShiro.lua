@@ -139,12 +139,7 @@ function getMangas(x)
 		local v for v in x.XPath('//ul[@class="series-chapterlist"]//a').Get() do
 			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
 			MANGAINFO.ChapterNames.Add(x.XPathString('span[@class="ch"]',v))
-		end
-	elseif MODULE.Name == 'KomikIndoWebId' then
-		local v for v in x.XPath('//div[@id="chapterlist"]//div[@class="eph-num"]/a').Get() do
-			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
-			MANGAINFO.ChapterNames.Add(x.XPathString('span[@class="chapternum"]',v))
-		end
+		end		
 	elseif MODULE.Name == 'Ngomik' then
 		local v = x.XPath('//div[contains(@class, "bxcl")]//li//*[contains(@class,"lch")]/a')
 		for i = 1, v.Count do
@@ -153,50 +148,43 @@ function getMangas(x)
 			MANGAINFO.ChapterNames.Add(name:gsub(MODULE.RootURL..'/',''))
 			MANGAINFO.ChapterLinks.Add(v1.GetAttribute('href'));
 		end
+	elseif MODULE.Name == 'Komiku' then
+		x.XPathHREFAll('//table[@class="chapter"]//td[1]/a',MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
+	elseif MODULE.Name == 'MangaKita' then
+		local s, l, title
+		local v for v in x.XPath('//div[@class="list chapter-list"]//div/span/a').Get() do
+			s = v.ToString()
+			l = v.GetAttribute('href')
+			title = l
+			if s < 'Download PDF' then
+				title = title:gsub('mangakita.net', ''):gsub('https:', '')
+				title = title:gsub('/', ''):gsub('-', ' ')
+				MANGAINFO.ChapterNames.Add(title);
+				MANGAINFO.ChapterLinks.Add(l);
+			end
+		end
+	elseif MODULE.Name == 'Mangacan' then
+		local s
+		local v for v in x.XPath('//table[@class="updates"]//td/a').Get() do
+			s = v.GetAttribute('href')
+			s = string.gsub(s, '-1.htm', '.htm')
+			MANGAINFO.ChapterNames.Add(Trim(SeparateLeft(v.ToString(), '')));
+			MANGAINFO.ChapterLinks.Add(s);
+		end
 	else
+		-- common
+		local v for v in x.XPath('//*[@id="chapterlist"]//*[@class="eph-num"]/a').Get() do
+			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
+			MANGAINFO.ChapterNames.Add(x.XPathString('span[@class="chapternum"]',v))
+		end
+		
 		if MANGAINFO.ChapterLinks.Count == 0 then x.XPathHREFAll('//li//span[@class="leftoff"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
 		if MANGAINFO.ChapterLinks.Count == 0 then x.XPathHREFAll('//div[@class="bxcl"]//li//*[@class="lchx"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
 		if MANGAINFO.ChapterLinks.Count == 0 then x.XPathHREFAll('//div[@class="bxcl"]//li//div[@class="lch"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
 		if MANGAINFO.ChapterLinks.Count == 0 then x.XPathHREFAll('//div[@class="bxcl nobn"]//li//div[@class="lch"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
 		if MANGAINFO.ChapterLinks.Count == 0 then x.XPathHREFAll('//ul[@class="lcp_catlist"]//li/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
 		if MANGAINFO.ChapterLinks.Count == 0 then x.XPathHREFAll('//div[contains(@class, "bxcl")]//li//*[contains(@class,"lchx")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
-		if MANGAINFO.ChapterLinks.Count == 0 then x.XPathHREFAll('//div[contains(@class, "lchx")]//li//*[contains(@class,"bxcl")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
-
-		if MANGAINFO.ChapterLinks.Count < 1 or MODULE.Name == 'Mangacan' then
-			local v = x.XPath('//table[@class="updates"]//td/a')
-			for i = 1, v.Count do
-				local v1 = v.Get(i)
-				local s = v1.GetAttribute('href')
-				s = string.gsub(s, '-1.htm', '.htm')
-				MANGAINFO.ChapterNames.Add(Trim(SeparateLeft(v1.ToString(), '')));
-				MANGAINFO.ChapterLinks.Add(s);
-			end
-		end
-
-		if MANGAINFO.ChapterLinks.Count < 1 or MODULE.Name == 'Komiku' then
-			local v = x.XPath('//table[@class="chapter"]//td[1]/a')
-			for i = 1, v.Count do
-				local v1 = v.Get(i)
-				MANGAINFO.ChapterNames.Add(v1.ToString());
-				MANGAINFO.ChapterLinks.Add(v1.GetAttribute('href'));
-			end
-		end
-
-		if MANGAINFO.ChapterLinks.Count < 1 or MODULE.Name == 'MangaKita' then
-			local v = x.XPath('//div[@class="list chapter-list"]//div/span/a')
-			for i = 1, v.Count do
-				local v1 = v.Get(i)
-				local s = v1.ToString()
-				local l = v1.GetAttribute('href')
-				local title = l
-				if s < 'Download PDF' then
-				title = title:gsub('mangakita.net', ''):gsub('https:', '')
-				title = title:gsub('/', ''):gsub('-', ' ')
-				MANGAINFO.ChapterNames.Add(title);
-				MANGAINFO.ChapterLinks.Add(l);
-				end
-			end
-		end
+		if MANGAINFO.ChapterLinks.Count == 0 then x.XPathHREFAll('//div[contains(@class, "lchx")]//li//*[contains(@class,"bxcl")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end		
 	end
 end
 
