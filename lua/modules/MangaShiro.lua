@@ -37,6 +37,7 @@ end
 
 function getCover(x)
 	local img = ''
+	if img == '' then img = x.XPathString('//div[@class="series-thumb"]/img/@src') end
 	if img == '' then img = x.XPathString('//div[@class="thumb"]/img/@data-src') end
 	if img == '' then img = x.XPathString('//div[@class="thumb"]/img/@src') end
 	if img == '' then img = x.XPathString('//div[@class="imgdesc"]/img/@src') end
@@ -53,6 +54,7 @@ end
 
 function getAuthors(x)
 	local authors = ''
+	if authors == '' then authors = x.XPathStringAll('//span[@class="author"]') end
 	if authors == '' then authors = x.XPathString('//div[@class="spe"]//span[starts-with(.,"المؤلف")]/substring-after(.,":")') end
 	if authors == '' then authors = x.XPathString('//li[starts-with(.,"Komikus")]/b') end
 	if authors == '' then authors = x.XPathString('//div[@class="listinfo"]//li[starts-with(.,"Author")]/substring-after(.,":")') end
@@ -99,6 +101,7 @@ end
 
 function getStatus(x)
 	local status = ''
+	if status == '' then status = x.XPathString('//span[@class="status Ongoing"]') end
 	if status == '' then status = x.XPathString('//div[@class="spe"]//span[starts-with(.,"الحالة")]/substring-after(.,":")') end
 	if status == '' then status = x.XPathString('//div[@class="spe"]//span[starts-with(.,"Status:")]/substring-after(.,":")') end
 	if status == '' then status = x.XPathString('//div[@class="listinfo"]//li[starts-with(.,"Status")]/substring-after(.," ")') end
@@ -117,6 +120,7 @@ end
 
 function getSummary(x)
 	local summary = ''
+	if summary == '' then summary = x.XPathString('//div[@class="series-synops"]/string-join(.//text(),"")') end
 	if summary == '' then summary = x.XPathString('//div[@class="sinopsis"]/p') end
 	if summary == '' then summary = x.XPathString('//*[@class="desc"]/string-join(.//text(),"")') end
 	if summary == '' then summary = x.XPathString('//*[@class="sinopsis"]/string-join(.//text(),"")') end
@@ -131,7 +135,12 @@ function getSummary(x)
 end
 
 function getMangas(x)
-	if MODULE.Name == 'KomikIndoWebId' then
+	if MODULE.Name == 'MaidMangaID' then
+		local v for v in x.XPath('//ul[@class="series-chapterlist"]//a').Get() do
+			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
+			MANGAINFO.ChapterNames.Add(x.XPathString('span[@class="ch"]',v))
+		end
+	elseif MODULE.Name == 'KomikIndoWebId' then
 		local v for v in x.XPath('//div[@id="chapterlist"]//div[@class="eph-num"]/a').Get() do
 			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
 			MANGAINFO.ChapterNames.Add(x.XPathString('span[@class="chapternum"]',v))
@@ -230,6 +239,7 @@ function getpagenumber()
 				end
 		elseif MODULE.Name == 'MangaSWAT' then x.XPathStringAll('//*[@id="readerarea"]/p/img/@data-src', TASK.PageLinks)
 		else
+			if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[@class="reader-area"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[@id="readerarea"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[@id="readerarea"]/p//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[@id="readerarea"]/div//img/@src', TASK.PageLinks) end
