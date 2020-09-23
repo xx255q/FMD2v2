@@ -67,6 +67,7 @@ function getAuthors(x)
 	if authors == '' then authors = x.XPathString('//ul[@class="baru"]/li[2][starts-with(.,"Mangaka")]/substring-after(.,":")') end
 	if authors == '' then authors = x.XPathString('//table[@class="listinfo"]//tr[contains(th, "Author")]/following-sibling::td') end
 	if authors == '' then authors = x.XPathString('//tr[contains(td, "Komikus")]//following-sibling::td') end
+	if authors == '' then authors = x.XPathString('//div[@class="fmed"]/b[starts-with(.,"Author")]//following-sibling::span') end
 	return authors
 end
 
@@ -92,6 +93,7 @@ function getGenres(x)
 	if genre == '' then genre = x.XPathStringAll('//ul[@class="genre"]/li') end
 	if genre == '' then genre = x.XPathStringAll('//span[@class="details"]//div[starts-with(.,"Genre")]/a') end
 	if genre == '' then genre = x.XPathStringAll('//div[@class="listinfo"]//li[starts-with(.,"Genre")]/substring-after(.,":")') end
+	if genre == '' then genre = x.XPathStringAll('//span[@class="mgen"]/a') end
 	return genre
 end
 
@@ -108,6 +110,7 @@ function getStatus(x)
 	if status == '' then status = x.XPathString('//span[@class="details"]//div[starts-with(.,"Status")]') end
 	if status == '' then status = x.XPathString('//ul[@class="baru"]/li[3]') end
 	if status == '' then status = x.XPathString('//tr[contains(td, "Status")]//following-sibling::td') end
+	if status == '' then status = x.XPathString('//div[@class="imptdt" and starts-with(.,"Status")]/i') end
 	status = status:gsub('Finished', 'Completed')
 	return status
 end
@@ -122,12 +125,18 @@ function getSummary(x)
 	if summary == '' then summary = x.XPathString('//*[@class="description"]/string-join(.//text(),"")') end
 	if summary == '' then summary = x.XPathString('//div[contains(@class,"animeinfo")]/div[@class="rm"]/span/string-join(.//text(),"")') end
 	if summary == '' then summary = x.XPathString('//*[@class="jds"]/p') end
+	if summary == '' then summary = x.XPathString('//*[@itemprop="description"]/string-join(.//text(),"")') end
 	summary = summary:gsub('.fb_iframe_widget_fluid_desktop iframe', ''):gsub('width: 100%% !important;', ''):gsub('{', ''):gsub('}', '')
 	return summary
 end
 
 function getMangas(x)
-	if MODULE.Name == 'Ngomik' then
+	if MODULE.Name == 'KomikIndoWebId' then
+		local v for v in x.XPath('//div[@id="chapterlist"]//div[@class="eph-num"]/a').Get() do
+			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
+			MANGAINFO.ChapterNames.Add(x.XPathString('span[@class="chapternum"]',v))
+		end
+	elseif MODULE.Name == 'Ngomik' then
 		local v = x.XPath('//div[contains(@class, "bxcl")]//li//*[contains(@class,"lch")]/a')
 		for i = 1, v.Count do
 			local v1 = v.Get(i)
@@ -252,7 +261,7 @@ function getnameandlink()
 		['PecintaKomik'] = '/daftar-manga/?list',
 		['MangaIndoNet'] = '/manga-list/?list',
 		['KomikIndo'] = '/manga-list/?list',
-		['KomikIndoWebId'] = '/daftar-komik/',
+		['KomikIndoWebId'] = '/manga/?order=latest',
 		['Komiku'] = '/daftar-komik/',
 		['KazeManga'] = '/manga-list/?list',
 		['Mangacan'] =  '/daftar-komik-manga-bahasa-indonesia.html',
@@ -279,40 +288,61 @@ function getnameandlink()
 	end
 	if HTTP.GET(MODULE.RootURL..dirurl) then
 		local x=CreateTXQuery(HTTP.Document)
-		if LINKS.Count < 1 then x.XPathHREFAll('//*[@class="daftarkomik"]//a',LINKS,NAMES) end
-		if LINKS.Count < 1 then x.XPathHREFAll('//*[@class="jdlbar"]//a',LINKS,NAMES) end
-		if LINKS.Count < 1 then x.XPathHREFAll('//*[@class="blix"]//a',LINKS,NAMES) end
-		if LINKS.Count < 1 then x.XPathHREFAll('//*[@class="soralist"]//a',LINKS,NAMES) end
-		if LINKS.Count < 1 then x.XPathHREFAll('//*[@id="a-z"]//h4/a',LINKS,NAMES) end
-		if LINKS.Count < 1 then x.XPathHREFAll('//*[@class="manga-list"]/a',LINKS,NAMES) end
 
-		if LINKS.Count < 1 or MODULE.Name == 'KoMBatch' then
-			local pages = 1
-			local p = 1
-			while p <= pages do
-				if p > 1 then
-					if HTTP.GET(MODULE.RootURL..dirurl..'?page=' .. tostring(p)) then
-						x=CreateTXQuery(HTTP.Document)
-					else
-						break
-					end
+		if MODULE.Name == 'KomikIndoWebId' then
+			local updatestatus = tonumber(require('fmd.env').Revision)>4966
+			local next_url
+			dirurl = MODULE.RootURL .. '/manga/'
+			while true do
+				x.XPathHREFTitleAll('//div[@class="bsx"]/a',LINKS,NAMES)
+				next_url = x.XPathString('//div[@class="hpage"]/a[@class="r"]/@href')
+				if HTTP.Terminated then break end
+				if next_url == '' then break end
+				if updatestatus then
+					UPDATELIST.UpdateStatusText('Loading page ' .. (next_url:match('page=(%d+)') or ''))
 				end
-				if p == pages then
-					local pg = x.XPathString('//*[contains(@class, "pagination")]//li[last()-1]/a/substring-after(@href, "?page=")')
-					if pg ~= '' then pages = tonumber(pg) end
+				if HTTP.GET(dirurl .. next_url) then
+					x.ParseHTML(HTTP.Document)
+				else
+					break
 				end
-				local v=x.XPath('//*[contains(@class, "trending")]//*[contains(@class, "box_trending")]')
-				for i=1,v.Count do
-					local v1=v.Get(i)
-					local title = x.XPathString('.//*[contains(@class, "_2dU-m")]/text()', v1)
-					local link = x.XPathString('.//*[contains(@class, "_2dU-m")]/@href', v1)
-					NAMES.Add(title)
-					LINKS.Add(link)
-				end
-				p = p + 1
 			end
+		else
+			if LINKS.Count < 1 then x.XPathHREFAll('//*[@class="daftarkomik"]//a',LINKS,NAMES) end
+			if LINKS.Count < 1 then x.XPathHREFAll('//*[@class="jdlbar"]//a',LINKS,NAMES) end
+			if LINKS.Count < 1 then x.XPathHREFAll('//*[@class="blix"]//a',LINKS,NAMES) end
+			if LINKS.Count < 1 then x.XPathHREFAll('//*[@class="soralist"]//a',LINKS,NAMES) end
+			if LINKS.Count < 1 then x.XPathHREFAll('//*[@id="a-z"]//h4/a',LINKS,NAMES) end
+			if LINKS.Count < 1 then x.XPathHREFAll('//*[@class="manga-list"]/a',LINKS,NAMES) end
+
+			if LINKS.Count < 1 or MODULE.Name == 'KoMBatch' then
+				local pages = 1
+				local p = 1
+				while p <= pages do
+					if p > 1 then
+						if HTTP.GET(MODULE.RootURL..dirurl..'?page=' .. tostring(p)) then
+							x=CreateTXQuery(HTTP.Document)
+						else
+							break
+						end
+					end
+					if p == pages then
+						local pg = x.XPathString('//*[contains(@class, "pagination")]//li[last()-1]/a/substring-after(@href, "?page=")')
+						if pg ~= '' then pages = tonumber(pg) end
+					end
+					local v=x.XPath('//*[contains(@class, "trending")]//*[contains(@class, "box_trending")]')
+					for i=1,v.Count do
+						local v1=v.Get(i)
+						local title = x.XPathString('.//*[contains(@class, "_2dU-m")]/text()', v1)
+						local link = x.XPathString('.//*[contains(@class, "_2dU-m")]/@href', v1)
+						NAMES.Add(title)
+						LINKS.Add(link)
+					end
+					p = p + 1
+				end
+			end
+			if LINKS.Count < 1 or MODULE.Name == 'Mangacan' then x.XPathHREFAll('//*[@class="blix"]/ul//a',LINKS,NAMES) end
 		end
-		if LINKS.Count < 1 or MODULE.Name == 'Mangacan' then x.XPathHREFAll('//*[@class="blix"]/ul//a',LINKS,NAMES) end
 		return no_error
 	else
 		return net_problem
@@ -351,7 +381,7 @@ function Init()
 	AddWebsiteModule('ee7abb21767d48d5b4b343ce701ae6e6', 'PecintaKomik', 'https://www.pecintakomik.net')
 	AddWebsiteModule('63be65ab7f004093ac26fdeb30b466e4', 'MangaIndoNet', 'https://mangaindo.net')
 	AddWebsiteModule('009bf49bc17a4a2a8e1c79cce6867651', 'KomikIndo', 'https://komikindo.co')
-	AddWebsiteModule('2cf30e2a7f3d4b4a9b2d29c3fb04e23f', 'KomikIndoWebId', 'https://www.komikindo.web.ID')
+	AddWebsiteModule('2cf30e2a7f3d4b4a9b2d29c3fb04e23f', 'KomikIndoWebId', 'https://komikindo.web.ID')
 	AddWebsiteModule('5af0f26f0d034fb2b42ee65d7e4188ab', 'Komiku', 'https://komiku.co.ID')
 	AddWebsiteModule('4ccdf84e05474a66adc14ea8a2edfd15', 'KazeManga', 'https://kazemanga.web.ID')
 	AddWebsiteModule('ca571825056b4850bd3693e4e1437997', 'Mangacan', 'http://www.mangacanblog.com')
