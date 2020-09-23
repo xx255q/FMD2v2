@@ -154,13 +154,13 @@ function getMangas(x)
 			MANGAINFO.ChapterLinks.Add(v1.GetAttribute('href'));
 		end
 	else
-		if MANGAINFO.ChapterLinks.Count < 1 then x.XPathHREFAll('//li//span[@class="leftoff"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
-		if MANGAINFO.ChapterLinks.Count < 1 then x.XPathHREFAll('//div[@class="bxcl"]//li//*[@class="lchx"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
-		if MANGAINFO.ChapterLinks.Count < 1 then x.XPathHREFAll('//div[@class="bxcl"]//li//div[@class="lch"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
-		if MANGAINFO.ChapterLinks.Count < 1 then x.XPathHREFAll('//div[@class="bxcl nobn"]//li//div[@class="lch"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
-		if MANGAINFO.ChapterLinks.Count < 1 then x.XPathHREFAll('//ul[@class="lcp_catlist"]//li/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
-		if MANGAINFO.ChapterLinks.Count < 1 then x.XPathHREFAll('//div[contains(@class, "bxcl")]//li//*[contains(@class,"lchx")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
-		if MANGAINFO.ChapterLinks.Count < 1 then x.XPathHREFAll('//div[contains(@class, "lchx")]//li//*[contains(@class,"bxcl")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
+		if MANGAINFO.ChapterLinks.Count == 0 then x.XPathHREFAll('//li//span[@class="leftoff"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
+		if MANGAINFO.ChapterLinks.Count == 0 then x.XPathHREFAll('//div[@class="bxcl"]//li//*[@class="lchx"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
+		if MANGAINFO.ChapterLinks.Count == 0 then x.XPathHREFAll('//div[@class="bxcl"]//li//div[@class="lch"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
+		if MANGAINFO.ChapterLinks.Count == 0 then x.XPathHREFAll('//div[@class="bxcl nobn"]//li//div[@class="lch"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
+		if MANGAINFO.ChapterLinks.Count == 0 then x.XPathHREFAll('//ul[@class="lcp_catlist"]//li/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
+		if MANGAINFO.ChapterLinks.Count == 0 then x.XPathHREFAll('//div[contains(@class, "bxcl")]//li//*[contains(@class,"lchx")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
+		if MANGAINFO.ChapterLinks.Count == 0 then x.XPathHREFAll('//div[contains(@class, "lchx")]//li//*[contains(@class,"bxcl")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
 
 		if MANGAINFO.ChapterLinks.Count < 1 or MODULE.Name == 'Mangacan' then
 			local v = x.XPath('//table[@class="updates"]//td/a')
@@ -239,16 +239,16 @@ function getpagenumber()
 				end
 		elseif MODULE.Name == 'MangaSWAT' then x.XPathStringAll('//*[@id="readerarea"]/p/img/@data-src', TASK.PageLinks)
 		else
-			if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[@class="reader-area"]//img/@src', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[@id="readerarea"]//img/@src', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[@id="readerarea"]/p//img/@src', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[@id="readerarea"]/div//img/@src', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[@id="readerarea"]//a/@href', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[@id="readerarea"]//img/@src', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[@id="readerareaimg"]//img/@src', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[@id="imgholder"]//img/@src', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[@class="entry-content"]//img/@src', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[@class="bc"]/img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="reader-area"]//img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="readerarea"]//img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="readerarea"]/p//img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="readerarea"]/div//img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="readerarea"]//a/@href', TASK.PageLinks) end
+			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="readerarea"]//img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="readerareaimg"]//img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="imgholder"]//img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="entry-content"]//img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="bc"]/img/@src', TASK.PageLinks) end
 		end
 		return true
 	else
@@ -257,104 +257,90 @@ function getpagenumber()
 end
 
 function getnameandlink()
-	local dirs = {
-		['MangaShiro'] = '/manga/?list',
-		['KomikStation'] = '/manga/?list',
-		['MangaKid'] = '/manga-lists/',
-		['KomikCast'] = '/daftar-komik/?list',
-		['WestManga'] = '/manga-list/?list',
-		['Kiryuu'] = '/manga-lists/?list',
-		['Kyuroku'] = '/manga/?list',
-		['BacaManga'] = '/manga/?list',
-		['PecintaKomik'] = '/daftar-manga/?list',
-		['MangaIndoNet'] = '/manga-list/?list',
-		['KomikIndo'] = '/manga-list/?list',
-		['KomikIndoWebId'] = '/manga/?order=latest',
-		['Komiku'] = '/daftar-komik/',
-		['KazeManga'] = '/manga-list/?list',
-		['Mangacan'] =  '/daftar-komik-manga-bahasa-indonesia.html',
-		['MangaIndo'] = '/manga-list-201902-v052/',
-		['KomikMama'] = '/manga-list/?list',
-		['MangaCeng'] = '/manga/?list',
-		['MaidMangaID'] = '/manga-list/?list',
-		['KomikAV'] = '/manga/?list',
-		['Ngomik'] = '/daftar-komik/?list',
-		['MangaPus'] = '/manga-list/?list',
-		['Mangaseno'] = '/manga-list/?list',
-		['SekteKomik'] = '/manga/?list',
-		['BaekjinScans'] = '/manga/?list',
-		['Mangakyo'] = '/daftar-manga/?list',
-		['MataKomik'] = '/manga/?list',
-		['Rawkuma'] = '/manga/?list',
-		['KomikGoCoID'] = '/manga/?list',
-		['MangaSWAT'] = '/manga/?list',
-		['MangaTsuki'] = '/manga/?list'
-	}
-	local dirurl = '/manga-list/'
-	if dirs[MODULE.Name] ~= nil then
-		dirurl = dirs[MODULE.Name]
-	end
-	if HTTP.GET(MODULE.RootURL..dirurl) then
-		local x=CreateTXQuery(HTTP.Document)
-
-		if MODULE.Name == 'KomikIndoWebId' then
-			local updatestatus = tonumber(require('fmd.env').Revision)>4966
-			local next_url
-			dirurl = MODULE.RootURL .. '/manga/'
-			while true do
-				x.XPathHREFTitleAll('//div[@class="bsx"]/a',LINKS,NAMES)
-				next_url = x.XPathString('//div[@class="hpage"]/a[@class="r"]/@href')
-				if HTTP.Terminated then break end
-				if next_url == '' then break end
-				if updatestatus then
-					UPDATELIST.UpdateStatusText('Loading page ' .. (next_url:match('page=(%d+)') or ''))
-				end
-				if HTTP.GET(dirurl .. next_url) then
-					x.ParseHTML(HTTP.Document)
-				else
-					break
-				end
+	-- continues page based, no end number detected
+	-- if MODULE.Name == 'KomikIndoWebId' then
+		-- local dirurl = MODULE.RootURL .. '/manga/?order=latest'
+		-- if not HTTP.GET(dirurl) then return net_problem end
+		-- local x = CreateTXQuery(HTTP.Document)
+		-- local next_url
+		-- dirurl = MODULE.RootURL .. '/manga/'
+		-- local updatestatus = tonumber(require('fmd.env').Revision)>4966
+		-- while true do
+			-- x.XPathHREFTitleAll('//div[@class="bsx"]/a',LINKS,NAMES)
+			-- next_url = x.XPathString('//div[@class="hpage"]/a[@class="r"]/@href')
+			-- if HTTP.Terminated then break end
+			-- if next_url == '' then break end
+			-- if updatestatus then
+				-- UPDATELIST.UpdateStatusText('Loading page ' .. (next_url:match('page=(%d+)') or ''))
+			-- end
+			-- if HTTP.GET(dirurl .. next_url) then
+				-- x.ParseHTML(HTTP.Document)
+			-- else
+				-- break
+			-- end
+		-- end
+	-- else
+	if MODULE.Name == 'KoMBatch' then
+		local dirurl = MODULE.RootURL .. '/manga-list/'
+		local x = CreateTXQuery()
+		local pages = 1
+		local p = 1
+		local u = dirurl
+		while p <= pages do
+			if p > 1 then u =  dirurl .. '?page=' .. tostring(p) end
+			if not HTTP.GET(u) then return net_problem end
+			x.ParseHTML(HTTP.Document)
+			if p == pages then
+				local pg = x.XPathString('//*[contains(@class, "pagination")]//li[last()-1]/a/substring-after(@href, "?page=")')
+				if pg ~= '' then pages = tonumber(pg) end
 			end
-		else
-			if LINKS.Count < 1 then x.XPathHREFAll('//*[@class="daftarkomik"]//a',LINKS,NAMES) end
-			if LINKS.Count < 1 then x.XPathHREFAll('//*[@class="jdlbar"]//a',LINKS,NAMES) end
-			if LINKS.Count < 1 then x.XPathHREFAll('//*[@class="blix"]//a',LINKS,NAMES) end
-			if LINKS.Count < 1 then x.XPathHREFAll('//*[@class="soralist"]//a',LINKS,NAMES) end
-			if LINKS.Count < 1 then x.XPathHREFAll('//*[@id="a-z"]//h4/a',LINKS,NAMES) end
-			if LINKS.Count < 1 then x.XPathHREFAll('//*[@class="manga-list"]/a',LINKS,NAMES) end
-
-			if LINKS.Count < 1 or MODULE.Name == 'KoMBatch' then
-				local pages = 1
-				local p = 1
-				while p <= pages do
-					if p > 1 then
-						if HTTP.GET(MODULE.RootURL..dirurl..'?page=' .. tostring(p)) then
-							x=CreateTXQuery(HTTP.Document)
-						else
-							break
-						end
-					end
-					if p == pages then
-						local pg = x.XPathString('//*[contains(@class, "pagination")]//li[last()-1]/a/substring-after(@href, "?page=")')
-						if pg ~= '' then pages = tonumber(pg) end
-					end
-					local v=x.XPath('//*[contains(@class, "trending")]//*[contains(@class, "box_trending")]')
-					for i=1,v.Count do
-						local v1=v.Get(i)
-						local title = x.XPathString('.//*[contains(@class, "_2dU-m")]/text()', v1)
-						local link = x.XPathString('.//*[contains(@class, "_2dU-m")]/@href', v1)
-						NAMES.Add(title)
-						LINKS.Add(link)
-					end
-					p = p + 1
-				end
+			local v=x.XPath('//*[contains(@class, "trending")]//*[contains(@class, "box_trending")]')
+			for i=1,v.Count do
+				local v1=v.Get(i)
+				local title = x.XPathString('.//*[contains(@class, "_2dU-m")]/text()', v1)
+				local link = x.XPathString('.//*[contains(@class, "_2dU-m")]/@href', v1)
+				NAMES.Add(title)
+				LINKS.Add(link)
 			end
-			if LINKS.Count < 1 or MODULE.Name == 'Mangacan' then x.XPathHREFAll('//*[@class="blix"]/ul//a',LINKS,NAMES) end
+			p = p + 1
 		end
-		return no_error
 	else
-		return net_problem
+		-- full text based list
+		local dirs = {
+			['MangaKid'] = '/manga-lists/',
+			['KomikCast'] = '/daftar-komik/?list',
+			['WestManga'] = '/manga-list/?list',
+			['Kiryuu'] = '/manga-lists/?list',
+			['PecintaKomik'] = '/daftar-manga/?list',
+			['MangaIndoNet'] = '/manga-list/?list',
+			['KomikIndo'] = '/manga-list/?list',
+			['KomikIndoWebId'] = '/manga/?order=latest',
+			['Komiku'] = '/daftar-komik/',
+			['KazeManga'] = '/manga-list/?list',
+			['Mangacan'] =  '/daftar-komik-manga-bahasa-indonesia.html',
+			['MangaIndo'] = '/manga-list-201902-v052/',
+			['KomikMama'] = '/manga-list/?list',
+			['MaidMangaID'] = '/manga-list/?list',
+			['Ngomik'] = '/daftar-komik/?list',
+			['MangaPus'] = '/manga-list/?list',
+			['Mangaseno'] = '/manga-list/?list',
+		}
+		local dirurl = '/manga/?list'
+		if dirs[MODULE.Name] ~= nil then
+			dirurl = dirs[MODULE.Name]
+		end
+		local dirurl = MODULE.RootURL .. dirurl
+		if not HTTP.GET(dirurl) then return net_problem end
+		local x = CreateTXQuery(HTTP.Document)
+		
+		x.XPathHREFAll('//*[@class="blix"]//a',LINKS,NAMES)
+		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="daftarkomik"]//a',LINKS,NAMES) end
+		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="jdlbar"]//a',LINKS,NAMES) end
+		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="soralist"]//a',LINKS,NAMES) end
+		if LINKS.Count == 0 then x.XPathHREFAll('//*[@id="a-z"]//h4/a',LINKS,NAMES) end
+		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="manga-list"]/a',LINKS,NAMES) end
 	end
+	return no_error
 end
 
 function BeforeDownloadImage()
@@ -380,7 +366,7 @@ function Init()
 	m.OnBeforeDownloadImage = 'BeforeDownloadImage'
 	AddWebsiteModule('b543e37b656e43ffb3faa034eee6c945', 'MangaKita', 'https://mangakita.net')
 	AddWebsiteModule('b5586745030a45bba05d0c360caa6d1a', 'KomikStation', 'https://www.komikstation.com')
-	AddWebsiteModule('49602ce189e844f49bfe78f7a1484dbe', 'MangaKid', 'https://mgku.me')
+	AddWebsiteModule('49602ce189e844f49bfe78f7a1484dbe', 'MangaKid', 'https://mangakid.club')
 	AddWebsiteModule('b8206e754d4541689c1d367f7e19fd64', 'KomikCast', 'https://komikcast.com')
 	AddWebsiteModule('35e1b3ff5dbf428889d0f316c3d881e6', 'WestManga', 'https://westmanga.info')
 	AddWebsiteModule('031f3cc0ae3346ad9b8c33d5377891e9', 'Kiryuu', 'https://kiryuu.co')
@@ -402,7 +388,7 @@ function Init()
 	AddWebsiteModule('5c06401129894099bb6fc59c08a878d4', 'Ngomik', 'https://ngomik.in')
 	AddWebsiteModule('c16adc6202924e558b977f74c7301bed', 'MangaPus', 'https://mangapus.com')
 	AddWebsiteModule('0a6dd9c339c94a339dbc89c781b20d20', 'Mangaseno', 'https://mangaseno.com')
-	AddWebsiteModule('56f905ea80e24c4f8bbc37e05de2ad9a', 'Mangakyo', 'https://www.mangakyo.com')
+	AddWebsiteModule('56f905ea80e24c4f8bbc37e05de2ad9a', 'Mangakyo', 'https://www.mangakyo.me')
 	AddWebsiteModule('76e6db9fe2cf4dd49589cfa9b1174684', 'MataKomik', 'https://matakomik.com')
 	AddWebsiteModule('cab72ea1fa4947d29e50ec8751d06c7d', 'KomikGoCoID', 'https://www.komikgo.co.ID')
 	AddWebsiteModule('d2ffd187eadd4c39819428a160d752cf', 'MangaTsuki', 'https://mangatsuki.web.ID')
