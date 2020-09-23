@@ -192,17 +192,28 @@ function getMangas(x)
 end
 
 function getpagenumber()
-	TASK.PageNumber=0
-	TASK.PageLinks.Clear()
+	if MODULE.Name == 'KoMBatch' then
+		local link = MaybeFillHost(MODULE.RootURL,URL)
+		link = link:gsub('/read', '/api/chapter')
+		if HTTP.GET(link) then
+			local x = CreateTXQuery(HTTP.Document)
+			for v in x.XPath('json(*).chapter.images()("text")').Get() do
+				TASK.PageLinks.Add(v.ToString():gsub('^//', 'https://'))
+			end
+		else
+			return false
+		end
+		return true
+	end
+	
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
+		local x = CreateTXQuery(HTTP.Document)
 		if MODULE.Name == 'BacaManga' then
 			local crypto = require 'fmd.crypto'
-			local x = CreateTXQuery(HTTP.Document)
 			local s = x.XPathString('*')
 			x.ParseHTML(crypto.DecodeBase64(GetBetween('](atob(', ')),', s)))
 			x.XPathStringAll('json(*)()', TASK.PageLinks)
-		elseif MODULE.Name == 'Kiryuu' then
-			local x = CreateTXQuery(HTTP.Document)
+		elseif MODULE.Name == 'Kiryuu' then			
 			local v=x.XPath('//*[@id="readerarea"]//img')
 				for i=1,v.Count do
 						local v1=v.Get(i)
@@ -217,30 +228,17 @@ function getpagenumber()
 								TASK.PageLinks.Add(v1.GetAttribute('src'))
 						end
 				end
-		elseif MODULE.Name == 'MangaSWAT' then CreateTXQuery(HTTP.Document).XPathStringAll('//*[@id="readerarea"]/p/img/@data-src', TASK.PageLinks)
+		elseif MODULE.Name == 'MangaSWAT' then x.XPathStringAll('//*[@id="readerarea"]/p/img/@data-src', TASK.PageLinks)
 		else
-			if TASK.PageLinks.Count < 1 then CreateTXQuery(HTTP.Document).XPathStringAll('//*[@id="readerarea"]/p/img/@src', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then CreateTXQuery(HTTP.Document).XPathStringAll('//*[@id="readerarea"]/p//img/@src', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then CreateTXQuery(HTTP.Document).XPathStringAll('//*[@id="readerarea"]/div//img/@src', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then CreateTXQuery(HTTP.Document).XPathStringAll('//*[@id="readerarea"]//a/@href', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then CreateTXQuery(HTTP.Document).XPathStringAll('//*[@id="readerarea"]//img/@src', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then CreateTXQuery(HTTP.Document).XPathStringAll('//*[@id="readerareaimg"]//img/@src', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then CreateTXQuery(HTTP.Document).XPathStringAll('//*[@id="imgholder"]//img/@src', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then CreateTXQuery(HTTP.Document).XPathStringAll('//*[@class="entry-content"]//img/@src', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 then CreateTXQuery(HTTP.Document).XPathStringAll('//*[@class="bc"]/img/@src', TASK.PageLinks) end
-			if TASK.PageLinks.Count < 1 or MODULE.Name == 'KoMBatch' then
-				local link = MaybeFillHost(MODULE.RootURL,URL)
-				link = link:gsub('/read', '/api/chapter')
-				if HTTP.GET(link) then
-					x=CreateTXQuery(HTTP.Document)
-					x.ParseHTML(HTTP.Document)
-			for v in x.XPath('json(*).chapter.images()("text")').Get() do
-						TASK.PageLinks.Add(v.ToString():gsub('^//', 'https://'))
-					end
-				else
-					return false
-				end
-			end
+			if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[@id="readerarea"]//img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[@id="readerarea"]/p//img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[@id="readerarea"]/div//img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[@id="readerarea"]//a/@href', TASK.PageLinks) end
+			if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[@id="readerarea"]//img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[@id="readerareaimg"]//img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[@id="imgholder"]//img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[@class="entry-content"]//img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count < 1 then x.XPathStringAll('//*[@class="bc"]/img/@src', TASK.PageLinks) end
 		end
 		return true
 	else
