@@ -477,7 +477,7 @@ begin
   {$ENDIF}
   OnCustomTerminate := @TerminateCurrent;
 
-  HTTP:=THTTPSendThread.Create(Self);
+  HTTP:=TModuleContainer(Container.DownloadInfo.Module).CreateHTTP(Self);
   HTTP.Sock.OnStatus:=@SockOnStatus;
 end;
 
