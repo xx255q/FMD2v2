@@ -176,7 +176,9 @@ function _m.bypass(self, METHOD, URL)
 
 	local result = 0
 	local counter = 0
-	local maxretry = HTTP.RetryCount;
+	-- local maxretry = HTTP.RetryCount;
+	-- most websites forced new challenge, consider disable it until further change
+	local maxretry = 1;
 	HTTP.RetryCount = 0
 
 	while true do
