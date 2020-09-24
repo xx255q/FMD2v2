@@ -462,10 +462,11 @@ begin
   pp := '';
   if UsingProxy then
     pp := 'Proxy-';
-  if FKeepAlive then
+  if FKeepAlive or (Protocol = '1.1') then
   begin
     FHeaders.Insert(0, pp + 'Connection: keep-alive');
-    FHeaders.Insert(0, 'Keep-Alive: ' + IntToStr(FKeepAliveTimeout));
+    // timeout will be ignored by most server and return their own timeout
+    //FHeaders.Insert(0, 'Keep-Alive: ' + IntToStr(FKeepAliveTimeout));
   end
   else
     FHeaders.Insert(0, pp + 'Connection: close');
