@@ -93,8 +93,18 @@ end;
 
 function TLuaHandler.LoadChunkExecute(const AName: String;
   const AChunk: TMemoryStream): Integer;
+var
+  l: Integer;
 begin
-  if FLoadedChunks.IndexOf(AName) <> -1 then Exit(0);
+  Result := 0;
+  l := FLoadedChunks.IndexOf(AName);
+  if (l <> -1) then
+  begin
+    if AlwaysLoadLuaFromFile then
+      FLoadedChunks.Delete(l)
+    else
+      Exit;
+  end;
   Result := LuaLoadFromStreamOrFile(FHandle, AChunk, AName);
   if Result = 0 then
   begin
