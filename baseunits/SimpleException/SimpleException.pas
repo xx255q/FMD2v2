@@ -213,16 +213,6 @@ function GetOSVer: String;
 var
   wdir: array [0..MAX_PATH] of Char;
 
-  function WinLater: String;
-  begin
-    if (Win32MajorVersion = 6) and (Win32MinorVersion = 3) then
-      Result := 'Windows 8.1'
-    else if (Win32MajorVersion = 10) and (Win32MinorVersion = 0) then
-      Result := 'Windows 10'
-    else
-      Result := Format('Windows %d.%d', [Win32MajorVersion, Win32MinorVersion]);
-  end;
-
 {$ENDIF}
 begin
   {$IFDEF LCLcarbon}
@@ -235,24 +225,28 @@ begin
   Result := 'Unix ';
   {$ENDIF}
   {$IFDEF WINDOWS}
+  Result := 'Windows ';
   case WindowsVersion of
-    wv95: Result := 'Windows 95';
-    wvNT4: Result := 'Windows NT v.4';
-    wv98: Result := 'Windows 98';
-    wvMe: Result := 'Windows ME';
-    wv2000: Result := 'Windows 2000';
-    wvXP: Result := 'Windows XP';
-    wvServer2003: Result := 'Windows Server 2003';
-    wvVista: Result := 'Windows Vista';
-    wv7: Result := 'Windows 7';
-    wv8: Result := 'Windows 8';
-    else
-      Result := WinLater;
+    wvUnknown: Result += 'Unknown';
+    wv95: Result += '95';
+    wvNT4: Result += 'NT 4.0';
+    wv98: Result += '98';
+    wvMe: Result += 'ME';
+    wv2000: Result += '2000';
+    wvXP: Result += 'XP';
+    wvServer2003: Result += 'Server 2003';
+    wvVista: Result += 'Vista';
+    wv7: Result += '7';
+    wv8: Result += '8';
+    wv8_1: Result += '8.1';
+    wv10: Result += '10';
+    wvLater: Result += IntToStr(Win32MajorVersion) + '.' + IntToStr(Win32MinorVersion);
   end;
   FillChar({%H-}wdir, SizeOf(wdir), 0);
   GetWindowsDirectory(PChar(wdir), MAX_PATH);
   if DirectoryExists(wdir + '\SysWOW64') then
-    Result := Result + ' 64-bit';
+    Result += ' 64-bit';
+  Result += ' Build ' + IntToStr(Win32BuildNumber);
   {$ENDIF}
 end;
 
