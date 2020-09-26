@@ -6211,6 +6211,7 @@ var
   data: PMangaInfoData;
 begin
   data := Sender.GetNodeData(Node);
+  if dataProcess.GoToRecNo(Node^.Index) then
   with data^ do
   begin
     Link := dataProcess.Value[Node^.Index, DATA_PARAM_LINK];
