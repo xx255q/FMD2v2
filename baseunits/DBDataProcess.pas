@@ -40,7 +40,6 @@ type
     FRecNo: Integer;
     function GetLinkCount: Integer;
     procedure ResetRecNo(Dataset: TDataSet);
-    procedure GoToRecNo(const ARecIndex: Integer);
   protected
     procedure CreateTable;
     procedure VacuumTable;
@@ -103,6 +102,7 @@ type
     procedure Sort;
 
     function GetModule(const RecIndex: Integer): Pointer;
+    function GoToRecNo(const ARecIndex: Integer): Boolean;
 
     property Module: Pointer read FModule;
     property Website: String read FWebsite write FWebsite;
@@ -267,12 +267,16 @@ begin
   FRecNo := 0;
 end;
 
-procedure TDBDataProcess.GoToRecNo(const ARecIndex: Integer);
+function TDBDataProcess.GoToRecNo(const ARecIndex: Integer): Boolean;
 begin
-  if FQuery.RecNo<>(ARecIndex+1) then
-  begin
+  if FQuery.RecNo=ARecIndex+1 then Exit(True);
+  Result:=False;
+  if ARecIndex > RecordCount then Exit;
+  try
     FRecNo:=ARecIndex;
     FQuery.RecNo:=ARecIndex+1;
+    Result:=True;
+  except
   end;
 end;
 
@@ -409,11 +413,8 @@ begin
   else
     Result:='';
   if FQuery.Active=False then Exit;
-  try
-    GoToRecNo(RecIndex);
+  if GoToRecNo(RecIndex) then
     Result:=FQuery.Fields[FieldIndex].AsString;
-  except
-  end;
 end;
 
 function TDBDataProcess.GetValueInt(const RecIndex, FieldIndex: Integer
@@ -421,13 +422,9 @@ function TDBDataProcess.GetValueInt(const RecIndex, FieldIndex: Integer
 begin
   Result:=0;
   if FQuery.Active=False then Exit;
-  if not (FieldIndex in [DATA_PARAM_NUMCHAPTER,DATA_PARAM_JDN]) then
-    Exit;
-  try
-    GoToRecNo(RecIndex);
+  if not (FieldIndex in [DATA_PARAM_NUMCHAPTER,DATA_PARAM_JDN]) then Exit;
+  if GoToRecNo(RecIndex) then
     Result:=FQuery.Fields[FieldIndex].AsInteger;
-  except
-  end;
 end;
 
 procedure TDBDataProcess.AttachAllSites;
@@ -802,10 +799,12 @@ function TDBDataProcess.DeleteData(const RecIndex: Integer): Boolean;
 begin
   Result := False;
   try
-    GoToRecNo(RecIndex);
-    FQuery.Delete;
-    Dec(FRecordCount);
-    Result := True;
+    if GoToRecNo(RecIndex) then
+    begin
+      FQuery.Delete;
+      Dec(FRecordCount);
+      Result := True;
+    end;
   except
     on E: Exception do
       SendLogException(ClassName+'['+Website+'].DeleteData.Error!',E);
