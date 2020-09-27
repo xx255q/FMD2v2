@@ -14,14 +14,14 @@ SET luaver=lua54
 ECHO ^{>%update_file%
 ECHO   "_comment": "automatically build with make_release_win.bat",>>%update_file%
 
-IF "%arg1%"=="debug" (
-  CALL :makerelease i386-win32 Win32 "Win32 Debug" --no-write-project
-  ECHO   ,>>%update_file%
-  CALL :makerelease x86_64-win64 Win64 "Win64 Debug" --no-write-project
-) ELSE (
+IF "%arg1%"=="release" (
   CALL :makerelease i386-win32 Win32 Win32 --no-write-project
   ECHO   ,>>%update_file%
   CALL :makerelease x86_64-win64 Win64 Win64 --no-write-project
+) ELSE (
+  CALL :makerelease i386-win32 Win32 "Win32 Debug" --no-write-project
+  ECHO   ,>>%update_file%
+  CALL :makerelease x86_64-win64 Win64 "Win64 Debug" --no-write-project
 )
 ECHO ^}>>%update_file%
 
