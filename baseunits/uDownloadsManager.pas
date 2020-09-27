@@ -1497,7 +1497,7 @@ begin
       Order:=i;
       FDownloadsDB.tempSQL+='UPDATE "downloads" SET "order"='+PrepSQLValue(Order)+' WHERE "id"='''+DlId+''';';
       Inc(FDownloadsDB.tempSQLcount);
-      if FDownloadsDB.tempSQLcount>MAX_BIG_SQL_FLUSH then
+      if FDownloadsDB.tempSQLcount>=MAX_BIG_SQL_FLUSH_QUEUE then
         FDownloadsDB.FlushSQL;
     end;
   end;

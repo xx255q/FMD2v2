@@ -622,7 +622,7 @@ begin
       FOrder:=i;
       FFavoritesDB.tempSQL+='UPDATE "favorites" SET "order"='+PrepSQLValue(FOrder)+' WHERE "id"='+PrepSQLValue(Fid)+';';
       Inc(FFavoritesDB.tempSQLcount);
-      if FFavoritesDB.tempSQLcount>MAX_BIG_SQL_FLUSH then
+      if FFavoritesDB.tempSQLcount>=MAX_BIG_SQL_FLUSH_QUEUE then
         FFavoritesDB.FlushSQL;
     end;
   end;

@@ -83,8 +83,9 @@ type
   end;
 
 const
-  MAX_SQL_FLUSH=(1 shl 8)-1;
-  MAX_BIG_SQL_FLUSH=(1 shl {$ifdef CPU64}14{$else}12{$endif})-1;
+  MAX_SQL_FLUSH_QUEUE=1 shl 8;
+  MAX_BIG_SQL_FLUSH_QUEUE=1 shl {$ifdef CPU64}14{$else}12{$endif}-1;
+  MAX_COMMIT_QUEUE=1 shl 5;
 
 type
   { TSQLiteDataWA }
@@ -93,8 +94,12 @@ type
   public
     tempSQL: String;
     tempSQLcount: Integer;
+    commitCount: Integer;
     maxSQLqueue: Integer;
+    maxCommitQueue: Integer;
     Guardian: TRTLCriticalSection;
+  protected
+    procedure InternalCommit; inline;
   public
     constructor Create;
     destructor Destroy; override;
@@ -153,13 +158,28 @@ end;
 
 { TSQLiteDataWA }
 
+procedure TSQLiteDataWA.InternalCommit;
+begin
+  try
+    Transaction.Commit;
+    commitCount:=0;
+  except
+    on E: Exception do
+      Transaction.Rollback;
+  end;
+end;
+
 constructor TSQLiteDataWA.Create;
 begin
   inherited Create;
   InitCriticalSection(Guardian);
-  maxSQLqueue:=MAX_SQL_FLUSH;
+  maxSQLqueue:=MAX_SQL_FLUSH_QUEUE;
+  maxCommitQueue:=MAX_COMMIT_QUEUE;
   Table.PacketRecords:=1;
   Table.UniDirectional:=True;
+  tempSQL:='';
+  tempSQLcount:=0;
+  commitCount:=0;
 end;
 
 destructor TSQLiteDataWA.Destroy;
@@ -172,7 +192,7 @@ procedure TSQLiteDataWA.AppendSQL(const SQL: string);
 begin
   tempSQL+=SQL;
   Inc(tempSQLcount);
-  if tempSQLcount>maxSQLqueue then
+  if tempSQLcount>=maxSQLqueue then
     FlushSQL;
 end;
 
@@ -195,6 +215,9 @@ begin
     Connection.ExecuteSQL(tempsql);
     tempSQL:='';
     tempSQLcount:=0;
+    Inc(commitCount);
+    if commitCount>=maxCommitQueue then
+      InternalCommit;
   end;
 end;
 
@@ -216,12 +239,10 @@ begin
   EnterCriticalSection(Guardian);
   try
     FlushSQL;
-    Transaction.Commit;
-  except
-    on E: Exception do
-      Transaction.Rollback;
+    InternalCommit;
+  finally
+    LeaveCriticalSection(Guardian);
   end;
-  LeaveCriticalSection(Guardian);
 end;
 
 { TSQLite3ConnectionH }
