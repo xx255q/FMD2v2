@@ -17,7 +17,7 @@ interface
 
 uses
   SysUtils, Graphics, Dialogs, uBaseUnit, uData, FMDOptions, BaseThread,
-  ImgInfos, webp, MemBitmap, VirtualTrees;
+  ImgInfos, webp, MultiLog, MemBitmap, VirtualTrees;
 
 type
 
@@ -191,7 +191,8 @@ procedure TGetMangaInfosThread.MainThreadShowInfos;
 var node: PVirtualNode;
 begin
   TransferMangaInfo(mangaInfo, FInfo.MangaInfo);
-  with MainForm do begin
+  with MainForm do
+  try
     if Assigned(FNode) and dataProcess.WebsiteLoaded(TModuleContainer(FInfo.Module).ID) then   //todo: use tmodulecontainer
       begin
         vtMangaList.BeginUpdate;
@@ -209,6 +210,9 @@ begin
         vtMangaList.EndUpdate;
       end;
     ShowInformation;
+  except
+    on E: Exception do
+      Logger.SendException(Self.ClassName+'.MainThreadShowInfos error!', E);
   end;
 end;
 
