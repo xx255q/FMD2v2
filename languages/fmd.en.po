@@ -1019,7 +1019,7 @@ msgstr "Use proxy"
 
 #: tmainform.cboptionvacuumdatabasesonexit.caption
 msgid "Vacuum databases on exit"
-msgstr ""
+msgstr "Vacuum databases on exit"
 
 #: tmainform.cbpngcompressionlevel.text
 msgctxt "tmainform.cbpngcompressionlevel.text"
@@ -1516,7 +1516,7 @@ msgstr "General"
 
 #: tmainform.gboptionsconnectiosmiscellaneous.caption
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Miscellaneous"
 
 #: tmainform.lbdefaultdownloadpath.caption
 msgid "Choose the default download path:"
@@ -1730,7 +1730,7 @@ msgstr ""
 
 #: tmainform.lboptionmaxbackgroundloudthreads.caption
 msgid "Max number of background load threads"
-msgstr ""
+msgstr "Max number of background load threads"
 
 #: tmainform.lboptionmaxfavoritethreads.caption
 msgid "Max number of favorite check at the same time"
@@ -1741,10 +1741,9 @@ msgid "Number of downloaded tasks at the same time"
 msgstr "Number of downloaded tasks at the same time"
 
 #: tmainform.lboptionmaxretry.caption
-#, fuzzy
 #| msgid "Number of retry times if tasks have download problems (-1 = always retry)"
 msgid "Max number of retry on connection failure (-1 = always retry)"
-msgstr "Number of retry times if tasks have download problems (-1 = always retry)"
+msgstr "Max number of retry on connection failure (-1 = always retry)"
 
 #: tmainform.lboptionmaxthread.caption
 msgid "Number of downloaded files per task at the same time"
@@ -2676,4 +2675,3 @@ msgstr "Updating list"
 #, object-pascal-format
 msgid "Can not load WebP codec library \"%s\". Check your installation."
 msgstr "Can not load WebP codec library \"%s\". Check your installation."
-
