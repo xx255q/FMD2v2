@@ -38,8 +38,16 @@ uses
   // -- lua object create
   LuaXQuery,
   // -- in lua 'require "name"'
-  LuaFMD, LuaPCRE2, LuaDuktape, LuaCrypto, LuaFileUtil,
-  LuaStrings, LuaImagePuzzle, LuaMangaFox, LuaLogger;
+  LuaFMD,
+  LuaPCRE2,
+  LuaDuktape,
+  LuaCrypto,
+  LuaFileUtil,
+  LuaStrings,
+  LuaImagePuzzle,
+  LuaMangaFox,
+  LuaLogger,
+  LuaSubprocess;
 
 function luabase_print(L: Plua_State): Integer; cdecl;
 var
