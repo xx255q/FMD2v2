@@ -1632,7 +1632,7 @@ msgid "Number of downloaded tasks at the same time"
 msgstr ""
 
 #: tmainform.lboptionmaxretry.caption
-msgid "Number of retry times if tasks have download problems (-1 = always retry)"
+msgid "Max number of retry on connection failure (-1 = always retry)"
 msgstr ""
 
 #: tmainform.lboptionmaxthread.caption

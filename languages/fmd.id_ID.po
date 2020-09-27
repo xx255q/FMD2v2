@@ -1745,7 +1745,9 @@ msgid "Number of downloaded tasks at the same time"
 msgstr "Jumlah unduhan aktif pada waktu yang sama"
 
 #: tmainform.lboptionmaxretry.caption
-msgid "Number of retry times if tasks have download problems (-1 = always retry)"
+#, fuzzy
+#| msgid "Number of retry times if tasks have download problems (-1 = always retry)"
+msgid "Max number of retry on connection failure (-1 = always retry)"
 msgstr "Jumlah pengulangan jika unduhan memiliki masalah (-1 = selalu coba lagi)"
 
 #: tmainform.lboptionmaxthread.caption

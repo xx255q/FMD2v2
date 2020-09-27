@@ -1791,7 +1791,9 @@ msgid "Number of downloaded tasks at the same time"
 msgstr "Αριθμός ταυτόχρονων εργασιών λήψης"
 
 #: tmainform.lboptionmaxretry.caption
-msgid "Number of retry times if tasks have download problems (-1 = always retry)"
+#, fuzzy
+#| msgid "Number of retry times if tasks have download problems (-1 = always retry)"
+msgid "Max number of retry on connection failure (-1 = always retry)"
 msgstr "Αριθμός επαναλήψεων αν οι εργασίες έχουν προβλήματα λήψης (-1 = συνεχής επανάληψη)"
 
 #: tmainform.lboptionmaxthread.caption
