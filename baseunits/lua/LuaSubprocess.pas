@@ -35,7 +35,7 @@ begin
   r:=False;
   for i:=2 to lua_gettop(L) do
     args[i-2] := luaToString(L,i);
-  r := process.RunCommand(luaToString(L,1), args, s, [], swoNone);
+  r := process.RunCommand(luaToString(L,1), args, s, Options, SWOptions);
   lua_pushboolean(L, r);
   lua_pushstring(L, s);
   Result:=2;
