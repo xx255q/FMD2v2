@@ -125,7 +125,7 @@ function _m.solveIUAMChallenge(self, body, url)
 	HTTP.Request('POST', rooturl .. challengeUUID)
 	local rbody = HTTP.Document.ToString()
 	if rbody:find('^Access denied%. Your IP') then
-		ClearCookiesStorage()
+		HTTP.ClearCookiesStorage()
 		LOGGER.SendError('WebsitBypass[clounflare]: the server has BANNED your IP!\r\n' .. url .. '\r\n' .. rbody)
 		return -1
 	end
@@ -134,6 +134,59 @@ function _m.solveIUAMChallenge(self, body, url)
 	end
 
 	return 0
+end
+
+function _m.solveWithPythonSelenium(self, url)
+	local rooturl = url:match('(https?://[^/]+)') or ''
+
+	local s = nil
+	if tonumber(fmd.Revision) > 4985 then
+		local sub = require("fmd.subprocess")
+		_, s = sub.RunCommandHide(py_exe, py_cloudflare, rooturl, HTTP.UserAgent)
+	else
+		local exe = string.format('""%s" "%s" "%s" "%s""',py_exe,py_cloudflare,rooturl,HTTP.UserAgent)
+		local py = io.popen(exe, "r")
+		if py then
+			s = py:read('*a')
+			py:close()
+		end
+	end
+
+	if (s==nil) or (s=="") then
+		LOGGER.SendError('WebsitBypass[clounflare]: python selenium module failed or timeout\r\n' .. url)
+		return -1
+	end
+
+	local json = require "utils.json"
+	s = s:gsub("'",'"'):gsub("True","true"):gsub("False","false")
+	local s = json.decode(s)
+	local c
+	local scookie
+	local cookies = {}
+	for _, c in ipairs(s) do
+		cookie = {}
+		table.insert(cookie,c["name"].."=" .. c["value"])
+		c["name"]=nil
+		c["value"]=nil
+		if c["expiry"] then
+			c["expires"]=os.date('!%a, %d %b %Y %H:%M:%H GMT',c["expiry"])
+			c["expiry"]=nil
+		end
+		for k, v in pairs(c) do
+			if type(v) == "boolean" then
+				if v == true then table.insert(cookie,tostring(k)) end
+			else
+				table.insert(cookie,tostring(k).."="..tostring(v))
+			end
+		end
+		table.insert(cookies,table.concat(cookie,"; "))
+	end
+
+	local scookies = table.concat(cookies,"\n")
+	if scookies ~= "" then
+		HTTP.AddServerCookies(scookies)
+		return 2
+	end
 end
 
 function _m.solveChallenge(self, url)
@@ -147,11 +200,17 @@ function _m.solveChallenge(self, url)
 	end
 	-- reCapthca challenge
 	if (rc == 403) and body:find('action="/.-__cf_chl_captcha_tk__=%S+".-data%-sitekey=.-') then
+		if use_py_cloudflare then
+			return self:solveWithPythonSelenium(url)
+		end
 		LOGGER.SendError('WebsitBypass[clounflare]: detected reCapthca challenge, not supported right now. can be redirected to third party capthca solver in the future\r\n' .. url)
 		return -1
 	end
 	-- new IUAM challenge
 	if ((rc == 429) or (rc == 503)) and body:find('window%._cf_chl_opt={') then
+		if use_py_cloudflare then
+			return self:solveWithPythonSelenium(url)
+		end
 		LOGGER.SendError('WebsitBypass[clounflare]: detected the new Cloudflare challenge, not supported yet\r\n' .. url)
 		return 0
 	end
@@ -164,21 +223,27 @@ function _m.solveChallenge(self, url)
 	return -1
 end
 
+function fileExist(s)
+	local f = io.open(s, 'r')
+	local r = false
+	if f then r = true f:close() end
+	return r
+end
+
 function _m.bypass(self, METHOD, URL)
 	duktape = require 'fmd.duktape'
 	crypto = require 'fmd.crypto'
 	fmd = require 'fmd.env'
-	if tonumber(fmd.Revision) > 4800 then
-		ClearCookiesStorage = HTTP.ClearCookiesStorage
-	else
-		ClearCookiesStorage = function() end
-	end
+
+	py_exe = "python"
+	py_cloudflare = [[lua\websitebypass\cloudflare.py]]
+	use_py_cloudflare = fileExist(py_cloudflare)
 
 	local result = 0
 	local counter = 0
-	-- local maxretry = HTTP.RetryCount;
+	local maxretry = HTTP.RetryCount;
 	-- most websites forced new challenge, consider disable it until further change
-	local maxretry = 1;
+	-- local maxretry = 1;
 	HTTP.RetryCount = 0
 
 	while true do
@@ -194,11 +259,12 @@ function _m.bypass(self, METHOD, URL)
 	end
 
 	HTTP.RetryCount = maxretry
-	if result == 1 then
-		return true
-	end
 
-	return false
+	if result == 2 then -- need to reload
+		return HTTP.Request(METHOD, URL)
+	else
+		return (result >= 1)
+	end
 end
 
 return _m
