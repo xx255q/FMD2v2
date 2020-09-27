@@ -47,7 +47,7 @@ ECHO Building FMD %~1 --build-mode="%~3"
 ECHO ----------------------------------------------------
 DEL /F "%tdir%\fmd.exe" 2>nul
 DEL /F "%tdir%\fmd.dbg" 2>nul
-SET lbuild=%lazbuild% --build-mode="%~3" %~4
+SET lbuild=%lazbuild% -B --build-mode="%~3" %~4
 %lbuild% "%cdir%\mangadownloader\md.lpi"
 
 CALL :getfileversion "%tdir%\fmd.exe"
