@@ -287,7 +287,7 @@ begin
     FConn.ExecuteDirect('DROP TABLE IF EXISTS "' + FTableName + '"');
     FConn.ExecuteDirect('CREATE TABLE "' + FTableName + '" (' +
       DBDataProccesCreateParam + ');');
-    FTrans.Commit;
+    FTrans.CommitRetaining;
   end;
 end;
 
@@ -480,7 +480,7 @@ begin
   if (not FConn.Connected) or (FAttachedSites.Count = 0) then Exit;
   queryactive := FQuery.Active;
   if FQuery.Active then FQuery.Close;
-  FTrans.Commit;
+  FTrans.CommitRetaining;
   FConn.ExecuteDirect('END TRANSACTION');
   for i := FAttachedSites.Count - 1 downto 0 do begin
     try
@@ -819,7 +819,7 @@ begin
     try
       queryactive := FQuery.Active;
       if FQuery.Active then FQuery.Close;
-      FTrans.Commit;
+      FTrans.CommitRetaining;
       if FQuery.Active <> queryactive then
         FQuery.Active := queryactive;
     except

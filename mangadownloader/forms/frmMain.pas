@@ -1553,13 +1553,18 @@ var
   Node: PVirtualNode;
 begin
   if vtFavorites.SelectedCount = 0 then Exit;
-  Node := vtFavorites.GetFirstSelected();
-  while Assigned(Node) do
-  begin
-    if Sender = miFavoritesDisable then
-      FavoriteManager.StopChekForNewChapter(False, Node^.Index);
-    FavoriteManager[Node^.Index].Enabled := (Sender = miFavoritesEnable);
-    Node := vtFavorites.GetNextSelected(Node);
+  FavoriteManager.Lock;
+  try
+    Node := vtFavorites.GetFirstSelected();
+    while Assigned(Node) do
+    begin
+      if Sender = miFavoritesDisable then
+        FavoriteManager.StopChekForNewChapter(False, Node^.Index);
+      FavoriteManager[Node^.Index].Enabled := (Sender = miFavoritesEnable);
+      Node := vtFavorites.GetNextSelected(Node);
+    end;
+  finally
+    FavoriteManager.UnLock;
   end;
   UpdateVtFavorites;
   vtFavoritesFilterCountChange;

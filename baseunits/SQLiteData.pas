@@ -83,14 +83,21 @@ type
   end;
 
 const
+  {$ifdef NO_COMMIT_QUEUE}
+  MAX_COMMIT_QUEUE=0;
+  MAX_SQL_FLUSH_QUEUE=0;
+  {$else}
+  MAX_COMMIT_QUEUE=1 shl 4;
   MAX_SQL_FLUSH_QUEUE=1 shl 8;
+  {$endif}
   MAX_BIG_SQL_FLUSH_QUEUE=1 shl {$ifdef CPU64}14{$else}12{$endif}-1;
-  MAX_COMMIT_QUEUE=1 shl 5;
 
 type
   { TSQLiteDataWA }
 
   TSQLiteDataWA = class(TSQliteData)
+  private
+    FUpdateCount: Integer;
   public
     tempSQL: String;
     tempSQLcount: Integer;
@@ -103,11 +110,14 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+
+    procedure BeginUpdate; inline;
+    procedure EndUpdate; inline;
     procedure AppendSQL(const SQL:string); inline;
     procedure AppendSQLSafe(const SQL:string); inline;
-    procedure FlushSQL; inline;
+    procedure FlushSQL(const UseQueue:Boolean=True); inline;
     procedure FlushSQLSafe; inline;
-    procedure Commit; override;
+    procedure Commit(const UseQueue:Boolean=True);
   end;
 
 function QuotedStrD(const S: String): String; overload; inline;
@@ -160,8 +170,9 @@ end;
 
 procedure TSQLiteDataWA.InternalCommit;
 begin
+  if (commitCount>0) and (FUpdateCount=0) then
   try
-    Transaction.Commit;
+    Transaction.CommitRetaining;
     commitCount:=0;
   except
     on E: Exception do
@@ -180,12 +191,29 @@ begin
   tempSQL:='';
   tempSQLcount:=0;
   commitCount:=0;
+  FUpdateCount:=0;
 end;
 
 destructor TSQLiteDataWA.Destroy;
 begin
+  FUpdateCount:=0;
+  FlushSQL;
+  InternalCommit;
   DoneCriticalSection(Guardian);
   inherited Destroy;
+end;
+
+procedure TSQLiteDataWA.BeginUpdate;
+begin
+  InterlockedIncrement(FUpdateCount);
+end;
+
+procedure TSQLiteDataWA.EndUpdate;
+begin
+  if FUpdateCount>0 then
+    InterlockedDecrement(FUpdateCount);
+  if FUpdateCount=0 then
+    FlushSQL;
 end;
 
 procedure TSQLiteDataWA.AppendSQL(const SQL: string);
@@ -208,17 +236,17 @@ begin
     AppendSQL(SQL);
 end;
 
-procedure TSQLiteDataWA.FlushSQL;
+procedure TSQLiteDataWA.FlushSQL(const UseQueue: Boolean);
 begin
-  if tempSQLcount>0 then
+  if (tempSQLcount>0) and ((FUpdateCount=0) or (UseQueue=False)) then
   begin
     Connection.ExecuteSQL(tempsql);
     tempSQL:='';
     tempSQLcount:=0;
     Inc(commitCount);
-    if commitCount>=maxCommitQueue then
-      InternalCommit;
   end;
+  if commitCount>=maxCommitQueue then
+    InternalCommit;
 end;
 
 procedure TSQLiteDataWA.FlushSQLSafe;
@@ -233,12 +261,14 @@ begin
     FlushSQL;
 end;
 
-procedure TSQLiteDataWA.Commit;
+procedure TSQLiteDataWA.Commit(const UseQueue: Boolean);
 begin
   if not Connection.Connected then Exit;
   EnterCriticalSection(Guardian);
   try
-    FlushSQL;
+    FlushSQL(UseQueue);
+    if not UseQueue then
+      InterlockedExchange(FUpdateCount,0);
     InternalCommit;
   finally
     LeaveCriticalSection(Guardian);
@@ -623,6 +653,8 @@ procedure TSQliteData.CommitRetaining;
 begin
   if not FConn.Connected then Exit;
   try
+    if FQuery.Active then
+      FQuery.ApplyUpdates;
     Transaction.CommitRetaining;
   except
     Transaction.RollbackRetaining;

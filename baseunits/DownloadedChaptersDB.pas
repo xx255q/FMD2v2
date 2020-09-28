@@ -14,11 +14,14 @@ type
   TDownloadedChaptersDB = class(TSQliteData)
   private
     FGuardian: TRTLCriticalSection;
+    FCommitCount: Integer;
     function GetChapters(const AModuleID, ALink: String): String;
     procedure SetChapters(const AModuleID, ALink: String; AValue: String);
   protected
     procedure Lock; inline;
     procedure UnLock; inline;
+    procedure InternalCommit; inline;
+    procedure CheckCommit; inline;
   public
     constructor Create;
     destructor Destroy; override;
@@ -77,6 +80,7 @@ begin
       end;
       try
         Post;
+        CheckCommit;
       except
         CancelUpdates;
       end;
@@ -95,10 +99,24 @@ begin
   LeaveCriticalSection(FGuardian);
 end;
 
+procedure TDownloadedChaptersDB.InternalCommit;
+begin
+  inherited CommitRetaining;
+  FCommitCount:=0;
+end;
+
+procedure TDownloadedChaptersDB.CheckCommit;
+begin
+  Inc(FCommitCount);
+  if FCommitCount>=MAX_COMMIT_QUEUE then
+    InternalCommit;
+end;
+
 constructor TDownloadedChaptersDB.Create;
 begin
   inherited Create;
   InitCriticalSection(FGuardian);
+  FCommitCount:=0;
   AutoApplyUpdates := True;
   Table.Options:=Table.Options-[sqoAutoCommit];
   Table.PacketRecords:=1;
@@ -113,6 +131,7 @@ end;
 
 destructor TDownloadedChaptersDB.Destroy;
 begin
+  InternalCommit;
   DoneCriticalsection(FGuardian);
   inherited Destroy;
 end;
@@ -126,7 +145,7 @@ procedure TDownloadedChaptersDB.Commit;
 begin
   Lock;
   try
-    inherited Commit;
+    InternalCommit;
   finally
     UnLock;
   end;
@@ -139,7 +158,10 @@ begin
   with Table do
     try
       if Locate('id', LowerCase(AModuleID+ALink), []) then
+      begin
         Delete;
+        CheckCommit;
+      end;
     finally
       UnLock;
     end;

@@ -1462,7 +1462,7 @@ begin
   try
     //Logger.Send('TDownloadManager.Backup');
     DBUpdateOrder;
-    FDownloadsDB.Commit;
+    FDownloadsDB.Commit(False);
     DownloadedChapters.Commit;
     DownloadedChapters.Refresh;
   finally
@@ -1474,13 +1474,14 @@ procedure TDownloadManager.Lock;
 begin
   EnterCriticalSection(CS_Task);
   EnterCriticalSection(FDownloadsDB.Guardian);
+  FDownloadsDB.BeginUpdate;
   isRunningBackup := True;
 end;
 
 procedure TDownloadManager.UnLock;
 begin
-  FDownloadsDB.FlushSQL;
   isRunningBackup := False;
+  FDownloadsDB.EndUpdate;
   LeaveCriticalSection(FDownloadsDB.Guardian);
   LeaveCriticalSection(CS_Task);
 end;
@@ -1498,10 +1499,9 @@ begin
       FDownloadsDB.tempSQL+='UPDATE "downloads" SET "order"='+PrepSQLValue(Order)+' WHERE "id"='''+DlId+''';';
       Inc(FDownloadsDB.tempSQLcount);
       if FDownloadsDB.tempSQLcount>=MAX_BIG_SQL_FLUSH_QUEUE then
-        FDownloadsDB.FlushSQL;
+        FDownloadsDB.FlushSQL(False);
     end;
   end;
-  if FDownloadsDB.tempSQLcount>0 then FDownloadsDB.FlushSQL;
   FUpdateOrderCount:=0;
 end;
 
@@ -1584,6 +1584,7 @@ begin
     end
     else
     begin
+      FDownloadsDB.Commit(False);
       MainForm.tmRefreshDownloadsInfo.Enabled := False;
       MainForm.UpdateVtDownload;
       if isCheckForFMDDo and (OptionLetFMDDo <> DO_NOTHING) then begin

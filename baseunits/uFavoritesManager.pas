@@ -623,10 +623,9 @@ begin
       FFavoritesDB.tempSQL+='UPDATE "favorites" SET "order"='+PrepSQLValue(FOrder)+' WHERE "id"='+PrepSQLValue(Fid)+';';
       Inc(FFavoritesDB.tempSQLcount);
       if FFavoritesDB.tempSQLcount>=MAX_BIG_SQL_FLUSH_QUEUE then
-        FFavoritesDB.FlushSQL;
+        FFavoritesDB.FlushSQL(False);
     end;
   end;
-  if FFavoritesDB.tempSQLcount>0 then FFavoritesDB.FlushSQL;
   FUpdateOrderCount:=0;
 end;
 
@@ -1072,7 +1071,7 @@ begin
   Lock;
   try
     DBUpdateOrder;
-    FFavoritesDB.Commit;
+    FFavoritesDB.Commit(False);
   finally
     UnLock;
   end;
@@ -1159,10 +1158,12 @@ procedure TFavoriteManager.Lock;
 begin
   EnterCriticalsection(FGuardian);
   EnterCriticalSection(FFavoritesDB.Guardian);
+  FFavoritesDB.BeginUpdate;
 end;
 
 procedure TFavoriteManager.UnLock;
 begin
+  FFavoritesDB.EndUpdate;
   LeaveCriticalSection(FFavoritesDB.Guardian);
   LeaveCriticalsection(FGuardian);
 end;
