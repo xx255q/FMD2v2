@@ -1023,7 +1023,7 @@ msgstr "Gunakan proxy"
 
 #: tmainform.cboptionvacuumdatabasesonexit.caption
 msgid "Vacuum databases on exit"
-msgstr ""
+msgstr "Vakumkan pangkalan data saat keluar"
 
 #: tmainform.cbpngcompressionlevel.text
 msgctxt "tmainform.cbpngcompressionlevel.text"
