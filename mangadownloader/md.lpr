@@ -95,7 +95,7 @@ begin
     end
     else
     // max sql lines before flush it to sqlite engine
-    if SameText(AppParams[i],'--max-sql-flush-queue') then
+    if SameText(AppParams[i],'--max-flush-queue') then
     begin
       v:=StrToIntDef(AppParams.ValueFromIndex[i],-1);
       if v<1 then v:=1;
@@ -103,7 +103,7 @@ begin
     end
     else
     // max sql lines before flush it to sqlite engine, used in large iterations
-    if SameText(AppParams[i],'--max-big-sql-flush-queue') then
+    if SameText(AppParams[i],'--max-big-flush-queue') then
     begin
       v:=StrToIntDef(AppParams.ValueFromIndex[i],-1);
       if v<1 then v:=1;

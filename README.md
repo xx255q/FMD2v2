@@ -16,6 +16,14 @@ This is an active fork of the Free Manga Downloader which is a free open source 
   
 [Supported Websites](https://github.com/fmd-project-team/FMD/wiki/Supported-Websites)  
   
+Some useful arguments that can be used in FMD2:
+- `--lua-dofile` trigger FMD2 to always load lua modules from file. Only use it when developing a module. It might slowing down FMD2.
+- `--no-commit-queue` disable commit queue for databases. The same as `--max-commit-queue=0 --max-flush-queue=0`. It might slowing down FMD2 with large databases due to intense disk write.
+- `--max-commit-queue=16` override max number of commit before writing to disk.
+- `--max-flush-queue=256` override max number of update before commiting to database engine.
+- `--max-big-flush-queue=16384` override max number of update before commiting to database. Internally used when making large update to databases in one go. Be careful when reducing the number it might slowing down FMD2 significantly.
+- `--backup-interval=10` override backup databases interval (minutes).
+
 ## Build instructions
 
 In order to build FMD from the source code, you must install the latest Trunk version of Lazarus and Free Pascal Compiler:  
