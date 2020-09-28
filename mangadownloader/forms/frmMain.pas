@@ -875,6 +875,7 @@ type
 
 var
   MainForm: TMainForm;
+  TimerBackupInterval: Integer = 10;
 
 const
   CL_HLBlueMarks        = $FDC594;
@@ -1330,7 +1331,7 @@ begin
   with Timer1Hour do
   begin
     OnTimer:=@OnTimerBackup;
-    Interval:=1000*60*10;
+    Interval:=1000*60*TimerBackupInterval;
     Enabled:=True;
   end;
 

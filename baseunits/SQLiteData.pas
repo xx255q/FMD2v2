@@ -82,15 +82,15 @@ type
     property OnError: TExceptionEvent read FOnError write SetOnError;
   end;
 
-const
+var
   {$ifdef NO_COMMIT_QUEUE}
-  MAX_COMMIT_QUEUE=0;
-  MAX_SQL_FLUSH_QUEUE=0;
+  MAX_COMMIT_QUEUE:Integer=0;
+  MAX_SQL_FLUSH_QUEUE:Integer=0;
   {$else}
-  MAX_COMMIT_QUEUE=1 shl 4;
-  MAX_SQL_FLUSH_QUEUE=1 shl 8;
+  MAX_COMMIT_QUEUE:Integer=1 shl 4;
+  MAX_SQL_FLUSH_QUEUE:Integer=1 shl 8;
   {$endif}
-  MAX_BIG_SQL_FLUSH_QUEUE=1 shl {$ifdef CPU64}14{$else}12{$endif}-1;
+  MAX_BIG_SQL_FLUSH_QUEUE:Integer=1 shl {$ifdef CPU64}14{$else}12{$endif}-1;
 
 type
   { TSQLiteDataWA }

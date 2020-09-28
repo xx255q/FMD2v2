@@ -14,7 +14,7 @@ uses
   Forms, LazFileUtils, jsonini, simpleipc, sqlite3dyn, uBaseUnit,
   FMDVars, webp, CheckUpdate, DBUpdater, SelfUpdater, uDownloadsManager,
   LuaWebsiteModules, LuaBase, SimpleException, Classes, sysutils, frmMain,
-  MultiLog, FileChannel, ssl_openssl_lib, blcksock, ssl_openssl;
+  MultiLog, FileChannel, ssl_openssl_lib, blcksock, ssl_openssl, SQLiteData;
 
 var
   CheckInstance: Boolean = True;
@@ -22,6 +22,8 @@ var
   EnableLogging: Boolean = False;
   LogFileName: String = '';
   s: TStringList;
+  i: Integer;
+  v: Integer;
   {$IFDEF DEBUGLEAKS}
   trcfile: String;
   {$ENDIF DEBUGLEAKS}
@@ -71,9 +73,51 @@ begin
   end;
   {$endif}
 
-  // always execute lua modules from file, for dev purpose
-  if AppParams.IndexOf('--lua-dofile')<>-1 then
-    AlwaysLoadLuaFromFile:=True;
+  for i:=0 to AppParams.Count-1 do
+  begin
+    // always execute lua modules from file, for dev purpose
+    if SameText(AppParams[i],'--lua-dofile') then
+       AlwaysLoadLuaFromFile:=True
+    else
+    // don't use commit queue, might be slow on large databases
+    if SameText(AppParams[i],'--no-commit-queue') then
+    begin
+      MAX_COMMIT_QUEUE:=0;
+      MAX_SQL_FLUSH_QUEUE:=0;
+    end
+    else
+    // set max commit queue before writing it to disk
+    if SameText(AppParams[i],'--max-commit-queue') then
+    begin
+      v:=StrToIntDef(AppParams.ValueFromIndex[i],-1);
+      if v<1 then v:=1;
+      MAX_COMMIT_QUEUE:=v;
+    end
+    else
+    // max sql lines before flush it to sqlite engine
+    if SameText(AppParams[i],'--max-sql-flush-queue') then
+    begin
+      v:=StrToIntDef(AppParams.ValueFromIndex[i],-1);
+      if v<1 then v:=1;
+      MAX_SQL_FLUSH_QUEUE:=v;
+    end
+    else
+    // max sql lines before flush it to sqlite engine, used in large iterations
+    if SameText(AppParams[i],'--max-big-sql-flush-queue') then
+    begin
+      v:=StrToIntDef(AppParams.ValueFromIndex[i],-1);
+      if v<1 then v:=1;
+      MAX_BIG_SQL_FLUSH_QUEUE:=v;
+    end
+    else
+    // timer backup interval, in minutes
+    if SameText(AppParams[i],'--backup-interval') then
+    begin
+      v:=StrToIntDef(AppParams.ValueFromIndex[i],-1);
+      if v<1 then v:=1;
+      TimerBackupInterval:=v;
+    end;
+  end;
 
   with TJSONIniFile.Create(SETTINGS_FILE) do
     try
