@@ -70,14 +70,7 @@ function GetPageNumber()
 				end
 			end
 		elseif MODULE.ID == '9e96846a035646988e1b2eb0f356d795' then -- loveheaven
-			local crypto = require 'fmd.crypto'
-			local v = x.XPath('//img[contains(@class, "chapter-img")]/@data-src')
-			for i = 1, v.Count do
-				local s = v.Get(i).ToString()
-				if string.find(s, "https") == nil then
-					TASK.PageLinks.Add(crypto.DecodeBase64(s))
-				end
-			end
+			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-src', TASK.PageLinks)
 		elseif MODULE.ID == 'f488bcb1911b4f21baa1ab65ef9ca61c' then -- heroscan
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-original', TASK.PageLinks)
 		else
