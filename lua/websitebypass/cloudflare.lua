@@ -218,7 +218,11 @@ function _m.solveChallenge(self, url)
 	if ((rc == 429) or (rc == 503)) and body:find('<form .-="challenge%-form" action="/.-__cf_chl_jschl_tk__=%S+"') then
 		return self:solveIUAMChallenge(body, url)
 	end
-
+	
+	if use_py_cloudflare then
+		return self:solveWithPythonSelenium(url)
+	end
+	
 	LOGGER.SendWarning('WebsitBypass[clounflare]: no Cloudflare solution found!\r\n' .. url)
 	return -1
 end
