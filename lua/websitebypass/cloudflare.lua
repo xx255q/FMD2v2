@@ -136,15 +136,16 @@ function _m.solveIUAMChallenge(self, body, url)
 	return 0
 end
 
-function _m.solveWithPythonSelenium(self, url)
+function _m.solveWithWebDriver(self, url)
 	local rooturl = url:match('(https?://[^/]+)') or ''
 
 	local s = nil
 	if tonumber(fmd.Revision) > 4985 then
 		local sub = require("fmd.subprocess")
-		_, s = sub.RunCommandHide(py_exe, py_cloudflare, rooturl, HTTP.UserAgent)
+		print('"'..webdriver_exe .. '" "' .. webdriver_script .. '" "' .. rooturl .. '" "' .. HTTP.UserAgent..'"')
+		_, s = sub.RunCommandHide(webdriver_exe, webdriver_script, rooturl, HTTP.UserAgent)
 	else
-		local exe = string.format('""%s" "%s" "%s" "%s""',py_exe,py_cloudflare,rooturl,HTTP.UserAgent)
+		local exe = string.format('""%s" "%s" "%s" "%s""',webdriver_exe, webdriver_script, rooturl, HTTP.UserAgent)
 		local py = io.popen(exe, "r")
 		if py then
 			s = py:read('*a')
@@ -200,16 +201,16 @@ function _m.solveChallenge(self, url)
 	end
 	-- reCapthca challenge
 	if (rc == 403) and body:find('action="/.-__cf_chl_captcha_tk__=%S+".-data%-sitekey=.-') then
-		if use_py_cloudflare then
-			return self:solveWithPythonSelenium(url)
+		if use_webdriver then
+			return self:solveWithWebDriver(url)
 		end
 		LOGGER.SendError('WebsitBypass[clounflare]: detected reCapthca challenge, not supported right now. can be redirected to third party capthca solver in the future\r\n' .. url)
 		return -1
 	end
 	-- new IUAM challenge
 	if ((rc == 429) or (rc == 503)) and body:find('window%._cf_chl_opt={') then
-		if use_py_cloudflare then
-			return self:solveWithPythonSelenium(url)
+		if use_webdriver then
+			return self:solveWithWebDriver(url)
 		end
 		LOGGER.SendError('WebsitBypass[clounflare]: detected the new Cloudflare challenge, not supported yet\r\n' .. url)
 		return 0
@@ -219,10 +220,10 @@ function _m.solveChallenge(self, url)
 		return self:solveIUAMChallenge(body, url)
 	end
 	
-	if use_py_cloudflare then
-		return self:solveWithPythonSelenium(url)
+	if use_webdriver then
+		return self:solveWithWebDriver(url)
 	end
-	
+
 	LOGGER.SendWarning('WebsitBypass[clounflare]: no Cloudflare solution found!\r\n' .. url)
 	return -1
 end
@@ -239,9 +240,18 @@ function _m.bypass(self, METHOD, URL)
 	crypto = require 'fmd.crypto'
 	fmd = require 'fmd.env'
 
-	py_exe = "python"
 	py_cloudflare = [[lua\websitebypass\cloudflare.py]]
-	use_py_cloudflare = fileExist(py_cloudflare)
+	js_cloudflare = [[lua\websitebypass\cloudflare.js]]
+	use_webdriver = false
+	if fileExist(js_cloudflare) then
+		use_webdriver = true
+		webdriver_exe = 'node'
+		webdriver_script = js_cloudflare
+	elseif fileExist(py_cloudflare) then
+		use_webdriver = true
+		webdriver_exe = 'python'
+		webdriver_script = py_cloudflare
+	end
 
 	local result = 0
 	local counter = 0
