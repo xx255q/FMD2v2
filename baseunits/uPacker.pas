@@ -12,7 +12,7 @@ interface
 
 uses
   Classes, Zipper, zstream, SysUtils, uBaseUnit, Img2Pdf, FileUtil,
-  LazFileUtils, SimpleException, uEpub;
+  LazFileUtils, SimpleException, uEpub, MultiLog;
 
 type
   TPackerFormat = (pfZIP, pfCBZ, pfPDF, pfEPUB);
@@ -24,7 +24,7 @@ type
     FSavedFileName, FExt: String;
     FFileList: TStringList;
     procedure FileFound(FileIterator: TFileIterator);
-    procedure DoZipCbz;
+    function DoZipCbz: Boolean;
     procedure DoPdf;
     procedure DoEpub;
   public
@@ -48,10 +48,11 @@ begin
   FFileList.Add(FileIterator.Filename);
 end;
 
-procedure TPacker.DoZipCbz;
+function TPacker.DoZipCbz: Boolean;
 var
   i: Integer;
 begin
+  Result:=False;
   with TZipper.Create do
     try
       try
@@ -73,6 +74,18 @@ begin
     finally
       Free;
     end;
+  Result := FileExists(FSavedFileName);
+  if Result then
+    with TUnZipper.Create do
+      try
+         FileName:=FSavedFileName;
+         Examine;
+         Result := FileList.Count = Entries.Count;
+         if not Result then
+           Logger.SendWarning('Some files failed to be compressed!');
+      finally
+        Free;
+      end;
 end;
 
 procedure TPacker.DoPdf;
@@ -152,6 +165,7 @@ end;
 function TPacker.Execute: Boolean;
 var
   i: Integer;
+  packResult: Boolean;
 begin
   Result := False;
   Path := CorrectPathSys(Path);
@@ -184,11 +198,13 @@ begin
   if FileExists(FSavedFileName) then
     if DeleteFile(FSavedFileName) = False then
       Exit;
+  packResult:=True;
   case Format of
-    pfZIP, pfCBZ: DoZipCbz;
+    pfZIP, pfCBZ: packResult:=DoZipCbz;
     pfPDF: DoPdf;
     pfEPUB: DoEpub;
   end;
+  if not packResult then Exit(False);
   Result := FileExists(FSavedFileName);
   if Result then
   begin
