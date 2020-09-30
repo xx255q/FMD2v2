@@ -4,7 +4,7 @@ function _m.IUAMChallengeAnswer(self, body, url)
 	local script = body:match('<script.->(.-)</script')
 
 	if script == nil then
-		LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to parse the javascript\r\n' .. url)
+		LOGGER.SendError('WebsitBypass[cloudflare]: IUAM challenge detected but failed to parse the javascript\r\n' .. url)
 		return nil
 	end
 
@@ -54,9 +54,9 @@ String.prototype.sup = function () { return "<sup>" + this + "</sup>"; };
 
 	local answer, timeout = duktape.ExecJS(challenge)
 	if (answer == nil) or (answer == 'NaN') or (answer == '') then
-		-- LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to solve the javascript challenge\r\n' .. url .. '\r\n' .. body)
-		-- LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to solve the javascript challenge\r\n' .. url .. '\r\n' .. challenge)
-		LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to solve the javascript challenge\r\n' .. url)
+		-- LOGGER.SendError('WebsitBypass[cloudflare]: IUAM challenge detected but failed to solve the javascript challenge\r\n' .. url .. '\r\n' .. body)
+		-- LOGGER.SendError('WebsitBypass[cloudflare]: IUAM challenge detected but failed to solve the javascript challenge\r\n' .. url .. '\r\n' .. challenge)
+		LOGGER.SendError('WebsitBypass[cloudflare]: IUAM challenge detected but failed to solve the javascript challenge\r\n' .. url)
 	else
 		answer = answer:match('"jschl%-answer":.-"value":"(.-)"')
 		timeout = tonumber(answer:match('"timeout":(%d+)')) or 4000
@@ -82,7 +82,7 @@ function _m.solveIUAMChallenge(self, body, url)
 
 	local form, challengeUUID = body:match('<form (.-="challenge%-form" action="(.-__cf_chl_jschl_tk__=%S+)"(.-)</form>)')
 	if (form == nil) or (challengeUUID == nil) then
-		LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to parse the form\r\n' .. url)
+		LOGGER.SendError('WebsitBypass[cloudflare]: IUAM challenge detected but failed to parse the form\r\n' .. url)
 		return 0
 	end
 	challengeUUID = challengeUUID:gsub('&amp;', '&')
@@ -100,7 +100,7 @@ function _m.solveIUAMChallenge(self, body, url)
 
 	local i = 0; for _ in pairs(payload) do i = i + 1 end
 	if i == 0 then
-		LOGGER.SendError('WebsitBypass[clounflare]: IUAM challenge detected but failed to parse the form payload\r\n' .. url)
+		LOGGER.SendError('WebsitBypass[cloudflare]: IUAM challenge detected but failed to parse the form payload\r\n' .. url)
 		return 0
 	end
 	payload['jschl_answer'] = answer
@@ -126,7 +126,7 @@ function _m.solveIUAMChallenge(self, body, url)
 	local rbody = HTTP.Document.ToString()
 	if rbody:find('^Access denied%. Your IP') then
 		HTTP.ClearCookiesStorage()
-		LOGGER.SendError('WebsitBypass[clounflare]: the server has BANNED your IP!\r\n' .. url .. '\r\n' .. rbody)
+		LOGGER.SendError('WebsitBypass[cloudflare]: the server has BANNED your IP!\r\n' .. url .. '\r\n' .. rbody)
 		return -1
 	end
 	if HTTP.Cookies.Values["cf_clearance"] ~= "" then
@@ -137,34 +137,29 @@ function _m.solveIUAMChallenge(self, body, url)
 end
 
 function _m.solveWithWebDriver(self, url)
-	local rooturl = url:match('(https?://[^/]+)') or ''
+	local rooturl = url:match('(https?://[^/]+)') or url
 
 	local s = nil
-	if tonumber(fmd.Revision) > 4985 then
-		local sub = require("fmd.subprocess")
-		print('"'..webdriver_exe .. '" "' .. webdriver_script .. '" "' .. rooturl .. '" "' .. HTTP.UserAgent..'"')
-		_, s = sub.RunCommandHide(webdriver_exe, webdriver_script, rooturl, HTTP.UserAgent)
-	else
-		local exe = string.format('""%s" "%s" "%s" "%s""',webdriver_exe, webdriver_script, rooturl, HTTP.UserAgent)
-		local py = io.popen(exe, "r")
-		if py then
-			s = py:read('*a')
-			py:close()
-		end
-	end
+	print(string.format('WebsitBypass[cloudflare]: using webdriver "%s" "%s" "%s" "%s"',webdriver_exe, webdriver_script, rooturl, HTTP.UserAgent))
+	_, s = require("fmd.subprocess").RunCommandHide(webdriver_exe, webdriver_script, rooturl, HTTP.UserAgent)
 
-	if (s==nil) or (s=="") then
-		LOGGER.SendError('WebsitBypass[clounflare]: python selenium module failed or timeout\r\n' .. url)
+	if not(s) or (s=="") then
+		LOGGER.SendError("WebsitBypass[cloudflare]: webdriver doesn't return anything (timeout)\r\n" .. url)
+		return -1
+	end
+	if not s:lower():find('cf_clearance',1,true) then
+		LOGGER.SendError("WebsitBypass[cloudflare]: webdriver can't find cookie 'cf_clearance'\r\n" .. url)
 		return -1
 	end
 
-	local json = require "utils.json"
-	s = s:gsub("'",'"'):gsub("True","true"):gsub("False","false")
-	local s = json.decode(s)
-	local c
-	local scookie
+	s = require("utils.json").decode(s) or nil
+	if not s then
+		LOGGER.SendError("WebsitBypass[cloudflare]: webdriver failed to parse cookies\r\n" .. url)
+		return -1
+	end
+
 	local cookies = {}
-	for _, c in ipairs(s) do
+	local c for _, c in ipairs(s) do
 		cookie = {}
 		table.insert(cookie,c["name"].."=" .. c["value"])
 		c["name"]=nil
@@ -183,9 +178,8 @@ function _m.solveWithWebDriver(self, url)
 		table.insert(cookies,table.concat(cookie,"; "))
 	end
 
-	local scookies = table.concat(cookies,"\n")
-	if scookies ~= "" then
-		HTTP.AddServerCookies(scookies)
+	if #cookies > 0 then
+		HTTP.AddServerCookies(table.concat(cookies,"\n"))
 		return 2
 	end
 end
@@ -196,7 +190,7 @@ function _m.solveChallenge(self, url)
 
 	-- firewall blocked
 	if (rc == 403) and body:find('<span class="cf%-error%-code">1020</span>') then
-		LOGGER.SendError('WebsitBypass[clounflare]: Cloudflare has blocked this request (Code 1020 Detected)\r\n' .. url)
+		LOGGER.SendError('WebsitBypass[cloudflare]: Cloudflare has blocked this request (Code 1020 Detected)\r\n' .. url)
 		return -1
 	end
 	-- reCapthca challenge
@@ -204,7 +198,7 @@ function _m.solveChallenge(self, url)
 		if use_webdriver then
 			return self:solveWithWebDriver(url)
 		end
-		LOGGER.SendError('WebsitBypass[clounflare]: detected reCapthca challenge, not supported right now. can be redirected to third party capthca solver in the future\r\n' .. url)
+		LOGGER.SendError('WebsitBypass[cloudflare]: detected reCapthca challenge, not supported right now. can be redirected to third party capthca solver in the future\r\n' .. url)
 		return -1
 	end
 	-- new IUAM challenge
@@ -212,19 +206,19 @@ function _m.solveChallenge(self, url)
 		if use_webdriver then
 			return self:solveWithWebDriver(url)
 		end
-		LOGGER.SendError('WebsitBypass[clounflare]: detected the new Cloudflare challenge, not supported yet\r\n' .. url)
+		LOGGER.SendError('WebsitBypass[cloudflare]: detected the new Cloudflare challenge, not supported yet\r\n' .. url)
 		return 0
 	end
 	-- IUAM challenge
 	if ((rc == 429) or (rc == 503)) and body:find('<form .-="challenge%-form" action="/.-__cf_chl_jschl_tk__=%S+"') then
 		return self:solveIUAMChallenge(body, url)
 	end
-	
+
 	if use_webdriver then
 		return self:solveWithWebDriver(url)
 	end
 
-	LOGGER.SendWarning('WebsitBypass[clounflare]: no Cloudflare solution found!\r\n' .. url)
+	LOGGER.SendWarning('WebsitBypass[cloudflare]: no Cloudflare solution found!\r\n' .. url)
 	return -1
 end
 
