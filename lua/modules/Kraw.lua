@@ -18,7 +18,6 @@ function GetNameAndLink()
 		local post_data = 'action=load_more&class=Essential_Addons_Elementor%5CPro%5CElements%5CPost_List&args=orderby%3Dtitle%26order%3Dasc%26ignore_sticky_posts%3D1%26post_status%3Dpublish%26posts_per_page%3D20%26offset%3D0%26post_type%3Dpost%26tax_query%255B0%255D%255Btaxonomy%255D%3Dpost_tag%26tax_query%255B0%255D%255Bfield%255D%3Dterm_id%26tax_query%255B0%255D%255Bterms%255D%255B0%255D%3D14%26tax_query%255B0%255D%255Bterms%255D%255B1%255D%3D466%26tax_query%255Brelation%255D%3DAND&taxonomy%5Btaxonomy%5D=all&taxonomy%5Bfield%5D=term_id&taxonomy%5Bterms%5D%5B%5D=&settings=eael_post_list_post_feature_image%3Dyes%26eael_post_list_post_meta%3D%26eael_post_list_post_title%3Dyes%26eael_post_list_post_excerpt%3Dno%26eael_post_list_featured_area%3Dyes%26eael_post_list_featured_meta%3D%26eael_post_list_featured_title%3Dyes%26eael_post_list_featured_excerpt%3Dno%26eael_post_list_pagination%3Dyes%26eael_post_list_layout_type%3Ddefault%26eael_post_list_title_tag%3Dh2&page='
 		local x = CreateTXQuery()
 		local function getList()
-			HTTP.Document.SaveToFile('temp\\kraw_'..tostring(next_page)..'.html')
 			x.ParseHTML(HTTP.Document)
 			local count = LINKS.Count
 			x.XPathHREFAll('//h2[@class="eael-post-list-title"]/a', LINKS, NAMES)
