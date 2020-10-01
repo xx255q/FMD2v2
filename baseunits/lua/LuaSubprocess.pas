@@ -23,22 +23,42 @@ begin
   Result := 1;
 end;
 
+Const
+  ForbiddenOptions = [poRunSuspended,poWaitOnExit];
+
 function _runcommand(L:Plua_State;Options:TProcessOptions=[];SWOptions:TShowWindowOptions=swoNone): Integer;
 var
-  args: array of string;
-  r: Boolean;
-  s: String;
-  i: Integer;
+  p : TProcess;
+  i,
+  ExitStatus : integer;
+  OutputString : String;
+  ErrorString : String;
+  presult: Boolean;
 begin
-  SetLength(args,lua_gettop(L)-1);
-  s:='';
-  r:=False;
-  for i:=2 to lua_gettop(L) do
-    args[i-2] := luaToString(L,i);
-  r := process.RunCommand(luaToString(L,1), args, s, Options, SWOptions);
-  lua_pushboolean(L, r);
-  lua_pushstring(L, s);
-  Result:=2;
+  OutputString:='';
+  ErrorString:='';
+  ExitCode:=0;
+  presult:=False;
+
+  p:=DefaultTProcess.create(nil);
+  if Options<>[] then
+    P.Options:=Options - ForbiddenOptions;
+  P.ShowWindow:=SwOptions;
+  p.Executable:=luaToString(L,1);
+  if lua_gettop(L)>1 then
+    for i:=2 to lua_gettop(L) do
+      p.Parameters.Add(luaToString(L,i));
+  try
+    presult:=p.RunCommandLoop(OutputString,ErrorString,ExitStatus)=0;
+  finally
+    p.free;
+  end;
+  if exitstatus<>0 then presult:=false;
+  lua_pushboolean(L,presult);
+  lua_pushstring(L,OutputString);
+  lua_pushstring(L,ErrorString);
+  lua_pushinteger(L,ExitStatus);
+  Result:=4;
 end;
 
 function subprocess_runcommand(L: Plua_State): Integer; cdecl;
