@@ -1001,7 +1001,8 @@ msgstr "Show Favorites tab when adding new manga"
 msgid "Exit FMD"
 msgstr "Exit FMD"
 
-#: tmainform.cboptionsortdownloadswhenaddingnewdownloadtasks.caption
+#: tmainform.cboptionsortdownloadsonnewtasks.caption
+msgctxt "tmainform.cboptionsortdownloadsonnewtasks.caption"
 msgid "Sort Downloads when adding new download tasks"
 msgstr "Sort Downloads when adding new download tasks"
 
@@ -1741,7 +1742,6 @@ msgid "Number of downloaded tasks at the same time"
 msgstr "Number of downloaded tasks at the same time"
 
 #: tmainform.lboptionmaxretry.caption
-#| msgid "Number of retry times if tasks have download problems (-1 = always retry)"
 msgid "Max number of retry on connection failure (-1 = always retry)"
 msgstr "Max number of retry on connection failure (-1 = always retry)"
 

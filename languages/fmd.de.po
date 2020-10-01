@@ -13,7 +13,6 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: checkupdate.rs_btncheckupdates
-#, fuzzy
 msgctxt "checkupdate.rs_btncheckupdates"
 msgid "Check for latest version"
 msgstr "Auf neuste Version prüfen"
@@ -24,7 +23,7 @@ msgstr "Installierte version"
 
 #: checkupdate.rs_latestversion
 msgid "Latest Version   "
-msgstr "Neuste version"
+msgstr "Neuste version "
 
 #: checkupdate.rs_newversionfound
 msgid "New Version found!"
@@ -540,7 +539,7 @@ msgid ""
 "\n"
 "%d %s"
 msgstr ""
-"konnte neue Version nicht herunterladen %s\n"
+"Konnte neue Version nicht herunterladen %s\n"
 "\n"
 "%d %s"
 
@@ -828,7 +827,6 @@ msgid "Reset value"
 msgstr "Wert zurücksetzen"
 
 #: tmainform.btndownloadfiltercustomdateapply.caption
-#, fuzzy
 msgctxt "tmainform.btndownloadfiltercustomdateapply.caption"
 msgid "Apply"
 msgstr "Anwenden"
@@ -866,8 +864,6 @@ msgid "Visit my blog"
 msgstr "Besuche meinen Blog"
 
 #: tmainform.caption
-#, fuzzy
-#| msgid "Free Manga Downloader"
 msgctxt "tmainform.caption"
 msgid "Free Manga Downloader"
 msgstr "Free Manga Downloader"
@@ -1006,7 +1002,8 @@ msgstr "Zeige Favoriten Register wenn neue Mangas hinzugefügt werden"
 msgid "Exit FMD"
 msgstr "FMD beenden"
 
-#: tmainform.cboptionsortdownloadswhenaddingnewdownloadtasks.caption
+#: tmainform.cboptionsortdownloadsonnewtasks.caption
+msgctxt "tmainform.cboptionsortdownloadsonnewtasks.caption"
 msgid "Sort Downloads when adding new download tasks"
 msgstr "Sortiere Downloads wenn neue Aufgaben hinzugefügt werden"
 
@@ -1510,13 +1507,11 @@ msgid "Renaming"
 msgstr "Umbenennung"
 
 #: tmainform.gboptionsconnectionsdownloads.caption
-#, fuzzy
 msgctxt "tmainform.gboptionsconnectionsdownloads.caption"
 msgid "Downloads"
 msgstr "Downloads"
 
 #: tmainform.gboptionsconnectionsgeneral.caption
-#, fuzzy
 msgctxt "tmainform.gboptionsconnectionsgeneral.caption"
 msgid "General"
 msgstr "Allgemeines"
@@ -1748,8 +1743,6 @@ msgid "Number of downloaded tasks at the same time"
 msgstr "Anzahl von Downloads zur selben Zeit"
 
 #: tmainform.lboptionmaxretry.caption
-#, fuzzy
-#| msgid "Number of retry times if tasks have download problems (-1 = always retry)"
 msgid "Max number of retry on connection failure (-1 = always retry)"
 msgstr "Anzahl der erneuten Versuche, falls der Download Probleme hat (-1 =immer wiederholen)"
 
@@ -1775,8 +1768,6 @@ msgid "PDF Quality Level"
 msgstr "PDF Qualitätsstufe"
 
 #: tmainform.lboptionpdfquality.hint
-#, fuzzy
-#| msgid "100 = FlateEncode (lossless), = DCTEncode (lossy)"
 msgctxt "TMAINFORM.LBOPTIONPDFQUALITY.HINT"
 msgid "100 = FlateEncode (lossless), lower = DCTEncode (lossy)"
 msgstr "100 = FlateEncode (Verlustfrei), Niedriger = DCTEncode (Verlustbehaftet)"
@@ -2027,7 +2018,6 @@ msgid "Stop check for new chapter"
 msgstr "Nach neuen Kapitel suchen anhalten"
 
 #: tmainform.mifavoritestransferwebsite.caption
-#, fuzzy
 msgctxt "tmainform.mifavoritestransferwebsite.caption"
 msgid "Transfer website"
 msgstr "Webseite übertragen"
@@ -2348,8 +2338,6 @@ msgid "Save to"
 msgstr "Speichern unter"
 
 #: tmainform.vtdownload.header.columns[6].text
-#, fuzzy
-#| msgid "Added"
 msgctxt "TMAINFORM.VTDOWNLOAD.HEADER.COLUMNS[6].TEXT"
 msgid "Date added"
 msgstr "Hinzugefügt"
@@ -2384,7 +2372,7 @@ msgstr "Speichern unter"
 #: tmainform.vtfavorites.header.columns[5].text
 msgctxt "tmainform.vtfavorites.header.columns[5].text"
 msgid "Date added"
-msgstr ""
+msgstr "Hinzugefügt"
 
 #: tmainform.vtfavorites.header.columns[6].text
 msgid "Last checked date"
@@ -2531,7 +2519,6 @@ msgid "Compressing..."
 msgstr "Kompressiere..."
 
 #: udownloadsmanager.rs_disabled
-#, fuzzy
 msgctxt "udownloadsmanager.rs_disabled"
 msgid "Disabled"
 msgstr "Deaktiviert"
@@ -2541,7 +2528,6 @@ msgid "Downloading"
 msgstr "Lade herunter"
 
 #: udownloadsmanager.rs_failed
-#, fuzzy
 msgctxt "udownloadsmanager.rs_failed"
 msgid "Failed"
 msgstr "Gescheitert"
@@ -2572,25 +2558,21 @@ msgid "Waiting..."
 msgstr "Warten..."
 
 #: ufavoritesmanager.rs_btnaddtoqueue
-#, fuzzy
 msgctxt "ufavoritesmanager.rs_btnaddtoqueue"
 msgid "&Add to queue"
 msgstr "&Zur Warteschlage hinzufügen"
 
 #: ufavoritesmanager.rs_btncancel
-#, fuzzy
 msgctxt "ufavoritesmanager.rs_btncancel"
 msgid "&Cancel"
 msgstr "&Abbrechen"
 
 #: ufavoritesmanager.rs_btncheckfavorites
-#, fuzzy
 msgctxt "ufavoritesmanager.rs_btncheckfavorites"
 msgid "Check for new chapter"
 msgstr "Auf neues Kapitel überprüfen"
 
 #: ufavoritesmanager.rs_btndownload
-#, fuzzy
 msgctxt "ufavoritesmanager.rs_btndownload"
 msgid "&Download"
 msgstr "&Herunterladen"
@@ -2694,4 +2676,3 @@ msgstr "Liste erneuern"
 #, object-pascal-format
 msgid "Can not load WebP codec library \"%s\". Check your installation."
 msgstr "Kann WebP Codec \"%s nicht laden. Überprüfen sie ihre Installation."
-

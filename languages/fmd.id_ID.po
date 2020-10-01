@@ -1005,7 +1005,8 @@ msgstr "Tampilkan daftar kesukaan saat menambahkan komik baru"
 msgid "Exit FMD"
 msgstr "Keluar dari FMD"
 
-#: tmainform.cboptionsortdownloadswhenaddingnewdownloadtasks.caption
+#: tmainform.cboptionsortdownloadsonnewtasks.caption
+msgctxt "tmainform.cboptionsortdownloadsonnewtasks.caption"
 msgid "Sort Downloads when adding new download tasks"
 msgstr "Urutkan daftar unduhan saat menambahkan unduhan baru"
 
@@ -1745,8 +1746,6 @@ msgid "Number of downloaded tasks at the same time"
 msgstr "Jumlah unduhan aktif pada waktu yang sama"
 
 #: tmainform.lboptionmaxretry.caption
-#, fuzzy
-#| msgid "Number of retry times if tasks have download problems (-1 = always retry)"
 msgid "Max number of retry on connection failure (-1 = always retry)"
 msgstr "Jumlah pengulangan jika unduhan memiliki masalah (-1 = selalu coba lagi)"
 
@@ -2681,4 +2680,3 @@ msgstr "Memutakhirkan daftar"
 #, object-pascal-format
 msgid "Can not load WebP codec library \"%s\". Check your installation."
 msgstr "Tidak dapat memuat pustaka kodek WebP \"%s\". Periksa instalasi Anda."
-

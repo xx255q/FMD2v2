@@ -55,7 +55,7 @@ type
     cbOptionAutoCheckFavRemoveCompletedManga: TCheckBox;
     cbOptionAutoOpenFavStartup: TCheckBox;
     cbOptionDeleteCompletedTasksOnClose: TCheckBox;
-    cbOptionSortDownloadsWhenAddingNewDownloadTasks: TCheckBox;
+    cbOptionSortDownloadsOnNewTasks: TCheckBox;
     cbOptionShowFavoritesTabOnNewManga: TCheckBox;
     cbOptionShowDownloadsTabOnNewTasks: TCheckBox;
     cbOptionEnableLoadCover: TCheckBox;
@@ -2602,7 +2602,7 @@ begin
         finally
           DLManager.UnLock;
         end;
-        if OptionSortDownloadsWhenAddingNewDownloadTasks then
+        if OptionSortDownloadsOnNewTasks then
           DLManager.Sort(DLManager.SortColumn);
       end;
       DLManager.DownloadedChapters.Chapters[mangaInfo.ModuleID, mangaInfo.Link]:=links.Text;
@@ -5104,7 +5104,7 @@ begin
     cbOptionMinimizeOnStart.Checked := ReadBool('general', 'MinimizeOnStart', False);
     cbOptionMinimizeToTray.Checked := ReadBool('general', 'MinimizeToTray', False);
     cbOptionDeleteCompletedTasksOnClose.Checked := ReadBool('general', 'DeleteCompletedTasksOnClose', OptionDeleteCompletedTasksOnClose);
-    cbOptionSortDownloadsWhenAddingNewDownloadTasks.Checked := ReadBool('general', 'SortDownloadsWhenAddingNewDownloadTasks', OptionSortDownloadsWhenAddingNewDownloadTasks);
+    cbOptionSortDownloadsOnNewTasks.Checked := ReadBool('general', 'SortDownloadsOnNewTasks', OptionSortDownloadsOnNewTasks);
     cbOptionLetFMDDo.ItemIndex := ReadInteger('general', 'LetFMDDo', 0);
     edOptionExternalPath.Text := ReadString('general', 'ExternalProgramPath', '');
     edOptionExternalParams.Text := ReadString('general', 'ExternalProgramParams', DEFAULT_EXPARAM);
@@ -5262,7 +5262,7 @@ begin
       WriteBool('general', 'MinimizeOnStart', cbOptionMinimizeOnStart.Checked);
       WriteBool('general', 'MinimizeToTray', cbOptionMinimizeToTray.Checked);
       WriteBool('general', 'DeleteCompletedTasksOnClose', cbOptionDeleteCompletedTasksOnClose.Checked);
-      WriteBool('general', 'SortDownloadsWhenAddingNewDownloadTasks', cbOptionSortDownloadsWhenAddingNewDownloadTasks.Checked);
+      WriteBool('general', 'SortDownloadsOnNewTasks', cbOptionSortDownloadsOnNewTasks.Checked);
       WriteInteger('general', 'LetFMDDo', cbOptionLetFMDDo.ItemIndex);
       WriteString('general', 'ExternalProgramPath', edOptionExternalPath.Text);
       WriteString('general', 'ExternalProgramParams', edOptionExternalParams.Text);
@@ -5445,7 +5445,7 @@ begin
     OptionLetFMDDo := TFMDDo(cbOptionLetFMDDo.ItemIndex);
     OptionEnableLoadCover := cbOptionEnableLoadCover.Checked;
     OptionDeleteCompletedTasksOnClose := cbOptionDeleteCompletedTasksOnClose.Checked;
-    OptionSortDownloadsWhenAddingNewDownloadTasks := cbOptionSortDownloadsWhenAddingNewDownloadTasks.Checked;
+    OptionSortDownloadsOnNewTasks := cbOptionSortDownloadsOnNewTasks.Checked;
     DLManager.DB.AutoVacuum:=cbOptionVacuumDatabasesOnExit.Checked;
     FavoriteManager.DB.AutoVacuum:=cbOptionVacuumDatabasesOnExit.Checked;
 

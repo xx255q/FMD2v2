@@ -907,14 +907,16 @@ begin
             DLManager.UnLock;
           end;
 
-          if LNCResult = ncrDownload then
+          if LNCResult in [ncrDownload, ncrQueue] then
           begin
-            DLManager.CheckAndActiveTask;
-            if OptionSortDownloadsWhenAddingNewDownloadTasks then
+            if OptionSortDownloadsOnNewTasks then
               DLManager.Sort(DLManager.SortColumn);
+            if LNCResult = ncrDownload then
+              DLManager.CheckAndActiveTask;
             if OptionShowDownloadsTabOnNewTasks then
               MainForm.pcMain.ActivePage := MainForm.tsDownload;
           end;
+
           if Assigned(OnUpdateDownload) then
             OnUpdateDownload;
           if Assigned(OnUpdateFavorite) then

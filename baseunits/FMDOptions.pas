@@ -102,7 +102,7 @@ var
   DoAfterFMD: TFMDDo;
   OptionLetFMDDo: TFMDDo = DO_NOTHING;
   OptionDeleteCompletedTasksOnClose: Boolean = False;
-  OptionSortDownloadsWhenAddingNewDownloadTasks: Boolean = False;
+  OptionSortDownloadsOnNewTasks: Boolean = False;
 
   // saveto
   OptionChangeUnicodeCharacter: Boolean = False;

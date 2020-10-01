@@ -998,7 +998,8 @@ msgstr ""
 msgid "Exit FMD"
 msgstr "Έξοδος του FMD"
 
-#: tmainform.cboptionsortdownloadswhenaddingnewdownloadtasks.caption
+#: tmainform.cboptionsortdownloadsonnewtasks.caption
+msgctxt "tmainform.cboptionsortdownloadsonnewtasks.caption"
 msgid "Sort Downloads when adding new download tasks"
 msgstr ""
 
@@ -2731,4 +2732,3 @@ msgstr ""
 #, object-pascal-format
 msgid "Can not load WebP codec library \"%s\". Check your installation."
 msgstr ""
-

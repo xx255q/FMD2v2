@@ -9,12 +9,11 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: tr\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 2.4.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
 #: checkupdate.rs_btncheckupdates
-#, fuzzy
 msgctxt "checkupdate.rs_btncheckupdates"
 msgid "Check for latest version"
 msgstr "Son sürümü kontrol et"
@@ -829,7 +828,6 @@ msgid "Reset value"
 msgstr "Değeri sıfırla"
 
 #: tmainform.btndownloadfiltercustomdateapply.caption
-#, fuzzy
 msgctxt "tmainform.btndownloadfiltercustomdateapply.caption"
 msgid "Apply"
 msgstr "Uygula"
@@ -867,8 +865,6 @@ msgid "Visit my blog"
 msgstr "Blogumu ziyaret et"
 
 #: tmainform.caption
-#, fuzzy
-#| msgid "Free Manga Downloader"
 msgctxt "tmainform.caption"
 msgid "Free Manga Downloader"
 msgstr "Free Manga Downloader"
@@ -1007,7 +1003,8 @@ msgstr "Yeni manga eklerken Favoriler sekmesini göster"
 msgid "Exit FMD"
 msgstr "FMD'den çık"
 
-#: tmainform.cboptionsortdownloadswhenaddingnewdownloadtasks.caption
+#: tmainform.cboptionsortdownloadsonnewtasks.caption
+msgctxt "tmainform.cboptionsortdownloadsonnewtasks.caption"
 msgid "Sort Downloads when adding new download tasks"
 msgstr "Yeni indirme görevleri eklerken İndirmeleri Sırala"
 
@@ -1510,13 +1507,11 @@ msgid "Renaming"
 msgstr "Yeniden adlandırma"
 
 #: tmainform.gboptionsconnectionsdownloads.caption
-#, fuzzy
 msgctxt "tmainform.gboptionsconnectionsdownloads.caption"
 msgid "Downloads"
 msgstr "İndirmeler"
 
 #: tmainform.gboptionsconnectionsgeneral.caption
-#, fuzzy
 msgctxt "tmainform.gboptionsconnectionsgeneral.caption"
 msgid "General"
 msgstr "Genel"
@@ -1748,8 +1743,6 @@ msgid "Number of downloaded tasks at the same time"
 msgstr "Eşzamanlı indirilen görev sayısı (Maks: 8)"
 
 #: tmainform.lboptionmaxretry.caption
-#, fuzzy
-#| msgid "Number of retry times if tasks have download problems (-1 = always retry)"
 msgid "Max number of retry on connection failure (-1 = always retry)"
 msgstr "İndirmede sorun varsa tekrar deneme sayısı (-1 = sürekli yeniden dene)"
 
@@ -2345,8 +2338,6 @@ msgid "Save to"
 msgstr "Şuraya kaydet"
 
 #: tmainform.vtdownload.header.columns[6].text
-#, fuzzy
-#| msgid "Added"
 msgctxt "TMAINFORM.VTDOWNLOAD.HEADER.COLUMNS[6].TEXT"
 msgid "Date added"
 msgstr "Eklenme Tarihi"
@@ -2524,7 +2515,6 @@ msgid "Compressing..."
 msgstr ""
 
 #: udownloadsmanager.rs_disabled
-#, fuzzy
 msgctxt "udownloadsmanager.rs_disabled"
 msgid "Disabled"
 msgstr "Pasifler"
@@ -2534,7 +2524,6 @@ msgid "Downloading"
 msgstr ""
 
 #: udownloadsmanager.rs_failed
-#, fuzzy
 msgctxt "udownloadsmanager.rs_failed"
 msgid "Failed"
 msgstr "Başarısız oldu"
@@ -2565,25 +2554,21 @@ msgid "Waiting..."
 msgstr ""
 
 #: ufavoritesmanager.rs_btnaddtoqueue
-#, fuzzy
 msgctxt "ufavoritesmanager.rs_btnaddtoqueue"
 msgid "&Add to queue"
 msgstr "&Sıraya ekle"
 
 #: ufavoritesmanager.rs_btncancel
-#, fuzzy
 msgctxt "ufavoritesmanager.rs_btncancel"
 msgid "&Cancel"
 msgstr "&İptal"
 
 #: ufavoritesmanager.rs_btncheckfavorites
-#, fuzzy
 msgctxt "ufavoritesmanager.rs_btncheckfavorites"
 msgid "Check for new chapter"
 msgstr "Yeni bölümü kontrol et"
 
 #: ufavoritesmanager.rs_btndownload
-#, fuzzy
 msgctxt "ufavoritesmanager.rs_btndownload"
 msgid "&Download"
 msgstr "&İndir"
@@ -2687,4 +2672,3 @@ msgstr ""
 #, object-pascal-format
 msgid "Can not load WebP codec library \"%s\". Check your installation."
 msgstr ""
-

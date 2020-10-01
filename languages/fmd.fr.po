@@ -10,10 +10,9 @@ msgstr ""
 "PO-Revision-Date: \n"
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 2.4.1\n"
 
 #: checkupdate.rs_btncheckupdates
-#, fuzzy
 msgctxt "checkupdate.rs_btncheckupdates"
 msgid "Check for latest version"
 msgstr "Mise à jour"
@@ -830,7 +829,6 @@ msgid "Reset value"
 msgstr "Réinitialiser les filtres"
 
 #: tmainform.btndownloadfiltercustomdateapply.caption
-#, fuzzy
 msgctxt "tmainform.btndownloadfiltercustomdateapply.caption"
 msgid "Apply"
 msgstr "Appliquer"
@@ -868,8 +866,6 @@ msgid "Visit my blog"
 msgstr "Visiter mon blog"
 
 #: tmainform.caption
-#, fuzzy
-#| msgid "Free Manga Downloader"
 msgctxt "tmainform.caption"
 msgid "Free Manga Downloader"
 msgstr "Free Manga Downloader"
@@ -1008,7 +1004,8 @@ msgstr "Basculer sur l'onglet Favoris quand un manga est ajouté"
 msgid "Exit FMD"
 msgstr "Quitter FMD"
 
-#: tmainform.cboptionsortdownloadswhenaddingnewdownloadtasks.caption
+#: tmainform.cboptionsortdownloadsonnewtasks.caption
+msgctxt "tmainform.cboptionsortdownloadsonnewtasks.caption"
 msgid "Sort Downloads when adding new download tasks"
 msgstr "Trier les téléchargements quand une tâche est ajoutée"
 
@@ -1587,13 +1584,11 @@ msgid "Renaming"
 msgstr "Renommage"
 
 #: tmainform.gboptionsconnectionsdownloads.caption
-#, fuzzy
 msgctxt "tmainform.gboptionsconnectionsdownloads.caption"
 msgid "Downloads"
 msgstr "Téléchargements"
 
 #: tmainform.gboptionsconnectionsgeneral.caption
-#, fuzzy
 msgctxt "tmainform.gboptionsconnectionsgeneral.caption"
 msgid "General"
 msgstr "Général"
@@ -1825,8 +1820,6 @@ msgid "Number of downloaded tasks at the same time"
 msgstr "Nombre de tâches de téléchargement simultanées"
 
 #: tmainform.lboptionmaxretry.caption
-#, fuzzy
-#| msgid "Number of retry times if tasks have download problems (-1 = always retry)"
 msgid "Max number of retry on connection failure (-1 = always retry)"
 msgstr "Nombre de tentatives par tâche en cas d'échec du téléchargement (-1 = toujours réessayer)"
 
@@ -2422,8 +2415,6 @@ msgid "Save to"
 msgstr "Répertoire d'enregistrement"
 
 #: tmainform.vtdownload.header.columns[6].text
-#, fuzzy
-#| msgid "Added"
 msgctxt "TMAINFORM.VTDOWNLOAD.HEADER.COLUMNS[6].TEXT"
 msgid "Date added"
 msgstr "Date d'ajout"
@@ -2601,7 +2592,6 @@ msgid "Compressing..."
 msgstr ""
 
 #: udownloadsmanager.rs_disabled
-#, fuzzy
 msgctxt "udownloadsmanager.rs_disabled"
 msgid "Disabled"
 msgstr "Désactivés"
@@ -2611,7 +2601,6 @@ msgid "Downloading"
 msgstr ""
 
 #: udownloadsmanager.rs_failed
-#, fuzzy
 msgctxt "udownloadsmanager.rs_failed"
 msgid "Failed"
 msgstr "Échec"
@@ -2642,25 +2631,21 @@ msgid "Waiting..."
 msgstr ""
 
 #: ufavoritesmanager.rs_btnaddtoqueue
-#, fuzzy
 msgctxt "ufavoritesmanager.rs_btnaddtoqueue"
 msgid "&Add to queue"
 msgstr "&File d'attente"
 
 #: ufavoritesmanager.rs_btncancel
-#, fuzzy
 msgctxt "ufavoritesmanager.rs_btncancel"
 msgid "&Cancel"
 msgstr "&Annuler"
 
 #: ufavoritesmanager.rs_btncheckfavorites
-#, fuzzy
 msgctxt "ufavoritesmanager.rs_btncheckfavorites"
 msgid "Check for new chapter"
 msgstr "Vérifier les nouveaux chapitres"
 
 #: ufavoritesmanager.rs_btndownload
-#, fuzzy
 msgctxt "ufavoritesmanager.rs_btndownload"
 msgid "&Download"
 msgstr "&Télécharger"
@@ -2764,4 +2749,3 @@ msgstr ""
 #, object-pascal-format
 msgid "Can not load WebP codec library \"%s\". Check your installation."
 msgstr ""
-
