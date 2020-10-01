@@ -234,17 +234,19 @@ function _m.bypass(self, METHOD, URL)
 	crypto = require 'fmd.crypto'
 	fmd = require 'fmd.env'
 
-	py_cloudflare = [[lua\websitebypass\cloudflare.py]]
-	js_cloudflare = [[lua\websitebypass\cloudflare.js]]
 	use_webdriver = false
-	if fileExist(js_cloudflare) then
-		use_webdriver = true
-		webdriver_exe = 'node'
-		webdriver_script = js_cloudflare
-	elseif fileExist(py_cloudflare) then
-		use_webdriver = true
-		webdriver_exe = 'python'
-		webdriver_script = py_cloudflare
+	local py_cloudflare = [[lua\websitebypass\cloudflare.py]]
+	local js_cloudflare = [[lua\websitebypass\cloudflare.js]]
+	if fileExist([[lua\websitebypass\use_webdriver]]) then
+		if fileExist(js_cloudflare) then
+			use_webdriver = true
+			webdriver_exe = 'node'
+			webdriver_script = js_cloudflare
+		elseif fileExist(py_cloudflare) then
+			use_webdriver = true
+			webdriver_exe = 'python'
+			webdriver_script = py_cloudflare
+		end
 	end
 
 	local result = 0
