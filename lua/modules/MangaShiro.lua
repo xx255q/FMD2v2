@@ -226,6 +226,10 @@ function getpagenumber()
 						end
 				end
 		elseif MODULE.Name == 'MangaSWAT' then x.XPathStringAll('//*[@id="readerarea"]/p/img/@data-src', TASK.PageLinks)
+		elseif MODULE.ID == 'f9adee01635a4ff48fdff5164a65d6dd' then -- komiktap
+			local s = x.XPathString('//script[contains(., "ts_reader")]')
+			x.ParseHTML(GetBetween('"images":', '}],', s))
+			x.XPathStringAll('json(*)()', TASK.PageLinks)
 		else
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="reader-area"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="readerarea"]//img/@src', TASK.PageLinks) end
@@ -312,6 +316,7 @@ function getnameandlink()
 			['Ngomik'] = '/daftar-komik/?list',
 			['MangaPus'] = '/manga-list/?list',
 			['Mangaseno'] = '/manga-list/?list',
+			['Komiktap'] = '/manga/list-mode/'
 		}
 		local dirurl = '/manga/?list'
 		if dirs[MODULE.Name] ~= nil then
@@ -393,4 +398,7 @@ function Init()
 	
 	cat = 'English-Scanlation'
 	AddWebsiteModule('7103ae6839ea46ec80cdfc2c4b37c803', 'AsuraScans', 'https://asurascans.com')
+
+	cat = 'H-Sites'
+	AddWebsiteModule('f9adee01635a4ff48fdff5164a65d6dd', 'Komiktap', 'https://komiktap.in')
 end
