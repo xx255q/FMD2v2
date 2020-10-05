@@ -305,9 +305,10 @@ begin
 
   with FContainer do
     try
+      FMangaInformation.HTTP.Reset;
+      FMangaInformation.MangaInfo.Clear;
       FMangaInformation.Module := FavoriteInfo.Module;
       FMangaInformation.isGetByUpdater := False;
-      FMangaInformation.MangaInfo.Clear;
       // get new manga info
       FMangaInformation.GetInfoFromURL(FavoriteInfo.Link);
       if not Terminated then

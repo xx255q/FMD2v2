@@ -404,6 +404,8 @@ begin
   begin
     Synchronize(FManager.UpdateLoadStatus);
     try
+      FInfo.HTTP.Reset;
+      FInfo.MangaInfo.Clear;
       FInfo.Module := FModule;
       FInfo.MangaInfo.Title := FTitle;
       if (FInfo.GetInfoFromURL(FURL)=NO_ERROR) and not(Terminated) then
