@@ -77,16 +77,27 @@ function GetPageNumber()
 	if not HTTP.GET(URL) then return false; end
 	local rurl = HTTP.Headers.Values['location']
 	if rurl ~= '' then
-		HTTP.Headers.Values['Referer'] = ' ' .. url
+		HTTP.Headers.Values['Referer'] = url
 		if not HTTP.GET(rurl) then return false; end
 	end
-
-	local x = CreateTXQuery(HTTP.Document)
+	
+	local body = HTTP.Document.ToString()
+	local dirPath = body:match("var dirPath = '([^']+)")
+	local images = body:match("var images = JSON%.parse%('(.-)'%);")
+	if dirPath and images then
+		local s for s in images:gmatch('"(.-)"') do
+			TASK.PageLinks.Add(dirPath .. s)
+			print(dirPath .. s)
+		end
+	end
+	if TASK.PageLinks.Count > 0 then return true end
+	
+	local x = CreateTXQuery(HTTP.Document)	
 	TASK.PageNumber = tonumber(x.XPathString('count((//select[@id="viewer-pages-select"])[1]/option)')) or 0
 	if TASK.PageNumber == 0 then
 		x.XPathStringAll('//img[@class="viewer-img"]/@data-src', TASK.PageLinks)
 	else
-		TASK.PageContainerLinks.Add(HTTP.LastURL)
+		TASK.PageContainerLinks.Add(HTTP.LastURL:gsub('/1$',''))
 		TASK.PageLinks.Add(x.XPathString('//img[contains(@class,"viewer-image")]/@src'))
 	end
 	return true
@@ -94,8 +105,8 @@ end
 
 function GetImageURL()
 	local s = MaybeFillHost(MODULE.RootURL, TASK.PageContainerLinks[0])
-	HTTP.Headers.Values['Referer'] = ' ' .. MaybeFillHost(s)
-	if HTTP.GET(s .. '/' .. tostring(WORKID+1)) then
+	HTTP.Headers.Values['Referer'] = MaybeFillHost(MODULE.RootURL, TASK.ChapterLinks[TASK.CurrentDownloadChapterPtr])
+	if HTTP.GET(s:gsub('/1$','') .. '/' .. tostring(WORKID+1)) then
 		TASK.PageLinks[WORKID] = CreateTXQuery(HTTP.Document).XPathString('//img[contains(@class,"viewer-image")]/@src')
 		return true
 	end
