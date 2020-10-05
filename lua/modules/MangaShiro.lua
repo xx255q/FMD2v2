@@ -96,6 +96,7 @@ function getGenres(x)
 	if genre == '' then genre = x.XPathStringAll('//span[@class="details"]//div[starts-with(.,"Genre")]/a') end
 	if genre == '' then genre = x.XPathStringAll('//div[@class="listinfo"]//li[starts-with(.,"Genre")]/substring-after(.,":")') end
 	if genre == '' then genre = x.XPathStringAll('//span[@class="mgen"]/a') end
+	if genre == '' then genre = x.XPathStringAll('//div[@class="genre-info"]/a') end
 	return genre
 end
 
@@ -184,7 +185,8 @@ function getMangas(x)
 		if MANGAINFO.ChapterLinks.Count == 0 then x.XPathHREFAll('//div[@class="bxcl nobn"]//li//div[@class="lch"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
 		if MANGAINFO.ChapterLinks.Count == 0 then x.XPathHREFAll('//ul[@class="lcp_catlist"]//li/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
 		if MANGAINFO.ChapterLinks.Count == 0 then x.XPathHREFAll('//div[contains(@class, "bxcl")]//li//*[contains(@class,"lchx")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
-		if MANGAINFO.ChapterLinks.Count == 0 then x.XPathHREFAll('//div[contains(@class, "lchx")]//li//*[contains(@class,"bxcl")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end		
+		if MANGAINFO.ChapterLinks.Count == 0 then x.XPathHREFAll('//div[contains(@class, "lchx")]//li//*[contains(@class,"bxcl")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
+		if MANGAINFO.ChapterLinks.Count == 0 then x.XPathHREFAll('//*[@class="lchx"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames) end
 	end
 end
 
@@ -296,6 +298,26 @@ function getnameandlink()
 			end
 			p = p + 1
 		end
+	elseif MODULE.ID == '4efbab5ca3364cd0bb63b776b895262e' then -- manhwatime
+		local dirurl = MODULE.RootURL .. '/manhwa/'
+		local x = CreateTXQuery()
+		local pages = 1
+		local p = 1
+		local u = dirurl
+		while p <= pages do
+			if p > 1 then u = dirurl .. 'page/' .. tostring(p) end
+			if not HTTP.GET(u) then return net_problem end
+			x.ParseHTML(HTTP.Document)
+			if p == pages then
+				local pg = x.XPathString('//div[@class="pagination"]/span/substring-after(., "Page 1 of ")')
+				if pg ~= '' then pages = tonumber(pg) end
+			end
+			local v; for v in x.XPath('//div[@class="animposx"]/a').Get() do
+				LINKS.Add(v.GetAttribute('href'))
+				NAMES.Add(v.GetAttribute('title'))
+			end
+			p = p + 1
+		end
 	else
 		-- full text based list
 		local dirs = {
@@ -398,6 +420,7 @@ function Init()
 	
 	cat = 'English-Scanlation'
 	AddWebsiteModule('7103ae6839ea46ec80cdfc2c4b37c803', 'AsuraScans', 'https://asurascans.com')
+	AddWebsiteModule('4efbab5ca3364cd0bb63b776b895262e', 'ManhwaTime', 'https://manhwatime.xyz')
 
 	cat = 'H-Sites'
 	AddWebsiteModule('f9adee01635a4ff48fdff5164a65d6dd', 'Komiktap', 'https://komiktap.in')
