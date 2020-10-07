@@ -87,14 +87,17 @@ begin
       raise Exception.Create('Failed to create a Duktape heap.');
     duk_module_duktape_init(ctx);
     duk_registermodsearch(ctx);
-    duk_registermodsearch(ctx);
     duk_push_cfunction(ctx, 'print', @duk_nativeprint);
 
     duk_push_lstring(ctx, PAnsiChar(text), Length(text));
     r := duk_peval(ctx);
     s := duk_safe_to_string(ctx, -1);
-    if r <> 0 then raise Exception.Create('Duktape error: ' + s)
-    else Result := s;
+    if r <> DUK_ERR_NONE then raise Exception.Create('Duktape error: ' + s)
+    else
+    begin
+      if s <> 'undefined' then
+        Result := s;
+    end;
   finally
     duk_destroy_heap(ctx);
   end;
@@ -110,8 +113,12 @@ var
   //buflen: Integer;
 begin
   Result:=nil;
-  f:=DukLibDir+TrimFilename(AFileName);
-  if FileExists(f) = False then Exit;
+  f:=CleanAndExpandFilename(DukLibDir+AFileName);
+  if not FileExists(f) then
+  begin
+    f+='.js';
+    if not FileExists(f) then Exit;
+  end;
   s := TMemoryStream.Create;
   //try
     s.LoadFromFile(f);
