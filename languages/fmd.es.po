@@ -19,15 +19,15 @@ msgstr "Revisar Última Version"
 
 #: checkupdate.rs_currentversion
 msgid "Installed Version"
-msgstr ""
+msgstr "Versión Instalada"
 
 #: checkupdate.rs_latestversion
 msgid "Latest Version   "
-msgstr ""
+msgstr "Última Versión"
 
 #: checkupdate.rs_newversionfound
 msgid "New Version found!"
-msgstr ""
+msgstr "¡Nueva Versión Encontrada!"
 
 #: dbupdater.rs_buttoncancel
 msgctxt "dbupdater.rs_buttoncancel"
@@ -203,7 +203,7 @@ msgstr "Revisando..."
 
 #: frmmain.rs_custom
 msgid "Custom"
-msgstr ""
+msgstr "Personalizado"
 
 #: frmmain.rs_dlgcannotconnecttoserver
 msgid "Cannot connect to the server."
@@ -313,7 +313,7 @@ msgid ""
 "Removing and re-adding this data may fix the problem."
 msgstr ""
 "¡Hay un problema con estos datos!\n"
-"Quitarlo y volviendolo  a agregar podría resolver el problema."
+"Quitarlo y volviendolo a agregar podría resolver el problema."
 
 #: frmmain.rs_history
 msgid "History"
@@ -358,11 +358,11 @@ msgstr "En Progreso"
 
 #: frmmain.rs_last6months
 msgid "Last 6 months"
-msgstr ""
+msgstr "Últimos 6 Meses"
 
 #: frmmain.rs_last7days
 msgid "Last 7 days"
-msgstr ""
+msgstr "Últimos 7 Días"
 
 #: frmmain.rs_lblautochecknewchapterminute
 #, object-pascal-format
@@ -404,7 +404,7 @@ msgstr "Modo: Buscando..."
 
 #: frmmain.rs_olderthan6months
 msgid "Older than 6 months"
-msgstr ""
+msgstr "Más de 6 Meses"
 
 #: frmmain.rs_optioncompress
 msgid ""
@@ -434,7 +434,7 @@ msgstr ""
 
 #: frmmain.rs_revision
 msgid "Revision"
-msgstr ""
+msgstr "Revisión"
 
 #: frmmain.rs_selected
 #, object-pascal-format
@@ -452,7 +452,7 @@ msgstr "Ruta al Software (e.g. C:\\MangaDownloader)"
 
 #: frmmain.rs_thismonth
 msgid "This month"
-msgstr ""
+msgstr "Este Mes"
 
 #: frmmain.rs_today
 msgid "Today"
@@ -460,7 +460,7 @@ msgstr "Hoy"
 
 #: frmmain.rs_version
 msgid "Version"
-msgstr ""
+msgstr "Versión"
 
 #: frmmain.rs_webpconvertto
 msgid ""
@@ -560,7 +560,7 @@ msgstr "Falló en Guardar %s"
 
 #: selfupdater.rs_finishrestart
 msgid "Download update package finished, restart to proceed?"
-msgstr "La Descarga del Paquete ha terminado, ¿proceder en reiniciar?"
+msgstr "La Descarga del Paquete ha terminado, ¿proceder a reiniciar?"
 
 #: selfupdater.rs_finishrestarttitle
 msgid "Download finished"
@@ -574,31 +574,31 @@ msgstr "Perdido %s"
 
 #: simpleexception.sbuttoncontinue
 msgid "&Continue"
-msgstr ""
+msgstr "Continuar"
 
 #: simpleexception.sbuttondetails
 msgid "&Show Details"
-msgstr ""
+msgstr "&Mostrar Detalles"
 
 #: simpleexception.sbuttonterminate
 msgid "&Terminate"
-msgstr ""
+msgstr "&Finalizar"
 
 #: simpleexception.scanthandleexception
 msgid "Can't handle exception"
-msgstr ""
+msgstr "No se Puedo Manejar Excepción"
 
 #: simpleexception.scheckboxignoreexception
 msgid "Ignore this exception for next time"
-msgstr ""
+msgstr "Ignoar esta excepción para la próxima vez"
 
 #: simpleexception.sexceptioncaption
 msgid "An error occured during program execution:"
-msgstr ""
+msgstr "Un error ha ocurrido durante la ejecución del programa"
 
 #: simpleexception.sexceptiondialogtitle
 msgid "Exception Info"
-msgstr ""
+msgstr "Información de Excepción"
 
 #: taccountmanagerform.btedit.caption
 msgctxt "taccountmanagerform.btedit.caption"
@@ -718,19 +718,19 @@ msgstr "Copiar"
 
 #: tfrmdialogyn.btno.caption
 msgid "&No"
-msgstr ""
+msgstr "&No"
 
 #: tfrmdialogyn.btyes.caption
 msgid "&Yes"
-msgstr ""
+msgstr "&Si"
 
 #: tfrmdialogyn.caption
 msgid "Dialog"
-msgstr ""
+msgstr "Diálogo"
 
 #: tfrmdialogyn.lbmessage.caption
 msgid "lbMessage"
-msgstr ""
+msgstr "lbMensaje"
 
 #: timportfavorites.btcancel.caption
 msgctxt "TIMPORTFAVORITES.BTCANCEL.CAPTION"
@@ -874,7 +874,7 @@ msgstr "Agregar a Descargas como Tarea Detenida"
 
 #: tmainform.cbfilterstatus.text
 msgid "<none>"
-msgstr "<nada>"
+msgstr "<ninguno>"
 
 #: tmainform.cbonlynew.caption
 msgid "Search only new manga"
@@ -1021,7 +1021,7 @@ msgstr "Usar Proxy"
 
 #: tmainform.cboptionvacuumdatabasesonexit.caption
 msgid "Vacuum databases on exit"
-msgstr ""
+msgstr "Vaciar Bases de datos al salir"
 
 #: tmainform.cbpngcompressionlevel.text
 msgctxt "tmainform.cbpngcompressionlevel.text"
@@ -1518,7 +1518,7 @@ msgstr "General"
 
 #: tmainform.gboptionsconnectiosmiscellaneous.caption
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Misceláneo"
 
 #: tmainform.lbdefaultdownloadpath.caption
 msgid "Choose the default download path:"
@@ -1526,11 +1526,11 @@ msgstr "Escoger la Ruta de Descarga por Defecto:"
 
 #: tmainform.lbdownloadfiltercustomdatefrom.caption
 msgid "From:"
-msgstr ""
+msgstr "Desde:"
 
 #: tmainform.lbdownloadfiltercustomdateto.caption
 msgid "To:"
-msgstr ""
+msgstr "Para:"
 
 #: tmainform.lbdroptargetopacity.caption
 msgid "Opacity"
@@ -1648,7 +1648,7 @@ msgstr "Tiempo de Conexión Expiró (Segundos)"
 
 #: tmainform.lboptiondefaultuseragent.caption
 msgid "Default user-agent"
-msgstr ""
+msgstr "Agente de Usuario Prederteminado"
 
 #: tmainform.lboptionexternal.caption
 msgid "Open manga by using external program:"
@@ -1732,11 +1732,11 @@ msgstr ""
 
 #: tmainform.lboptionmaxbackgroundloudthreads.caption
 msgid "Max number of background load threads"
-msgstr ""
+msgstr "Máximo Número de Hilos en Segundo Plano"
 
 #: tmainform.lboptionmaxfavoritethreads.caption
 msgid "Max number of favorite check at the same time"
-msgstr ""
+msgstr "Máximo Número de Favoritos Verificando al Mismo Tiempo"
 
 #: tmainform.lboptionmaxparallel.caption
 msgid "Number of downloaded tasks at the same time"
@@ -1752,7 +1752,7 @@ msgstr "Numero de Archivos Descargados por Tarea al Mismo Tiempo"
 
 #: tmainform.lboptionmaxupdatelistthreads.caption
 msgid "Max number of update list threads"
-msgstr ""
+msgstr "Máximo Número de Hilos de Actualización de Lista"
 
 #: tmainform.lboptionnewmangatime.caption
 msgid "New manga based on  it's update time (days)"
@@ -2344,7 +2344,7 @@ msgstr "Agregado"
 
 #: tmainform.vtdownload.header.columns[7].text
 msgid "Last downloaded date"
-msgstr ""
+msgstr "Fecha de Última Descarga"
 
 #: tmainform.vtfavorites.header.columns[0].text
 msgid "#"
@@ -2372,15 +2372,15 @@ msgstr "Guardar en"
 #: tmainform.vtfavorites.header.columns[5].text
 msgctxt "tmainform.vtfavorites.header.columns[5].text"
 msgid "Date added"
-msgstr ""
+msgstr "Agregado el"
 
 #: tmainform.vtfavorites.header.columns[6].text
 msgid "Last checked date"
-msgstr ""
+msgstr "Ultima Fecha de Verificación"
 
 #: tmainform.vtfavorites.header.columns[7].text
 msgid "Last updated date"
-msgstr ""
+msgstr "Fecha de Última Actualización"
 
 #: tnewchapter.btcancel.caption
 msgctxt "TNEWCHAPTER.BTCANCEL.CAPTION"
@@ -2417,6 +2417,10 @@ msgid ""
 "\n"
 "Old folder structures will be ignored. However, if the only part you change is the drive letter (e.g. 'D:'), only the letter will be replaced. This only works for absolute paths, relative paths will be ignored."
 msgstr ""
+"Si cambias multiples entradas al mismo tiempo, las nuevas rutas serán construidas así\n"
+"\"{New_Path}\\{Manga_Title}\"\n"
+"\n"
+"Antiguas estructuras de Carpetas serán ignoradas. Sin embargo, si la única parte que cambias es la letra de la Unidad de Disco (Por ejemplo 'D:'), solo la letra será reemplazada. Esto solo funciona para rutas absolutas, rutas relativas será ignaradas."
 
 #: tshutdowncounterform.btabort.caption
 msgid "&Abort"
@@ -2484,7 +2488,7 @@ msgstr "&Actualizar"
 
 #: tupdatedialogform.caption
 msgid "New Version Found"
-msgstr ""
+msgstr "Nueva Versión Encontrada"
 
 #: tupdatedialogform.lbmessage.caption
 msgid ""
@@ -2512,7 +2516,7 @@ msgstr "Nombre de Opciones"
 
 #: udownloadsmanager.rs_compressing
 msgid "Compressing..."
-msgstr ""
+msgstr "Comprimiendo..."
 
 #: udownloadsmanager.rs_disabled
 msgctxt "udownloadsmanager.rs_disabled"
@@ -2521,37 +2525,37 @@ msgstr "Deshabilitado"
 
 #: udownloadsmanager.rs_downloading
 msgid "Downloading"
-msgstr ""
+msgstr "Descargando"
 
 #: udownloadsmanager.rs_failed
 msgctxt "udownloadsmanager.rs_failed"
 msgid "Failed"
-msgstr "Fallido"
+msgstr "Falló"
 
 #: udownloadsmanager.rs_failedtocreatedir
 msgid "Failed to create directory!"
-msgstr ""
+msgstr "¡Falló en Crear Directorio!"
 
 #: udownloadsmanager.rs_failedtryresumetask
 msgid "Failed, try resuming this task!"
-msgstr ""
+msgstr "¡Falló, Prueba Reanudando Esta Tarea!"
 
 #: udownloadsmanager.rs_finish
 msgid "Completed"
-msgstr ""
+msgstr "Completado"
 
 #: udownloadsmanager.rs_preparing
 msgctxt "udownloadsmanager.rs_preparing"
 msgid "Preparing"
-msgstr ""
+msgstr "Preparando"
 
 #: udownloadsmanager.rs_stopped
 msgid "Stopped"
-msgstr ""
+msgstr "Detenido"
 
 #: udownloadsmanager.rs_waiting
 msgid "Waiting..."
-msgstr ""
+msgstr "Esperando..."
 
 #: ufavoritesmanager.rs_btnaddtoqueue
 msgctxt "ufavoritesmanager.rs_btnaddtoqueue"
@@ -2575,100 +2579,100 @@ msgstr "&Descargar"
 
 #: ufavoritesmanager.rs_btnremove
 msgid "&Remove"
-msgstr ""
+msgstr "&Quitar"
 
 #: ufavoritesmanager.rs_dlgcompletedmangacaption
 msgid "Found completed manga(s)"
-msgstr ""
+msgstr "Manga(s) Completado(s) Encontrado(s)"
 
 #: ufavoritesmanager.rs_dlgfavoritescheckisrunning
 msgid "Favorites check is running!"
-msgstr ""
+msgstr "Vericación de Favoritos está Ejecutandose"
 
 #: ufavoritesmanager.rs_dlgnewchaptercaption
 msgctxt "ufavoritesmanager.rs_dlgnewchaptercaption"
 msgid "Found new chapter(s)"
-msgstr ""
+msgstr "Encontrado(s) Nuevo(s) Capítulo (s)"
 
 #: ufavoritesmanager.rs_favoritehasnewchapter
 #, object-pascal-format
 msgid "%s <%s> has %d new chapter(s)."
-msgstr ""
+msgstr "%s <%s> has %d Nuevo(s) Capítulo(s)."
 
 #: ufavoritesmanager.rs_lblmangawillberemoved
 #, object-pascal-format
 msgid "%d completed manga(s) will be removed:"
-msgstr ""
+msgstr "%d Manga(s) Completado(s) será(n) removido(s):"
 
 #: ufavoritesmanager.rs_lblnewchapterfound
 #, object-pascal-format
 msgid "Found %d new chapter from %d manga(s):"
-msgstr ""
+msgstr "Encontrado(s) %d nuevo(s) capítulo(s) de manga(s):"
 
 #: usilentthread.rs_silentthreadloadstatus
 #, object-pascal-format
 msgid "Loading: %d/%d"
-msgstr ""
+msgstr "Cargando: %d/%d"
 
 #: uupdatethread.rs_dlghasnewmanga
 #, object-pascal-format
 msgid "%s has %d new manga(s)"
-msgstr ""
+msgstr "%s Ha %d Encontrado Manga(s)"
 
 #: uupdatethread.rs_gettingdirectory
 msgid "Getting directory"
-msgstr ""
+msgstr "Obteniendo Directorio"
 
 #: uupdatethread.rs_gettinginfo
 msgid "Getting info"
-msgstr ""
+msgstr "Obteniendo Información"
 
 #: uupdatethread.rs_gettinglistfor
 msgid "Getting list for"
-msgstr ""
+msgstr "Obteniendo Lista para"
 
 #: uupdatethread.rs_indexingnewtitle
 msgid "Indexing new title(s)"
-msgstr ""
+msgstr "Indexando Nuevo(s) Título(s)"
 
 #: uupdatethread.rs_lookingfornewtitle
 msgid "Looking for new title(s)"
-msgstr ""
+msgstr "Buscando para nuevo(s) título(s)"
 
 #: uupdatethread.rs_lookingfornewtitlefromanotherdirectory
 msgid "Looking for new title(s) from another directory"
-msgstr ""
+msgstr "Buscando Nuevo(s) Título(s) de Otro Directorio"
 
 #: uupdatethread.rs_preparing
 msgctxt "uupdatethread.rs_preparing"
 msgid "Preparing"
-msgstr ""
+msgstr "Preparando"
 
 #: uupdatethread.rs_removingduplicatefromcurrentdata
 msgid "Removing duplicate from current data"
-msgstr ""
+msgstr "Quitando duplicados de los Datos Actuales"
 
 #: uupdatethread.rs_removingduplicatefromlocaldata
 msgid "Removing duplicate from local data"
-msgstr ""
+msgstr "Quitando duplicados de los datos locales"
 
 #: uupdatethread.rs_removingduplicatefromnewtitle
 msgid "Removing duplicate from new title(s)"
-msgstr ""
+msgstr "Quitando duplicados de nuevo(s) título(s)"
 
 #: uupdatethread.rs_savingdata
 msgid "Saving data"
-msgstr ""
+msgstr "Guardando datos"
 
 #: uupdatethread.rs_synchronizingdata
 msgid "Synchronizing data"
-msgstr ""
+msgstr "Sincronizando datos"
 
 #: uupdatethread.rs_updatinglist
 msgid "Updating list"
-msgstr ""
+msgstr "Actualizando Lista"
 
 #: webp.serrloadfailed
 #, object-pascal-format
 msgid "Can not load WebP codec library \"%s\". Check your installation."
-msgstr ""
+msgstr "No se puede cargar libreria de codec WebP \"%s\". Revisa tu instalación."
