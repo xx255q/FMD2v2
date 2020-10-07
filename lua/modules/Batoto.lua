@@ -29,7 +29,7 @@ function GetInfo()
 	if not HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then return net_problem end
 
 	local x = CreateTXQuery(HTTP.Document)
-	MANGAINFO.Title     = x.XPathString('//h3[@class="item-title"]/a') .. GetLanguageCodeSuffix(x.XPathString('//h3[@class="item-title"]/parent::*/span[contains(@class, "flag")]/@class'))
+	MANGAINFO.Title     = x.XPathString('//h3[@class="item-title"]/a') .. GetLanguageCodeSuffix(x.XPathString('//h3[@class="item-title"]/parent::*/em/@data-lang'))
 	MANGAINFO.CoverLink = x.XPathString('//div[contains(@class, "attr-cover")]/img/@src')
 	MANGAINFO.Authors   = x.XPathStringAll('//div[@class="attr-item" and (./b="Authors:")]/span/a')
 	MANGAINFO.Genres    = x.XPathStringAll('//div[@class="attr-item" and (./b="Genres:")]/span/span')
@@ -58,7 +58,7 @@ function GetNameAndLink()
 	local x = CreateTXQuery(HTTP.Document)
 	local v for v in x.XPath('//div[@id="series-list"]/div/div').Get() do
 		LINKS.Add(x.XPathString('a/@href', v))
-		NAMES.Add(x.XPathString('a', v) .. GetLanguageCodeSuffix(x.XPathString('span[contains(@class, "flag")]/@class', v)))
+		NAMES.Add(x.XPathString('a', v) .. GetLanguageCodeSuffix(x.XPathString('em/@data-lang', v)))
 	end
 
 	return no_error
@@ -79,7 +79,7 @@ JSON.parse(CryptoJS.AES.decrypt(server, batojs).toString(CryptoJS.enc.Utf8));
 	if server:find('^//') then server = 'https:' .. server end
 	local images = script:match('const images = %[([^%]]+)')
 	local i for i in images:gmatch('"([^",]+)') do
-		TASK.PageLinks.Add(server..i)
+		TASK.PageLinks.Add(server .. i)
 	end
 
 	return no_error
@@ -94,8 +94,7 @@ function GetLanguageCodeSuffix(s)
 	local suffix = ' [EN]'
 
 	if s and (s ~= '') then
-		s = s:match('flag_(%S+)')
-		if s and (s ~= 'united_kingdom') then suffix = ' [' .. string.upper(s) .. ']' end
+		if s and (s ~= 'en') then suffix = ' [' .. string.upper(s) .. ']' end
 	end
 
 	return suffix
