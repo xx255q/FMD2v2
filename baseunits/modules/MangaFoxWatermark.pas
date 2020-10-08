@@ -460,11 +460,9 @@ begin
             try
               Writer := Handler.WriterClass.Create;
               FileStream := TFileStream.Create(NewFileName, fmCreate);
-              {$IF (FPC_FULLVERSION >= 30101)}
               if Writer is TFPWriterJPEG then
                 TFPWriterJPEG(Writer).GrayScale := GrayScale
               else
-              {$ENDIF}
               if Writer is TFPWriterPNG then
               begin
                 if GrayScale then

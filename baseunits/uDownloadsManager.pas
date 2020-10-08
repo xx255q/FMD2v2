@@ -8,10 +8,6 @@ unit uDownloadsManager;
 
 {$mode objfpc}{$H+}
 
-{$IF FPC_FULLVERSION >= 20701}
-  {$DEFINE FPC271}
-{$ENDIF}
-
 interface
 
 uses

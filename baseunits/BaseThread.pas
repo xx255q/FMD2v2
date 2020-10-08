@@ -17,7 +17,7 @@ type
     function GetTerminated: Boolean;
   protected
     procedure CallOnCustomTerminate; inline;
-    {$ifdef FPC_FULLVERSION>30202}
+    {$if FPC_FULLVERSION >= 30202}
     procedure TerminatedSet; override;
     {$else}
   public
@@ -44,7 +44,7 @@ begin
   FOnCustomTerminate(Self);
 end;
 
-{$ifdef FPC_FULLVERSION>=30202}
+{$if FPC_FULLVERSION >= 30202}
 procedure TBaseThread.TerminatedSet;
 begin
 {$else}

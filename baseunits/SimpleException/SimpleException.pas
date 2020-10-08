@@ -572,12 +572,7 @@ procedure TSimpleException.CallExceptionHandler;
 begin
   if (ThreadID <> MainThreadID) then
     try
-      {$IF FPC_FULLVERSION >= 20701}
       TThread.Synchronize(TThread.CurrentThread, @ExceptionHandler);
-      {$ELSE}
-      if (Sender <> nil) and (Sender is TThread) then
-        TThread.Synchronize((Sender as TThread), @ExceptionHandler)
-      {$ENDIF}
     except
       {$IFDEF MULTILOG}
       if Logger.Enabled then

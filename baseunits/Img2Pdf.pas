@@ -219,9 +219,7 @@ begin
     WRT := TFPWriterJPEG.Create;
     try
       WRT.CompressionQuality := PageInfo.Owner.CompressionQuality;
-      {$IF (FPC_FULLVERSION >= 30101)}
       WRT.GrayScale := (PageInfo.ColorSpace = 'DeviceGray');
-      {$ENDIF}
       IMG.SaveToStream(PageInfo.Stream, WRT);
     finally
       WRT.Free;
