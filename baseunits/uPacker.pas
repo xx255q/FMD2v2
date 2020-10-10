@@ -108,7 +108,11 @@ begin
   p := TProcess.Create(nil);
   try
     if FileExists(FSavedFileName) then
-      if not DeleteFile(FSavedFileName) then Exit;
+      if not DeleteFile(FSavedFileName) then
+      begin
+        Logger.SendError(Self.ClassName+'.Do7Zip Error: failed to delete existing file '+FSavedFileName);
+        Exit;
+      end;
     p.Executable := CURRENT_ZIP_EXE;
     with p.Parameters do begin
       Add('a');

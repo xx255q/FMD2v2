@@ -906,7 +906,7 @@ var
 
     Result := c = 0;
     if Result = False then
-      Logger.SendWarning(Format('%s, checkforfinish failed=%d/%d [%s] "%s" > "%s"',
+      Logger.SendWarning(Format('%s.CheckForFinish failed %d of %d [%s] "%s" > "%s"',
         [Self.ClassName,
         c,
         Container.PageLinks.Count,
@@ -1067,12 +1067,6 @@ begin
         else
         begin
           Container.Status := STATUS_FAILED;
-          Logger.SendWarningStrings(Format('%s, download failed. "%s" "%s" "%s"',
-            [Self.ClassName,
-             Container.DownloadInfo.Title,
-             Container.ChapterNames[Container.CurrentDownloadChapterPtr],
-             Container.ChapterLinks[Container.CurrentDownloadChapterPtr]
-            ]), Container.PageLinks.Text);
         end;
       end
       else
