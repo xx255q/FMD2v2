@@ -12,7 +12,7 @@ interface
 
 uses
   Classes, Zipper, zstream, SysUtils, uBaseUnit, Img2Pdf, FileUtil,
-  LazFileUtils, SimpleException, uEpub, MultiLog;
+  LazFileUtils, SimpleException, uEpub, FMDOptions, process, MultiLog;
 
 type
   TPackerFormat = (pfZIP, pfCBZ, pfPDF, pfEPUB);
@@ -25,6 +25,7 @@ type
     FFileList: TStringList;
     procedure FileFound(FileIterator: TFileIterator);
     function DoZipCbz: Boolean;
+    function Do7Zip: Boolean;
     procedure DoPdf;
     procedure DoEpub;
   public
@@ -86,6 +87,70 @@ begin
       finally
         Free;
       end;
+end;
+
+Function MaybeQuoteIfNotQuoted(Const S : TProcessString) : TProcessString;
+
+begin
+  If (Pos(' ',S)<>0) and (pos('"',S)=0) then
+    Result:='"'+S+'"'
+  else
+     Result:=S;
+end;
+
+function TPacker.Do7Zip: Boolean;
+var
+  p: TProcess;
+  exit_status, i: Integer;
+  s, sout, serr: string;
+begin
+  Result := False;
+  p := TProcess.Create(nil);
+  try
+    if FileExists(FSavedFileName) then
+      if not DeleteFile(FSavedFileName) then Exit;
+    p.Executable := CURRENT_ZIP_EXE;
+    with p.Parameters do begin
+      Add('a');
+      Add('-tzip');
+      Add('-mx0');
+      Add('-mmt'+IntToStr(CPUCount));
+      Add('-sccUTF-8');
+      Add('-scsUTF-8');
+      Add('-stl');
+      Add('-spd');
+      Add('-slt');
+      Add('-sse');
+      Add('-sdel');
+      Add(FSavedFileName);
+      AddStrings(FFileList);
+    end;
+    sout:='';
+    serr:='';
+    p.ShowWindow:=swoHIDE;
+    p.RunCommandLoop(sout,serr,exit_status);
+    Result := exit_status = 0;
+    if not Result then
+    begin
+      serr:='';
+      s:=IntToStr(exit_status)+' ';
+      case exit_status of
+        1: s+='Warning';
+        2: s+='Fatal error';
+        7: s+='Command line error';
+        8: s+='Not enough memory operation';
+        255: s+='User stopped the process';
+        else
+          s:='Unknown';
+      end;
+      s+=' '+MaybeQuoteIfNotQuoted(p.Executable);
+      for i:=0 to p.Parameters.Count-1 do
+        s+=' '+MaybeQuoteIfNotQuoted(p.Parameters[i]);
+      Logger.SendError(Self.ClassName+'.Do7zip Error: '+s);
+    end;
+  finally
+    p.Free;
+  end;
 end;
 
 procedure TPacker.DoPdf;
@@ -200,7 +265,7 @@ begin
       Exit;
   packResult:=True;
   case Format of
-    pfZIP, pfCBZ: packResult:=DoZipCbz;
+    pfZIP, pfCBZ: packResult:=Do7Zip;
     pfPDF: DoPdf;
     pfEPUB: DoEpub;
   end;
@@ -208,8 +273,9 @@ begin
   Result := FileExists(FSavedFileName);
   if Result then
   begin
-    for i := 0 to FFileList.Count - 1 do
-      DeleteFile(FFileList[i]);
+    if not (Format in [pfZIP, pfCBZ]) then // let 7za delete the files
+      for i := 0 to FFileList.Count - 1 do
+        DeleteFile(FFileList[i]);
     if IsDirectoryEmpty(Path) then
       RemoveDir(Path);
   end;

@@ -18,7 +18,7 @@ uses
   FakeActiveX,
   {$endif}
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, LCLType,
-  ExtCtrls, ComCtrls, Buttons, Spin, Menus, VirtualTrees, RichMemo, simpleipc,
+  ExtCtrls, ComCtrls, Buttons, Spin, Menus, VirtualTrees, RichMemo, simpleipc, process,
   lclproc, types, LCLIntf, EditBtn, PairSplitter, MultiLog,
   FileChannel, FileUtil, LazUTF8Classes, LazStringUtils, TAGraph, TASources, TASeries, TATools,
   AnimatedGif, uBaseUnit, uDownloadsManager, uFavoritesManager,
@@ -990,7 +990,7 @@ uses
   {$endif}
   frmImportFavorites, frmShutdownCounter, frmSelectDirectory,
   frmWebsiteSettings, WebsiteModules, uUpdateThread, FMDVars, RegExpr, sqlite3dyn, Clipbrd,
-  ssl_openssl_lib, LazFileUtils, LazUTF8, UTF8Process, webp, DBUpdater, pcre2, pcre2lib, dynlibs,
+  ssl_openssl_lib, LazFileUtils, LazUTF8, webp, DBUpdater, pcre2, pcre2lib, dynlibs,
   LuaWebsiteModules, LuaBase, uBackupSettings;
 
 var
@@ -2400,15 +2400,14 @@ end;
 
 procedure TMainForm.DoRestartFMD;
 var
-  p: TProcessUTF8;
+  p: TProcess;
 begin
-  p := TProcessUTF8.Create(nil);
+  p := TProcess.Create(nil);
   try
     p.InheritHandles := False;
     p.CurrentDirectory := FMD_DIRECTORY;
     p.Executable := Application.ExeName;
     p.Options := [];
-    p.InheritHandles := False;
     p.Parameters.AddStrings(AppParams);
     {$ifdef windows}
     p.Parameters.Add('--dorestart-pid=' + IntToStr(GetProcessID));
