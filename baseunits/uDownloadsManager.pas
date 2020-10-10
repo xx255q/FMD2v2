@@ -896,7 +896,8 @@ var
 
   function CheckForFinish: Boolean;
   var
-    c: Integer;
+    c, i: Integer;
+    s: String;
   begin
     Result := False;
     if Container.PageLinks.Count = 0 then
@@ -906,13 +907,19 @@ var
 
     Result := c = 0;
     if Result = False then
+    begin
+      s:=LineEnding;
+      for i:=0 to Container.PageLinks.Count-1 do
+        if Container.PageLinks[i]<>'D' then
+          s+='['+GetFileName(i)+'] '+Container.PageLinks[i]+LineEnding;
       Logger.SendWarning(Format('%s.CheckForFinish failed %d of %d [%s] "%s" > "%s"',
         [Self.ClassName,
         c,
         Container.PageLinks.Count,
         Container.DownloadInfo.Website,
         Container.DownloadInfo.Title,
-        Container.ChapterLinks[Container.CurrentDownloadChapterPtr]]));
+        Container.ChapterLinks[Container.CurrentDownloadChapterPtr]])+s);
+    end;
   end;
 
 var
