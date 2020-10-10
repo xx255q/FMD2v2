@@ -1110,6 +1110,7 @@ begin
       Container.DownloadInfo.Progress := '';
       Container.CurrentDownloadChapterPtr := 0;
       Container.Status := STATUS_FAILED;
+      Logger.SendWarning(Self.ClassName+'.Execute end with failed chapter(s)');
     end
     else
     begin
