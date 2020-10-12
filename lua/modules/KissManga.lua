@@ -1,23 +1,52 @@
+function Init()
+	local m = NewWebsiteModule()
+	m.ID                         = '4f40515fb43640ddb08eb61278fc97a5'
+	m.Name                       = 'KissManga'
+	m.RootURL                    = 'https://kissmanga.org'
+	m.Category                   = 'English'
+	m.OnGetDirectoryPageNumber   = 'GetDirectoryPageNumber'
+	m.OnGetNameAndLink           = 'GetNameAndLink'
+	m.OnGetInfo                  = 'GetInfo'
+	m.OnGetPageNumber            = 'GetPageNumber'
+	m.SortedList                 = true
+end
+
+function GetDirectoryPageNumber()
+	local url = MODULE.RootURL .. '/manga_list'
+	if HTTP.GET(url) then
+		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).x.XPathString('//ul[@class="pager"]/li[last()]/a'):match('%((.-)%)'))
+		return no_error
+	else
+		return net_problem
+	end
+end
+
+function GetNameAndLink()
+	local url = MODULE.RootURL .. '/manga_list'
+	if URL ~= '0' then
+		url = url .. '?page=' .. (URL + 1)
+	end
+	if HTTP.GET(url) then
+		CreateTXQuery(HTTP.Document).XPathHREFAll('//a[@class="item_movies_link"]', LINKS, NAMES)
+		return no_error
+	else
+		return net_problem
+	end
+end
+
 function GetInfo()
-	mangainfo.url=MaybeFillHost(module.RootURL, url)
-	if http.get(mangainfo.url) then
-		local x=TXQuery.Create(http.document)
-		if mangainfo.title == '' then
-			mangainfo.title = x.xpathstring('//strong[@class="bigChar"]')
-		end
-		local coverlink = x.xpathstring('//div[@class="a_center"]//img/@src')
-		if coverlink ~= '' then
-			if coverlink:find('^//') then coverlink = 'https:' .. coverlink; end
-			mangainfo.coverlink=MaybeFillHost(module.RootURL, coverlink)
-		end
-		mangainfo.authors=x.xpathstringall('//*[@class="info"][2]//a[@class="dotUnder"]')
-		--mangainfo.artists=x.xpathstringall('//*[@class="rightBox"]/a[contains(@href,"/?artist=")]')
-		mangainfo.genres=x.xpathstringall('//*[@class="info"][3]//a[@class="dotUnder"]')
-		mangainfo.genres = mangainfo.genres:gsub("%s+Manga", "")
-		mangainfo.summary=x.xpathstring('//div[@class="summary"]//p')
-		mangainfo.status = MangaInfoStatusIfPos(x.xpathstring('//*[@class="item_static"][1]'), 'Ongoing', 'Completed')
-		x.xpathhrefall('//div[@class="listing listing8515 full"]//div//div//h3//a', mangainfo.chapterlinks, mangainfo.chapternames)
-		InvertStrings(mangainfo.chapterlinks, mangainfo.chapternames)
+	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL,URL)
+	if HTTP.GET(MANGAINFO.URL) then
+		local x = CreateTXQuery(HTTP.Document)
+		MANGAINFO.Title     = x.XPathString('//strong[@class="bigChar"]')
+		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//div[@id="rightside"]//img/@src'))
+		MANGAINFO.Authors   = x.XPathStringAll('//*[@class="info"][2]//a[@class="dotUnder"]')
+		MANGAINFO.Artists   = x.XPathStringAll('//div[@class="barContent"]//span[starts-with(., "Artist")]/parent::*/a')
+		MANGAINFO.Summary   = x.XPathString('//div[@class="summary"]//p')
+		MANGAINFO.Genres    = x.XPathStringAll('//*[@class="info"][3]//a[@class="dotUnder"]'):gsub("%s+Manga", "")
+		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//*[@class="item_static"][1]'), 'Ongoing', 'Completed')
+		x.XPathHREFAll('//div[@class="listing listing8515 full"]//div//div//h3//a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_problem
@@ -25,48 +54,11 @@ function GetInfo()
 end
 
 function GetPageNumber()
-	if http.get(MaybeFillHost(module.rooturl,url)) then
-		x=TXQuery.Create(http.Document)
-		x.xpathstringall('//div[@id="centerDivVideo"]/img/@src', task.PageLinks)
+	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
+		x=CreateTXQuery(HTTP.Document)
+		x.XPathStringAll('//div[@id="centerDivVideo"]/img/@src', TASK.PageLinks)
 		return true
 	else
 		return false
 	end
-end
-
-function GetDirectoryPageNumber()
-	if http.get(module.RootURL..'/manga_list') then
-		page = tonumber(TXQuery.Create(http.Document).XPathString('//ul[@class="pager"]/li[last()]/a'):match('%((.-)%)'))
-		return true
-	else
-		return false
-	end
-end
-
-function GetNameAndLink()
-	if http.get(module.rooturl..'/manga_list?page='..IncStr(url)) then
-		x=TXQuery.Create(http.Document)
-		x.xpathhrefall('//a[@class="item_movies_link"]', links, names)
-		return no_error
-	else
-		return net_problem
-	end
-end
-
-function BeforeDownloadImage()
-	http.headers.values['Referer'] = task.PageContainerLinks.text
-	return true
-end
-
-function Init()
-	m=NewModule()
-	m.category='English'
-	m.website='KissManga'
-	m.rooturl='https://kissmanga.org'
-	m.lastupdated='Oct 08, 2020'
-	m.ongetinfo='GetInfo'
-	m.ongetpagenumber='GetPageNumber'
-	m.ongetdirectorypagenumber='GetDirectoryPageNumber'
-	m.ongetnameandlink='GetNameAndLink' 
-	m.onbeforedownloadimage='BeforeDownloadImage'
 end
