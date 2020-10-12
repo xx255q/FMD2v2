@@ -97,7 +97,7 @@ function GetPageNumber()
 		return s:sub(-3)
 	end
 	vm.CurURI = body:match('ng%-src="(https?://{{vm%.CurPathName}}.-){{vm%.CurChapter%.Directory'):gsub('{{vm%.CurPathName}}', vm.CurPathName)
-	if vm.CurChapter.Directory ~= '' then vm.CurURI = cm.CurURI .. cm.CurChapter.Directory .. '/' end
+	if vm.CurChapter.Directory ~= '' then vm.CurURI = vm.CurURI .. vm.CurChapter.Directory .. '/' end
 	vm.CurURI = vm.CurURI .. vm.ChapterImage(vm.CurChapter.Chapter) .. '-'
 	
 	local Page; for Page = 1, vm.CurChapter.Page do
