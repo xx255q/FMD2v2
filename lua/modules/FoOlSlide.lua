@@ -49,7 +49,8 @@ function getdirurl(website)
 		['FujoshiBitches']     = dirurlreader,
 		['TapTrans']           = dirurlfsdir,
 		['LoliVault']          = dirurlonline,
-		['Shoujohearts']       = dirurlreader
+		['Shoujohearts']       = dirurlreader,
+		['KirishimaFansub']    = dirurllector
 	}
 	if dirs[website] ~= nil then
 		return dirs[website]
@@ -257,7 +258,7 @@ function Init()
 
 	-- es-sc
 	cat = 'Spanish-Scanlation'
-	AddWebsiteModule('639c7f8e27f74314ad9b474460086384', 'KirishimaFansub', 'http://lector.kirishimafansub.net')
+	AddWebsiteModule('639c7f8e27f74314ad9b474460086384', 'KirishimaFansub', 'https://kirishimafansub.net')
 	AddWebsiteModule('218b722b1eb34f2aa3863f84538c5b08', 'LoliVault', 'https://lolivault.net')
 	AddWebsiteModule('1e3d6dac50344396b8267da9a885ac05', 'Mangasubes', 'http://mangasubes.patyscans.com')
 	AddWebsiteModule('ba071f02443e40a3805d32c62169afb4', 'MenudoFansub', 'http://www.menudo-fansub.com')
