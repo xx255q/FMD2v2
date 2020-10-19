@@ -227,11 +227,7 @@ function getpagenumber()
 								TASK.PageLinks.Add(v1.GetAttribute('src'))
 						end
 				end
-		elseif MODULE.Name == 'MangaSWAT' then x.XPathStringAll('//*[@id="readerarea"]/p/img/@data-src', TASK.PageLinks)
-		elseif MODULE.ID == 'f9adee01635a4ff48fdff5164a65d6dd' then -- komiktap
-			local s = x.XPathString('//script[contains(., "ts_reader")]')
-			x.ParseHTML(GetBetween('"images":', '}],', s))
-			x.XPathStringAll('json(*)()', TASK.PageLinks)
+		elseif MODULE.Name == 'MangaSWAT' then x.XPathStringAll('//*[@id="readerarea"]/p/img/@data-src', TASK.PageLinks)	
 		else
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="reader-area"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="readerarea"]//img/@src', TASK.PageLinks) end
@@ -243,6 +239,11 @@ function getpagenumber()
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="imgholder"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="entry-content"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="bc"]/img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count == 0 then
+				local s = x.XPathString('//script[contains(., "ts_reader")]')
+				x.ParseHTML(GetBetween('"images":', '}],', s))
+				x.XPathStringAll('json(*)()', TASK.PageLinks)
+			end
 		end
 		return true
 	else
@@ -409,7 +410,7 @@ function Init()
 	AddWebsiteModule('d2ffd187eadd4c39819428a160d752cf', 'MangaTsuki', 'https://mangatsuki.web.id')
 
 	cat = 'Webcomics'
-	AddWebsiteModule('46dcfabe757140e7980ec34c65bdb30f', 'SekteKomik', 'http://sektekomik.com')
+	AddWebsiteModule('46dcfabe757140e7980ec34c65bdb30f', 'SekteKomik', 'https://sektekomik.com')
 	AddWebsiteModule('e34c929129c74d8aaf8383da9f6ab378', 'BaekjinScans', 'https://baekjinscans.xyz')
 
 	cat = 'Raw'
