@@ -32,7 +32,7 @@ function GetInfo()
 	if not HTTP.GET(u) then return net_problem end
 
 	x = CreateTXQuery(HTTP.Document)
-	MANGAINFO.Title     = Trim(x.XPathString('//title/substring-before(., "Online - 9Ekor")'))
+	MANGAINFO.Title     = Trim(x.XPathString('//h1/substring-after(., "Kategori:")'))
 
 	x.XPathHREFAll('//div[@class="page-content"]//h3[@class="entry-title"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
