@@ -335,6 +335,7 @@ function Init()
 	AddWebsiteModule('a9e9305e841f43f588a0deff0bc6ac88', 'BDSFansub', 'https://bdsfansub.com')
 	AddWebsiteModule('df25c494b176424785ee82142d0af425', 'LeerManhua', 'https://leermanhua.com')
 	AddWebsiteModule('1a9038c97ad04b6b8c54425a01b0bcb9', 'BakaguyaScan', 'https://bakaguya-scan.tk')
+	AddWebsiteModule('2458c40d646f4c0796aa550558e5e6b4', 'MundoWuxia', 'https://mundowuxia.com')
 
 	cat = 'Webcomics'
 	AddWebsiteModule('2e6196018ffc4c92bc7ff332e41d52d4', 'ManyToon', 'https://manytoon.me')
