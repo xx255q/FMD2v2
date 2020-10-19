@@ -86,7 +86,7 @@ function Modules.Madara()
 			else
 				x.XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			end
-			local idmanga = x.XPathString('//div[@id="manga-chapters-holder"]/@data-id')
+			local idmanga = x.XPathString('//div[contains(@id, "manga-chapters-holder")]/@data-id')
 			if MANGAINFO.ChapterLinks.Count < 1 then
 				HTTP.Reset()
 				HTTP.Headers.Values['Cache-Control'] = ' no-cache'
