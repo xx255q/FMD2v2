@@ -1,8 +1,35 @@
+function Init()
+	function AddWebsiteModule(id, name, url, category)
+		local m = NewWebsiteModule()
+		m.ID                       = id
+		m.Name                     = name
+		m.RootURL                  = url
+		m.Category                 = category
+		m.SortedList               = true
+		m.OnGetInfo                = 'GetInfo'
+		m.OnGetPageNumber          = 'GetPageNumber'
+		m.OnBeforeDownloadImage    = 'BeforeDownloadImage'
+		m.OnGetNameAndLink         = 'GetNameAndLink'
+		m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
+	end
+	local cat = 'Vietnamese'
+	AddWebsiteModule('ef7f922bd45f4f9d9c559a55f987004d', 'TruyenChon', 'http://truyenchon.com', cat)
+	AddWebsiteModule('567780dbaa3149e7ad698f11ce68ea9b', 'NetTruyen', 'http://www.nettruyen.com', cat)
+	AddWebsiteModule('d25308907620480496bd73f50451d67f', 'NhatTruyen', 'http://nhattruyen.com', cat)
+
+	cat = 'English'
+	AddWebsiteModule('d2f24dec90e841b1aab4bea145ffb638', 'MangaNT', 'https://mangant.com', cat)
+
+	cat = 'Spanish'
+	AddWebsiteModule('76b33c241c0d44a6b4a5b8dd86ec7750', 'ManhuaES', 'https://manhuaes.com', cat)
+end
+
 local dirurl = {
-	['TruyenChon'] = '/the-loai?status=-1&sort=15&page=%s',
-	['NetTruyen'] = '/tim-truyen?status=-1&sort=15&page=%s',
-	['MangaNT'] = '/genres?status=-1&sort=15&page=%s',
-	['NhatTruyen'] = '/the-loai?status=-1&sort=15&page=%s'
+	['ef7f922bd45f4f9d9c559a55f987004d'] = '/the-loai?status=-1&sort=15&page=%s', -- truyenchon
+	['567780dbaa3149e7ad698f11ce68ea9b'] = '/tim-truyen?status=-1&sort=15&page=%s', -- nettruyen
+	['d2f24dec90e841b1aab4bea145ffb638'] = '/genres?status=-1&sort=15&page=%s', -- mangant
+	['d25308907620480496bd73f50451d67f'] = '/the-loai?status=-1&sort=15&page=%s', -- nhattruyen
+	['76b33c241c0d44a6b4a5b8dd86ec7750'] = '/category-comics/manga/page/%s' -- manhuaes
 }
 
 function GetInfo()
@@ -36,8 +63,8 @@ function GetPageNumber()
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local x=CreateTXQuery(HTTP.Document)
-		if MODULE.ID == 'a964861afd0f410cb5122df5f50d3e1a' then
-			x.XPathStringAll('//*[@class="blocks-gallery-item"]//img/@data-src', TASK.PageLinks)
+		if MODULE.ID == '76b33c241c0d44a6b4a5b8dd86ec7750' then -- manhuaes
+			x.XPathStringAll('//div[contains(@class, "reading-detail")]//img/@data-src', TASK.PageLinks)
 		else
 			x.XPathStringAll('//div[@class="page-chapter"]/img/@data-original', TASK.PageLinks)
 		end
@@ -53,9 +80,10 @@ function BeforeDownloadImage()
 end
 
 function GetNameAndLink()
-	if HTTP.GET(MODULE.RootURL .. dirurl[MODULE.Name]:format((URL + 1))) then
+	if HTTP.GET(MODULE.RootURL .. dirurl[MODULE.ID]:format((URL + 1))) then
 		local x = CreateTXQuery(HTTP.Document)
 		x.XPathHREFAll('//div[@class="item"]//h3/a', LINKS, NAMES)
+		if LINKS.Count == 0 then x.XPathHREFAll('//div[@class="overlay"]/a',LINKS,NAMES) end
 		return no_error
 	else
 		return net_problem
@@ -63,7 +91,7 @@ function GetNameAndLink()
 end
 
 function GetDirectoryPageNumber()
-	if HTTP.GET(MODULE.RootURL .. dirurl[MODULE.Name]:format('1')) then
+	if HTTP.GET(MODULE.RootURL .. dirurl[MODULE.ID]:format('1')) then
 		local x = CreateTXQuery(HTTP.Document)
 		local s = x.XPathString('//ul[@class="pagination"]/li[last()]/a/@href')
 		PAGENUMBER = tonumber(s:match('&page=(%d+)')) or 1
@@ -71,27 +99,4 @@ function GetDirectoryPageNumber()
 	else
 		return net_problem
 	end
-end
-
-function Init()
-	function AddWebsiteModule(id, name, url, category)
-		local m = NewWebsiteModule()
-		m.ID                       = id
-		m.Name                     = name
-		m.RootURL                  = url
-		m.Category                 = category
-		m.SortedList               = true
-		m.OnGetInfo                = 'GetInfo'
-		m.OnGetPageNumber          = 'GetPageNumber'
-		m.OnBeforeDownloadImage    = 'BeforeDownloadImage'
-		m.OnGetNameAndLink         = 'GetNameAndLink'
-		m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
-	end
-	local cat = 'Vietnamese'
-	AddWebsiteModule('ef7f922bd45f4f9d9c559a55f987004d', 'TruyenChon', 'http://truyenchon.com', cat)
-	AddWebsiteModule('567780dbaa3149e7ad698f11ce68ea9b', 'NetTruyen', 'http://www.nettruyen.com', cat)
-	AddWebsiteModule('d25308907620480496bd73f50451d67f', 'NhatTruyen', 'http://nhattruyen.com', cat)
-
-	cat = 'English'
-	AddWebsiteModule('d2f24dec90e841b1aab4bea145ffb638', 'MangaNT', 'https://mangant.com', cat)
 end
