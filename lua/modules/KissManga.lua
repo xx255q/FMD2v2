@@ -14,7 +14,7 @@ end
 function GetDirectoryPageNumber()
 	local url = MODULE.RootURL .. '/manga_list'
 	if HTTP.GET(url) then
-		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).x.XPathString('//ul[@class="pager"]/li[last()]/a'):match('%((.-)%)'))
+		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//ul[@class="pager"]/li[last()]/a'):match('%((.-)%)')) or 1
 		return no_error
 	else
 		return net_problem
@@ -55,7 +55,7 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		x=CreateTXQuery(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		x.XPathStringAll('//div[@id="centerDivVideo"]/img/@src', TASK.PageLinks)
 		return true
 	else
