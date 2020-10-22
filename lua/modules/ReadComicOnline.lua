@@ -14,7 +14,7 @@ end
 function GetDirectoryPageNumber()
 	local url = MODULE.RootURL .. '/ComicList/Newest'
 	if HTTP.GET(url) then
-		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).x.XPathString('//ul[@class="pager"]/li[last()]/a/@href'):match('=(%d+)$')) or 1
+		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//ul[@class="pager"]/li[last()]/a/@href'):match('=(%d+)$')) or 1
 		return no_error
 	else
 		return net_problem
@@ -27,7 +27,7 @@ function GetNameAndLink()
 		url = url .. '?page=' .. (URL + 1)
 	end
 	if HTTP.GET(url) then
-		CreateTXQuery(HTTP.Document).XPathHREFAll(pattern, LINKS, NAMES)
+		CreateTXQuery(HTTP.Document).XPathHREFAll('//table[@class="listing"]/tbody/tr/td[1]/a', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem
@@ -54,9 +54,13 @@ function GetInfo()
 end
 
 function GetPageNumber()
-	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL .. '&quality=hq&readType=1')) then
-		x=CreateTXQuery(HTTP.Document)
-		x.XPathStringAll('//div[@id="divImage"]/img/@src', TASK.PageLinks)
+	HTTP.Cookies.Values['rco_quality'] = 'hq'
+	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
+		local body = HTTP.Document.ToString()
+		local s = body:match('var%s+lstImages%s+.-;(.-)%s+var%s')
+		local i; for i in s:gmatch('%("(.-)"%)') do
+			TASK.PageLinks.Add(i)
+		end
 		return true
 	else
 		return false
