@@ -33,6 +33,9 @@ function Modules.Madara()
 			end
 			MANGAINFO.CoverLink=x.XPathString('//div[@class="summary_image"]//img/@data-src')
 			if MANGAINFO.CoverLink == '' then
+				MANGAINFO.CoverLink=x.XPathString('//div[@class="summary_image"]//img/@data-lazy-src')
+			end
+			if MANGAINFO.CoverLink == '' then
 				MANGAINFO.CoverLink=x.XPathString('//div[@class="summary_image"]//img/@src')
 			end
 			if MODULE.Name == 'GetManhwa' then
@@ -377,6 +380,7 @@ function Init()
 	AddWebsiteModule('ae84d6cc416a473d85cf9fa416305378', 'SkyManga', 'https://skymanga.co')
 	AddWebsiteModule('c22df90060eb4d44b7baf89791745d5c', 'ManhuasWorld', 'https://manhuasworld.com')
 	AddWebsiteModule('d031c93743204c6e9f647faa9b31db2b', 'AncientEmpireScan', 'https://www.ancientempirescan.site')
+	AddWebsiteModule('46e0c618a19748d6af150c2f198f5360', '1stKissManhua', 'https://1stkissmanhua.com')
 
 	cat = 'Arabic-Scanlation'
 	AddWebsiteModule('7bda2905b61c49d1976777e9f2356361', '3asqOrg', 'https://3asq.org')
