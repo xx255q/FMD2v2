@@ -339,7 +339,8 @@ function getnameandlink()
 			['Ngomik'] = '/daftar-komik/?list',
 			['MangaPus'] = '/manga-list/?list',
 			['Mangaseno'] = '/manga-list/?list',
-			['Komiktap'] = '/manga/list-mode/'
+			['Komiktap'] = '/manga/list-mode/',
+			['FlameScans'] = '/manga/list-mode/'
 		}
 		local dirurl = '/manga/?list'
 		if dirs[MODULE.Name] ~= nil then
@@ -422,6 +423,7 @@ function Init()
 	cat = 'English-Scanlation'
 	AddWebsiteModule('7103ae6839ea46ec80cdfc2c4b37c803', 'AsuraScans', 'https://asurascans.com')
 	AddWebsiteModule('4efbab5ca3364cd0bb63b776b895262e', 'ManhwaTime', 'https://manhwatime.xyz')
+	AddWebsiteModule('fb34a56c83f54b19b57a9a92070fe899', 'FlameScans', 'https://www.flame-scans.com')
 
 	cat = 'H-Sites'
 	AddWebsiteModule('f9adee01635a4ff48fdff5164a65d6dd', 'Komiktap', 'https://komiktap.in')

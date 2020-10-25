@@ -299,6 +299,7 @@ function Init()
 	AddWebsiteModule('f95e0abd491e48aa81e686d14c0b983f', 'MartialScans', 'https://martialscans.com')
 	AddWebsiteModule('c07a3a37cb3f4e1a8fe48ad156056887', 'HeroManhua', 'https://heromanhua.com')
 	AddWebsiteModule('b810006e1bba4fe3a22bdbf9b235a537', 'MangaTurf', 'https://mangaturf.com')
+	AddWebsiteModule('4fade5ed11284de1812860d22ad324bf', 'ArangScans', 'https://arangscans.com')
 
 	cat = 'French'
 	AddWebsiteModule('41867fa36f2f49959df9fef8aa53ffb5', 'WakaScan', 'https://wakascan.com')
@@ -381,6 +382,7 @@ function Init()
 	AddWebsiteModule('c22df90060eb4d44b7baf89791745d5c', 'ManhuasWorld', 'https://manhuasworld.com')
 	AddWebsiteModule('d031c93743204c6e9f647faa9b31db2b', 'AncientEmpireScan', 'https://www.ancientempirescan.site')
 	AddWebsiteModule('46e0c618a19748d6af150c2f198f5360', '1stKissManhua', 'https://1stkissmanhua.com')
+	AddWebsiteModule('0a296830cf814700ac18c74139982679', 'TwilightScans', 'https://twilightscans.com')
 
 	cat = 'Arabic-Scanlation'
 	AddWebsiteModule('7bda2905b61c49d1976777e9f2356361', '3asqOrg', 'https://3asq.org')
