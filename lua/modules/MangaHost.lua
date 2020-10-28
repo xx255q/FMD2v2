@@ -10,30 +10,23 @@ local DirectoryPagination = '/mangas/page/'
 
 -- Get info and chapter list for current manga.
 function GetInfo()
-	local t, v, x = nil
+	local v, x = nil
 	local u = MaybeFillHost(MODULE.RootURL, URL)
 
 	if not HTTP.GET(u) then return net_problem end
 
 	x = CreateTXQuery(HTTP.Document)
 	MANGAINFO.Title     = x.XPathString('//meta[@property="og:title"]/@content')
-	MANGAINFO.CoverLink = x.XPathString('//img[contains(@class, "thumbnail")]/@src')
-	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//li[contains(strong, "Status:")]/text()'), 'Ativo', 'Completo')
-	MANGAINFO.Authors   = x.XPathString('//li[contains(strong, "Autor:")]/text()')
-	MANGAINFO.Artists   = x.XPathString('//li[contains(strong, "Desenho (Art):")]/text()')
-	MANGAINFO.Genres    = x.XPathStringAll('//li[contains(strong, "Categoria(s):")]/a')
-	MANGAINFO.Summary   = Trim(x.XPathString('//div[@id="divSpdInText"]/p[1]'))
+	MANGAINFO.CoverLink = x.XPathString('//picture/img/@src')
+	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//div[contains(strong, "Status:")]/text()'), 'Ativo', 'Completo')
+	MANGAINFO.Authors   = x.XPathString('//div[contains(strong, "Autor:")]/text()')
+	MANGAINFO.Artists   = x.XPathString('//div[contains(strong, "Desenho (Art):")]/text()')
+	MANGAINFO.Genres    = x.XPathStringAll('//div[@class="w-col w-col-7"]/article/div[@class="tags"]/a')
+	MANGAINFO.Summary   = Trim(x.XPathString('//div[@class="paragraph"]'))
 
-	if x.XPathCount('//ul[@class="list_chapters"]') > 0 then
-		v = x.XPath('//ul[@class="list_chapters"]//a')
-		for i = 1, v.Count do
-			t = TXQuery.New()
-			t.ParseHTML(v.Get(i).GetAttribute('data-content'))
-			MANGAINFO.ChapterLinks.Add(t.XPathString('//a/@href'))
-			MANGAINFO.ChapterNames.Add(v.Get(i).GetAttribute('title'))
-		end
-	else
-		x.XPathHREFAll('//a[@class="capitulo"]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+	for v in x.XPath('//div[@class="card pop"]').Get() do
+		MANGAINFO.ChapterLinks.Add(x.XPathString('div[2]/div/a/@href', v))
+		MANGAINFO.ChapterNames.Add(x.XPathString('div[1]/text()', v) .. ' ' .. x.XPathString('div[1]/span/text()', v))
 	end
 	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
@@ -51,7 +44,7 @@ function GetDirectoryPageNumber()
 	return no_error
 end
 
--- Get LINKS and NAMES from the manga list of the current website.
+-- Get links and names from the manga list of the current website.
 function GetNameAndLink()
 	local x = nil
 	local u = MODULE.RootURL .. DirectoryPagination .. (URL + 1)
@@ -59,7 +52,7 @@ function GetNameAndLink()
 	if not HTTP.GET(u) then return net_problem end
 
 	x = CreateTXQuery(HTTP.Document)
-	x.XPathHREFAll('//div[@class="list clearfix"]//h3/a', LINKS, NAMES)
+	x.XPathHREFAll('//*[@class="manga-block-title"]/a', LINKS, NAMES)
 
 	return no_error
 end
