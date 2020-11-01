@@ -28,8 +28,6 @@ function Modules.Madara()
 				MANGAINFO.Title=x.XPathStringAll('//div[@class="post-title post-sigle-title"]/*[self::h1 or self::h2 or self::h3]/text()', '')
 			elseif MODULE.Name == 'GetManhwa' then
 				MANGAINFO.Title=x.XPathStringAll('//div[@class="post-title-dpage"]/h3')
-			elseif MODULE.Name == 'WordExcerpt' then
-				MANGAINFO.Title=x.XPathStringAll('//div[@class="c-manga-title"]/h1')
 			end
 			MANGAINFO.CoverLink=x.XPathString('//div[@class="summary_image"]//img/@data-src')
 			if MANGAINFO.CoverLink == '' then
@@ -40,22 +38,13 @@ function Modules.Madara()
 			end
 			if MODULE.Name == 'GetManhwa' then
 				MANGAINFO.CoverLink=x.XPathString('//div[@class="my_profile-manga"]/@style'):match('background%-image:URL%((.-)%)')
-			elseif MODULE.Name == 'WordExcerpt' then
-				MANGAINFO.CoverLink=x.XPathString('//div[@class="c-manga-thumbnail-bg"]/@style'):match('background%-image: url%((.-)%)')
 			end
 			MANGAINFO.Authors=x.XPathStringAll('//div[@class="author-content"]/a')
 			if MANGAINFO.Authors == '' then
 				MANGAINFO.Authors=x.XPathStringAll('//div[@class="summary-heading-creator"]/a')
 			end
-			if MODULE.Name == 'WordExcerpt' then
-				MANGAINFO.Authors=x.XPathString('//div[@class="post-content_item" and contains(., "Author")]//a')
-			end
 			MANGAINFO.Artists=x.XPathStringAll('//div[@class="artist-content"]/a')
-			if MODULE.Name == 'WordExcerpt' then
-				MANGAINFO.Genres=x.XPathStringAll('//div[@class="post-content_item tags"]/a')
-			else
-				MANGAINFO.Genres=x.XPathStringAll('//div[@class="genres-content"]/a')
-			end
+			MANGAINFO.Genres=x.XPathStringAll('//div[@class="genres-content"]/a')
 			if MODULE.Name == 'ATMSubs' then
 				MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//div[@class="summary-heading" and contains(h5, "Statut")]/following-sibling::div'), 'En Cours', 'Complete')
 			else
@@ -63,8 +52,6 @@ function Modules.Madara()
 			end
 			if MODULE.Name == 'Mangareceh' then
 				MANGAINFO.Summary=x.XPathString('//div[contains(@class,"description-summary")]//p[2]')
-			elseif MODULE.Name == 'WordExcerpt' then
-				MANGAINFO.Summary=x.XPathString('//div[@class="content"]/p')
 			else
 				MANGAINFO.Summary=x.XPathString('//div[contains(@class,"description-summary")]//p')
 			end
@@ -295,7 +282,6 @@ function Init()
 	AddWebsiteModule('9bec8a0a18e94de1b99c2bc2598438b4', 'MangaDods', 'https://www.mangadods.com')
 	AddWebsiteModule('a24656d5e72544469f656e490ffc2591', 'DisasterScans', 'https://disasterscans.com')
 	AddWebsiteModule('a1b569bcec9147f4945383655c052676', 'RaiderScans', 'https://raiderscans.com')
-	AddWebsiteModule('3524f691a195425897acd98909fcbb1f', 'WordExcerpt', 'https://wordexcerpt.com')
 	AddWebsiteModule('f95e0abd491e48aa81e686d14c0b983f', 'MartialScans', 'https://martialscans.com')
 	AddWebsiteModule('c07a3a37cb3f4e1a8fe48ad156056887', 'HeroManhua', 'https://heromanhua.com')
 	AddWebsiteModule('b810006e1bba4fe3a22bdbf9b235a537', 'MangaTurf', 'https://mangaturf.com')
