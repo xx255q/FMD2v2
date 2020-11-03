@@ -32,11 +32,10 @@ function getpagenumber()
 				TASK.PageContainerLinks.Add(MaybeFillHost(MODULE.RootURL, '/g/' .. galleryId .. '/' .. i))
 			end
 		else
-			local v = x.XPath('//*[@class="gallery"]//img/@data-src')
-			for i = 1, v.Count do
-				local s = v.Get(i).ToString();
-				s = s:gsub('^//', 'https://'):gsub('(/%d+)[tT]%.', '%1.')
-				TASK.PageLinks.Add(s)
+			local galleryId = x.XPathString('//*[@rel="canonical"]/@href'):match('/g/(%d+)/')
+			TASK.PageNumber = tonumber(x.XPathString('//div[@class="pages" and contains(., "Pages")]/substring-after(.,": ")'))
+			for i = 1, TASK.PageNumber do
+				TASK.PageContainerLinks.Add(MaybeFillHost(MODULE.RootURL, '/gallery/' .. galleryId .. '/' .. i))
 			end
 		end
 	else
