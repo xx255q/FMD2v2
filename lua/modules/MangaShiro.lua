@@ -151,19 +151,6 @@ function getMangas(x)
 		end
 	elseif MODULE.Name == 'Komiku' then
 		x.XPathHREFAll('//table[@class="chapter"]//td[1]/a',MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
-	elseif MODULE.Name == 'MangaKita' then
-		local s, l, title
-		local v for v in x.XPath('//div[@class="list chapter-list"]//div/span/a').Get() do
-			s = v.ToString()
-			l = v.GetAttribute('href')
-			title = l
-			if s < 'Download PDF' then
-				title = title:gsub('mangakita.net', ''):gsub('https:', '')
-				title = title:gsub('/', ''):gsub('-', ' ')
-				MANGAINFO.ChapterNames.Add(title);
-				MANGAINFO.ChapterLinks.Add(l);
-			end
-		end
 	elseif MODULE.Name == 'Mangacan' then
 		local s
 		local v for v in x.XPath('//table[@class="updates"]//td/a').Get() do
@@ -212,21 +199,20 @@ function getpagenumber()
 			local s = x.XPathString('*')
 			x.ParseHTML(crypto.DecodeBase64(GetBetween('](atob(', ')),', s)))
 			x.XPathStringAll('json(*)()', TASK.PageLinks)
-		elseif MODULE.Name == 'Kiryuu' then			
-			local v=x.XPath('//*[@id="readerarea"]//img')
-				for i=1,v.Count do
-						local v1=v.Get(i)
-						if string.find(v1.GetAttribute('src'), ".filerun.") == nil and
-							 string.find(v1.GetAttribute('src'), ",0.jpg") == nil and
-							 string.find(v1.GetAttribute('src'), ",5.jpg") == nil and
-							 string.find(v1.GetAttribute('src'), ".5.jpg") == nil and
-							 string.find(v1.GetAttribute('src'), "00.jpg") == nil and
-							 string.find(v1.GetAttribute('src'), "z10.jpg") == nil and
-							 string.find(v1.GetAttribute('src'), "Komeng.jpg") == nil and
-							 string.find(v1.GetAttribute('src'), "ZZ.jpg") == nil then
-								TASK.PageLinks.Add(v1.GetAttribute('src'))
-						end
+		elseif MODULE.ID == '031f3cc0ae3346ad9b8c33d5377891e9' or MODULE.ID == 'b543e37b656e43ffb3faa034eee6c945' then -- kiryuu, mangakita
+			local v; for v in x.XPath('//*[@id="readerarea"]//img').Get() do
+				if string.find(v.GetAttribute('src'), ".filerun.") == nil and
+					string.find(v.GetAttribute('src'), ",0.jpg") == nil and
+					string.find(v.GetAttribute('src'), ",5.jpg") == nil and
+					string.find(v.GetAttribute('src'), ".5.jpg") == nil and
+					string.find(v.GetAttribute('src'), "00.jpg") == nil and
+					string.find(v.GetAttribute('src'), "z10.jpg") == nil and
+					string.find(v.GetAttribute('src'), "Komeng.jpg") == nil and
+					string.find(v.GetAttribute('src'), "ZZ.jpg") == nil and
+					string.find(v.GetAttribute('src'), "Iklan.jpg") == nil then
+					TASK.PageLinks.Add(v.GetAttribute('src'))
 				end
+			end
 		elseif MODULE.Name == 'MangaSWAT' then x.XPathStringAll('//*[@id="readerarea"]/p/img/@data-src', TASK.PageLinks)	
 		else
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="reader-area"]//img/@src', TASK.PageLinks) end
@@ -340,7 +326,8 @@ function getnameandlink()
 			['MangaPus'] = '/manga-list/?list',
 			['Mangaseno'] = '/manga-list/?list',
 			['Komiktap'] = '/manga/list-mode/',
-			['FlameScans'] = '/manga/list-mode/'
+			['FlameScans'] = '/manga/list-mode/',
+			['MangaKita'] = '/daftar-manga/?list'
 		}
 		local dirurl = '/manga/?list'
 		if dirs[MODULE.Name] ~= nil then
