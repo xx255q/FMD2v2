@@ -5,7 +5,7 @@ function Init()
 	m.RootURL                    = 'http://mangahasu.se'
 	m.Category                   = 'English'
 	m.OnGetNameAndLink           = 'GetNameAndLink'
-	m.OnGetDirectoryPageNumber   = 'OnGetDirectoryPageNumber'
+	m.OnGetDirectoryPageNumber   = 'GetDirectoryPageNumber'
 	m.OnGetInfo                  = 'GetInfo'
 	m.OnGetPageNumber            = 'GetPageNumber'
 	m.OnBeforeDownloadImage      = 'BeforeDownloadImage'
@@ -21,7 +21,7 @@ function GetNameAndLink()
 	end
 end
 
-function OnGetDirectoryPageNumber()
+function GetDirectoryPageNumber()
 	if HTTP.GET(MODULE.RootURL .. '/directory.html') then
 		x = CreateTXQuery(HTTP.Document)
 		PAGENUMBER = tonumber(x.XPathString('//div[@class="pagination-ct"]/a[last()]/substring-after(@href,"=")')) or 1
