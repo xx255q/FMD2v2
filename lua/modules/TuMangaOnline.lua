@@ -10,10 +10,29 @@ function Init()
 	m.OnGetInfo                  = 'GetInfo'
 	m.OnGetPageNumber            = 'GetPageNumber'
 	m.OnGetImageURL              = 'GetImageURL'
+
+	local fmd = require 'fmd.env'
+	local slang = fmd.SelectedLanguage
+	local lang = {
+		['en'] = {
+			['delay'] = 'Delay (s) between requests',
+		},
+		['id_ID'] = {
+			['delay'] = 'Tunda (detik) antara permintaan',
+		},
+		get =
+			function(self, key)
+				local sel = self[slang]
+				if sel == nil then sel = self['en'] end
+				return sel[key]
+			end
+	}
+	m.AddOptionSpinEdit('tmo_delay', lang:get('delay'), 5)
 end
 
 function GetNameAndLink()
 	local s = '/library?order_item=alphabetically&order_dir=asc&filter_by=title&_page=1&page=' .. (URL + 1)
+	Delay()
 	if HTTP.GET(MODULE.RootURL .. s) then
 		local x = CreateTXQuery(HTTP.Document)
 		local hasTitles = false
@@ -33,6 +52,7 @@ end
 
 function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
+	Delay()
 	if HTTP.GET(MANGAINFO.URL) then
 		local x = CreateTXQuery(HTTP.Document)
 		if MANGAINFO.Title == '' then
@@ -74,6 +94,7 @@ end
 function GetPageNumber()
 	HTTP.Headers.Values['Referer'] = ' ' .. MaybeFillHost(MODULE.RootURL, TASK.Link)
 	URL = MaybeFillHost(MODULE.RootURL, URL)
+	Delay()
 	if not HTTP.GET(URL) then return false; end
 	local rurl = HTTP.Headers.Values['location']
 	if rurl ~= '' then
@@ -111,4 +132,16 @@ function GetImageURL()
 		return true
 	end
 	return false
+end
+
+function Delay()
+	local lastDelay = tonumber(MODULE.Storage['lastDelay']) or 1
+	local tmo_delay = tonumber(MODULE.GetOption('tmo_delay')) or 5 -- * MODULE.ActiveConnectionCount
+	if lastDelay ~= '' then
+		lastDelay = os.time() - lastDelay
+		if lastDelay < tmo_delay then
+			sleep((tmo_delay - lastDelay) * 1000)
+		end
+	end
+	MODULE.Storage['lastDelay'] = os.time()
 end
