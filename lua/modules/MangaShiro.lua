@@ -238,29 +238,6 @@ function getpagenumber()
 end
 
 function getnameandlink()
-	-- continues page based, no end number detected
-	-- if MODULE.Name == 'KomikIndoWebId' then
-		-- local dirurl = MODULE.RootURL .. '/manga/?order=latest'
-		-- if not HTTP.GET(dirurl) then return net_problem end
-		-- local x = CreateTXQuery(HTTP.Document)
-		-- local next_url
-		-- dirurl = MODULE.RootURL .. '/manga/'
-		-- local updatestatus = tonumber(require('fmd.env').Revision)>4966
-		-- while true do
-			-- x.XPathHREFTitleAll('//div[@class="bsx"]/a',LINKS,NAMES)
-			-- next_url = x.XPathString('//div[@class="hpage"]/a[@class="r"]/@href')
-			-- if HTTP.Terminated then break end
-			-- if next_url == '' then break end
-			-- if updatestatus then
-				-- UPDATELIST.UpdateStatusText('Loading page ' .. (next_url:match('page=(%d+)') or ''))
-			-- end
-			-- if HTTP.GET(dirurl .. next_url) then
-				-- x.ParseHTML(HTTP.Document)
-			-- else
-				-- break
-			-- end
-		-- end
-	-- else
 	if MODULE.Name == 'KoMBatch' then
 		local dirurl = MODULE.RootURL .. '/manga-list/'
 		local x = CreateTXQuery()
@@ -315,7 +292,7 @@ function getnameandlink()
 			['PecintaKomik'] = '/daftar-manga/?list',
 			['MangaIndoNet'] = '/manga-list/?list',
 			['KomikIndo'] = '/manga-list/?list',
-			['KomikIndoWebId'] = '/manga/?order=latest',
+			['KomikIndoWebId'] = '/manga/list-mode/',
 			['Komiku'] = '/daftar-komik/',
 			['KazeManga'] = '/manga-list/?list',
 			['Mangacan'] =  '/daftar-komik-manga-bahasa-indonesia.html',
