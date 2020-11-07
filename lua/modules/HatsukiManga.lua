@@ -1,10 +1,26 @@
 function Init()
 	local m = NewWebsiteModule()
-	m.ID                         = '13c4aabe55424dd2b46384102d1fae1e'
-	m.Name                       = 'HatsukiManga'
-	m.RootURL                    = 'https://hatsukimanga.com'
-	m.OnGetInfo                  = 'GetInfo'
-	m.OnGetPageNumber            = 'GetPageNumber'
+	m.ID                  = '13c4aabe55424dd2b46384102d1fae1e'
+	m.Name                = 'HatsukiManga'
+	m.RootURL             = 'https://hatsukimanga.com'
+	m.Category            = 'Spanish'
+	m.OnGetNameAndLink    = 'GetNameAndLink'
+	m.OnGetInfo           = 'GetInfo'
+	m.OnGetPageNumber     = 'GetPageNumber'
+end
+
+function GetNameAndLink()
+	HTTP.Reset()
+	HTTP.Headers.Values['Cache-Control'] = ' no-store, no-cache, must-revalidate'
+	HTTP.Headers.Values['X-Requested-With'] = ' XMLHttpRequest'
+	HTTP.MimeType = 'text/html; charset=UTF-8'
+	if HTTP.POST(MODULE.RootURL .. '/biblioteca.php', MODULE.RootURL) then
+		local x = CreateTXQuery(HTTP.Document)
+		x.XPathHREFAll('//a[contains(@class, "miniatura")]', LINKS, NAMES)
+		return no_error
+	else
+		return net_problem
+	end
 end
 
 function GetInfo()
@@ -18,7 +34,7 @@ function GetInfo()
 
 		local v; for v in x.XPath('//div[@class="cuadro-obra"]').Get() do
 			MANGAINFO.ChapterLinks.Add(x.XPathString('ul/li/div[2]/a/@href', v))
-			MANGAINFO.ChapterNames.Add(x.XPathString('div/p', v))
+			MANGAINFO.ChapterNames.Add(x.XPathString('div/p', v) .. ' [' .. x.XPathString('ul/li/div[1]/a', v) .. ']')
 		end
 		return no_error
 	else
