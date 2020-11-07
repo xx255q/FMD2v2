@@ -10,13 +10,8 @@ function Init()
 end
 
 function GetNameAndLink()
-	HTTP.Reset()
-	HTTP.Headers.Values['Cache-Control'] = ' no-store, no-cache, must-revalidate'
-	HTTP.Headers.Values['X-Requested-With'] = ' XMLHttpRequest'
-	HTTP.MimeType = 'text/html; charset=UTF-8'
-	if HTTP.POST(MODULE.RootURL .. '/biblioteca.php', MODULE.RootURL) then
-		local x = CreateTXQuery(HTTP.Document)
-		x.XPathHREFAll('//a[contains(@class, "miniatura")]', LINKS, NAMES)
+	if HTTP.GET(MODULE.RootURL .. '/biblioteca.php') then
+		CreateTXQuery(HTTP.Document).XPathHREFAll('//a[contains(@class, "miniatura")]', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem
