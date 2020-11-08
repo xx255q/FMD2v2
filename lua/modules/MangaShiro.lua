@@ -178,20 +178,6 @@ function getMangas(x)
 end
 
 function getpagenumber()
-	if MODULE.Name == 'KoMBatch' then
-		local link = MaybeFillHost(MODULE.RootURL,URL)
-		link = link:gsub('/read', '/api/chapter')
-		if HTTP.GET(link) then
-			local x = CreateTXQuery(HTTP.Document)
-			for v in x.XPath('json(*).chapter.images()("text")').Get() do
-				TASK.PageLinks.Add(v.ToString():gsub('^//', 'https://'))
-			end
-		else
-			return false
-		end
-		return true
-	end
-	
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
 		local x = CreateTXQuery(HTTP.Document)
 		if MODULE.Name == 'BacaManga' then
@@ -238,31 +224,7 @@ function getpagenumber()
 end
 
 function getnameandlink()
-	if MODULE.Name == 'KoMBatch' then
-		local dirurl = MODULE.RootURL .. '/manga-list/'
-		local x = CreateTXQuery()
-		local pages = 1
-		local p = 1
-		local u = dirurl
-		while p <= pages do
-			if p > 1 then u =  dirurl .. '?page=' .. tostring(p) end
-			if not HTTP.GET(u) then return net_problem end
-			x.ParseHTML(HTTP.Document)
-			if p == pages then
-				local pg = x.XPathString('//*[contains(@class, "pagination")]//li[last()-1]/a/substring-after(@href, "?page=")')
-				if pg ~= '' then pages = tonumber(pg) end
-			end
-			local v=x.XPath('//*[contains(@class, "trending")]//*[contains(@class, "box_trending")]')
-			for i=1,v.Count do
-				local v1=v.Get(i)
-				local title = x.XPathString('.//*[contains(@class, "_2dU-m")]/text()', v1)
-				local link = x.XPathString('.//*[contains(@class, "_2dU-m")]/@href', v1)
-				NAMES.Add(title)
-				LINKS.Add(link)
-			end
-			p = p + 1
-		end
-	elseif MODULE.ID == '4efbab5ca3364cd0bb63b776b895262e' then -- manhwatime
+	if MODULE.ID == '4efbab5ca3364cd0bb63b776b895262e' then -- manhwatime
 		local dirurl = MODULE.RootURL .. '/manhwa/'
 		local x = CreateTXQuery()
 		local pages = 1
@@ -365,7 +327,6 @@ function Init()
 	AddWebsiteModule('2929eb02fcad4156a6c61576c1dc4b53', 'MangaCeng', 'https://mangaceng.com')
 	AddWebsiteModule('7a74b2abda1d4b329ee1d1fa58866c03', 'MaidMangaID', 'https://www.maid.my.id')
 	AddWebsiteModule('a70859360a2a474ba2abdb86bc48616c', 'KomikAV', 'https://komikav.com')
-	AddWebsiteModule('180a930232614f81816720cefeea7954', 'KoMBatch', 'https://kombatch.com')
 	AddWebsiteModule('5c06401129894099bb6fc59c08a878d4', 'Ngomik', 'https://ngomik.in')
 	AddWebsiteModule('c16adc6202924e558b977f74c7301bed', 'MangaPus', 'https://mangapus.com')
 	AddWebsiteModule('0a6dd9c339c94a339dbc89c781b20d20', 'Mangaseno', 'https://mangaseno.com')

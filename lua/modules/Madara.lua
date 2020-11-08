@@ -85,7 +85,7 @@ function Modules.Madara()
 				local q = 'action=manga_get_chapters&manga=' .. idmanga
 				if HTTP.POST(MODULE.RootURL .. '/wp-admin/admin-ajax.php', q) then
 						local x = CreateTXQuery(HTTP.Document)
-						x.XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+						x.XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/a[1]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 				end
 			end
 			MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
@@ -297,7 +297,8 @@ function Init()
 	AddWebsiteModule('9ff90d87df4c48fbb1cd310cbccca181', 'KomikGo', 'https://komikgo.com')
 	AddWebsiteModule('8949b01268974dd8a5798fec469deb65', 'KlikManga', 'https://klikmanga.com')
 	AddWebsiteModule('273d639c63fa4cafb4f27a4b6e0679d9', 'PojokManga', 'https://pojokmanga.com')
-	AddWebsiteModule('994972530f574d449db141c75d41047b', 'Mangareceh', 'https://mangareceh.ID')
+	AddWebsiteModule('994972530f574d449db141c75d41047b', 'Mangareceh', 'https://mangareceh.id')
+	AddWebsiteModule('180a930232614f81816720cefeea7954', 'KoMBatch', 'https://kombatch.com')
 
 	cat = 'H-Sites'
 	AddWebsiteModule('58bc6b05826e45e1b66e32d40ddc9fbd', 'ManhwaHand', 'https://manhwahand.com')
