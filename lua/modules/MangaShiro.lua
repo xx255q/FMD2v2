@@ -198,8 +198,7 @@ function getpagenumber()
 					string.find(v.GetAttribute('src'), "Iklan.jpg") == nil then
 					TASK.PageLinks.Add(v.GetAttribute('src'))
 				end
-			end
-		elseif MODULE.Name == 'MangaSWAT' then x.XPathStringAll('//*[@id="readerarea"]/p/img/@data-src', TASK.PageLinks)	
+			end	
 		else
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="reader-area"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="readerarea"]//img/@src', TASK.PageLinks) end
@@ -238,10 +237,7 @@ function getnameandlink()
 				local pg = x.XPathString('//div[@class="pagination"]/span/substring-after(., "Page 1 of ")')
 				if pg ~= '' then pages = tonumber(pg) end
 			end
-			local v; for v in x.XPath('//div[@class="animposx"]/a').Get() do
-				LINKS.Add(v.GetAttribute('href'))
-				NAMES.Add(v.GetAttribute('title'))
-			end
+			x.XPathHREFTitleAll('//div[@class="animposx"]/a', LINKS, NAMES)
 			p = p + 1
 		end
 	else
