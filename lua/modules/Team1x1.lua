@@ -48,7 +48,7 @@ end
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local x = CreateTXQuery(HTTP.Document)
-		CreateTXQuery(HTTP.Document).XPathStringAll('//div[@id="translationPageall"]//img/@src', TASK.PageLinks)
+		CreateTXQuery(HTTP.Document).XPathStringAll('//div[@id="translationPageall"]//embed/@src', TASK.PageLinks)
 		return true
 	else
 		return false
