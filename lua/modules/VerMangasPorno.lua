@@ -40,12 +40,10 @@ function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
 		local x = CreateTXQuery(HTTP.Document)
-		if MODULE.ID == 'c3a863e704054a1a86eeafbbaae67513' then -- vermangasporno
-			MANGAINFO.CoverLink  = x.XPathString('//div[@class="comicimg"]/p/img/@data-lazy-src')
-		else
-			MANGAINFO.CoverLink  = x.XPathString('//div[@class="comicimg"]/p/img/@src')
-		end
 		MANGAINFO.Title      = x.XPathString('//title')
+		MANGAINFO.CoverLink  = x.XPathString('//div[@class="comicimg"]/p/img/@data-lazy-src')
+		if MANGAINFO.CoverLink == '' then MANGAINFO.CoverLink = x.XPathString('//div[@class="comicimg"]/p/a/img/@data-lazy-src') end
+		if MANGAINFO.CoverLink == '' then MANGAINFO.CoverLink = x.XPathString('//div[@class="comicimg"]/p/img/@src') end
 		MANGAINFO.Genres     = x.XPathStringAll('//div[@id="tagsin"]/a')
 
 		MANGAINFO.ChapterLinks.Add(URL)
@@ -58,11 +56,10 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		if MODULE.ID == 'c3a863e704054a1a86eeafbbaae67513' then -- vermangasporno
-			CreateTXQuery(HTTP.Document).XPathStringAll('//div[@class="comicimg"]/p/img/@data-lazy-src', TASK.PageLinks)
-		else
-			CreateTXQuery(HTTP.Document).XPathStringAll('//div[@class="comicimg"]/p/img/@src', TASK.PageLinks)
-		end
+		local x = CreateTXQuery(HTTP.Document)
+		x.XPathStringAll('//div[@class="comicimg"]/p/img/@data-lazy-src', TASK.PageLinks)
+		if TASK.PageLinks.Count == 0 then x.XPathStringAll('//div[@class="comicimg"]/p/a/img/@data-lazy-src', TASK.PageLinks) end
+		if TASK.PageLinks.Count == 0 then x.XPathStringAll('//div[@class="comicimg"]/p/img/@src', TASK.PageLinks) end
 		return true
 	else
 		return false
