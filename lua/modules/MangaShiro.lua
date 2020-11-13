@@ -223,7 +223,25 @@ function getpagenumber()
 end
 
 function getnameandlink()
-	if MODULE.ID == '4efbab5ca3364cd0bb63b776b895262e' then -- manhwatime
+	-- continues page based, no end number detected
+	if MODULE.ID == '5af0f26f0d034fb2b42ee65d7e4188ab' then -- komiku
+		local dirurl = MODULE.RootURL .. '/manga/'
+		if not HTTP.GET(dirurl) then return net_problem end
+		local x = CreateTXQuery(HTTP.Document)
+		local next_url
+		while true do
+			x.XPathHREFAll('//div[@class="kan"]/a',LINKS,NAMES)
+			next_url = x.XPathString('//a[contains(@class,"next")]/@href')
+			if HTTP.Terminated then break end
+			if next_url == '' then break end
+			UPDATELIST.UpdateStatusText('Loading page ' .. (next_url:match('page/(%d+)/') or ''))
+			if HTTP.GET(next_url) then
+				x.ParseHTML(HTTP.Document)
+			else
+				break
+			end
+		end
+	elseif MODULE.ID == '4efbab5ca3364cd0bb63b776b895262e' then -- manhwatime
 		local dirurl = MODULE.RootURL .. '/manhwa/'
 		local x = CreateTXQuery()
 		local pages = 1
@@ -251,7 +269,6 @@ function getnameandlink()
 			['MangaIndoNet'] = '/manga-list/?list',
 			['KomikIndo'] = '/manga-list/?list',
 			['KomikIndoWebId'] = '/manga/list-mode/',
-			['Komiku'] = '/daftar-komik/',
 			['KazeManga'] = '/manga-list/?list',
 			['Mangacan'] =  '/daftar-komik-manga-bahasa-indonesia.html',
 			['MangaIndo'] = '/manga-list-201902-v052/',
