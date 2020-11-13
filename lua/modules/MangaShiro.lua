@@ -279,7 +279,8 @@ function getnameandlink()
 			['Mangaseno'] = '/manga-list/?list',
 			['Komiktap'] = '/manga/list-mode/',
 			['FlameScans'] = '/manga/list-mode/',
-			['MangaKita'] = '/daftar-manga/?list'
+			['MangaKita'] = '/daftar-manga/?list',
+			['Sekaikomik'] = '/daftar-komik/?list'
 		}
 		local dirurl = '/manga/?list'
 		if dirs[MODULE.Name] ~= nil then
@@ -351,6 +352,7 @@ function Init()
 	cat = 'Webcomics'
 	AddWebsiteModule('46dcfabe757140e7980ec34c65bdb30f', 'SekteKomik', 'https://sektekomik.com')
 	AddWebsiteModule('e34c929129c74d8aaf8383da9f6ab378', 'BaekjinScans', 'https://baekjinscans.xyz')
+	AddWebsiteModule('1f1ec10a248c4a4f838c80b3e27fc4c7', 'SekaiKomik', 'https://www.sekaikomik.com')
 
 	cat = 'Raw'
 	AddWebsiteModule('21b0dfcb262d4ae28520679165282666', 'Rawkuma', 'https://rawkuma.com')
