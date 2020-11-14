@@ -19,8 +19,6 @@ function Init()
 
 	cat = 'English'
 	AddWebsiteModule('d2f24dec90e841b1aab4bea145ffb638', 'MangaNT', 'https://mangant.com', cat)
-
-	cat = 'Spanish'
 	AddWebsiteModule('76b33c241c0d44a6b4a5b8dd86ec7750', 'ManhuaES', 'https://manhuaes.com', cat)
 end
 
@@ -33,24 +31,23 @@ local dirurl = {
 }
 
 function GetInfo()
-	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
+	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=CreateTXQuery(HTTP.Document)
-		if MANGAINFO.Title == '' then
-			MANGAINFO.Title = x.XPathString('//h1[@class="title-detail"]')
-		end
+		local x = CreateTXQuery(HTTP.Document)
+		MANGAINFO.Title     = x.XPathString('//h1[@class="title-detail"]')
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//div[contains(@class, "col-image")]/img/@src'))
-		MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//li[contains(@class, "status")]/p[2]'), 'Đang tiến hành', 'Hoàn thành')
+		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//li[contains(@class, "status")]/p[2]'), 'Đang tiến hành', 'Hoàn thành')
 		if MANGAINFO.Status == '' then
 			MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//p[contains(., "status")]/following-sibling::p'))
 		end
-		MANGAINFO.Authors=x.XPathString('//li[contains(@class, "author")]/p[2]')
+		MANGAINFO.Authors   = x.XPathString('//li[contains(@class, "author")]/p[2]')
 		if MANGAINFO.Authors == '' then
-			MANGAINFO.Authors=x.XPathStringAll('//p[contains(., "Author(s)")]/following-sibling::p/a')
+			MANGAINFO.Authors = x.XPathStringAll('//p[contains(., "Author(s)")]/following-sibling::p/a')
 		end
-		MANGAINFO.Artists=x.XPathString('//h4[starts-with(./label,"Artista")]/substring-after(.,":")')
-		MANGAINFO.Genres=x.XPathStringAll('//li[contains(@class, "kind")]/p[2]/a')
-		MANGAINFO.Summary=x.XPathString('//div[@class="detail-content"]/p')
+		MANGAINFO.Artists   = x.XPathString('//h4[starts-with(./label,"Artista")]/substring-after(.,":")')
+		MANGAINFO.Genres    = x.XPathStringAll('//li[contains(@class, "kind")]/p[2]/a')
+		MANGAINFO.Summary   = x.XPathString('//div[@class="detail-content"]/p')
+
 		x.XPathHREFAll('//div[@class="list-chapter"]//ul/li/div[contains(@class, "chapter")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
@@ -62,7 +59,7 @@ end
 function GetPageNumber()
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x=CreateTXQuery(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		if MODULE.ID == '76b33c241c0d44a6b4a5b8dd86ec7750' then -- manhuaes
 			x.XPathStringAll('//div[contains(@class, "reading-detail")]//img/@data-src', TASK.PageLinks)
 		else
