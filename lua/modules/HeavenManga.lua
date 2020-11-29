@@ -126,7 +126,7 @@ function Init()
 		}
 		m.AddOptionCheckBox('luaincluderaw', lang:get('includeraw'), false)
 	end
-	AddWebsiteModule('3b0d5c38081a4b21a39a388a3ec59197', 'HeavenManga', 'https://ww3.heaventoon.com')
-	AddWebsiteModule('a9a8bd394d63495686794a8d427bda00', 'HolyManga', 'https://w19.holymanga.net')
-	AddWebsiteModule('f49e608b66994721a5ea992b56367d96', 'KooManga', 'https://ww4.koomanga.com')
+	AddWebsiteModule('3b0d5c38081a4b21a39a388a3ec59197', 'HeavenToon', 'https://ww4.heaventoon.com')
+	AddWebsiteModule('a9a8bd394d63495686794a8d427bda00', 'HolyManga', 'https://ww1.holymanga.net')
+	AddWebsiteModule('f49e608b66994721a5ea992b56367d96', 'KooManga', 'https://ww6.koomanga.com')
 end
