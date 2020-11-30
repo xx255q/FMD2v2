@@ -198,7 +198,9 @@ function getpagenumber()
 					string.find(v.GetAttribute('src'), "Iklan.jpg") == nil then
 					TASK.PageLinks.Add(v.GetAttribute('src'))
 				end
-			end	
+			end
+		elseif MODULE.ID == '7103ae6839ea46ec80cdfc2c4b37c803' then -- AsuraScans
+			x.XPathStringAll('//*[@id="readerarea"]/p//img[@loading]/@src', TASK.PageLinks)
 		else
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="reader-area"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="readerarea"]//img/@src', TASK.PageLinks) end
