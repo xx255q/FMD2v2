@@ -41,15 +41,16 @@ function getpagenumber()
 	local chapter = URL:match('/chapter%-(.+)$'):gsub('/$', '')
 	local slug = URL:match('/chapter/(.+)/')
 	local q = '{"query":"{chapter(x:'..varX[MODULE.Name]..',slug:\\"'..slug..'\\",number:'..chapter..'){id,title,mangaID,number,slug,date,pages,manga{id,title,slug,mainSlug,isWebtoon,isYaoi}}}"}'
+	HTTP.Reset()
 	HTTP.MimeType = 'application/json'
 	if HTTP.POST(apiurl, q) then
 		local i for i in json.decode(HTTP.Document.ToString()).data.chapter.pages:gmatch('":"([^"]+)') do
-			print(TASK.PageLinks.Add(cdnurl .. i))
+			TASK.PageLinks.Add(cdnurl .. i)
 		end
+		return true
 	else
 		return false
 	end
-	return true
 end
 
 function getnameandlink()
