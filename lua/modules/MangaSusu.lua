@@ -42,7 +42,7 @@ function Init()
 	local m = NewWebsiteModule()
 	m.ID                       = '05ae08089f0d48c395aae71cf0dc75f4'
 	m.Name                     = 'MangaSusu'
-	m.RootURL                  = 'https://www.mangasusu.mobi'
+	m.RootURL                  = 'https://www.mangasusu.pw'
 	m.Category                 = 'Indonesian'
 	m.OnGetInfo                = 'GetInfo'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
