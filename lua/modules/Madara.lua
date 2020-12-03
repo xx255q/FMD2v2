@@ -116,13 +116,13 @@ function Modules.Madara()
 			if TASK.PageLinks.Count == 0 then
 				x.XPathStringAll('//div[@class="entry-content"]//picture/img/@src', TASK.PageLinks)
 			end
-			if TASK.PageLinks.Count < 1 then
+			if TASK.PageLinks.Count == 0 then
 				x.XPathStringAll('//div[contains(@class, "page-break")]/img/@src', TASK.PageLinks)
 			end
-			if TASK.PageLinks.Count < 1 then
+			if TASK.PageLinks.Count == 0 then
 				x.XPathStringAll('//*[@class="wp-manga-chapter-img webpexpress-processed"]/@src', TASK.PageLinks)
 			end
-			if TASK.PageLinks.Count < 1 then
+			if TASK.PageLinks.Count == 0 then
 				x.XPathStringAll('//div[@class="reading-content"]//img/@src', TASK.PageLinks)
 			end
 			return true
@@ -299,6 +299,7 @@ function Init()
 	AddWebsiteModule('273d639c63fa4cafb4f27a4b6e0679d9', 'PojokManga', 'https://pojokmanga.com')
 	AddWebsiteModule('994972530f574d449db141c75d41047b', 'Mangareceh', 'https://mangareceh.id')
 	AddWebsiteModule('180a930232614f81816720cefeea7954', 'KoMBatch', 'https://kombatch.com')
+	AddWebsiteModule('deafed31465943078a7b67ddf4885fda', 'MangaDropOut', 'https://www.mangadropout.xyz')
 
 	cat = 'H-Sites'
 	AddWebsiteModule('58bc6b05826e45e1b66e32d40ddc9fbd', 'ManhwaHand', 'https://manhwahand.com')
