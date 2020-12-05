@@ -61,7 +61,7 @@ function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local x = CreateTXQuery(HTTP.Document)
 		if MODULE.ID == '76b33c241c0d44a6b4a5b8dd86ec7750' then -- manhuaes
-			x.XPathStringAll('//div[contains(@class,"reading-detail")]/*[not(contains(@class,"mrt5"))]//img/@data-src', TASK.PageLinks)
+			x.XPathStringAll('//div[contains(@class,"reading-detail")]/*[not(contains(@class,"mrt5"))]//img/@src', TASK.PageLinks)
 		else
 			x.XPathStringAll('//div[@class="page-chapter"]/img/@data-original', TASK.PageLinks)
 		end
