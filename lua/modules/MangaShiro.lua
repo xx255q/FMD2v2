@@ -152,7 +152,7 @@ function getMangas(x)
 			MANGAINFO.ChapterLinks.Add(v1.GetAttribute('href'));
 		end
 	elseif MODULE.Name == 'Komiku' then
-		x.XPathHREFAll('//table[@class="chapter"]//td[1]/a',MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
+		x.XPathHREFTitleAll('//td[@class="judulseries"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 	elseif MODULE.Name == 'Mangacan' then
 		local s
 		local v for v in x.XPath('//table[@class="updates"]//td/a').Get() do
@@ -203,6 +203,8 @@ function getpagenumber()
 			end
 		elseif MODULE.ID == '7103ae6839ea46ec80cdfc2c4b37c803' then -- AsuraScans
 			x.XPathStringAll('//*[@id="readerarea"]/p//img[@loading]/@src', TASK.PageLinks)
+		elseif MODULE.ID == '5af0f26f0d034fb2b42ee65d7e4188ab' then -- Komiku
+			x.XPathStringAll('//*[@id="Baca_Komik"]/img/@src', TASK.PageLinks)
 		else
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="reader-area"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="readerarea"]//img/@src', TASK.PageLinks) end
@@ -228,25 +230,7 @@ function getpagenumber()
 end
 
 function getnameandlink()
-	-- continues page based, no end number detected
-	if MODULE.ID == '5af0f26f0d034fb2b42ee65d7e4188ab' then -- komiku
-		local dirurl = MODULE.RootURL .. '/manga/'
-		if not HTTP.GET(dirurl) then return net_problem end
-		local x = CreateTXQuery(HTTP.Document)
-		local next_url
-		while true do
-			x.XPathHREFAll('//div[@class="kan"]/a',LINKS,NAMES)
-			next_url = x.XPathString('//a[contains(@class,"next")]/@href')
-			if HTTP.Terminated then break end
-			if next_url == '' then break end
-			UPDATELIST.UpdateStatusText('Loading page ' .. (next_url:match('page/(%d+)/') or ''))
-			if HTTP.GET(next_url) then
-				x.ParseHTML(HTTP.Document)
-			else
-				break
-			end
-		end
-	elseif MODULE.ID == '4efbab5ca3364cd0bb63b776b895262e' then -- manhwatime
+	if MODULE.ID == '4efbab5ca3364cd0bb63b776b895262e' then -- manhwatime
 		local dirurl = MODULE.RootURL .. '/manhwa/'
 		local x = CreateTXQuery()
 		local pages = 1
@@ -287,7 +271,8 @@ function getnameandlink()
 			['MangaKita'] = '/daftar-manga/?list',
 			['Sekaikomik'] = '/daftar-komik/?list',
 			['BacaKomik'] = '/daftar-manga/?list',
-			['LegionAsia'] = '/manga/list-mode/'
+			['LegionAsia'] = '/manga/list-mode/',
+			['Komiku'] = '/daftar-komik/'
 		}
 		local dirurl = '/manga/?list'
 		if dirs[MODULE.Name] ~= nil then
@@ -297,12 +282,13 @@ function getnameandlink()
 		if not HTTP.GET(dirurl) then return net_problem end
 		local x = CreateTXQuery(HTTP.Document)
 		
-		x.XPathHREFAll('//*[@class="blix"]//a',LINKS,NAMES)
-		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="daftarkomik"]//a',LINKS,NAMES) end
-		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="jdlbar"]//a',LINKS,NAMES) end
-		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="soralist"]//a',LINKS,NAMES) end
-		if LINKS.Count == 0 then x.XPathHREFAll('//*[@id="a-z"]//h4/a',LINKS,NAMES) end
-		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="manga-list"]/a',LINKS,NAMES) end
+		x.XPathHREFAll('//*[@class="blix"]//a', LINKS, NAMES)
+		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="daftarkomik"]//a', LINKS, NAMES) end
+		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="jdlbar"]//a', LINKS, NAMES) end
+		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="soralist"]//a', LINKS, NAMES) end
+		if LINKS.Count == 0 then x.XPathHREFAll('//*[@id="a-z"]//h4/a', LINKS, NAMES) end
+		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="manga-list"]/a', LINKS, NAMES) end
+		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="ls4j"]//a', LINKS, NAMES) end
 	end
 	return no_error
 end
@@ -340,7 +326,7 @@ function Init()
 	AddWebsiteModule('63be65ab7f004093ac26fdeb30b466e4', 'MangaIndoNet', 'https://mangaindo.net')
 	AddWebsiteModule('009bf49bc17a4a2a8e1c79cce6867651', 'KomikIndo', 'https://komikindo.co')
 	AddWebsiteModule('2cf30e2a7f3d4b4a9b2d29c3fb04e23f', 'KomikIndoWebId', 'https://komikindo.web.id')
-	AddWebsiteModule('5af0f26f0d034fb2b42ee65d7e4188ab', 'Komiku', 'https://komiku.co.id')
+	AddWebsiteModule('5af0f26f0d034fb2b42ee65d7e4188ab', 'Komiku', 'https://komiku.id')
 	AddWebsiteModule('4ccdf84e05474a66adc14ea8a2edfd15', 'KazeManga', 'https://kazemanga.web.id')
 	AddWebsiteModule('ca571825056b4850bd3693e4e1437997', 'Mangacan', 'http://www.mangacanblog.com')
 	AddWebsiteModule('fb5bd3aa549f4aefa112a8fe7547d2a9', 'MangaIndo', 'https://mangaindo.web.id')
