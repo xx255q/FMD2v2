@@ -18,7 +18,7 @@ end
 -- Local Constants
 ----------------------------------------------------------------------------------------------------
 
-DirectoryPagination = '/browse?sort=title&page='
+DirectoryPagination = '/browse?sort=title.az&page='
 
 ----------------------------------------------------------------------------------------------------
 -- Event Functions
@@ -29,7 +29,7 @@ function GetInfo()
 	if not HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then return net_problem end
 
 	local x = CreateTXQuery(HTTP.Document)
-	MANGAINFO.Title     = x.XPathString('//h3[@class="item-title"]/a') .. GetLanguageCodeSuffix(x.XPathString('//h3[@class="item-title"]/parent::*/em/@data-lang'))
+	MANGAINFO.Title     = x.XPathString('//h3[contains(@class, "item-title")]/a') .. GetLanguageCodeSuffix(x.XPathString('//h3[contains(@class, "item-title")]/parent::*/em/@data-lang'))
 	MANGAINFO.CoverLink = x.XPathString('//div[contains(@class, "attr-cover")]/img/@src')
 	MANGAINFO.Authors   = x.XPathStringAll('//div[@class="attr-item" and (./b="Authors:")]/span/a')
 	MANGAINFO.Genres    = x.XPathStringAll('//div[@class="attr-item" and (./b="Genres:")]/span/span')
@@ -46,7 +46,7 @@ end
 function GetDirectoryPageNumber()
 	if not HTTP.GET(MODULE.RootURL .. DirectoryPagination .. "1") then return net_problem end
 
-	PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('(//ul[contains(@class, "pagination")])[1]/li[last()-1]')) or 1
+	PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('(//ul[contains(@class, "pagination")])[2]/li[last()-1]')) or 1
 
 	return no_error
 end
