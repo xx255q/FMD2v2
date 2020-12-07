@@ -38,6 +38,7 @@ end
 function getCover(x)
 	local img = ''
 	if img == '' then img = x.XPathString('//div[@class="series-thumb"]/img/@src') end
+	if img == '' then img = x.XPathString('//div[@class="thumb"]/img/@data-lazy-src') end
 	if img == '' then img = x.XPathString('//div[@class="thumb"]/img/@data-src') end
 	if img == '' then img = x.XPathString('//div[@class="thumb"]/img/@src') end
 	if img == '' then img = x.XPathString('//div[@class="imgdesc"]/img/@src') end
@@ -116,6 +117,7 @@ function getStatus(x)
 	if status == '' then status = x.XPathString('//tr[contains(td, "Status")]//following-sibling::td') end
 	if status == '' then status = x.XPathString('//div[@class="imptdt" and starts-with(.,"Status")]/i') end
 	status = status:gsub('Finished', 'Completed')
+	status = status:gsub('Berjalan', 'Ongoing'):gsub('Tamat', 'Completed')
 	return status
 end
 
@@ -130,7 +132,7 @@ function getSummary(x)
 	if summary == '' then summary = x.XPathString('//*[@class="description"]/string-join(.//text(),"")') end
 	if summary == '' then summary = x.XPathString('//div[contains(@class,"animeinfo")]/div[@class="rm"]/span/string-join(.//text(),"")') end
 	if summary == '' then summary = x.XPathString('//*[@class="jds"]/p') end
-	if summary == '' then summary = x.XPathString('//*[@itemprop="description"]/string-join(.//text(),"")') end
+	if summary == '' then summary = x.XPathString('//*[@itemprop="description"]/string-join(.//text()[not(parent::script)],"")') end
 	summary = summary:gsub('.fb_iframe_widget_fluid_desktop iframe', ''):gsub('width: 100%% !important;', ''):gsub('{', ''):gsub('}', '')
 	return summary
 end
@@ -212,6 +214,7 @@ function getpagenumber()
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="imgholder"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="entry-content"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="bc"]/img/@src', TASK.PageLinks) end
+			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="chimg"]/img/@data-lazy-src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then
 				local s = x.XPathString('//script[contains(., "ts_reader")]')
 				x.ParseHTML(GetBetween('"images":', '}],', s))
@@ -282,7 +285,9 @@ function getnameandlink()
 			['Komiktap'] = '/manga/list-mode/',
 			['FlameScans'] = '/manga/list-mode/',
 			['MangaKita'] = '/daftar-manga/?list',
-			['Sekaikomik'] = '/daftar-komik/?list'
+			['Sekaikomik'] = '/daftar-komik/?list',
+			['BacaKomik'] = '/daftar-manga/?list',
+			['LegionAsia'] = '/manga/list-mode/'
 		}
 		local dirurl = '/manga/?list'
 		if dirs[MODULE.Name] ~= nil then
@@ -350,6 +355,7 @@ function Init()
 	AddWebsiteModule('76e6db9fe2cf4dd49589cfa9b1174684', 'MataKomik', 'https://matakomik.com')
 	AddWebsiteModule('cab72ea1fa4947d29e50ec8751d06c7d', 'KomikGoCoID', 'https://www.komikgo.co.id')
 	AddWebsiteModule('d2ffd187eadd4c39819428a160d752cf', 'MangaTsuki', 'https://mangatsuki.web.id')
+	AddWebsiteModule('f68bb6ee00e442418c8c05eb00759ae1', 'BacaKomik', 'https://bacakomik.co')
 
 	cat = 'Webcomics'
 	AddWebsiteModule('46dcfabe757140e7980ec34c65bdb30f', 'SekteKomik', 'https://sektekomik.com')
@@ -369,4 +375,7 @@ function Init()
 
 	cat = 'H-Sites'
 	AddWebsiteModule('f9adee01635a4ff48fdff5164a65d6dd', 'Komiktap', 'https://komiktap.in')
+
+	cat = 'Spanish'
+	AddWebsiteModule('41294a121062494489adfa601c442ef8', 'LegionAsia', 'https://legionasia.com')
 end
