@@ -145,7 +145,7 @@ function getMangas(x)
 			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
 			MANGAINFO.ChapterNames.Add(x.XPathString('span[@class="ch"]',v))
 		end		
-	elseif MODULE.Name == '5c06401129894099bb6fc59c08a878d4' then -- Ngomik
+	elseif MODULE.ID == '5c06401129894099bb6fc59c08a878d4' then -- Ngomik
 		local v = x.XPath('//div[contains(@class, "bxcl")]//li//*[contains(@class,"lch")]/a')
 		for i = 1, v.Count do
 			local v1 = v.Get(i)
