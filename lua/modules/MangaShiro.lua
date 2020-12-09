@@ -1,7 +1,7 @@
 function getinfo()
-	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
+	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x=CreateTXQuery(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title     = getTitle(x)
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, getCover(x))
 		MANGAINFO.Authors   = getAuthors(x)
@@ -71,6 +71,7 @@ function getAuthors(x)
 	if authors == '' then authors = x.XPathString('//table[@class="listinfo"]//tr[contains(th, "Author")]/following-sibling::td') end
 	if authors == '' then authors = x.XPathString('//tr[contains(td, "Komikus")]//following-sibling::td') end
 	if authors == '' then authors = x.XPathString('//div[@class="fmed"]/b[starts-with(.,"Author")]//following-sibling::span') end
+	if authors == '' then authors = x.XPathString('//td[@itemprop="creator"]') end
 	return authors
 end
 
@@ -98,6 +99,7 @@ function getGenres(x)
 	if genre == '' then genre = x.XPathStringAll('//div[@class="listinfo"]//li[starts-with(.,"Genre")]/substring-after(.,":")') end
 	if genre == '' then genre = x.XPathStringAll('//span[@class="mgen"]/a') end
 	if genre == '' then genre = x.XPathStringAll('//div[@class="genre-info"]/a') end
+	if genre == '' then genre = x.XPathStringAll('//table[@class="inftable"]//tr[contains(td, "Genres")]/td/a') end
 	return genre
 end
 
@@ -138,12 +140,12 @@ function getSummary(x)
 end
 
 function getMangas(x)
-	if MODULE.Name == 'MaidMangaID' then
+	if MODULE.ID == '7a74b2abda1d4b329ee1d1fa58866c03' then -- MaidMangaID
 		local v for v in x.XPath('//ul[@class="series-chapterlist"]//a').Get() do
 			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
 			MANGAINFO.ChapterNames.Add(x.XPathString('span[@class="ch"]',v))
 		end		
-	elseif MODULE.Name == 'Ngomik' then
+	elseif MODULE.Name == '5c06401129894099bb6fc59c08a878d4' then -- Ngomik
 		local v = x.XPath('//div[contains(@class, "bxcl")]//li//*[contains(@class,"lch")]/a')
 		for i = 1, v.Count do
 			local v1 = v.Get(i)
@@ -151,9 +153,11 @@ function getMangas(x)
 			MANGAINFO.ChapterNames.Add(name:gsub(MODULE.RootURL..'/',''))
 			MANGAINFO.ChapterLinks.Add(v1.GetAttribute('href'));
 		end
-	elseif MODULE.Name == 'Komiku' then
+	elseif MODULE.ID == '5af0f26f0d034fb2b42ee65d7e4188ab' then -- Komiku
 		x.XPathHREFTitleAll('//td[@class="judulseries"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-	elseif MODULE.Name == 'Mangacan' then
+	elseif MODULE.ID == '421be2f0d918493e94f745c71090f359' then -- Mangafast
+		x.XPathHREFTitleAll('//td[@class="jds"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+	elseif MODULE.ID == 'ca571825056b4850bd3693e4e1437997' then -- Mangacan
 		local s
 		local v for v in x.XPath('//table[@class="updates"]//td/a').Get() do
 			s = v.GetAttribute('href')
@@ -180,9 +184,9 @@ function getMangas(x)
 end
 
 function getpagenumber()
-	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
+	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local x = CreateTXQuery(HTTP.Document)
-		if MODULE.Name == 'BacaManga' then
+		if MODULE.ID == '5e66f8a12f114ba3a8408eb1d7044d76' then -- BacaManga
 			local crypto = require 'fmd.crypto'
 			local s = x.XPathString('*')
 			x.ParseHTML(crypto.DecodeBase64(GetBetween('](atob(', ')),', s)))
@@ -205,6 +209,8 @@ function getpagenumber()
 			x.XPathStringAll('//*[@id="readerarea"]/p//img[@loading]/@src', TASK.PageLinks)
 		elseif MODULE.ID == '5af0f26f0d034fb2b42ee65d7e4188ab' then -- Komiku
 			x.XPathStringAll('//*[@id="Baca_Komik"]/img/@src', TASK.PageLinks)
+		elseif MODULE.ID == '421be2f0d918493e94f745c71090f359' then -- Mangafast
+			x.XPathStringAll('//*[@id="Read"]/img/@data-src', TASK.PageLinks)
 		else
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="reader-area"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="readerarea"]//img/@src', TASK.PageLinks) end
@@ -230,7 +236,12 @@ function getpagenumber()
 end
 
 function getnameandlink()
-	if MODULE.ID == '4efbab5ca3364cd0bb63b776b895262e' then -- manhwatime
+	if MODULE.ID == '421be2f0d918493e94f745c71090f359' then -- Mangafast
+		local dirurl = MODULE.RootURL .. '/list-manga/'
+		if not HTTP.GET(dirurl) then return net_problem end
+		local x = CreateTXQuery(HTTP.Document)
+		x.XPathHREFTitleAll('//*[@class="ranking1"]/a', LINKS, NAMES)
+	elseif MODULE.ID == '4efbab5ca3364cd0bb63b776b895262e' then -- manhwatime
 		local dirurl = MODULE.RootURL .. '/manhwa/'
 		local x = CreateTXQuery()
 		local pages = 1
@@ -250,33 +261,33 @@ function getnameandlink()
 	else
 		-- full text based list
 		local dirs = {
-			['MangaKid'] = '/manga-lists/',
-			['KomikCast'] = '/daftar-komik/?list',
-			['WestManga'] = '/manga-list/?list',
-			['Kiryuu'] = '/manga-lists/?list',
-			['PecintaKomik'] = '/daftar-manga/?list',
-			['MangaIndoNet'] = '/manga-list/?list',
-			['KomikIndo'] = '/manga-list/?list',
-			['KomikIndoWebId'] = '/manga/list-mode/',
-			['KazeManga'] = '/manga-list/?list',
-			['Mangacan'] =  '/daftar-komik-manga-bahasa-indonesia.html',
-			['MangaIndo'] = '/manga-list-201902-v052/',
-			['KomikMama'] = '/manga-list/?list',
-			['MaidMangaID'] = '/manga-list/?list',
-			['Ngomik'] = '/daftar-komik/?list',
-			['MangaPus'] = '/manga-list/?list',
-			['Mangaseno'] = '/manga-list/?list',
-			['Komiktap'] = '/manga/list-mode/',
-			['FlameScans'] = '/manga/list-mode/',
-			['MangaKita'] = '/daftar-manga/?list',
-			['Sekaikomik'] = '/daftar-komik/?list',
-			['BacaKomik'] = '/daftar-manga/?list',
-			['LegionAsia'] = '/manga/list-mode/',
-			['Komiku'] = '/daftar-komik/'
+			['49602ce189e844f49bfe78f7a1484dbe'] = '/manga-lists/', -- MangaKid
+			['b8206e754d4541689c1d367f7e19fd64'] = '/daftar-komik/?list', -- KomikCast
+			['35e1b3ff5dbf428889d0f316c3d881e6'] = '/manga-list/?list', -- WestManga
+			['031f3cc0ae3346ad9b8c33d5377891e9'] = '/manga-lists/?list', -- Kiryuu
+			['ee7abb21767d48d5b4b343ce701ae6e6'] = '/daftar-manga/?list', -- PecintaKomik
+			['63be65ab7f004093ac26fdeb30b466e4'] = '/manga-list/?list', -- MangaIndoNet
+			['009bf49bc17a4a2a8e1c79cce6867651'] = '/manga-list/?list', -- KomikIndo
+			['2cf30e2a7f3d4b4a9b2d29c3fb04e23f'] = '/manga/list-mode/', -- KomikIndoWebId
+			['4ccdf84e05474a66adc14ea8a2edfd15'] = '/manga-list/?list', -- KazeManga
+			['ca571825056b4850bd3693e4e1437997'] = '/daftar-komik-manga-bahasa-indonesia.html', -- Mangacan
+			['fb5bd3aa549f4aefa112a8fe7547d2a9'] = '/manga-list-201902-v052/', -- MangaIndo
+			['6f8182f08d5444dbb5244ec882430db1'] = '/manga-list/?list', -- KomikMama
+			['7a74b2abda1d4b329ee1d1fa58866c03'] = '/manga-list/?list', -- MaidMangaID
+			['5c06401129894099bb6fc59c08a878d4'] = '/daftar-komik/?list', -- Ngomik
+			['c16adc6202924e558b977f74c7301bed'] = '/manga-list/?list', -- MangaPus
+			['0a6dd9c339c94a339dbc89c781b20d20'] = '/manga-list/?list', -- Mangaseno
+			['f9adee01635a4ff48fdff5164a65d6dd'] = '/manga/list-mode/', -- Komiktap
+			['fb34a56c83f54b19b57a9a92070fe899'] = '/manga/list-mode/', -- FlameScans
+			['b543e37b656e43ffb3faa034eee6c945'] = '/daftar-manga/?list', -- MangaKita
+			['1f1ec10a248c4a4f838c80b3e27fc4c7'] = '/daftar-komik/?list', -- Sekaikomik
+			['f68bb6ee00e442418c8c05eb00759ae1'] = '/daftar-manga/?list', -- BacaKomik
+			['41294a121062494489adfa601c442ef8'] = '/manga/list-mode/', -- LegionAsia
+			['5af0f26f0d034fb2b42ee65d7e4188ab'] = '/daftar-komik/', -- Komiku
 		}
 		local dirurl = '/manga/?list'
-		if dirs[MODULE.Name] ~= nil then
-			dirurl = dirs[MODULE.Name]
+		if dirs[MODULE.ID] ~= nil then
+			dirurl = dirs[MODULE.ID]
 		end
 		local dirurl = MODULE.RootURL .. dirurl
 		if not HTTP.GET(dirurl) then return net_problem end
@@ -301,15 +312,15 @@ end
 
 function Init()
 	local cat = 'Indonesian'
-	local function AddWebsiteModule(id, site, url)
-		local m=NewWebsiteModule()
-		m.ID=id
-		m.Category=cat
-		m.Name=site
-		m.RootURL=url
-		m.OnGetInfo='getinfo'
-		m.OnGetPageNumber='getpagenumber'
-		m.OnGetNameAndLink='getnameandlink'
+	local function AddWebsiteModule(id, name, url)
+		local m = NewWebsiteModule()
+		m.ID                = id
+		m.Name              = name
+		m.RootURL           = url
+		m.Category          = cat
+		m.OnGetInfo         = 'getinfo'
+		m.OnGetPageNumber   = 'getpagenumber'
+		m.OnGetNameAndLink  = 'getnameandlink'
 		return m
 	end
 	local m = AddWebsiteModule('5eb57a1843d8462dab0fdfd0efc1eca5', 'MangaShiro', 'https://mangashiro.co')
@@ -364,4 +375,7 @@ function Init()
 
 	cat = 'Spanish'
 	AddWebsiteModule('41294a121062494489adfa601c442ef8', 'LegionAsia', 'https://legionasia.com')
+
+	cat = 'English'
+	AddWebsiteModule('421be2f0d918493e94f745c71090f359', 'Mangafast', 'https://mangafast.net')
 end
