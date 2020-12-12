@@ -59,7 +59,7 @@ function GetPageNumber()
 
 	x = CreateTXQuery(HTTP.Document)
 	x.ParseHTML(GetBetween('var pages = ', ';', x.XPathString('//script[contains(., "var pages = ")]')):gsub('\\/', '/'))
-	x.XPathStringAll('json(*)().URL', TASK.PageLinks)
+	x.XPathStringAll('json(*)().url', TASK.PageLinks)
 
 	return no_error
 end
