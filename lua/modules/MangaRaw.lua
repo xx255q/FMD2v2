@@ -10,6 +10,7 @@ function Init()
 	m.OnGetNameAndLink           = 'GetNameAndLink'
 	m.OnGetInfo                  = 'GetInfo'
 	m.OnGetPageNumber            = 'GetPageNumber'
+	m.SortedList                 = true
 
 	local fmd = require 'fmd.env'
 	local slang = fmd.SelectedLanguage
