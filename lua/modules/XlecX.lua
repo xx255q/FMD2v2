@@ -8,6 +8,7 @@ function Init()
 	m.OnGetNameAndLink           = 'GetNameAndLink'
 	m.OnGetInfo                  = 'GetInfo'
 	m.OnGetPageNumber            = 'GetPageNumber'
+	m.SortedList                 = true
 end
 
 function GetDirectoryPageNumber()
