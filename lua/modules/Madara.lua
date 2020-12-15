@@ -95,6 +95,17 @@ function Modules.Madara()
 	end
 
 	function Madara:getpagenumber()
+		if MODULE.ID == '5a19d20a9731446489df49fd01c7cf77' then -- ChibiManga
+			TASK.PageLinks.Clear()
+			if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
+			local x = CreateTXQuery(HTTP.Document)
+			local s = x.XPathString('//script[contains(., "chapter_preloaded_images")]')
+			s = "["..GetBetween("[", "]", s).."]"
+			x.ParseHTML(s)
+			x.XPathStringAll('json(*)()', TASK.PageLinks)
+			end
+		end
+
 		TASK.PageLinks.Clear()
 		local aurl = MaybeFillHost(MODULE.RootURL, URL)
 		if string.find(aurl, 'style=list', 1, true) == nil then
@@ -147,26 +158,6 @@ function Modules.Madara()
 	end
 
 	return Madara
-end
-
-function Modules.ChibiManga()
-	local ChibiManga = {}
-	setmetatable(ChibiManga, { __index = Modules.Madara() })
-
-	function ChibiManga:getpagenumber()
-		TASK.PageLinks.Clear()
-		if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-			local x = CreateTXQuery(HTTP.Document)
-			local s = x.XPathString('//script[contains(., "chapter_preloaded_images")]', TASK.PageLinks)
-			s = "["..GetBetween("[", "]", s).."]"
-			x.ParseHTML(s)
-			x.XPathStringAll('json(*)()', TASK.PageLinks)
-			return true
-		end
-		return false
-	end
-
-	return ChibiManga
 end
 
 function Modules.HentaiRead()
