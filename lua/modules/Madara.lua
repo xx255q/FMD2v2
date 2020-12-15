@@ -277,6 +277,7 @@ function Init()
 	AddWebsiteModule('c07a3a37cb3f4e1a8fe48ad156056887', 'HeroManhua', 'https://heromanhua.com')
 	AddWebsiteModule('b810006e1bba4fe3a22bdbf9b235a537', 'MangaTurf', 'https://mangaturf.com')
 	AddWebsiteModule('4fade5ed11284de1812860d22ad324bf', 'ArangScans', 'https://arangscans.com')
+	AddWebsiteModule('805140cf71b44550a99d74f63bb50a2a', 'Aloalivn', 'https://aloalivn.com')
 
 	cat = 'French'
 	AddWebsiteModule('41867fa36f2f49959df9fef8aa53ffb5', 'WakaScan', 'https://wakascan.com')
