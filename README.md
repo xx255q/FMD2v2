@@ -11,10 +11,7 @@ Use the converter if you want to migrate your FMD1 settings and databases.
 
 ## About FMD
 
-This is an active fork of the Free Manga Downloader which is a free open source application written in Object Pascal for managing and downloading manga from various websites. The source code was released under the GPLv2 license.  
-  
-  
-[Supported Websites](https://github.com/fmd-project-team/FMD/wiki/Supported-Websites)  
+This is an active fork of the Free Manga Downloader which is a free open source application written in Object Pascal for managing and downloading manga from various websites. The source code was released under the GPLv2 license.
   
 Some useful arguments that can be used in FMD2:
 - `--lua-dofile` trigger FMD2 to always load lua modules from file. Only use it when developing a module. It might slowing down FMD2.
