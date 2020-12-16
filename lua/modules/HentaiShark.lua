@@ -1,14 +1,18 @@
 function Init()
-	local m = NewWebsiteModule()
-	m.ID                         = '43c6880fe2804a198c6e9f748641498f'
-	m.Name                       = 'HentaiShark'
-	m.RootURL                    = 'https://www.hentaishark.com'
-	m.Category                   = 'H-Sites'
-	m.OnGetDirectoryPageNumber   = 'GetDirectoryPageNumber'
-	m.OnGetNameAndLink           = 'GetNameAndLink'
-	m.OnGetInfo                  = 'GetInfo'
-	m.OnGetPageNumber            = 'GetPageNumber'
-	m.SortedList                 = true
+	function AddWebsiteModule(id, name, url)
+		local m = NewWebsiteModule()
+		m.ID                         = id
+		m.Name                       = name
+		m.RootURL                    = url
+		m.Category                   = 'H-Sites'
+		m.OnGetDirectoryPageNumber   = 'GetDirectoryPageNumber'
+		m.OnGetNameAndLink           = 'GetNameAndLink'
+		m.OnGetInfo                  = 'GetInfo'
+		m.OnGetPageNumber            = 'GetPageNumber'
+		m.SortedList                 = true
+	end
+	AddWebsiteModule('43c6880fe2804a198c6e9f748641498f', 'HentaiShark', 'https://www.hentaishark.com')
+	AddWebsiteModule('39ab2e1385d84a93aa9d28d44a5a7099', 'ReadHentai', 'https://readhent.ai')
 end
 
 function GetDirectoryPageNumber()
