@@ -12,9 +12,15 @@ assignees: ''
 * **Name:** 
 * **Root URL:**
 * **Directory list URL:**
-<!-- manga info should contains chapter list or provide a way to get the chapter list -->
+<!-- Manga info should contains chapter list or provide a way to get the chapter list -->
 * **Example manga info URL:**
 * **Example chapter URL:**
 
-**Additional context**
-Add any other context about the problem here.
+**Languages**
+List of languages supported by the website
+
+**Website relationship**
+If applicable describe the relation with any other website (eg : "alternative domain, copy of ...")
+
+**Additional details**
+Add any other context details that you may have found (like template to reuse)
