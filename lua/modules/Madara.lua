@@ -225,7 +225,7 @@ function getnameandlink()
 end
 
 function BeforeDownloadImage()
-	HTTP.Headers.Values['referer'] = MODULE.RootURL
+	HTTP.Headers.Values['Referer'] = MaybeFillHost(MODULE.RootURL, TASK.ChapterLinks[TASK.CurrentDownloadChapterPtr])
 	return true
 end
 
