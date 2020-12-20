@@ -18,7 +18,6 @@ function GetInfo()
 	if HTTP.POST(string.format(infoURL,id)) then
 		local x = CreateTXQuery(HTTP.Document)
 		local y = json.decode(HTTP.Document.ToString())
-		print(y)
 		MANGAINFO.Title = y.data.comic.name
 		if(y.data.comic.hcover ~= '') then
 			MANGAINFO.CoverLink = string.format(coverURL, y.data.comic.hcover):gsub("_s","_b")
