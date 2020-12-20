@@ -71,7 +71,7 @@ function GetNameAndLink()
 		local list = x.XPath('json(*).data.data()')
 		for i = 1, list.Count do
 			LINKS.Add(string.format(seriesURL,x.XPathString('comic_id',list.Get(i))))
-			NAMES.Add(y.data_data[i].comic_name)
+			NAMES.Add(y.data.data[i].comic_name)
 		end
 	else
 		return net_problem
