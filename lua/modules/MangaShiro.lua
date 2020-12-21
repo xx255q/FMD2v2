@@ -1,4 +1,4 @@
-function getinfo()
+function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
 		local x = CreateTXQuery(HTTP.Document)
@@ -77,7 +77,8 @@ end
 
 function getArtists(x)
 	local artists = ''
-	if artists == '' then artists = x.XPathStringAll('//div[@class="spe"]//span[starts-with(.,"Artist")]/substring-after(.,":")') end
+	if artists == '' then artists = x.XPathString('//div[@class="spe"]//span[starts-with(.,"Artist")]/substring-after(.,":")') end
+	if artists == '' then artists = x.XPathString('//div[@class="fmed"]/b[starts-with(.,"Artist")]//following-sibling::span') end
 	return artists
 end
 
@@ -183,7 +184,7 @@ function getMangas(x)
 	end
 end
 
-function getpagenumber()
+function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local x = CreateTXQuery(HTTP.Document)
 		if MODULE.ID == '5e66f8a12f114ba3a8408eb1d7044d76' then -- BacaManga
@@ -206,11 +207,15 @@ function getpagenumber()
 				end
 			end
 		elseif MODULE.ID == '7103ae6839ea46ec80cdfc2c4b37c803' then -- AsuraScans
-			x.XPathStringAll('//*[@id="readerarea"]/p//img[@loading]/@src', TASK.PageLinks)
+			x.XPathStringAll('//*[@id="readerarea"]/p/img[@loading]/@data-src', TASK.PageLinks)
 		elseif MODULE.ID == '5af0f26f0d034fb2b42ee65d7e4188ab' then -- Komiku
 			x.XPathStringAll('//*[@id="Baca_Komik"]/img/@src', TASK.PageLinks)
 		elseif MODULE.ID == '421be2f0d918493e94f745c71090f359' then -- Mangafast
-			x.XPathStringAll('//*[@id="Read"]/img/@data-src', TASK.PageLinks)
+			local v for v in x.XPath('//*[@id="Read"]/img').Get() do
+				local src = v.GetAttribute('onerror')
+				src = string.match(src, "src='(.*)'")
+				TASK.PageLinks.Add(src)
+			end
 		else
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="reader-area"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="readerarea"]//img/@src', TASK.PageLinks) end
@@ -235,7 +240,7 @@ function getpagenumber()
 	end
 end
 
-function getnameandlink()
+function GetNameAndLink()
 	if MODULE.ID == '421be2f0d918493e94f745c71090f359' then -- Mangafast
 		local dirurl = MODULE.RootURL .. '/list-manga/'
 		if not HTTP.GET(dirurl) then return net_problem end
@@ -320,9 +325,9 @@ function Init()
 		m.Name              = name
 		m.RootURL           = url
 		m.Category          = cat
-		m.OnGetInfo         = 'getinfo'
-		m.OnGetPageNumber   = 'getpagenumber'
-		m.OnGetNameAndLink  = 'getnameandlink'
+		m.OnGetInfo         = 'GetInfo'
+		m.OnGetPageNumber   = 'GetPageNumber'
+		m.OnGetNameAndLink  = 'GetNameAndLink'
 		return m
 	end
 	local m = AddWebsiteModule('5eb57a1843d8462dab0fdfd0efc1eca5', 'MangaShiro', 'https://mangashiro.co')
