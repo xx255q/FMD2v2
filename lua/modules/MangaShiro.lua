@@ -290,7 +290,8 @@ function GetNameAndLink()
 			['41294a121062494489adfa601c442ef8'] = '/manga/list-mode/', -- LegionAsia
 			['5af0f26f0d034fb2b42ee65d7e4188ab'] = '/daftar-komik/', -- Komiku
 			['755ce08dc1a74f69b283cb45b7af56c1'] = '/manga/list-mode/', -- Boosei
-			['363066add92f4043b39d2009b442ab32'] = '/manga/list-mode/' -- PhoenixFansub
+			['363066add92f4043b39d2009b442ab32'] = '/manga/list-mode/', -- PhoenixFansub
+			['9f756fcbfa114ea4a9abb578004edf31'] = '/manga/list-mode/' -- SkyMangas
 		}
 		local dirurl = '/manga/?list'
 		if dirs[MODULE.ID] ~= nil then
@@ -384,6 +385,7 @@ function Init()
 	cat = 'Spanish'
 	AddWebsiteModule('41294a121062494489adfa601c442ef8', 'LegionAsia', 'https://legionasia.com')
 	AddWebsiteModule('363066add92f4043b39d2009b442ab32', 'PhoenixFansub', 'https://phoenixfansub.com')
+	AddWebsiteModule('9f756fcbfa114ea4a9abb578004edf31', 'SkyMangas', 'https://skymangas.com')
 
 	cat = 'English'
 	AddWebsiteModule('421be2f0d918493e94f745c71090f359', 'Mangafast', 'https://mangafast.net')
