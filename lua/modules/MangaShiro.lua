@@ -119,7 +119,7 @@ function getStatus(x)
 	if status == '' then status = x.XPathString('//ul[@class="baru"]/li[3]') end
 	if status == '' then status = x.XPathString('//tr[contains(td, "Status")]//following-sibling::td') end
 	if status == '' then status = x.XPathString('//div[@class="imptdt" and starts-with(.,"Status")]/i') end
-	status = status:gsub('Finished', 'Completed')
+	status = status:gsub('Finished', 'Completed'):gsub('Publishing', 'Ongoing')
 	status = status:gsub('Berjalan', 'Ongoing'):gsub('Tamat', 'Completed')
 	return status
 end
@@ -291,7 +291,8 @@ function GetNameAndLink()
 			['5af0f26f0d034fb2b42ee65d7e4188ab'] = '/daftar-komik/', -- Komiku
 			['755ce08dc1a74f69b283cb45b7af56c1'] = '/manga/list-mode/', -- Boosei
 			['363066add92f4043b39d2009b442ab32'] = '/manga/list-mode/', -- PhoenixFansub
-			['9f756fcbfa114ea4a9abb578004edf31'] = '/manga/list-mode/' -- SkyMangas
+			['9f756fcbfa114ea4a9abb578004edf31'] = '/manga/list-mode/', -- SkyMangas
+			['ec1a1ad5301f414592f0ba0402024813'] = '/komik-list/?list' -- Doujindesu
 		}
 		local dirurl = '/manga/?list'
 		if dirs[MODULE.ID] ~= nil then
@@ -308,6 +309,7 @@ function GetNameAndLink()
 		if LINKS.Count == 0 then x.XPathHREFAll('//*[@id="a-z"]//h4/a', LINKS, NAMES) end
 		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="manga-list"]/a', LINKS, NAMES) end
 		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="ls4j"]//a', LINKS, NAMES) end
+		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="listttl"]//a', LINKS, NAMES) end
 	end
 	return no_error
 end
@@ -381,6 +383,7 @@ function Init()
 
 	cat = 'H-Sites'
 	AddWebsiteModule('f9adee01635a4ff48fdff5164a65d6dd', 'Komiktap', 'https://komiktap.in')
+	AddWebsiteModule('ec1a1ad5301f414592f0ba0402024813', 'Doujindesu', 'https://doujindesu.info')
 
 	cat = 'Spanish'
 	AddWebsiteModule('41294a121062494489adfa601c442ef8', 'LegionAsia', 'https://legionasia.com')
