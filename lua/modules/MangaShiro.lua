@@ -84,6 +84,7 @@ end
 
 function getGenres(x)
 	local genre = ''
+	if genre == '' then genre = x.XPathStringAll('//span[@class="mgen"]/a') end
 	if genre == '' then genre = x.XPathStringAll('//div[@class="spe"]//span[contains(.,"التصنيفات")]/a') end
 	if genre == '' then genre = x.XPathStringAll('//div[@class="spe"]//span[starts-with(.,"Genres:")]/substring-after(.,":")') end
 	if genre == '' then genre = x.XPathStringAll('//div[contains(@class,"animeinfo")]/div[@class="gnr"]/a') end
@@ -98,7 +99,6 @@ function getGenres(x)
 	if genre == '' then genre = x.XPathStringAll('//ul[@class="genre"]/li') end
 	if genre == '' then genre = x.XPathStringAll('//span[@class="details"]//div[starts-with(.,"Genre")]/a') end
 	if genre == '' then genre = x.XPathStringAll('//div[@class="listinfo"]//li[starts-with(.,"Genre")]/substring-after(.,":")') end
-	if genre == '' then genre = x.XPathStringAll('//span[@class="mgen"]/a') end
 	if genre == '' then genre = x.XPathStringAll('//div[@class="genre-info"]/a') end
 	if genre == '' then genre = x.XPathStringAll('//table[@class="inftable"]//tr[contains(td, "Genres")]/td/a') end
 	return genre
@@ -118,7 +118,7 @@ function getStatus(x)
 	if status == '' then status = x.XPathString('//span[@class="details"]//div[starts-with(.,"Status")]') end
 	if status == '' then status = x.XPathString('//ul[@class="baru"]/li[3]') end
 	if status == '' then status = x.XPathString('//tr[contains(td, "Status")]//following-sibling::td') end
-	if status == '' then status = x.XPathString('//div[@class="imptdt" and starts-with(.,"Status")]/i') end
+	if status == '' then status = x.XPathString('//div[@class="imptdt" and contains(.,"Status")]/i') end
 	status = status:gsub('Finished', 'Completed'):gsub('Publishing', 'Ongoing')
 	status = status:gsub('Berjalan', 'Ongoing'):gsub('Tamat', 'Completed')
 	return status
@@ -293,7 +293,8 @@ function GetNameAndLink()
 			['363066add92f4043b39d2009b442ab32'] = '/manga/list-mode/', -- PhoenixFansub
 			['9f756fcbfa114ea4a9abb578004edf31'] = '/manga/list-mode/', -- SkyMangas
 			['ec1a1ad5301f414592f0ba0402024813'] = '/komik-list/?list', -- Doujindesu
-			['5c06401129894099bb6fc59c08a878d4'] = '/all-komik/?list' -- Ngomik
+			['5c06401129894099bb6fc59c08a878d4'] = '/all-komik/?list', -- Ngomik
+			['a70859360a2a474ba2abdb86bc48616c'] = '/manga/list-mode/' -- KomikAV
 		}
 		local dirurl = '/manga/?list'
 		if dirs[MODULE.ID] ~= nil then
