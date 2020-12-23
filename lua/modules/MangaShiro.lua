@@ -275,7 +275,7 @@ function GetNameAndLink()
 			['2cf30e2a7f3d4b4a9b2d29c3fb04e23f'] = '/manga/list-mode/', -- KomikIndoWebId
 			['4ccdf84e05474a66adc14ea8a2edfd15'] = '/manga-list/?list', -- KazeManga
 			['ca571825056b4850bd3693e4e1437997'] = '/daftar-komik-manga-bahasa-indonesia.html', -- Mangacan
-			['fb5bd3aa549f4aefa112a8fe7547d2a9'] = '/manga-list-201902-v052/', -- MangaIndo
+			['fb5bd3aa549f4aefa112a8fe7547d2a9'] = '/manga-list/', -- MangaIndo
 			['6f8182f08d5444dbb5244ec882430db1'] = '/manga-list/?list', -- KomikMama
 			['7a74b2abda1d4b329ee1d1fa58866c03'] = '/manga-list/', -- MaidMangaID
 			['5c06401129894099bb6fc59c08a878d4'] = '/daftar-komik/?list', -- Ngomik
