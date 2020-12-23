@@ -292,7 +292,8 @@ function GetNameAndLink()
 			['755ce08dc1a74f69b283cb45b7af56c1'] = '/manga/list-mode/', -- Boosei
 			['363066add92f4043b39d2009b442ab32'] = '/manga/list-mode/', -- PhoenixFansub
 			['9f756fcbfa114ea4a9abb578004edf31'] = '/manga/list-mode/', -- SkyMangas
-			['ec1a1ad5301f414592f0ba0402024813'] = '/komik-list/?list' -- Doujindesu
+			['ec1a1ad5301f414592f0ba0402024813'] = '/komik-list/?list', -- Doujindesu
+			['5c06401129894099bb6fc59c08a878d4'] = '/all-komik/?list' -- Ngomik
 		}
 		local dirurl = '/manga/?list'
 		if dirs[MODULE.ID] ~= nil then
@@ -356,7 +357,7 @@ function Init()
 	AddWebsiteModule('2929eb02fcad4156a6c61576c1dc4b53', 'MangaCeng', 'https://mangaceng.com')
 	AddWebsiteModule('7a74b2abda1d4b329ee1d1fa58866c03', 'MaidMangaID', 'https://www.maid.my.id')
 	AddWebsiteModule('a70859360a2a474ba2abdb86bc48616c', 'KomikAV', 'https://komikav.com')
-	AddWebsiteModule('5c06401129894099bb6fc59c08a878d4', 'Ngomik', 'https://ngomik.in')
+	AddWebsiteModule('5c06401129894099bb6fc59c08a878d4', 'Ngomik', 'https://ngomik.net')
 	AddWebsiteModule('c16adc6202924e558b977f74c7301bed', 'MangaPus', 'https://mangapus.com')
 	AddWebsiteModule('0a6dd9c339c94a339dbc89c781b20d20', 'Mangaseno', 'https://mangaseno.com')
 	AddWebsiteModule('56f905ea80e24c4f8bbc37e05de2ad9a', 'Mangakyo', 'https://www.mangakyo.me')
