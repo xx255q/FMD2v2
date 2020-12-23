@@ -278,7 +278,7 @@ function GetNameAndLink()
 			['ca571825056b4850bd3693e4e1437997'] = '/daftar-komik-manga-bahasa-indonesia.html', -- Mangacan
 			['fb5bd3aa549f4aefa112a8fe7547d2a9'] = '/manga-list-201902-v052/', -- MangaIndo
 			['6f8182f08d5444dbb5244ec882430db1'] = '/manga-list/?list', -- KomikMama
-			['7a74b2abda1d4b329ee1d1fa58866c03'] = '/manga-list/?list', -- MaidMangaID
+			['7a74b2abda1d4b329ee1d1fa58866c03'] = '/manga-list/', -- MaidMangaID
 			['5c06401129894099bb6fc59c08a878d4'] = '/daftar-komik/?list', -- Ngomik
 			['c16adc6202924e558b977f74c7301bed'] = '/manga-list/?list', -- MangaPus
 			['0a6dd9c339c94a339dbc89c781b20d20'] = '/manga-list/?list', -- Mangaseno
@@ -310,6 +310,7 @@ function GetNameAndLink()
 		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="manga-list"]/a', LINKS, NAMES) end
 		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="ls4j"]//a', LINKS, NAMES) end
 		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="listttl"]//a', LINKS, NAMES) end
+		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="Manga"]/a', LINKS, NAMES) end
 	end
 	return no_error
 end
