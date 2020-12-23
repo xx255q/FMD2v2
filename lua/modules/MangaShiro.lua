@@ -272,7 +272,6 @@ function GetNameAndLink()
 			['031f3cc0ae3346ad9b8c33d5377891e9'] = '/manga-lists/?list', -- Kiryuu
 			['ee7abb21767d48d5b4b343ce701ae6e6'] = '/daftar-manga/?list', -- PecintaKomik
 			['63be65ab7f004093ac26fdeb30b466e4'] = '/manga-list/?list', -- MangaIndoNet
-			['009bf49bc17a4a2a8e1c79cce6867651'] = '/manga-list/?list', -- KomikIndo
 			['2cf30e2a7f3d4b4a9b2d29c3fb04e23f'] = '/manga/list-mode/', -- KomikIndoWebId
 			['4ccdf84e05474a66adc14ea8a2edfd15'] = '/manga-list/?list', -- KazeManga
 			['ca571825056b4850bd3693e4e1437997'] = '/daftar-komik-manga-bahasa-indonesia.html', -- Mangacan
