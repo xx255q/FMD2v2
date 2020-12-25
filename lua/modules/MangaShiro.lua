@@ -72,6 +72,7 @@ function getAuthors(x)
 	if authors == '' then authors = x.XPathString('//tr[contains(td, "Komikus")]//following-sibling::td') end
 	if authors == '' then authors = x.XPathString('//div[@class="fmed"]/b[starts-with(.,"Author")]//following-sibling::span') end
 	if authors == '' then authors = x.XPathString('//td[@itemprop="creator"]') end
+	if authors == '' then authors = x.XPathString('//td[contains(., "Author")]/following-sibling::td') end
 	return authors
 end
 
@@ -79,11 +80,13 @@ function getArtists(x)
 	local artists = ''
 	if artists == '' then artists = x.XPathString('//div[@class="spe"]//span[starts-with(.,"Artist")]/substring-after(.,":")') end
 	if artists == '' then artists = x.XPathString('//div[@class="fmed"]/b[starts-with(.,"Artist")]//following-sibling::span') end
+	if artists == '' then artists = x.XPathString('//td[contains(., "Artist")]/following-sibling::td') end
 	return artists
 end
 
 function getGenres(x)
 	local genre = ''
+	if genre == '' then genre = x.XPathStringAll('//div[@class="seriestugenre"]/a') end
 	if genre == '' then genre = x.XPathStringAll('//span[@class="mgen"]/a') end
 	if genre == '' then genre = x.XPathStringAll('//div[@class="spe"]//span[contains(.,"التصنيفات")]/a') end
 	if genre == '' then genre = x.XPathStringAll('//div[@class="spe"]//span[starts-with(.,"Genres:")]/substring-after(.,":")') end
@@ -117,8 +120,8 @@ function getStatus(x)
 	if status == '' then status = x.XPathString('//div[@class="preview"]//li[starts-with(.,"Tanggal Rilis")]/substring-after(.,"-")') end
 	if status == '' then status = x.XPathString('//span[@class="details"]//div[starts-with(.,"Status")]') end
 	if status == '' then status = x.XPathString('//ul[@class="baru"]/li[3]') end
-	if status == '' then status = x.XPathString('//tr[contains(td, "Status")]//following-sibling::td') end
 	if status == '' then status = x.XPathString('//div[@class="imptdt" and contains(.,"Status")]/i') end
+	if status == '' then status = x.XPathString('//td[contains(., "Status")]//following-sibling::td') end
 	status = status:gsub('Finished', 'Completed'):gsub('Publishing', 'Ongoing')
 	status = status:gsub('Berjalan', 'Ongoing'):gsub('Tamat', 'Completed')
 	return status
@@ -192,7 +195,7 @@ function GetPageNumber()
 			local s = x.XPathString('*')
 			x.ParseHTML(crypto.DecodeBase64(GetBetween('](atob(', ')),', s)))
 			x.XPathStringAll('json(*)()', TASK.PageLinks)
-		elseif MODULE.ID == '031f3cc0ae3346ad9b8c33d5377891e9' or MODULE.ID == 'b543e37b656e43ffb3faa034eee6c945' then -- kiryuu, mangakita
+		elseif MODULE.ID == '031f3cc0ae3346ad9b8c33d5377891e9' then -- Kiryuu
 			local v; for v in x.XPath('//*[@id="readerarea"]//img').Get() do
 				if string.find(v.GetAttribute('src'), ".filerun.") == nil and
 					string.find(v.GetAttribute('src'), ",0.jpg") == nil and
@@ -229,9 +232,8 @@ function GetPageNumber()
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="bc"]/img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="chimg"]/img/@data-lazy-src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then
-				local s = x.XPathString('//script[contains(., "ts_reader")]')
-				x.ParseHTML(GetBetween('"images":', '}],', s))
-				x.XPathStringAll('json(*)()', TASK.PageLinks)
+				x.ParseHTML(GetBetween('run(', ');', x.XPathString('//script[contains(., "ts_reader")]')))
+				x.XPathStringAll('json(*).sources().images()', TASK.PageLinks)
 			end
 		end
 		return true
