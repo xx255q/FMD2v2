@@ -16,6 +16,7 @@ function Init()
 	AddWebsiteModule('4c089029492f43c98d9f27a23403247b', 'HanaScan', 'https://hanascan.com')
 	AddWebsiteModule('010777f53bf2414fad039b9567c8a9ce', 'MangaHato', 'https://mangahato.com')
 	AddWebsiteModule('794187d0e92e4933bf63812438d69017', 'Manhwa18', 'https://manhwa18.com')
+	AddWebsiteModule('9054606f128e4914ae646032215915e5', 'LoveHug', 'https://lovehug.net')
 
 	cat = 'English'
 	AddWebsiteModule('80427d9a7b354f04a8f432b345f0f640', 'MangaWeek', 'https://mangaweek.com')
@@ -29,15 +30,15 @@ function Init()
 end
 
 function GetInfo()
-	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
+	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=CreateTXQuery(HTTP.Document)
-		MANGAINFO.Title     = Trim(SeparateLeft(x.XPathString('//div[@class="container"]//li[3]//span'), '- Raw'))
+		local x = CreateTXQuery(HTTP.Document)
+		MANGAINFO.Title     = Trim(SeparateLeft(x.XPathString('//div[contains(@class, "container")]//li[3]//span'), '- Raw'))
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//img[@class="thumbnail"]/@src'))
 		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//ul[@class="manga-info"]/li[contains(., "Status")]//a'))
 		MANGAINFO.Authors   = x.XPathString('//ul[@class="manga-info"]/li[contains(., "Author")]//a')
 		MANGAINFO.Genres    = x.XPathStringAll('//ul[@class="manga-info"]/li[contains(., "Genre")]//a')
-		MANGAINFO.Summary   = x.XPathString('string-join(//div[./h3="Description"]/p, "\r\n")')
+		MANGAINFO.Summary   = x.XPathString('string-join(//div[./h3="Description"]//p, "\r\n")')
 		if MANGAINFO.Summary == '' then
 			MANGAINFO.Summary = x.XPathString('//div[@class="detail"]/div[@class="content"]')
 		end
@@ -45,10 +46,15 @@ function GetInfo()
 		if MANGAINFO.ChapterLinks.Count == 0 then
 			x.XPathHREFAll('//div[@id="list-chapters"]//a[@class="chapter"]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		end
+		if MANGAINFO.ChapterLinks.Count == 0 then
+			x.XPathHREFTitleAll('//ul[contains(@class, "list-chapters")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+		end
 		for i = 0, MANGAINFO.ChapterLinks.Count-1 do
 			MANGAINFO.ChapterLinks[i] = MODULE.RootURL .. '/' .. MANGAINFO.ChapterLinks[i]
 		end
 		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
+		HTTP.Reset()
+		HTTP.Headers.Values['Referer'] = MANGAINFO.URL
 		return no_error
 	else
 		return net_problem
@@ -59,7 +65,7 @@ function GetPageNumber()
 	TASK.PageLinks.Clear()
 	local u = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(u) then
-		local x=CreateTXQuery(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		if MODULE.ID == '794187d0e92e4933bf63812438d69017' then -- manhwa18
 			local v = x.XPath('//img[contains(@class, "chapter-img")]/@src')
 			for i = 1, v.Count do
@@ -73,6 +79,14 @@ function GetPageNumber()
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-src', TASK.PageLinks)
 		elseif MODULE.ID == 'f488bcb1911b4f21baa1ab65ef9ca61c' then -- heroscan
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-original', TASK.PageLinks)
+		elseif MODULE.ID == '9054606f128e4914ae646032215915e5' then -- LoveHug
+			local v for v in x.XPath('//img[contains(@class, "chapter-img")]').Get() do
+				local src = v.GetAttribute('src')
+				if src:find('pagespeed') then
+					src = v.GetAttribute('data-pagespeed-lazy-src')
+				end
+			TASK.PageLinks.Add(src)
+			end
 		else
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@src', TASK.PageLinks)
 		end
