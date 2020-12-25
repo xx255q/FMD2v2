@@ -304,6 +304,7 @@ function Init()
 	AddWebsiteModule('ac3452866dd843fda8b859afe8c8faab', 'ManyToonCom', 'https://manytoon.com')
 	AddWebsiteModule('2b5f00cfbb124546b6c11a7e5ec9c403', 'Hiperdex', 'https://hiperdex.com')
 	AddWebsiteModule('c87aeae76e884adc9de8bc6b9d56f2c6', 'ShosetsuManga', 'https://www.shosetsu-manga.org')
+	AddWebsiteModule('7fd5031b766a4d228fd0940c0cdb1424', 'MangaHentai', 'https://mangahentai.me')
 
 	cat = 'Spanish-Scanlation'
 	AddWebsiteModule('eb72aedce86b4598b3d702bc055079e8', 'GodsRealmScan', 'https://godsrealmscan.com')
