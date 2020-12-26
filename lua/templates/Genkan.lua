@@ -43,7 +43,7 @@ function _M.GetDirectoryPageNumber()
 
   if not HTTP.GET(u) then return net_problem end
 
-  PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('(//ul[@class="pagination"])[last()]//a[@class="page-link" and not(@rel)]/text()')) or 1
+  PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//ul[@class="pagination"]/li[last()-1]/a')) or 1
 
   return no_error
 end
