@@ -19,33 +19,33 @@ function getinfo()
 	return net_problem
 end
 
--- Get page number and page container LINKS:
+
 function getpagenumber()
-	local x = nil
+	local first_image = string.gsub(URL, "view", "read") -- fetch 1st image to get encrypted message
 
-	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		x = CreateTXQuery(HTTP.Document)
-		x.XPathStringAll('(//div[@class="box"])[2]/div/div/a/@href', TASK.PageContainerLinks)
-		TASK.PageNumber = TASK.PageContainerLinks.Count
+	if not HTTP.GET(MaybeFillHost(MODULE.RootURL, first_image)) then return net_problem end
 
-		return true
+	x = CreateTXQuery(HTTP.Document)
+	message = GetBetween('initReader("', '", ', x.XPathString('//script[contains(., "initReader")]'))
+	decoded = decryptmessage(message)
+	x.ParseHTML(decoded)
+	base = x.XPathString('json(*).b')
+	gallery = x.XPathString('json(*).r')
+	index = x.XPathString('json(*).i')
+	x.XPathStringAll('json(*).f().h', TASK.PageLinks)
+	image_names = x.XPath('json(*).f().p')
+
+	for i=0, TASK.PageLinks.Count-1 do
+		TASK.PageLinks[i] = base .. gallery .. TASK.PageLinks[i] .. '/' .. index .. '/'.. image_names.Get(i+1).ToString()
+		i = i + 1
 	end
-	return false
+	TASK.PageContainerLinks = TASK.PageLinks
+
+	TASK.PageNumber = TASK.PageContainerLinks.Count
+
+	return no_error
 end
 
--- Get image urls from page containers:
-function getimageurl()
-	local s = MaybeFillHost(MODULE.RootURL, TASK.PageContainerLinks[WORKID])
-
-	if HTTP.GET(s) then
-		TASK.PageLinks[WORKID] = CreateTXQuery(HTTP.Document).XPathString('//img[@id="currImage"]/@src')
-
-		return true
-	end
-	return false
-end
-
--- Get last page number for manga directory:
 function getdirectorypagenumber()
 	if HTTP.GET(MODULE.RootURL) then
 		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('(//ul[@class="pagination-list"])[1]/li[last()]/a/text()'))
@@ -55,7 +55,6 @@ function getdirectorypagenumber()
 	return net_problem
 end
 
--- Go through all directory pages and get NAMES and LINKS for manga entries:
 function getnameandlink()
 	local v, x = nil
 
@@ -73,6 +72,55 @@ function getnameandlink()
 	return net_problem
 end
 
+function decryptmessage(str)
+	local crypto = require 'fmd.crypto'
+	message = crypto.DecodeBase64(str)
+	prime_array = {2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53}
+	local prime_picker = 0
+	for i=1,64 do
+		prime_picker = prime_picker ~ string.byte(message, i)
+		for j=1,8 do
+            -- no need for zero shift bit correction since message byte will always be positive
+			if(prime_picker & 1 == 1) then
+				prime_picker = prime_picker >> 1 ~ 12
+			else
+				prime_picker = prime_picker >> 1
+			end
+		end
+	end
+	prime_picker = prime_picker & 7
+	array = {}
+	o2 = 0
+	o3 = 0
+	o5 = 0
+	
+	for i=0,255 do array[i] = i end
+	for i=0,255 do 
+			o2 = (o2 + array[i] + string.byte(message, (i % 64)+1)) % 256
+			o4 = array[i]
+			array[i] = array[o2]
+			array[o2] = o4
+	end
+	
+	prime = prime_array[prime_picker+1]
+	o1 = 0
+	o2 = 0
+	parsed = ''
+	i = 0
+	while i + 64 < string.len(message) do
+		o1 = (o1 + prime) % 256
+		o2 = (o3 + array[(o2 + array[o1]) % 256]) % 256
+		o3 = (o3 + o1 + array[o1]) % 256
+		o4 = array[o1]
+		array[o1] = array[o2]
+		array[o2] = o4
+		o5 = array[(o2 + array[(o1 + array[(o5 + o3) % 256]) % 256]) % 256]
+		parsed = parsed .. string.char(string.byte(message, (i + 64)+1) ~ o5)
+		i = i + 1
+	end
+	return parsed
+end
+
 -- Initialize module:
 function Init()
 	local m = NewWebsiteModule()
@@ -84,5 +132,4 @@ function Init()
 	m.OnGetPageNumber          = 'getpagenumber'
 	m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
 	m.OnGetNameAndLink         = 'getnameandlink'
-	m.OnGetImageURL            = 'getimageurl'
 end
