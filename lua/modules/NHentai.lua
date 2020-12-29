@@ -56,7 +56,7 @@ function GetNameAndLink()
 	if not HTTP.GET(u) then return net_problem end
 
 	x = CreateTXQuery(HTTP.Document)
-	x.XPathHREFAll('//div[@id="content"]/div/div[@class="gallery"]/a', LINKS, NAMES)
+	x.XPathHREFAll('//div[@id="content"]/div[not(contains(@class, "popular"))]/div[@class="gallery"]/a', LINKS, NAMES)
 
 	return no_error
 end
@@ -92,12 +92,12 @@ end
 ----------------------------------------------------------------------------------------------------
 
 function Init()
-	function AddWebsiteModule(id, name, url, category)
+	function AddWebsiteModule(id, name, url)
 		local m = NewWebsiteModule()
 		m.ID                       = id
 		m.Name                     = name
 		m.RootURL                  = url
-		m.Category                 = category
+		m.Category                 = 'H-Sites'
 		m.OnGetInfo                = 'GetInfo'
 		m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
 		m.OnGetNameAndLink         = 'GetNameAndLink'
@@ -105,6 +105,6 @@ function Init()
 		m.OnGetImageURL            = 'GetImageURL'
 		m.SortedList               = True
 	end
-	AddWebsiteModule('f8d26ca921af4876b7ba84bd7e06fe82', 'NHentai', 'https://nhentai.net', 'H-Sites')
-	AddWebsiteModule('0052cb4aabe0443ca0c97e1eb217728a', 'HentaiHand', 'https://hentaihand.com', 'H-Sites')
+	AddWebsiteModule('f8d26ca921af4876b7ba84bd7e06fe82', 'NHentai', 'https://nhentai.net')
+	AddWebsiteModule('0052cb4aabe0443ca0c97e1eb217728a', 'HentaiHand', 'https://hentaihand.com')
 end
