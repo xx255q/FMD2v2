@@ -103,7 +103,7 @@ function Init()
 		m.OnGetNameAndLink         = 'GetNameAndLink'
 		m.OnGetPageNumber          = 'GetPageNumber'
 		m.OnGetImageURL            = 'GetImageURL'
-		m.SortedList               = True
+		m.SortedList               = true
 	end
 	AddWebsiteModule('f8d26ca921af4876b7ba84bd7e06fe82', 'NHentai', 'https://nhentai.net')
 	AddWebsiteModule('0052cb4aabe0443ca0c97e1eb217728a', 'HentaiHand', 'https://hentaihand.com')
