@@ -74,9 +74,9 @@ function Init()
 	m.Name                     = 'HentaiCafe'
 	m.RootURL                  = 'https://hentai.cafe'
 	m.Category                 = 'H-Sites'
-	m.FavoriteAvailable        = false
 	m.OnGetInfo                = 'GetInfo'
 	m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
 	m.OnGetPageNumber          = 'GetPageNumber'
+	m.SortedList               = true
 end
