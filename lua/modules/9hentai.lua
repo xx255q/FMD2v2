@@ -64,7 +64,7 @@ function Init()
 	m.ID                       = 'f4c518f48eff41efa0929f61fdf93dc6'
 	m.Category                 = 'H-Sites'
 	m.Name                     = '9hentai'
-	m.RootURL                  = 'https://9hentai.com'
+	m.RootURL                  = 'https://9hentai.ru'
 	m.SortedList               = true
 	m.OnGetInfo                = 'GetInfo'
 	m.OnGetPageNumber          = 'GetPageNumber'
