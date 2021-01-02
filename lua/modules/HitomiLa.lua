@@ -24,18 +24,14 @@ function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		----------------------------------------------------------------------------------------------
 		--  direct translaton of https://ltn.hitomi.la/common.js and https://ltn.hitomi.la/reader.js
-		local adapose = false
 
 		local function subdomain_from_galleryid(g, number_of_frontends)
-			if (adapose) then
-				return '0'
-			end
 			local o = g % number_of_frontends
 			return string.char(97 + o)
 		end
 
 		local function subdomain_from_url(url, base)
-			local retval = 'a'
+			local retval = 'b'
 			if (base) then
 				retval = base
 			end
@@ -46,7 +42,7 @@ function GetPageNumber()
 			local r = '^.*/%w/(%w%w)/.*$'
 			local m = url:gsub(r, '%1')
 			if not(m) then
-				return retval
+				return 'a'
 			end
 
 			local g = tonumber(m, b) or nil
@@ -87,9 +83,10 @@ function GetPageNumber()
 			local webp
 			if (image['hash'] and image['haswebp'] and not(no_webp)) then
 				webp = 'webp'
+				return url_from_url_from_hash(galleryid, image, webp, webp, 'a')
 			end
-
 			return url_from_url_from_hash(galleryid, image, webp)
+			
 		end
 		-- end of https://ltn.hitomi.la/common.js
 
@@ -98,7 +95,7 @@ function GetPageNumber()
 		local gallery_url = x.XPathString('//script[contains(@src,"reader.js")]/@src'):match('//(.+)/')
 		if galleryid and gallery_url and HTTP.GET('https://'..gallery_url..'/galleries/'..galleryid..'.js') then
 			local no_webp = not MODULE.GetOption('download_webp')
-			local s = HTTP.Document.ToString():match('(%[.-%])')
+			local s = HTTP.Document.ToString():match('("files":%[.-%])'):gsub('"files":','')
 			if s then
 				x.ParseHTML(s)
 				local image={}, v for v in x.XPath('json(*)()').Get() do
