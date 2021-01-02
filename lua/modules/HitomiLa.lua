@@ -35,7 +35,7 @@ function GetPageNumber()
 		end
 
 		local function subdomain_from_url(url, base)
-			local retval = 'a'
+			local retval = 'b'
 			if (base) then
 				retval = base
 			end
