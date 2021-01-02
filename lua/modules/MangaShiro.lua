@@ -190,12 +190,7 @@ end
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local x = CreateTXQuery(HTTP.Document)
-		if MODULE.ID == '5e66f8a12f114ba3a8408eb1d7044d76' then -- BacaManga
-			local crypto = require 'fmd.crypto'
-			local s = x.XPathString('*')
-			x.ParseHTML(crypto.DecodeBase64(GetBetween('](atob(', ')),', s)))
-			x.XPathStringAll('json(*)()', TASK.PageLinks)
-		elseif MODULE.ID == '031f3cc0ae3346ad9b8c33d5377891e9' then -- Kiryuu
+		if MODULE.ID == '031f3cc0ae3346ad9b8c33d5377891e9' then -- Kiryuu
 			local v; for v in x.XPath('//*[@id="readerarea"]//img').Get() do
 				if string.find(v.GetAttribute('src'), ".filerun.") == nil and
 					string.find(v.GetAttribute('src'), ",0.jpg") == nil and
@@ -346,7 +341,6 @@ function Init()
 	AddWebsiteModule('35e1b3ff5dbf428889d0f316c3d881e6', 'WestManga', 'https://westmanga.info')
 	AddWebsiteModule('031f3cc0ae3346ad9b8c33d5377891e9', 'Kiryuu', 'https://kiryuu.co')
 	AddWebsiteModule('965d172c0fbd4ad7b75f39fb5cec26ac', 'Kyuroku', 'https://kyuroku.com')
-	AddWebsiteModule('5e66f8a12f114ba3a8408eb1d7044d76', 'BacaManga', 'https://bacamanga.co')
 	AddWebsiteModule('ee7abb21767d48d5b4b343ce701ae6e6', 'PecintaKomik', 'https://www.pecintakomik.net')
 	AddWebsiteModule('63be65ab7f004093ac26fdeb30b466e4', 'MangaIndoNet', 'https://mangaindo.net')
 	AddWebsiteModule('009bf49bc17a4a2a8e1c79cce6867651', 'KomikIndo', 'https://komikindo.co')
