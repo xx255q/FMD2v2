@@ -55,6 +55,9 @@ function GetPageNumber()
 		if src:find('&url=') then
 			src = string.match(src, "&url=(.*)")
 		end
+		if src:find('http') then -- make sure urls contain proper http string
+			TASK.PageLinks.Add(src)
+		end
     TASK.PageLinks.Add(src)
 	end
 
@@ -126,7 +129,7 @@ function Init()
 		}
 		m.AddOptionCheckBox('luaincluderaw', lang:get('includeraw'), false)
 	end
-	AddWebsiteModule('3b0d5c38081a4b21a39a388a3ec59197', 'HeavenToon', 'https://ww4.heaventoon.com')
-	AddWebsiteModule('a9a8bd394d63495686794a8d427bda00', 'HolyManga', 'https://ww1.holymanga.net')
+	AddWebsiteModule('3b0d5c38081a4b21a39a388a3ec59197', 'HeavenToon', 'https://ww5.heaventoon.com')
+	AddWebsiteModule('a9a8bd394d63495686794a8d427bda00', 'HolyManga', 'https://ww2.holymanga.net')
 	AddWebsiteModule('f49e608b66994721a5ea992b56367d96', 'KooManga', 'https://ww6.koomanga.com')
 end
