@@ -1,85 +1,144 @@
-function getinfo()
-	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL,URL)
-	local id = URL:match('title/(%d+)')
-	if id == nil then id = URL:match('manga/(%d+)'); end
-	delay()
-	if HTTP.GET(MaybeFillHost(MODULE.RootURL, '/api/manga/' .. id)) then
+local API_PATH = '/api/v2' -- This is the path to the JSON API. Call the full url to look at the API documentation.
+local API_PARAMS = '?include=chapters' -- This parameter minimizes the calls to the API by combining the info and chapter parts into one call instead of two. Getting manga info should only be one call overall.
+local API_CHAPTER_PARAMS = '?saver=false' -- This parameter forces the API to always deliver the source images instead of the data-saver low quality images. Default of the API is actually false, but this prevents that you download data-saver images if the default will ever be changed.
+
+function GetInfo()
+	-- Extract Manga ID which is needed for getting info and chapter list:
+	local mid = URL:match('title/(%d+)')
+	if mid == nil then mid = URL:match('manga/(%d+)') end
+
+	-- Delay this task if configured:
+	Delay()
+
+	-- Fetch JSON from API:
+	if HTTP.GET(MaybeFillHost(MODULE.RootURL, API_PATH .. '/manga/' .. mid .. API_PARAMS)) then
 		local crypto = require 'fmd.crypto'
-		local resp = crypto.HTMLEncode(HTTP.Document.ToString())
-		local x = CreateTXQuery(resp)
+		local x = CreateTXQuery(crypto.HTMLEncode(HTTP.Document.ToString()))
 
-		local info = x.XPath('json(*)')
-		if MANGAINFO.Title == '' then
-			MANGAINFO.Title = x.XPathString('manga/title', info)
-		end
-		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('manga/cover_url', info))
-		MANGAINFO.Authors = x.XPathString('manga/author', info)
-		MANGAINFO.Artists = x.XPathString('manga/artist', info)
-		MANGAINFO.Summary = x.XPathString('manga/description', info)
-		MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('manga/status', info), '1', '2')
+		local minfo    = x.XPath('json(*)')
+		local mcode    = x.XPathString('code', minfo)
+		local mstatus  = x.XPathString('status', minfo)
+		local mmessage = x.XPathString('message', minfo)
 
-		local genres = ''
-		local v = x.XPath('jn:members(manga/genres)', info)
-		if v.Count > 0 then genres = getgenre(v.Get(1).ToString()); end
-		for i = 2, v.Count do
-			local v1 = v.Get(i)
-			genres = genres .. ', ' .. getgenre(v1.ToString())
-		end
-		if x.XPathString('manga/hentai', info) == '1' then
-			if genres ~= '' then genres = genres .. ', ' end
-			genres = genres .. 'Hentai'
-		end
-		MANGAINFO.Genres = genres
+		-- Handle the returned JSON if code is 200. Any other code will result in an error that is being shown in the description of the Mangainfo.
+		-- If no code is returned, the API certainly didn't respond. It's probably not reachable if that happens.
+		if mcode == '200' then
+			MANGAINFO.Title     = x.XPathString('data/manga/title', minfo)
+			MANGAINFO.CoverLink = x.XPathString('data/manga/mainCover', minfo)
+			MANGAINFO.Authors   = x.XPathStringAll('json(*).data.manga.author()')
+			MANGAINFO.Artists   = x.XPathStringAll('json(*).data.manga.artist()')
+			MANGAINFO.Summary   = x.XPathString('data/manga/description', minfo)
+			MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('data/manga/publication/status', minfo), '1', '2')
 
-		local selLang = MODULE.GetOption('lualang')
-		local selLangId = findlang(selLang)
-		local chapters = x.XPath('let $c := json(*).chapter return for $k in jn:keys($c) ' ..
-			'return jn:object(object(("chapter_id", $k)), $c($k))')
-		for i = 1, chapters.Count do
-			local v1 = chapters.Get(i)
-
-			if not IgnoreChaptersByGroupId(x.XPathString('group_id', v1)) then
-
-				local lang = x.XPathString('lang_code', v1)
-				local ts = tonumber(x.XPathString('timestamp', v1))
-				if (selLang == 0 or lang == selLangId) and (ts <= os.time()) then
-					MANGAINFO.ChapterLinks.Add('/chapter/' .. x.XPathString('chapter_id', v1))
-
-					local s = ''
-					local vol = x.XPathString('volume', v1)
-					local ch = x.XPathString('chapter', v1)
-					if vol ~= '' then s = s .. string.format('Vol. %s', vol); end
-					if s ~= '' then s = s .. ' '; end
-					if ch ~= '' then s = s .. string.format('Ch. %s', ch); end
-
-					local title = x.XPathString('title', v1)
-					if title ~= '' then
-						if s ~= '' then s = s .. ' - '; end
-						s = s .. title
-					end
-
-					if selLang == 0 then
-						s = string.format('%s [%s]', s, getlang(lang))
-					end
-
-					if MODULE.GetOption('luashowscangroup') then
-						local group = x.XPathString('group_name', v1)
-						local group2 = x.XPathString('group_name_2', v1)
-						local group3 = x.XPathString('group_name_3', v1)
-						if group2:len() > 0 and group2 ~= 'null' then
-							group = group .. ' | ' .. group2
-						end
-						if group3:len() > 0 and group3 ~= 'null' then
-							group = group .. ' | ' .. group3
-						end
-						s = string.format('%s [%s]', s, group)
-					end
-
-					MANGAINFO.ChapterNames.Add(s)
+			-- Fetch genre/demographic IDs and match them against an array with corresponding names:
+			local gids = x.XPath('json(*).data.manga.tags()')
+			local dgid = x.XPathString('data/manga/publication/demographic', minfo)
+			MANGAINFO.Genres = GetGenre(gids.Get(1).ToString())
+			if gids.Count > 1 then
+				for i = 2, gids.Count do
+					MANGAINFO.Genres = MANGAINFO.Genres .. ', ' .. GetGenre(gids.Get(i).ToString())
 				end
 			end
+			if (dgid ~= '0') and (MANGAINFO.Genres ~= '') then
+				MANGAINFO.Genres = GetDemographic(dgid) .. ', ' .. MANGAINFO.Genres
+			elseif (dgid ~= '0') and (MANGAINFO.Genres == '') then
+				MANGAINFO.Genres = GetDemographic(dgid)
+			end
+
+			-- If Manga is Hentai, add it to genre list:
+			if x.XPathString('data/manga/isHentai', minfo) == 'true' then
+				if MANGAINFO.Genres ~= '' then MANGAINFO.Genres =  'Hentai, ' .. MANGAINFO.Genres else MANGAINFO.Genres = 'Hentai' end
+			end
+
+			-- Fetch and map all groups involved with the current manga chapters. The following array can be further used to get the group name by id:
+			local grouplist = {}
+			local g for g in x.XPath('json(*).data.groups()').Get() do
+				grouplist[x.XPathString('id', g)] = x.XPathString('name', g)
+			end
+
+			-- Get user defined options for fetching all chapters respecting these options:
+			local optlang  = MODULE.GetOption('lualang')
+			local optgroup = MODULE.GetOption('luashowscangroup')
+			local opttitle = MODULE.GetOption('luashowchaptertitle')
+
+			-- Map options with values/IDs from arrays:
+			local optlangid = FindLanguage(optlang)
+
+			-- Get all chapters:
+			local chapters = x.XPath('json(*).data.chapters()')
+			for ic = 1, chapters.Count do
+				local ignore = false
+
+				-- Check if the language of the chapter is matching with the user selection, otherwise skip the chapter:
+				local language = x.XPathString('language', chapters.Get(ic))
+				if (optlangid ~= language) and (optlang > 0) then ignore = true end
+
+				-- Check if the timestamp is in the future, skip the chapter if true:
+				local timestamp = tonumber(x.XPathString('timestamp', chapters.Get(ic)))
+				if timestamp > os.time() then ignore = true end
+
+				-- Check if the group that released the chapter is on the built-in ignore list, otherwise skip the chapter:
+				local groupids = x.XPath('json(*).data.chapters()[' .. ic .. '].groups()') -- This is a fuckin' workaround because the direct approach by using "x.XPath('groups').Get(i).ToString" does not work as the array will be combined to a single string.
+				if ignore == false then
+					for i = 1, groupids.Count do
+						if ignore == false then -- Chapter should be ignored if at least one group is on the ignore list. This check prevents that the ignore value is being set back to false if a second group is not in the list.
+							ignore = IgnoreChaptersByGroupId(groupids.Get(i).ToString())
+						end
+					end
+				end
+
+				-- If at least one group is in the ignore list or if the timestamp is in the future skip the current chapter:
+				if ignore == false then
+
+					-- Initialize some variables for building the chapter name:
+					local title   = x.XPathString('title', chapters.Get(ic))
+					local volume  = x.XPathString('volume', chapters.Get(ic))
+					local chapter = x.XPathString('chapter', chapters.Get(ic))
+					local group   = ''
+
+					-- Remove title if user option is disabled:
+					if opttitle == false then title = '' end
+
+					-- Add prefix to title, if it's not empty:
+					if title ~= '' then title = ' - ' .. title end
+
+					-- Complete volume and chapter strings if not empty:
+					if volume ~= '' then volume = string.format('Vol. %s ', volume) end
+					if chapter ~= '' then chapter = string.format('Ch. %s', chapter) end
+
+					-- Append language id if user option is set to "All":
+					if optlang == 0 then language = string.format(' [%s]', language) else language = '' end
+
+					-- Get the group names if the user option is enabled:
+					if optgroup then
+						group = ' [' .. grouplist[groupids.Get(1).ToString()]
+						if groupids.Count > 1 then
+							for i = 2, groupids.Count do
+								group = group .. ', ' .. grouplist[groupids.Get(i).ToString()]
+							end
+						end
+						group = group .. ']'
+					end
+
+					-- Add chapter name and link to the manga info list:
+					MANGAINFO.ChapterNames.Add(volume .. chapter .. title .. language .. group)
+					MANGAINFO.ChapterLinks.Add('/chapter/' .. x.XPathString('id', chapters.Get(ic)))
+
+				end
+			end
+
+			-- Sort the chapter list from oldest to latest:
+			MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
+
+		elseif mcode == '' then
+			MANGAINFO.Summary = 'Manga information could not be fetched. Please check if you can access the Manga page in your browser.'
+			return net_problem
+
+		else
+			MANGAINFO.Summary = mstatus .. ' (' .. mcode .. '):   ' .. mmessage
+			return net_problem
+
 		end
-		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
 	else
 		return net_problem
@@ -98,7 +157,7 @@ function IgnoreChaptersByGroupId(id)
 	end
 end
 
-function getgenre(genre)
+function GetGenre(genre)
 	local genres = {
 		["1"] = "4-koma",
 		["2"] = "Action",
@@ -193,7 +252,21 @@ function getgenre(genre)
 	end
 end
 
-local langs = {
+function GetDemographic(demograhic)
+	local demographics = {
+		["1"] = "Shounen",
+		["2"] = "Shoujo",
+		["3"] = "Seinen",
+		["4"] = "Josei"
+	}
+	if demographics[demograhic] ~= nil then
+		return demographics[demograhic]
+	else
+		return demograhic
+	end
+end
+
+local Langs = {
 	["sa"] = "Arabic",
 	["bd"] = "Bengali",
 	["bg"] = "Bulgarian",
@@ -233,60 +306,86 @@ local langs = {
 	["vn"] = "Vietnamese"
 }
 
-function getlang(lang)
-	if langs[lang] ~= nil then
-		return langs[lang]
+function GetLang(lang)
+	if Langs[lang] ~= nil then
+		return Langs[lang]
 	else
 		return 'Unknown'
 	end
 end
 
-function getlanglist()
+function GetLangList()
 	local t = {}
-	for k, v in pairs(langs) do table.insert(t, v); end
+	for k, v in pairs(Langs) do table.insert(t, v); end
 	table.sort(t)
 	return t
 end
 
-function findlang(lang)
-	local t = getlanglist()
+function FindLanguage(lang)
+	local t = GetLangList()
 	for i, v in ipairs(t) do
 		if i == lang then
 			lang = v
 			break
 		end
 	end
-	for k, v in pairs(langs) do
+	for k, v in pairs(Langs) do
 		if v == lang then return k; end
 	end
 	return nil
 end
 
-function getpagenumber()
-	local chapterid = URL:match('chapter/(%d+)')
-	delay()
-	if HTTP.GET(MaybeFillHost(MODULE.RootURL,'/api/chapter/'..chapterid)) then
-		local x=CreateTXQuery(HTTP.Document)
-		x.ParseHTML(HTTP.Document.ToString():gsub('<', ''):gsub('>', ''):gsub('&quot;', ''))
-		local hash = x.XPathString('json(*).hash')
-		local srv = x.XPathString('json(*).server')
-		if srv:sub(-1) ~= '/' then srv = srv .. '/' end
-		local v for v in x.XPath('json(*).page_array()').Get() do
-			local s = MaybeFillHost(MODULE.RootURL, srv .. hash .. '/' .. v.ToString())
-			TASK.PageLinks.Add(s)
+function GetPageNumber()
+	-- Extract chapter ID which is needed for getting info about the current chapter:
+	local cid = URL:match('chapter/(%d+)')
+
+	-- Delay this task if configured:
+	Delay()
+
+	-- Fetch JSON from API:
+	if HTTP.GET(MaybeFillHost(MODULE.RootURL, API_PATH .. '/chapter/' .. cid .. API_CHAPTER_PARAMS)) then
+		local crypto = require 'fmd.crypto'
+		local x = CreateTXQuery(crypto.HTMLEncode(HTTP.Document.ToString():gsub('<', ''):gsub('>', ''):gsub('&quot;', ''))) -- Some characters may not be correctly escaped and create issues for the parser. That's why these will be removed.
+
+		local cinfo    = x.XPath('json(*)')
+		local ccode    = x.XPathString('code', cinfo)
+		local cstatus  = x.XPathString('status', cinfo)
+		local cmessage = x.XPathString('message', cinfo)
+
+		-- Handle the returned JSON if code is 200. Any other code will result in an error that is being shown in the log if enabled.
+		-- If no code is returned, the API certainly didn't respond. It's probably not reachable if that happens.
+		if ccode == '200' then
+			local hash   = x.XPathString('data/hash', cinfo)
+			local server = x.XPathString('data/server', cinfo)
+
+			-- If the base url of the image server misses or has a '/' too much, the download won't work. This check prevents that:
+			if server:sub(-1) ~= '/' then server = server .. '/' end
+
+			local pages for pages in x.XPath('json(*).data.pages()').Get() do
+				TASK.PageLinks.Add(server .. hash .. '/' .. pages.ToString())
+			end
+
+		elseif ccode == '' then
+			print('Chapter could not be fetched. Please check if you can access the Manga page and read the chapter in your browser.')
+			return net_problem
+
+		else
+			print(cstatus .. ' (' .. ccode .. '):   ' .. cmessage)
+			return net_problem
+
 		end
-		return true
+
+		return no_error
 	else
-		return false
+		return net_problem
 	end
-	return true
 end
 
 local dirurl='/titles/2'
 
-function getdirectorypagenumber()
+function GetDirectoryPageNumber()
 	HTTP.Cookies.Values['mangadex_title_mode'] = '2'
-	delay()
+	Delay()
 	if HTTP.GET(MODULE.RootURL .. dirurl) then
 		local x = CreateTXQuery(HTTP.Document)
 		PAGENUMBER = tonumber(x.XPathString('(//ul[contains(@class,"pagination")]/li/a)[last()]/@href'):match('/2/(%d+)')) or 1
@@ -296,19 +395,19 @@ function getdirectorypagenumber()
 	end
 end
 
-function getnameandlink()
+function GetNameAndLink()
 	HTTP.Cookies.Values['mangadex_title_mode'] = '2'
-	delay()
+	Delay()
 	if HTTP.GET(MODULE.RootURL .. dirurl .. '/' .. (URL + 1) .. '/') then
 		local x = CreateTXQuery(HTTP.Document)
-		x.XPathHREFAll('//a[contains(@class, "manga_title")]',LINKS,NAMES)
+		x.XPathHREFAll('//a[contains(@class, "manga_title")]', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem
 	end
 end
 
-function delay()
+function Delay()
 	local lastDelay = tonumber(MODULE.Storage['lastDelay']) or 1
 	local mdx_delay = tonumber(MODULE.GetOption('mdx_delay')) or 2 -- * MODULE.ActiveConnectionCount
 	if lastDelay ~= '' then
@@ -322,55 +421,55 @@ end
 
 function Login()
 	MODULE.ClearCookies()
-	MODULE.Account.Status=asChecking
-	local login_url=MODULE.RootURL..'/login'
+	MODULE.Account.Status = asChecking
+	local login_url=MODULE.RootURL .. '/login'
 	if not HTTP.GET(login_url) then
-		MODULE.Account.Status=asUnknown
+		MODULE.Account.Status = asUnknown
 		return false
 	end
-	local login_post_url=CreateTXQuery(HTTP.Document).XPathString('//form[@id="login_form"]/@action') or ''
-	if login_post_url=='' then
-		MODULE.Account.Status=asUnknown
+	local login_post_url = CreateTXQuery(HTTP.Document).XPathString('//form[@id="login_form"]/@action') or ''
+	if login_post_url == '' then
+		MODULE.Account.Status = asUnknown
 		return false
 	end
-	login_post_url=MODULE.RootURL..login_post_url:gsub('&nojs=1','')
+	login_post_url = MODULE.RootURL .. login_post_url:gsub('&nojs=1','')
 	HTTP.Reset()
 
-	HTTP.Headers.Values['Origin']= ' '..MODULE.RootURL
-	HTTP.Headers.Values['Referer']= ' '..login_url
-	HTTP.Headers.Values['Accept']=' */*'
-	HTTP.Headers.Values['X-Requested-With']=' XMLHttpRequest'
+	HTTP.Headers.Values['Origin'] = ' ' .. MODULE.RootURL
+	HTTP.Headers.Values['Referer'] = ' ' .. login_url
+	HTTP.Headers.Values['Accept'] = ' */*'
+	HTTP.Headers.Values['X-Requested-With'] = ' XMLHttpRequest'
 
 	function getFormData(formData)
-		local t=tostring(os.time())
-		local b=string.rep('-',39-t:len())..t
-		local crlf=string.char(13)..string.char(10)
-		local r=''
-		for k,v in pairs(formData) do
-			r=r..'--'..b..crlf..
-				'Content-Disposition: form-data; name="'..k..'"'..crlf..
-				crlf..
-				v..crlf
+		local t = tostring(os.time())
+		local b = string.rep('-',39-t:len()) .. t
+		local crlf = string.char(13) .. string.char(10)
+		local r = ''
+		for k, v in pairs(formData) do
+			r = r .. '--' .. b .. crlf ..
+				'Content-Disposition: form-data; name="' .. k .. '"' .. crlf ..
+				crlf ..
+				v .. crlf
 		end
-		r=r..'--'..b..'--'..crlf
-		return 'multipart/form-data; boundary='..b,r
+		r=r .. '--' .. b .. '--' .. crlf
+		return 'multipart/form-data; boundary=' .. b, r
 	end
 	local post_data
-	HTTP.MimeType,post_data=getFormData({
-		login_username=MODULE.Account.Username,
-		login_password=MODULE.Account.Password,
-		two_factor='',
-		remember_me='1'})
+	HTTP.MimeType,post_data = getFormData({
+		login_username = MODULE.Account.Username,
+		login_password = MODULE.Account.Password,
+		two_factor = '',
+		remember_me = '1'})
 
 	HTTP.POST(login_post_url,post_data)
-	if HTTP.ResultCode==200 then
-		if HTTP.Cookies.Values['mangadex_rememberme_token']~='' then
-			MODULE.Account.Status=asValid
+	if HTTP.ResultCode == 200 then
+		if HTTP.Cookies.Values['mangadex_rememberme_token'] ~= '' then
+			MODULE.Account.Status = asValid
 		else
-			MODULE.Account.Status=asInvalid
+			MODULE.Account.Status = asInvalid
 		end
 	else
-		MODULE.Account.Status=asUnknown
+		MODULE.Account.Status = asUnknown
 	end
 	return true
 end
@@ -398,10 +497,10 @@ function Init()
 	m.Name                     = 'MangaDex'
 	m.RootURL                  = 'https://mangadex.org'
 	m.Category                 = 'English'
-	m.OnGetInfo                = 'getinfo'
-	m.OnGetPageNumber          = 'getpagenumber'
-	m.OnGetNameAndLink         = 'getnameandlink'
-	m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
+	m.OnGetInfo                = 'GetInfo'
+	m.OnGetPageNumber          = 'GetPageNumber'
+	m.OnGetNameAndLink         = 'GetNameAndLink'
+	m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
 	m.MaxTaskLimit             = 1
 	m.MaxConnectionLimit       = 2
 	m.AccountSupport           = true
@@ -415,11 +514,13 @@ function Init()
 		['en'] = {
 			['delay'] = 'Delay (s) between requests',
 			['showscangroup'] = 'Show scanlation group',
+			['showchaptertitle'] = 'Show chapter title',
 			['lang'] = 'Language:'
 		},
 		['id_ID'] = {
 			['delay'] = 'Tunda (detik) antara permintaan',
 			['showscangroup'] = 'Tampilkan grup scanlation',
+			['showchaptertitle'] = 'Tampilkan judul bab',
 			['lang'] = 'Bahasa:'
 		},
 		get =
@@ -431,9 +532,10 @@ function Init()
 	}
 	m.AddOptionSpinEdit('mdx_delay', lang:get('delay'), 2)
 	m.AddOptionCheckBox('luashowscangroup', lang:get('showscangroup'), false)
+	m.AddOptionCheckBox('luashowchaptertitle', lang:get('showchaptertitle'), true)
 
 	local items = 'All'
-	local t = getlanglist()
+	local t = GetLangList()
 	for k, v in ipairs(t) do items = items .. '\r\n' .. v; end
 	m.AddOptionComboBox('lualang', lang:get('lang'), items, 11)
 end
