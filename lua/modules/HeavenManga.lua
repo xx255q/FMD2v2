@@ -55,6 +55,9 @@ function GetPageNumber()
 		if src:find('&url=') then
 			src = string.match(src, "&url=(.*)")
 		end
+		if src:find('http') then -- make sure urls contain proper http string
+			TASK.PageLinks.Add(src)
+		end
     TASK.PageLinks.Add(src)
 	end
 
