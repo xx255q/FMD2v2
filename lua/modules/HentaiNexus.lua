@@ -60,19 +60,7 @@ function GetPageNumber()
 	local message = GetBetween('initReader("', '", ', x.XPathString('//script[contains(., "initReader")]'))
 	local decoded = DecryptMessage(message)
 	x.ParseHTML(decoded)
-	local base    = x.XPathString('json(*).b')
-	local gallery = x.XPathString('json(*).r')
-	local index   = x.XPathString('json(*).i')
-	x.XPathStringAll('json(*).f().h', TASK.PageLinks)
-	local image_names = x.XPath('json(*).f().p')
-
-	for i = 0, TASK.PageLinks.Count - 1 do
-		TASK.PageLinks[i] = base .. gallery .. TASK.PageLinks[i] .. '/' .. index .. '/'.. image_names.Get(i+1).ToString()
-		i = i + 1
-	end
-	TASK.PageContainerLinks = TASK.PageLinks
-	TASK.PageNumber = TASK.PageContainerLinks.Count
-
+	x.XPathStringAll('json(*).pages()', TASK.PageLinks)
 	return no_error
 end
 
