@@ -10,15 +10,23 @@ function Init()
 end
 
 function GetNameAndLink()
-	if HTTP.GET(MODULE.RootURL .. '/newmanga/page/' .. (URL + 1)) then
-		local x = CreateTXQuery(HTTP.Document)
-		if x.XPath('//h3[@class="entry-title"]/a').Count == 0 then return no_error end
-		x.XPathHREFAll('//h3[@class="entry-title"]/a', LINKS, NAMES)
-		UPDATELIST.CurrentDirectoryPageNumber = UPDATELIST.CurrentDirectoryPageNumber + 1
-		return no_error
-	else
-		return net_problem
+	local dirurl = MODULE.RootURL .. '/manga/newmanga'
+	if not HTTP.GET(dirurl) then return net_problem end
+	local x = CreateTXQuery(HTTP.Document)
+	local next_url
+	while true do
+		x.XPathHREFAll('//h3[@class="entry-title"]/a',LINKS,NAMES)
+		next_url = x.XPathString('//a[contains(@class, "next page-numbers")]/@href')
+		if HTTP.Terminated then break end
+		if next_url == '' then break end
+		UPDATELIST.UpdateStatusText('Loading page ' .. (next_url:match('page/(%d+)/') or ''))
+		if HTTP.GET(next_url) then
+			x.ParseHTML(HTTP.Document)
+		else
+			break
+		end
 	end
+	return no_error
 end
 
 function GetInfo()
