@@ -42,7 +42,13 @@ end
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local x = CreateTXQuery(HTTP.Document)
-		x.XPathStringAll('//figure[@class="wp-block-image"]/img/@data-src', TASK.PageLinks)
+		local v for v in x.XPath('//figure[@class="wp-block-image"]/img').Get() do
+			local src = v.GetAttribute('src')
+			if v.GetAttribute('data-src') ~= '' then
+				src = v.GetAttribute('data-src')
+			end
+		TASK.PageLinks.Add(src)
+		end
 		return true
 	else
 		return false
