@@ -52,24 +52,18 @@ end
 
 -- Get LINKS and NAMES from the manga list of the current website.
 function GetNameAndLink()
-	local x, v = nil
 	local u = MODULE.RootURL .. '/directory/'
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = CreateTXQuery(HTTP.Document)
-
+	local x = CreateTXQuery(HTTP.Document)
 	json = GetBetween('vm.FullDirectory = ', '}]};', x.XPathString('//script[contains(., "vm.FullDirectory = ")]')) .. '}]}'
 	json = json:gsub('\\"', ''):gsub('\\u2019', '\''):gsub('&#', '')
 	x.ParseHTML(json)
-	v = x.XPath('json(*).Directory()')
-
-	for i = 1, v.Count do
-	NAMES.Add(x.XPathString('s', v.Get(i)))
-		LINKS.Add(MODULE.RootURL .. '/manga/' .. x.XPathString('i', v.Get(i)))
+	local v for v in x.XPath('json(*).Directory()').Get() do
+		NAMES.Add(x.XPathString('s', v))
+		LINKS.Add(MODULE.RootURL .. '/manga/' .. x.XPathString('i', v))
 	end
-
-	x.XPathHREFAll('//ul[contains(@class, "manga-list")]/li/a', LINKS, NAMES)
 
 	return no_error
 end
