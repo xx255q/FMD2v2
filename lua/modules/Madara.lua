@@ -244,6 +244,7 @@ function Init()
 		m.OnBeforeDownloadImage = 'BeforeDownloadImage'
 	end
 	AddWebsiteModule('29e070b824344c8697ceb9554a6d1d4b', 'MangazukiClub', 'https://mangazuki.club')
+	AddWebsiteModule('1d7090e3140f4957973a0e063c43f106', 'ManhwaRaw', 'https://manhwaraw.com')
 
 	cat = 'English'
 	AddWebsiteModule('4bce5afe51b646c6b0d30329a069ee83', 'IsekaiScan', 'https://isekaiscan.com')
