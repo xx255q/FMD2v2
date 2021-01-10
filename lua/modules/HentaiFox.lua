@@ -65,6 +65,13 @@ function GetInfo()
 	end
 end
 
+local ext = {
+	['p'] = '.png',
+	['j'] = '.jpg',
+	['g'] = '.gif',
+	['w'] = '.webp'
+}
+
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local x = CreateTXQuery(HTTP.Document)
@@ -74,20 +81,11 @@ function GetPageNumber()
 		local json      = GetBetween("parseJSON('{", "');", x.XPathString('//script[contains(., "var g_th")]'))
 		json = json:gsub('","', ';'):gsub('"}', ';'):gsub(':', ','):gsub('"', '')
 		local i; for i in json:gmatch('(.-);') do
-			i, ext = i:match('(.-),(.-),.-,.-')
-			if ext == 'p' then
-				ext = '.png'
-			elseif ext == 'j' then
-				ext = '.jpg'
-			elseif ext == 'g' then
-				ext = '.gif'
-			elseif ext == 'w' then
-				ext = '.webp'
-			end
+			i1, i2 = i:match('(.-),(.-),.-,.-')
 			if MODULE.ID == '58a2dec76ebf43a5a9e7dc9b453e52e9' then -- HentaiFox
-				TASK.PageLinks.Add('https://i.hentaifox.com/' .. dir .. '/' .. id .. '/' .. i .. ext)
+				TASK.PageLinks.Add('https://i.hentaifox.com/' .. dir .. '/' .. id .. '/' .. i1 .. ext[i2])
 			else
-				TASK.PageLinks.Add('https://m' .. server .. '.imhentai.com/' .. dir .. '/' .. id .. '/' .. i .. ext)
+				TASK.PageLinks.Add('https://m' .. server .. '.imhentai.com/' .. dir .. '/' .. id .. '/' .. i1 .. ext[i2])
 			end
 		end
 		return true
