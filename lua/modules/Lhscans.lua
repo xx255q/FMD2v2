@@ -78,14 +78,6 @@ function GetPageNumber()
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-src', TASK.PageLinks)
 		elseif MODULE.ID == 'f488bcb1911b4f21baa1ab65ef9ca61c' or MODULE.ID == '010777f53bf2414fad039b9567c8a9ce' then -- HeroScan, KissAway
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-original', TASK.PageLinks)
-		elseif MODULE.ID == '9054606f128e4914ae646032215915e5' then -- LoveHug
-			local v for v in x.XPath('//img[contains(@class, "chapter-img")]').Get() do
-				local src = v.GetAttribute('src')
-				if src:find('pagespeed') then
-					src = v.GetAttribute('data-pagespeed-lazy-src')
-				end
-			TASK.PageLinks.Add(src)
-			end
 		else
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@src', TASK.PageLinks)
 		end
