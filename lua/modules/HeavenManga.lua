@@ -58,7 +58,6 @@ function GetPageNumber()
 		if src:find('http') then -- make sure urls contain proper http string
 			TASK.PageLinks.Add(src)
 		end
-    TASK.PageLinks.Add(src)
 	end
 
 	return no_error
