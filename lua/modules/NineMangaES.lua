@@ -29,6 +29,9 @@ end
 function GetPageNumber()
 	Template.GetPageNumber()
 
+	x.ParseHTML('[' .. GetBetween('all_imgs_url: [', '],', x.XPathString('//script[contains(., "all_imgs_url")]')) .. ']')
+	x.XPathStringAll('json(*)()', TASK.PageLinks)
+
 	return no_error
 end
 
@@ -47,7 +50,7 @@ function Init()
 	local m = NewWebsiteModule()
 	m.ID                       = 'aed7321c8e464233a6ee74688d0e672e'
 	m.Name                     = 'NineMangaES'
-	m.RootURL                  = 'http://es.ninemanga.com'
+	m.RootURL                  = 'https://es.ninemanga.com'
 	m.Category                 = 'Spanish'
 	m.OnGetInfo                = 'GetInfo'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
