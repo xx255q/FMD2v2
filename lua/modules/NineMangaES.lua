@@ -29,9 +29,6 @@ end
 function GetPageNumber()
 	Template.GetPageNumber()
 
-	x.ParseHTML('[' .. GetBetween('all_imgs_url: [', '],', x.XPathString('//script[contains(., "all_imgs_url")]')) .. ']')
-	x.XPathStringAll('json(*)()', TASK.PageLinks)
-
 	return no_error
 end
 
