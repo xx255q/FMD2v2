@@ -61,6 +61,11 @@ function GetPageNumber()
 	local decoded = DecryptMessage(message)
 	x.ParseHTML(decoded)
 	x.XPathStringAll('json(*).pages()', TASK.PageLinks)
+	for i = 0, TASK.PageLinks.Count - 1 do
+		-- Bypass 'i0.wp.com' image CDN to ensure original images are loaded directly from host
+		TASK.PageLinks[i] = TASK.PageLinks[i]:gsub("i%d.wp.com/", "")
+		i = i + 1
+	end
 	return no_error
 end
 
