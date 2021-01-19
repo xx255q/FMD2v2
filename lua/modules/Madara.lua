@@ -399,4 +399,7 @@ function Init()
 
 	cat = 'Adult'
 	AddWebsiteModule('8760050d777d432dab8e776e3f1a6474', 'PornComix', 'https://porncomixinfo.net')
+
+	cat = 'Spanish'
+	AddWebsiteModule('22c481c279c740b897ffc906ab808502', 'TuMangaNet', 'https://tumanga.net')
 end
