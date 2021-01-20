@@ -67,7 +67,7 @@ function Init()
 	local m = NewWebsiteModule()
 	m.ID                       = '9d37501925e94fa8a447c0aa34914db6'
 	m.Name                     = 'ScanOP'
-	m.RootURL                  = 'https://www.scan-op.com'
+	m.RootURL                  = 'https://scan-op.cc'
 	m.Category                 = 'French'
 	m.OnGetInfo                = 'GetInfo'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
