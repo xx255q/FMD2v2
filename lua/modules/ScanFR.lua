@@ -26,7 +26,7 @@ function GetInfo()
 	MANGAINFO.Title     = x.XPathString('(//div[contains(@class, "container")]//h2)[1]/substring-after(., "Manga ")')
 	MANGAINFO.Artists   = x.XPathStringAll('//dt[text()="' .. XPathTokenArtists .. '"]/following-sibling::dd[1]')
 
-	for v in x.XPath('//ul[@class="chapters888"]/li/h5').Get() do
+	for v in x.XPath('//ul[@class="chapterszozo"]/li/h5').Get() do
 		if x.XPathString('normalize-space(.)', v):find('RAW') then
 			if MODULE.GetOption('luaincluderaw') then
 				MANGAINFO.ChapterLinks.Add(x.XPathString('a/@href', v))
@@ -64,7 +64,7 @@ function Init()
 	local m = NewWebsiteModule()
 	m.ID                       = '4dc19ea882d046c2a7ac385757e0a514'
 	m.Name                     = 'ScanFR'
-	m.RootURL                  = 'https://www.scan-fr.co'
+	m.RootURL                  = 'https://www.scan-fr.cc'
 	m.Category                 = 'French'
 	m.OnGetInfo                = 'GetInfo'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
