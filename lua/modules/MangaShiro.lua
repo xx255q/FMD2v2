@@ -74,6 +74,7 @@ function getAuthors(x)
 	if authors == '' then authors = x.XPathString('//td[@itemprop="creator"]') end
 	if authors == '' then authors = x.XPathString('//td[contains(., "Author")]/following-sibling::td') end
 	if authors == '' then authors = x.XPathString('//li[contains(b, "Author")]//following-sibling::span') end
+	if authors == '' then authors = x.XPathString('//div[@class="spe"]/span[contains(., "Author")]/substring-after(., "Author")') end
 	return authors
 end
 
@@ -124,6 +125,7 @@ function getStatus(x)
 	if status == '' then status = x.XPathString('//ul[@class="baru"]/li[3]') end
 	if status == '' then status = x.XPathString('//div[@class="imptdt" and contains(.,"Status")]/i') end
 	if status == '' then status = x.XPathString('//td[contains(., "Status")]//following-sibling::td') end
+	if status == '' then status = x.XPathString('//div[@class="spe"]/span[starts-with(., "Status")]/substring-after(., "Status")') end
 	status = status:gsub('Finished', 'Completed'):gsub('Publishing', 'Ongoing')
 	status = status:gsub('Berjalan', 'Ongoing'):gsub('Tamat', 'Completed')
 	return status
@@ -218,6 +220,8 @@ function GetPageNumber()
 				src = string.match(src, "src='(.*)'")
 				TASK.PageLinks.Add(src)
 			end
+		elseif MODULE.ID == 'c8e02b7aaac1412180db86374fc799a8' then -- ManhwasNet
+			x.XPathStringAll('//*[@class="reader-area"]/img/@data-src', TASK.PageLinks)
 		else
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="reader-area"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="readerarea"]//img/@src', TASK.PageLinks) end
@@ -295,7 +299,8 @@ function GetNameAndLink()
 			['ec1a1ad5301f414592f0ba0402024813'] = '/komik-list/?list', -- Doujindesu
 			['5c06401129894099bb6fc59c08a878d4'] = '/all-komik/?list', -- Ngomik
 			['a70859360a2a474ba2abdb86bc48616c'] = '/manga/list-mode/', -- KomikAV
-			['13c6434a0c2541b18abee83a2c72e8f5'] = '/daftar-komik/' -- MangaKane
+			['13c6434a0c2541b18abee83a2c72e8f5'] = '/daftar-komik/', -- MangaKane
+			['c8e02b7aaac1412180db86374fc799a8'] = '/manga-list/?list' -- ManhwasNet
 		}
 		local dirurl = '/manga/?list'
 		if dirs[MODULE.ID] ~= nil then
@@ -393,6 +398,7 @@ function Init()
 	AddWebsiteModule('41294a121062494489adfa601c442ef8', 'LegionAsia', 'https://legionasia.com')
 	AddWebsiteModule('363066add92f4043b39d2009b442ab32', 'PhoenixFansub', 'https://phoenixfansub.com')
 	AddWebsiteModule('9f756fcbfa114ea4a9abb578004edf31', 'SkyMangas', 'https://skymangas.com')
+	AddWebsiteModule('c8e02b7aaac1412180db86374fc799a8', 'ManhwasNet', 'https://manhwas.net')
 
 	cat = 'English'
 	AddWebsiteModule('421be2f0d918493e94f745c71090f359', 'Mangafast', 'https://mangafast.net')
