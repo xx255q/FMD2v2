@@ -300,7 +300,8 @@ function GetNameAndLink()
 			['5c06401129894099bb6fc59c08a878d4'] = '/all-komik/?list', -- Ngomik
 			['a70859360a2a474ba2abdb86bc48616c'] = '/manga/list-mode/', -- KomikAV
 			['13c6434a0c2541b18abee83a2c72e8f5'] = '/daftar-komik/', -- MangaKane
-			['c8e02b7aaac1412180db86374fc799a8'] = '/manga-list/?list' -- ManhwasNet
+			['c8e02b7aaac1412180db86374fc799a8'] = '/manga-list/?list', -- ManhwasNet
+			['ac42a85566244b7e836679491ce679e6'] = '/manga/list-mode/' -- YugenMangas
 		}
 		local dirurl = '/manga/?list'
 		if dirs[MODULE.ID] ~= nil then
@@ -399,6 +400,7 @@ function Init()
 	AddWebsiteModule('363066add92f4043b39d2009b442ab32', 'PhoenixFansub', 'https://phoenixfansub.com')
 	AddWebsiteModule('9f756fcbfa114ea4a9abb578004edf31', 'SkyMangas', 'https://skymangas.com')
 	AddWebsiteModule('c8e02b7aaac1412180db86374fc799a8', 'ManhwasNet', 'https://manhwas.net')
+	AddWebsiteModule('ac42a85566244b7e836679491ce679e6', 'YugenMangas', 'https://yugenmangas.com')
 
 	cat = 'English'
 	AddWebsiteModule('421be2f0d918493e94f745c71090f359', 'Mangafast', 'https://mangafast.net')
