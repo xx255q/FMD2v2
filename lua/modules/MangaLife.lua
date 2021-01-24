@@ -31,7 +31,7 @@ function GetInfo()
 	vm.ChapterURLEncode = function(e)
 		local Index = ""
 		local t = e:sub(1, 1)
-		if 1 ~= t then Index = "-index-" .. t end
+		if '1' ~= t then Index = "-index-" .. t end
 		local n = tonumber(e:sub(2, -2))
 		local m = ""
 		local a = e:sub(-1)
