@@ -52,14 +52,8 @@ end
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local x = CreateTXQuery(HTTP.Document)
-		local h = x.XPathString('//*[@data-homepage]/@data-homepage')
-		if h == '' then h = MODULE.RootURL end
-		h = h:gsub('/+$','')
-		local v, s
-		for v in x.XPath('//div[contains(@class,"ch-image-container")]//img').Get() do
-			s = v.GetAttribute('src')
-			if s:find('^/') then s = h .. s end
-			TASK.PageLinks.Add(s)
+		local v for v in x.XPath('//div[contains(@class,"ch-image-container")]//img/@src').Get() do
+			TASK.PageLinks.Add(MaybeFillHost(MODULE.RootURL, v.ToString()))
 		end
 		return true
 	else
