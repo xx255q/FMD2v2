@@ -27,10 +27,10 @@ function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
 		local x = CreateTXQuery(HTTP.Document)
-		MANGAINFO.Title     = x.XPathString('//meta[@name="title"]/@content')
+		MANGAINFO.Title     = x.XPathString('//table[@class="bt_view1"]//td[@class="bt_title"]')
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//*[@class="bt_thumb"]/a/img/@src'))
-		MANGAINFO.Authors   = x.XPathString('//meta[@name="author"]/@content')
-		MANGAINFO.Summary   = x.XPathString('//meta[@name="description"]/@content')
+		MANGAINFO.Authors   = x.XPathString('//table[@class="bt_view1"]//span[contains(., "작가")]/following-sibling::span')
+		MANGAINFO.Summary   = x.XPathString('//table[@class="bt_view1"]//td[@class="bt_over"]')
 		local v for v in x.XPath('//table[@class="web_list"]/tbody//tr/td[@class="content__title"]').Get() do
 			MANGAINFO.ChapterLinks.Add(v.GetAttribute('data-role'))
 			MANGAINFO.ChapterNames.Add(v.ToString())
