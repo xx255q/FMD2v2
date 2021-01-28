@@ -10,12 +10,23 @@ function Init()
 end
 
 function GetNameAndLink()
-	if HTTP.GET(MODULE.RootURL .. '/seriler') then
-		CreateTXQuery(HTTP.Document).XPathHREFAll('//div[@class="table-responsive"]//td[2]/a', LINKS, NAMES)
-		return no_error
-	else
-		return net_problem
+	local dirurl = MODULE.RootURL .. '/seriler'
+	if not HTTP.GET(dirurl) then return net_problem end
+	local x = CreateTXQuery(HTTP.Document)
+	local next_url
+	while true do
+		x.XPathHREFAll('//div[@class="table-responsive"]//td[2]/a', LINKS, NAMES)
+		next_url = MaybeFillHost(MODULE.RootURL, x.XPathString('//ul[@class="pagination"]/li[last()-1]/a/@href'))
+		if HTTP.Terminated then break end
+		if next_url == '' then break end
+		UPDATELIST.UpdateStatusText('Loading page ' .. (next_url:match('seriler/(%d+)/') or ''))
+		if HTTP.GET(next_url) then
+			x.ParseHTML(HTTP.Document)
+		else
+			break
+		end
 	end
+	return no_error
 end
 
 function GetInfo()
@@ -39,13 +50,12 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x = CreateTXQuery(HTTP.Document)
-		local body    = x.XPathString('//script[contains(.,"var dataurl")]')
+		local body    = HTTP.Document.ToString()
 		local dataurl = body:match("var dataurl = '(.-)'")
 		local server  = body:match("var server = '(.-)'")
-		local images  = body:match('var page_array = %[([^%]]+)')
-		local i; for i in images:gmatch("'([^',]+)") do
-			TASK.PageLinks.Add(MODULE.RootURL .. server .. dataurl .. '/' .. i)
+		local images  = body:match("var page_array = %[([^%]]+)")
+		local i for i in images:gmatch("'([^',]+)") do
+			TASK.PageLinks.Add(MaybeFillHost(MODULE.RootURL, server .. dataurl .. '/' .. i))
 		end
 		return true
 	else
