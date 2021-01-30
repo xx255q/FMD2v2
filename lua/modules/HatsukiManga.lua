@@ -21,13 +21,13 @@ end
 function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		x = CreateTXQuery(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title      = x.XPathString('//h2[@class="titulo-pag-obra"]')
 		MANGAINFO.CoverLink  = MaybeFillHost(MODULE.RootURL, x.XPathString('//img[@class="portada-obra-pag-obra"]/@src'))
 		MANGAINFO.Genres     = x.XPathStringAll('//div[@class="generos-pag-obra"]/h4')
 		MANGAINFO.Summary    = x.XPathString('//div[@class="desc-obra"]/p')
 
-		local v; for v in x.XPath('//div[@class="cuadro-obra"]').Get() do
+		local v for v in x.XPath('//div[@class="cuadro-obra"]').Get() do
 			MANGAINFO.ChapterLinks.Add(x.XPathString('ul/li/div[2]/a/@href', v))
 			MANGAINFO.ChapterNames.Add(x.XPathString('div/p', v) .. ' [' .. x.XPathString('ul/li/div[1]/a', v) .. ']')
 		end
@@ -40,12 +40,8 @@ end
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, '/biblioteca/' .. URL)) then
 		local x = CreateTXQuery(HTTP.Document)
-		local h = MODULE.RootURL
-		local v, s
-		for v in x.XPath('//li[@class="li-pagina"]/img').Get() do
-			s = v.GetAttribute('src')
-			s = s:gsub('../app', h .. '/app')
-			TASK.PageLinks.Add(s)
+		local v for v in x.XPath('//li[@class="li-pagina"]/img/@src').Get() do
+			TASK.PageLinks.Add(MaybeFillHost(MODULE.RootURL, v.ToString()))
 		end
 		return true
 	else
