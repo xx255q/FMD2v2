@@ -105,16 +105,7 @@ function GetPageNumber()
 	local u = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(u) then
 		local x = CreateTXQuery(HTTP.Document)
-		if MODULE.ID == '794187d0e92e4933bf63812438d69017' then -- manhwa18
-			local v = x.XPath('//img[contains(@class, "chapter-img")]/@src')
-			for i = 1, v.Count do
-				local s = v.Get(i).ToString()
-				s = s:gsub('app/', 'https://manhwa18.com/app/'):gsub('https://manhwa18.net/https://manhwa18.com', 'https://manhwa18.net')
-				if string.find(s, ".iff") == nil then
-					TASK.PageLinks.Add(s)
-				end
-			end
-		elseif MODULE.ID == '9e96846a035646988e1b2eb0f356d795' then -- loveheaven
+		if MODULE.ID == '9e96846a035646988e1b2eb0f356d795' then -- loveheaven
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-src', TASK.PageLinks)
 		elseif MODULE.ID == 'f488bcb1911b4f21baa1ab65ef9ca61c' or MODULE.ID == '010777f53bf2414fad039b9567c8a9ce' then -- HeroScan, KissAway
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-original', TASK.PageLinks)
