@@ -13,7 +13,6 @@ function Init()
 		m.OnGetPageNumber            = 'GetPageNumber'
 		m.OnBeforeDownloadImage      = 'BeforeDownloadImage'
 	end
-	AddWebsiteModule('9e96846a035646988e1b2eb0f356d795', 'LoveHeaven', 'https://loveheaven.net')
 	AddWebsiteModule('4c089029492f43c98d9f27a23403247b', 'HanaScan', 'https://hanascan.com')
 	AddWebsiteModule('010777f53bf2414fad039b9567c8a9ce', 'KissAway', 'https://kissaway.net')
 	AddWebsiteModule('794187d0e92e4933bf63812438d69017', 'Manhwa18', 'https://manhwa18.com')
@@ -105,9 +104,7 @@ function GetPageNumber()
 	local u = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(u) then
 		local x = CreateTXQuery(HTTP.Document)
-		if MODULE.ID == '9e96846a035646988e1b2eb0f356d795' then -- loveheaven
-			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-src', TASK.PageLinks)
-		elseif MODULE.ID == 'f488bcb1911b4f21baa1ab65ef9ca61c' or MODULE.ID == '010777f53bf2414fad039b9567c8a9ce' then -- HeroScan, KissAway
+		if MODULE.ID == 'f488bcb1911b4f21baa1ab65ef9ca61c' or MODULE.ID == '010777f53bf2414fad039b9567c8a9ce' then -- HeroScan, KissAway
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-original', TASK.PageLinks)
 		else
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@src', TASK.PageLinks)
