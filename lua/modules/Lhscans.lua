@@ -7,9 +7,10 @@ function Init()
 		m.Name                       = name
 		m.RootURL                    = url
 		m.TotalDirectory             = 1
+		m.OnGetDirectoryPageNumber   = 'GetDirectoryPageNumber'
+		m.OnGetNameAndLink           = 'GetNameAndLink'
 		m.OnGetInfo                  = 'GetInfo'
 		m.OnGetPageNumber            = 'GetPageNumber'
-		m.OnGetNameAndLink           = 'GetNameAndLink'
 		m.OnBeforeDownloadImage      = 'BeforeDownloadImage'
 	end
 	AddWebsiteModule('9e96846a035646988e1b2eb0f356d795', 'LoveHeaven', 'https://loveheaven.net')
@@ -27,6 +28,45 @@ function Init()
 	
 	cat = 'English-Scanlation'
 	AddWebsiteModule('7fb5fbed6d3a44fe923ecc7bf929e6cb', 'LHTranslation', 'https://lhtranslation.net')
+end
+
+function GetDirectoryPageNumber()
+	if HTTP.GET(MODULE.RootURL .. '/manga-list.html?page=1&sort=name&sort_type=ASC') then
+		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//ul[contains(@class, "pagination")]/li[last()-1]')) or 1
+		return no_error
+	else
+		return net_problem
+	end
+end
+
+function GetNameAndLink()
+	if MODULE.ID == '9054606f128e4914ae646032215915e5' then -- LoveHug
+		if HTTP.GET(MODULE.RootURL .. '/manga-list.html?page=' .. (URL + 1) .. '&sort=name&sort_type=ASC') then
+			local x = CreateTXQuery(HTTP.Document)
+			local v for v in x.XPath('//div[@class="row-last-update"]//div[contains(@class, "series-title")]/a').Get() do
+				NAMES.Add(Trim(SeparateLeft(v.ToString(), '- Raw')))
+				LINKS.Add(v.GetAttribute('href'))
+			end
+			return no_error
+		else
+			return net_problem
+		end
+	else
+		if HTTP.GET(MODULE.RootURL .. '/manga-list.html?listType=allABC') then
+			local x = CreateTXQuery(HTTP.Document)
+			if MODULE.ID == '694ff34a6ae4469fbdaecf8d3aebb6eb' then -- manhuascan
+				x.XPathHREFAll('//div[@id="Character"]//a', LINKS, NAMES)
+			else
+				local v for v in x.XPath('//span[@manga-slug]//a').Get() do
+					NAMES.Add(Trim(SeparateLeft(v.ToString(), '- Raw')))
+					LINKS.Add(v.GetAttribute('href'))
+				end
+			end
+			return no_error
+		else
+			return net_problem
+		end
+	end
 end
 
 function GetInfo()
@@ -85,23 +125,6 @@ function GetPageNumber()
 		return false
 	end
 	return true
-end
-
-function GetNameAndLink()
-	if HTTP.GET(MODULE.RootURL .. '/manga-list.html?listType=allABC') then
-		local x = CreateTXQuery(HTTP.Document)
-		if MODULE.ID == '694ff34a6ae4469fbdaecf8d3aebb6eb' then -- manhuascan
-			x.XPathHREFAll('//div[@id="Character"]//a', LINKS, NAMES)
-		else
-			local v; for v in x.XPath('//span[@manga-slug]//a').Get() do
-				NAMES.Add(Trim(SeparateLeft(v.ToString(), '- Raw')))
-				LINKS.Add(v.GetAttribute('href'))
-			end
-		end
-		return no_error
-	else
-		return net_problem
-	end
 end
 
 function BeforeDownloadImage()
