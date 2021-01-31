@@ -20,7 +20,7 @@ function GetInfo()
 	if MODULE.Name == 'NHentai' then
 		MANGAINFO.CoverLink = x.XPathString('//div[@id="cover"]//img/@data-src')
 		MANGAINFO.Artists   = x.XPathStringAll('//*[@class="tags"]/a[contains(@href, "artist")]/*[@class="name"]')
-		MANGAINFO.Genres    = x.XPathStringAll('//*[@class="tags"]/a[contains(@href, "tag") or contains(@href, "language") or contains(@href, "parody")]/*[@class="name"]')
+		MANGAINFO.Genres    = x.XPathStringAll('//*[@class="tags"]/a[contains(@href, "parody") or contains(@href, "tag") or contains(@href, "language") or contains(@href, "category")]/*[@class="name"]')
 	else
 		MANGAINFO.CoverLink = x.XPathString('//div[@id="cover"]//img/@src')
 		MANGAINFO.Artists   = x.XPathStringAll('//section[@id="tags"]//a[contains(@href, "artists")]/text()')
