@@ -56,7 +56,7 @@ function Init()
 	m.ID='8b8a11bb9b0e4cd8b30c8577c762d19c'
 		m.Category='Webcomics'
 		m.Name='NewToki'
-		m.RootURL='https://newtoki34.com'
+		m.RootURL='https://newtoki95.com'
 		m.OnGetInfo='getinfo'
 		m.OnGetPageNumber='getpagenumber'
 		m.OnGetNameAndLink='getnameandlink'
