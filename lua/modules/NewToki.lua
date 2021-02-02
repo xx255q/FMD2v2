@@ -24,12 +24,18 @@ function getpagenumber()
 	TASK.PageNumber=0
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
+		local function HexToStr(str)
+			return str:gsub('%x%x',function(c)return c.char(tonumber(c,16))end)
+		end
 		local x = CreateTXQuery(HTTP.Document)
-		x.XPathStringAll('//div[contains(@class, "view-content")]//img/@data-original', TASK.PageLinks)
-		return true
+		local s = x.XPathString('//script[contains(.,"var html_data")]')
+		local decoded_hex = HexToStr(s:match("html_data%+%=\'.*\';"):gsub("[html_data+=.;%'\n]", ''))
+		x.ParseHTML(decoded_hex)
+		x.XPathStringAll('//img[@src="/img/loading-image.gif"]/@*[contains(name(),"data-")]', TASK.PageLinks)
 	else
 		return false
 	end
+	return true
 end
 
 function getnameandlink()
