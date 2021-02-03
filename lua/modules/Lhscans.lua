@@ -72,29 +72,31 @@ function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
 		local x = CreateTXQuery(HTTP.Document)
-		MANGAINFO.Title     = Trim(SeparateLeft(x.XPathString('//div[@class="container"]//li[3]//span'), '- Raw'))
-		if MANGAINFO.Title == '' then MANGAINFO.Title = Trim(x.XPathString('//div[contains(@class, "container")]//li[3]//span'):gsub('- RAW', ''):gsub('%(MANGA%)', '')) end
-		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//img[@class="thumbnail"]/@src'))
-		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//ul[@class="manga-info"]/li[contains(., "Status")]//a'))
-		MANGAINFO.Authors   = x.XPathString('//ul[@class="manga-info"]/li[contains(., "Author")]//a')
-		MANGAINFO.Genres    = x.XPathStringAll('//ul[@class="manga-info"]/li[contains(., "Genre")]//a')
-		MANGAINFO.Summary   = x.XPathString('string-join(//div[./h3="Description"]//p, "\r\n")')
-		if MANGAINFO.Summary == '' then MANGAINFO.Summary = x.XPathString('//div[@class="detail"]/div[@class="content"]') end
+		MANGAINFO.Title      = Trim(SeparateLeft(x.XPathString('//div[@class="container"]//li[3]//span'), '- Raw'))
+		if MANGAINFO.Title   == '' then
+			MANGAINFO.Title = Trim(x.XPathString('//div[contains(@class, "container")]//li[3]//span'):gsub('- RAW', ''):gsub('%(MANGA%)', ''))
+		end
+		MANGAINFO.CoverLink  = MaybeFillHost(MODULE.RootURL, x.XPathString('//img[@class="thumbnail"]/@src'))
+		MANGAINFO.Status     = MangaInfoStatusIfPos(x.XPathString('//ul[@class="manga-info"]/li[contains(., "Status")]//a'))
+		MANGAINFO.Authors    = x.XPathString('//ul[@class="manga-info"]/li[contains(., "Author")]//a')
+		MANGAINFO.Genres     = x.XPathStringAll('//ul[@class="manga-info"]/li[contains(., "Genre")]//a')
+		MANGAINFO.Summary    = x.XPathString('string-join(//div[./h3="Description"]//p, "\r\n")')
+		if MANGAINFO.Summary == '' then
+			MANGAINFO.Summary = x.XPathString('//div[@class="detail"]/div[@class="content"]')
+		end
+
 		x.XPathHREFAll('//div[@id="tab-chapper"]//table/tbody/tr/td/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		if MANGAINFO.ChapterLinks.Count == 0 then
 			x.XPathHREFAll('//div[@id="list-chapters"]//a[@class="chapter"]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		end
 		if MANGAINFO.ChapterLinks.Count == 0 then
-			for v in x.XPath('//ul[contains(@class, "list-chapters")]/a').Get() do
+			local v for v in x.XPath('//ul[contains(@class, "list-chapters")]/a').Get() do
 				local data_href = v.GetAttribute('data-href'):gsub('/', '')
 				local href = v.GetAttribute('href')
 				local title = v.GetAttribute('title')
 				MANGAINFO.ChapterLinks.Add(data_href .. '/' .. href)
 				MANGAINFO.ChapterNames.Add(title)
 			end
-		end
-		for i = 0, MANGAINFO.ChapterLinks.Count-1 do
-			MANGAINFO.ChapterLinks[i] = MODULE.RootURL .. '/' .. MANGAINFO.ChapterLinks[i]
 		end
 		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		HTTP.Reset()
