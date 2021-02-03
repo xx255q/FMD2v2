@@ -60,7 +60,14 @@ function GetInfo()
 			MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//meta[@property="og:image"]/@content'))
 			MANGAINFO.Authors   = x.XPathString('//meta[@property="og:author"]/@content')
 			MANGAINFO.Summary   = x.XPathString('//div[@class="view-title"]//div[@class="col-sm-8"]/div[2]')
-			x.XPathHREFAll('//div[@class="wr-subject"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+			local v for v in x.XPath('//div[@class="wr-subject"]').Get() do
+				MANGAINFO.ChapterLinks.Add(x.XPathString('a/@href', v))
+				local removenumber = x.XPathString('a/span[contains(@class, "orangered")]', v)
+				local name = x.XPathString('normalize-space(a)', v)
+				name = name:match("^" .. removenumber .. "(.*)")
+				name = name:match("(.*)" .. removenumber .. "$")
+				MANGAINFO.ChapterNames.Add(name)
+			end
 			MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 			return no_error
 		else
