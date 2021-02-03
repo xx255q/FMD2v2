@@ -301,7 +301,8 @@ function GetNameAndLink()
 			['a70859360a2a474ba2abdb86bc48616c'] = '/manga/list-mode/', -- KomikAV
 			['13c6434a0c2541b18abee83a2c72e8f5'] = '/daftar-komik/', -- MangaKane
 			['c8e02b7aaac1412180db86374fc799a8'] = '/manga-list/?list', -- ManhwasNet
-			['ac42a85566244b7e836679491ce679e6'] = '/manga/list-mode/' -- YugenMangas
+			['ac42a85566244b7e836679491ce679e6'] = '/manga/list-mode/', -- YugenMangas
+			['7103ae6839ea46ec80cdfc2c4b37c803'] = '/manga/list-mode/' -- AsuraScans
 		}
 		local dirurl = '/manga/?list'
 		if dirs[MODULE.ID] ~= nil then
