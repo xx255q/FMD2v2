@@ -85,7 +85,13 @@ function GetInfo()
 			x.XPathHREFAll('//div[@id="list-chapters"]//a[@class="chapter"]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		end
 		if MANGAINFO.ChapterLinks.Count == 0 then
-			x.XPathHREFTitleAll('//ul[contains(@class, "list-chapters")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+			for v in x.XPath('//ul[contains(@class, "list-chapters")]/a').Get() do
+				local data_href = v.GetAttribute('data-href'):gsub('/', '')
+				local href = v.GetAttribute('href')
+				local title = v.GetAttribute('title')
+				MANGAINFO.ChapterLinks.Add(data_href .. '/' .. href)
+				MANGAINFO.ChapterNames.Add(title)
+			end
 		end
 		for i = 0, MANGAINFO.ChapterLinks.Count-1 do
 			MANGAINFO.ChapterLinks[i] = MODULE.RootURL .. '/' .. MANGAINFO.ChapterLinks[i]
