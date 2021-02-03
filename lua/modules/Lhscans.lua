@@ -116,6 +116,10 @@ function GetPageNumber()
 end
 
 function BeforeDownloadImage()
-	HTTP.Headers.Values['Referer'] = ' ' .. MaybeFillHost(MODULE.RootURL, TASK.ChapterLinks[TASK.CurrentDownloadChapterPtr])
+	if MODULE.ID == 'f488bcb1911b4f21baa1ab65ef9ca61c' and URL.find(URL, "isekaiscan") ~= nil then
+		HTTP.Headers.Values['Referer'] = ''
+	else
+		HTTP.Headers.Values['Referer'] = ' ' .. MaybeFillHost(MODULE.RootURL, TASK.ChapterLinks[TASK.CurrentDownloadChapterPtr])
+	end
 	return true
 end
