@@ -136,6 +136,10 @@ function Modules.Madara()
 			if TASK.PageLinks.Count == 0 then
 				x.XPathStringAll('//div[@class="reading-content"]//img/@src', TASK.PageLinks)
 			end
+			for i = 0, TASK.PageLinks.Count - 1 do -- Bypass 'i0.wp.com' image CDN to ensure original images are loaded directly from host
+				TASK.PageLinks[i] = TASK.PageLinks[i]:gsub("i%d.wp.com/", "")
+				i = i + 1
+			end
 			return true
 		end
 		return false
@@ -283,6 +287,7 @@ function Init()
 	AddWebsiteModule('805140cf71b44550a99d74f63bb50a2a', 'Aloalivn', 'https://aloalivn.com')
 	AddWebsiteModule('90abf9af48944b5487e1e15ca5a253fb', 'NitroScans', 'https://nitroscans.com')
 	AddWebsiteModule('2ee1ccc7bf774f79a4b0debda4bfd867', 'SleepyTranslations', 'https://sleepytranslations.com')
+	AddWebsiteModule('f01040ee781d4ae1929031419b97d2e0', 'VoidScans', 'https://voidscans.com')
 
 	cat = 'French'
 	AddWebsiteModule('41867fa36f2f49959df9fef8aa53ffb5', 'WakaScan', 'https://wakascan.com')
