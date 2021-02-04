@@ -101,6 +101,9 @@ function GetInfo()
 				MANGAINFO.ChapterNames.Add(title)
 			end
 		end
+		for i = 0, MANGAINFO.ChapterLinks.Count - 1 do
+			MANGAINFO.ChapterLinks[i] = MODULE.RootURL .. '/' .. MANGAINFO.ChapterLinks[i]
+		end
 		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		HTTP.Reset()
 		HTTP.Headers.Values['Referer'] = MANGAINFO.URL
