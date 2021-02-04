@@ -2,19 +2,20 @@ function Init()
 	local m = NewWebsiteModule()
 	m.ID                         = 'c878e7780b404a959e63179568cb7ab3'
 	m.Name                       = 'BlogTruyen'
-	m.RootURL                    = 'http://blogtruyen.com'
+	m.RootURL                    = 'https://blogtruyen.vn'
 	m.Category                   = 'Vietnamese'
 	m.OnGetDirectoryPageNumber   = 'GetDirectoryPageNumber'
 	m.OnGetNameAndLink           = 'GetNameAndLink'
 	m.OnGetInfo                  = 'GetInfo'
 	m.OnGetPageNumber            = 'GetPageNumber'
+	m.OnBeforeDownloadImage      = 'BeforeDownloadImage'
 end
 
 local dirurl = '/ajax/Search/AjaxLoadListManga?key=tatca&orderBy=1&p='
 
 function GetDirectoryPageNumber()
 	if HTTP.GET(MODULE.RootURL .. dirurl .. '1') then
-		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).x.XPathString('//*[@class="paging"]/span[last()]/a/@href/substring-before(substring-after(.,"("),")")')) or 1
+		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//*[@class="paging"]/span[last()]/a/@href'):match('%((.-)%)')) or 1
 		return no_error
 	else
 		return net_problem
@@ -63,4 +64,9 @@ function GetPageNumber()
 	else
 		return false
 	end
+end
+
+function BeforeDownloadImage()
+	HTTP.Headers.Values['Referer'] = MaybeFillHost(MODULE.RootURL, TASK.ChapterLinks[TASK.CurrentDownloadChapterPtr])
+	return true
 end
