@@ -1,4 +1,4 @@
-local API_URL = 'https://api.mangadex.org/v2' -- This is the url to the JSON API. Call this url to look at the API documentation.
+local API_PATH = '/api/v2' -- This is the path to the JSON API. Call the full url to look at the API documentation.
 local API_PARAMS = '?include=chapters' -- This parameter minimizes the calls to the API by combining the info and chapter parts into one call instead of two. Getting manga info should only be one call overall.
 local API_CHAPTER_PARAMS = '?saver=false' -- This parameter forces the API to always deliver the source images instead of the data-saver low quality images. Default of the API is actually false, but this prevents that you download data-saver images if the default will ever be changed.
 
@@ -11,7 +11,7 @@ function GetInfo()
 	Delay()
 
 	-- Fetch JSON from API:
-	if HTTP.GET(API_URL .. '/manga/' .. mid .. API_PARAMS) then
+	if HTTP.GET(MaybeFillHost(MODULE.RootURL, API_PATH .. '/manga/' .. mid .. API_PARAMS)) then
 		local crypto = require 'fmd.crypto'
 		local x = CreateTXQuery(crypto.HTMLEncode(HTTP.Document.ToString()))
 
@@ -343,7 +343,7 @@ function GetPageNumber()
 	Delay()
 
 	-- Fetch JSON from API:
-	if HTTP.GET(API_URL .. '/chapter/' .. cid .. API_CHAPTER_PARAMS) then
+	if HTTP.GET(MaybeFillHost(MODULE.RootURL, API_PATH .. '/chapter/' .. cid .. API_CHAPTER_PARAMS)) then
 		local crypto = require 'fmd.crypto'
 		local x = CreateTXQuery(crypto.HTMLEncode(HTTP.Document.ToString():gsub('<', ''):gsub('>', ''):gsub('&quot;', ''))) -- Some characters may not be correctly escaped and create issues for the parser. That's why these will be removed.
 
