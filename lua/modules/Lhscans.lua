@@ -120,6 +120,8 @@ function GetPageNumber()
 		local x = CreateTXQuery(HTTP.Document)
 		if MODULE.ID == 'f488bcb1911b4f21baa1ab65ef9ca61c' or MODULE.ID == '010777f53bf2414fad039b9567c8a9ce' then -- HeroScan, KissAway
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-original', TASK.PageLinks)
+		elseif MODULE.ID == '9054606f128e4914ae646032215915e5' then -- LoveHug
+			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-srcset', TASK.PageLinks)
 		else
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@src', TASK.PageLinks)
 		end
