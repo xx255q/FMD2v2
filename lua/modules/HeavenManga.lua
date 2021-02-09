@@ -1,8 +1,7 @@
 -- Get info and chapter list for current manga.
 function GetInfo()
-	local pages, x, v = nil
+	local p, x, v = nil
 	local u = MaybeFillHost(MODULE.RootURL, URL):gsub('/+$', '') .. '/'
-	local p = 1
 
 	if not HTTP.GET(u) then return net_problem end
 
@@ -14,8 +13,6 @@ function GetInfo()
 	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//div[@class="info"]//div[@class="update"]/span[last()]'))
 	MANGAINFO.Summary   = x.XPathString('//div[@class="comic-description"]/p')
 
-	pages = tonumber(x.XPathString('//div[@class="pagination"]//a[contains(@class, "page-numbers")][last()]/substring-after(@href, "/page-")'))
-	if pages == nil then pages = 1 end
 	while true do
 		for v in x.XPath('//div[contains(@class, "chapters-wrapper")]//h2[@class="chap"]/a').Get() do
 			if x.XPathString('span/text()', v) == 'RAW' then 
@@ -28,11 +25,9 @@ function GetInfo()
 				MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
 			end
 		end
-		p = p + 1
-		if p > pages then
-			break
-		elseif HTTP.GET(u .. '/page-' .. tostring(p)) then
-			x = CreateTXQuery(HTTP.Document)
+		p = x.XPathString('//div[@class="pagination"]/span[@class="current page-numbers"]/following-sibling::a/@href')
+		if (p ~= '') and HTTP.GET(MaybeFillHost(MODULE.RootURL, p)) then
+			x.ParseHTML(HTTP.Document)
 		else
 			break
 		end
@@ -44,14 +39,14 @@ end
 
 -- Get the page count for the current chapter.
 function GetPageNumber()
-	local v, x = nil
+	local src, v, x = nil
 	local u = MaybeFillHost(MODULE.RootURL, URL):gsub('/+$', '') .. '/'
 
 	if not HTTP.GET(u) then return net_problem end
 
 	x = CreateTXQuery(HTTP.Document)
 	for v in x.XPath('//div[@class="chapter-content"]//img').Get() do
-		local src = v.GetAttribute('src')
+		src = v.GetAttribute('src')
 		if src:find('&url=') then
 			src = string.match(src, "&url=(.*)")
 		end
@@ -128,7 +123,7 @@ function Init()
 		}
 		m.AddOptionCheckBox('luaincluderaw', lang:get('includeraw'), false)
 	end
-	AddWebsiteModule('3b0d5c38081a4b21a39a388a3ec59197', 'HeavenToon', 'https://ww5.heaventoon.com')
-	AddWebsiteModule('a9a8bd394d63495686794a8d427bda00', 'HolyManga', 'https://ww2.holymanga.net')
-	AddWebsiteModule('f49e608b66994721a5ea992b56367d96', 'KooManga', 'https://ww6.koomanga.com')
+	AddWebsiteModule('3b0d5c38081a4b21a39a388a3ec59197', 'MyToon', 'https://mytoon.net')
+	AddWebsiteModule('a9a8bd394d63495686794a8d427bda00', 'HolyManga', 'https://w23.holymanga.net')
+	AddWebsiteModule('f49e608b66994721a5ea992b56367d96', 'KooManga', 'https://ww7.koomanga.com')
 end
