@@ -269,6 +269,7 @@ function Init()
 	AddWebsiteModule('c01aa037f7f1459984e7cd8676fe9658', 'MangaRead', 'https://www.mangaread.org')
 	AddWebsiteModule('829fe500a3e64b8f9637a3d5ebdb4e11', 'LilyManga', 'https://lilymanga.com')
 	AddWebsiteModule('1f1ff002597f4f23a0dad6f25ea0612c', 'MangaClash', 'https://mangaclash.com')
+	AddWebsiteModule('e3f643dfdca24576adf5b87c99878bfb', 'Mangax18', 'https://mangax18.com')
 
 	cat = 'English-Scanlation'
 	AddWebsiteModule('f17a22a1a24640ecb2ae4f51c47a45c8', 'TrashScanlations', 'https://trashscanlations.com')
