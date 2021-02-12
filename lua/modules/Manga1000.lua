@@ -1,12 +1,16 @@
 function Init()
-	local m = NewWebsiteModule()
-	m.ID                         = 'fa2359317a72416a958a16682050acb0'
-	m.Name                       = 'Manga1000'
-	m.RootURL                    = 'https://manga1000.com'
-	m.Category                   = 'Raw'
-	m.OnGetNameAndLink           = 'GetNameAndLink'
-	m.OnGetInfo                  = 'GetInfo'
-	m.OnGetPageNumber            = 'GetPageNumber'
+	function AddWebsiteModule(id, name, rooturl)
+		local m = NewWebsiteModule()
+		m.ID                         = id
+		m.Name                       = name
+		m.RootURL                    = rooturl
+		m.Category                   = 'Raw'
+		m.OnGetNameAndLink           = 'GetNameAndLink'
+		m.OnGetInfo                  = 'GetInfo'
+		m.OnGetPageNumber            = 'GetPageNumber'
+	end
+	AddWebsiteModule('fa2359317a72416a958a16682050acb0', 'Manga1000', 'https://manga1000.com')
+	AddWebsiteModule('1d09f3bea8f148fa9e9215fc578fedcd', 'Manga1001', 'https://manga1001.com')
 end
 
 function GetNameAndLink()
@@ -41,6 +45,9 @@ function GetInfo()
 
 		x.XPathHREFAll('//table[contains(@class, "table")]//a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
+
+		HTTP.Reset()
+		HTTP.Headers.Values['Referer'] = MANGAINFO.URL
 		return no_error
 	else
 		return net_problem
