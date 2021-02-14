@@ -34,7 +34,7 @@ function _M.GetInfo()
 	MANGAINFO.Genres    = x.XPathStringAll('//dt[text()="' .. XPathTokenGenres .. '"]/following-sibling::dd[1]/a')
 	MANGAINFO.Summary   = x.XPathString('//div[contains(@class, "well")]/p')
 
-	for v in x.XPath('//ul[@class="chapters"]/li/h5').Get() do
+	for v in x.XPath('//ul[@class="chapters"]/li/*[self::h5 or self::h3]').Get() do
 		MANGAINFO.ChapterLinks.Add(x.XPathString('a/@href', v))
 		MANGAINFO.ChapterNames.Add(x.XPathString('normalize-space(.)', v))
 	end
