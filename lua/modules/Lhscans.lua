@@ -93,13 +93,7 @@ function GetInfo()
 			x.XPathHREFAll('//div[@id="list-chapters"]//a[@class="chapter"]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		end
 		if MANGAINFO.ChapterLinks.Count == 0 then
-			local v for v in x.XPath('//ul[contains(@class, "list-chapters")]/a').Get() do
-				local data_href = v.GetAttribute('data-href'):gsub('/', '')
-				local href = v.GetAttribute('href')
-				local title = v.GetAttribute('title')
-				MANGAINFO.ChapterLinks.Add(data_href .. '/' .. href)
-				MANGAINFO.ChapterNames.Add(title)
-			end
+			x.XPathHREFTitleAll('//ul[contains(@class, "list-chapters")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		end
 		for i = 0, MANGAINFO.ChapterLinks.Count - 1 do
 			MANGAINFO.ChapterLinks[i] = MODULE.RootURL .. '/' .. MANGAINFO.ChapterLinks[i]
@@ -120,9 +114,7 @@ function GetPageNumber()
 		local x = CreateTXQuery(HTTP.Document)
 		if MODULE.ID == 'f488bcb1911b4f21baa1ab65ef9ca61c' then -- HeroScan
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-original', TASK.PageLinks)
-		elseif MODULE.ID == '9054606f128e4914ae646032215915e5' then -- LoveHug
-			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-srcset', TASK.PageLinks)
-		elseif MODULE.ID == '010777f53bf2414fad039b9567c8a9ce' then -- KissAway
+		elseif MODULE.ID == '010777f53bf2414fad039b9567c8a9ce' or MODULE.ID == '9054606f128e4914ae646032215915e5' then -- KissAway, LoveHug
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-aload', TASK.PageLinks)
 		else
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@src', TASK.PageLinks)
