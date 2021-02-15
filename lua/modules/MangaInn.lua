@@ -58,8 +58,8 @@ function GetPageNumber()
 	if not HTTP.GET(u) then return net_problem end
 
 	x = CreateTXQuery(HTTP.Document)
-	x.ParseHTML(GetBetween('var images = ', ';', x.XPathString('//script[contains(., "var images = ")]')):gsub('\\/', '/'))
-	x.XPathStringAll('json(*)().URL', TASK.PageLinks)
+	x.ParseHTML(GetBetween('var images = ', ';', x.XPathString('//script[contains(., "var images = ")]')))
+	x.XPathStringAll('json(*)().url', TASK.PageLinks)
 
 	return no_error
 end
@@ -79,7 +79,7 @@ function Init()
 	local m = NewWebsiteModule()
 	m.ID                    = 'de4684706931463da794bb45377f4c3e'
 	m.Name                  = 'MangaInn'
-	m.RootURL               = 'http://www.mangainn.net'
+	m.RootURL               = 'https://www.mangainn.net'
 	m.Category              = 'English'
 	m.TotalDirectory        = AlphaList:len()
 	m.OnGetInfo             = 'GetInfo'
