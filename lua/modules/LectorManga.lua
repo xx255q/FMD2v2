@@ -17,7 +17,7 @@ function GetInfo()
 		for v in x.XPath('//div[@id="chapters'..s..'"]/div[@class="row"]').Get() do
 			ctitle = x.XPathString('./div/h4[contains(@class,"text-truncate")]', v)
 			for y in x.XPath('./following-sibling::ul[1]/li', v).Get() do
-				link = x.XPathString('.//a[contains(@href, "/viewer/")]/@href', y)
+				link = x.XPathString('.//a[contains(@href, "/view_uploads/")]/@href', y)
 				stitle = x.XPathString('./div/div[contains(@class,"text-truncate")]/span', y)
 				title = ctitle
 				if stitle ~= '' then title = title .. ' [' .. stitle .. ']' end
