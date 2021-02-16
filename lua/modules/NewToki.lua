@@ -31,24 +31,15 @@ function Init()
 end
 
 function GetNameAndLink()
-	local dirurl = MODULE.RootURL .. '/' .. dirpages[MODULE.CurrentDirectoryIndex + 1]
-	if not HTTP.GET(dirurl) then return net_problem end
-	local x = CreateTXQuery(HTTP.Document)
-	local next_url
-	while true do
+	Delay()
+	if HTTP.GET(MODULE.RootURL .. '/' .. dirpages[MODULE.CurrentDirectoryIndex + 1] .. '/p' .. (URL + 1)) then
+		local x = CreateTXQuery(HTTP.Document)
 		x.XPathHREFAll('//div[@class="in-lable trans-bg-black"]/a', LINKS, NAMES)
-		next_url = x.XPathString('//ul[contains(@class, "pagination")]/li[@class="active"]/following-sibling::li/a/@href')
-		if HTTP.Terminated then break end
-		if next_url == '' then break end
-		UPDATELIST.UpdateStatusText('Loading page ' .. (next_url:match('m/(.-)/p') or '') .. ' ' .. (next_url:match('p(%d+)') or ''))
-		Delay()
-		if HTTP.GET(next_url) then
-			x.ParseHTML(HTTP.Document)
-		else
-			break
-		end
+		UPDATELIST.CurrentDirectoryPageNumber = tonumber(x.XPathString('//ul[contains(@class, "pagination")]/li[last()]/a/@href'):match('/p(%d+)')) or 1
+		return no_error
+	else
+		return net_problem
 	end
-	return no_error
 end
 
 function GetInfo()
