@@ -302,7 +302,8 @@ function GetNameAndLink()
 			['13c6434a0c2541b18abee83a2c72e8f5'] = '/daftar-komik/', -- MangaKane
 			['c8e02b7aaac1412180db86374fc799a8'] = '/manga-list/?list', -- ManhwasNet
 			['ac42a85566244b7e836679491ce679e6'] = '/manga/list-mode/', -- YugenMangas
-			['7103ae6839ea46ec80cdfc2c4b37c803'] = '/manga/list-mode/' -- AsuraScans
+			['7103ae6839ea46ec80cdfc2c4b37c803'] = '/manga/list-mode/', -- AsuraScans
+			['c69cbc947a6a42e194b2e097bba15047'] = '/manga/list-mode/' -- MangaSusuWorld
 		}
 		local dirurl = '/manga/?list'
 		if dirs[MODULE.ID] ~= nil then
@@ -375,6 +376,7 @@ function Init()
 	AddWebsiteModule('f68bb6ee00e442418c8c05eb00759ae1', 'BacaKomik', 'https://bacakomik.co')
 	AddWebsiteModule('755ce08dc1a74f69b283cb45b7af56c1', 'Boosei', 'https://boosei.com')
 	AddWebsiteModule('13c6434a0c2541b18abee83a2c72e8f5', 'MangaKane', 'https://mangakane.com')
+	AddWebsiteModule('c69cbc947a6a42e194b2e097bba15047', 'MangaSusuWorld', 'https://mangasusu.world')
 
 	cat = 'Webcomics'
 	AddWebsiteModule('46dcfabe757140e7980ec34c65bdb30f', 'SekteKomik', 'https://sektekomik.com')
