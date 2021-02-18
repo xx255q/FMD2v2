@@ -303,7 +303,8 @@ function GetNameAndLink()
 			['c8e02b7aaac1412180db86374fc799a8'] = '/manga-list/?list', -- ManhwasNet
 			['ac42a85566244b7e836679491ce679e6'] = '/manga/list-mode/', -- YugenMangas
 			['7103ae6839ea46ec80cdfc2c4b37c803'] = '/manga/list-mode/', -- AsuraScans
-			['c69cbc947a6a42e194b2e097bba15047'] = '/manga/list-mode/' -- MangaSusuWorld
+			['c69cbc947a6a42e194b2e097bba15047'] = '/manga/list-mode/', -- MangaSusuWorld
+			['123fa1ed637e469b8cb4a154965a6423'] = '/manga/list-mode/' -- DragonTranslation
 		}
 		local dirurl = '/manga/?list'
 		if dirs[MODULE.ID] ~= nil then
@@ -404,6 +405,7 @@ function Init()
 	AddWebsiteModule('9f756fcbfa114ea4a9abb578004edf31', 'SkyMangas', 'https://skymangas.com')
 	AddWebsiteModule('c8e02b7aaac1412180db86374fc799a8', 'ManhwasNet', 'https://manhwas.net')
 	AddWebsiteModule('ac42a85566244b7e836679491ce679e6', 'YugenMangas', 'https://yugenmangas.com')
+	AddWebsiteModule('123fa1ed637e469b8cb4a154965a6423', 'DragonTranslation', 'https://dragontranslation.com')
 
 	cat = 'English'
 	AddWebsiteModule('421be2f0d918493e94f745c71090f359', 'Mangafast', 'https://mangafast.net')
