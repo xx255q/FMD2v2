@@ -29,7 +29,7 @@ function getTitle(x)
 	if title == '' then title = x.XPathString('//h2[@class="entry-title"]') end
 	if title == '' then title = x.XPathString('//h1') end
 	if title == '' then title = x.XPathString('//h2') end
-	title = title:gsub('Bahasa Indonesia$', ''):gsub(' Indonesia|Baca"', ''):gsub('Bahasa Indonesia', ''):gsub('Komik', ''):gsub(' Raw', '')
+	title = title:gsub('Bahasa Indonesia$', ''):gsub(' Indonesia|Baca"', ''):gsub('Bahasa Indonesia', ''):gsub('Komik', ''):gsub(' Raw', ''):gsub(' Indonesia Terbaru','')
 	title = title:gsub('Manga', ''):gsub('Indonesia', ''):gsub('Baca', ''):gsub('bahasa', ''):gsub('indonesia', ''):gsub('can', ''):gsub('|', '')
 	title = title:gsub(string.gsub(MODULE.Name, 'https://', ''), '')
 	return title
@@ -167,14 +167,6 @@ function getMangas(x)
 		x.XPathHREFTitleAll('//td[@class="jds"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 	elseif MODULE.ID == '13c6434a0c2541b18abee83a2c72e8f5' then -- MangaKane
 		x.XPathHREFTitleAll('//div[@class="flexch-infoz"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-	elseif MODULE.ID == 'ca571825056b4850bd3693e4e1437997' then -- Mangacan
-		local s
-		local v for v in x.XPath('//table[@class="updates"]//td/a').Get() do
-			s = v.GetAttribute('href')
-			s = string.gsub(s, '-1.htm', '.htm')
-			MANGAINFO.ChapterNames.Add(Trim(SeparateLeft(v.ToString(), '')));
-			MANGAINFO.ChapterLinks.Add(s);
-		end
 	else
 		-- common
 		local v for v in x.XPath('//*[@id="chapterlist"]//*[@class="eph-num"]/a').Get() do
@@ -222,6 +214,12 @@ function GetPageNumber()
 			end
 		elseif MODULE.ID == 'c8e02b7aaac1412180db86374fc799a8' then -- ManhwasNet
 			x.XPathStringAll('//*[@class="reader-area"]/img/@data-src', TASK.PageLinks)
+		elseif MODULE.ID == 'ca571825056b4850bd3693e4e1437997' then -- Mangacan
+			local duktape = require 'fmd.duktape'
+			local execute = x.XPathStringAll('//script[contains(.,"var fff")]'):match('(.*)abcd%(fff%)')
+			local result = duktape.ExecJS('var CryptoJS = require("utils/crypto-js.min.js");' .. execute ..'abcd(fff);ffff;')
+			x.ParseHTML(result)
+			x.XPathStringAll('//img/@src', TASK.PageLinks)
 		else
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="reader-area"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="readerarea"]//img/@src', TASK.PageLinks) end
@@ -238,6 +236,10 @@ function GetPageNumber()
 				x.ParseHTML(GetBetween('run(', ');', x.XPathString('//script[contains(., "ts_reader")]')))
 				x.XPathStringAll('json(*).sources().images()', TASK.PageLinks)
 			end
+		end
+		for i = 0, TASK.PageLinks.Count - 1 do -- Bypass 'i0.wp.com' image CDN to ensure original images are loaded directly from host
+			TASK.PageLinks[i] = TASK.PageLinks[i]:gsub("i%d.wp.com/", "")
+			i = i + 1
 		end
 		return true
 	else
