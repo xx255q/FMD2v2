@@ -220,10 +220,6 @@ function GetPageNumber()
 			local result = duktape.ExecJS('var CryptoJS = require("utils/crypto-js.min.js");' .. execute ..'abcd(fff);ffff;')
 			x.ParseHTML(result)
 			x.XPathStringAll('//img/@src', TASK.PageLinks)
-			for i = 0, TASK.PageLinks.Count - 1 do -- Bypass 'i0.wp.com' image CDN to ensure original images are loaded directly from host
-				TASK.PageLinks[i] = TASK.PageLinks[i]:gsub("i%d.wp.com/", "")
-				i = i + 1
-			end
 		else
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="reader-area"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="readerarea"]//img/@src', TASK.PageLinks) end
@@ -240,6 +236,10 @@ function GetPageNumber()
 				x.ParseHTML(GetBetween('run(', ');', x.XPathString('//script[contains(., "ts_reader")]')))
 				x.XPathStringAll('json(*).sources().images()', TASK.PageLinks)
 			end
+		end
+		for i = 0, TASK.PageLinks.Count - 1 do -- Bypass 'i0.wp.com' image CDN to ensure original images are loaded directly from host
+			TASK.PageLinks[i] = TASK.PageLinks[i]:gsub("i%d.wp.com/", "")
+			i = i + 1
 		end
 		return true
 	else
