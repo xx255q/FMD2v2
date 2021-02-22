@@ -202,8 +202,6 @@ function GetPageNumber()
 					TASK.PageLinks.Add(v.GetAttribute('src'))
 				end
 			end
-		elseif MODULE.ID == '7103ae6839ea46ec80cdfc2c4b37c803' then -- AsuraScans
-			x.XPathStringAll('//*[@id="readerarea"]/p/img[@loading]/@data-src', TASK.PageLinks)
 		elseif MODULE.ID == '5af0f26f0d034fb2b42ee65d7e4188ab' then -- Komiku
 			x.XPathStringAll('//*[@id="Baca_Komik"]/img/@src', TASK.PageLinks)
 		elseif MODULE.ID == '421be2f0d918493e94f745c71090f359' then -- Mangafast
