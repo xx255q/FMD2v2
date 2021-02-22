@@ -291,6 +291,7 @@ function Init()
 	AddWebsiteModule('f01040ee781d4ae1929031419b97d2e0', 'VoidScans', 'https://voidscans.com')
 	AddWebsiteModule('598672e8158d4fd781bea8d426534695', 'GourmetScans', 'https://gourmetscans.net')
 	AddWebsiteModule('813f780f2d3b41ab8de577aadcbd4d7a', 'ImmortalUpdates', 'https://immortalupdates.com')
+	AddWebsiteModule('5f60bc66acfa4605a3668857287eed1d', 'MangaGreat', 'https://mangagreat.com')
 
 	cat = 'French'
 	AddWebsiteModule('41867fa36f2f49959df9fef8aa53ffb5', 'WakaScan', 'https://wakascan.com')
