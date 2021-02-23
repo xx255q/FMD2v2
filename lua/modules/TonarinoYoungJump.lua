@@ -15,38 +15,38 @@ function GetInfo()
 		MANGAINFO.CoverLink = x.XPathString('//div[@class="series-header-image-wrapper"]/img/@data-src')
 		MANGAINFO.Title     = x.XPathString('//h1[@class="series-header-title"]/text()')
 		MANGAINFO.Authors   = x.XPathString('//h2[@class="series-header-author"]')
-	MANGAINFO.Summary   = x.XPathString('//*[@class="series-header-description"]')
-	lastChapter = x.XPathCount('//ul[contains(@class, "series-episode-list")]/li') + 1
+		MANGAINFO.Summary   = x.XPathString('//*[@class="series-header-description"]')
+		lastChapter = x.XPathCount('//ul[contains(@class, "series-episode-list")]/li') + 1
 
-	local s = x.XPathString('//div[@class="js-readable-product-list"]/@data-latest-list-endpoint')
-	local aggregateId = ''
-	if s ~= nil then
-		lastChapter = lastChapter + tonumber(s:match('number_since=(%d+)&'))
-		aggregateId = s:match('aggregate_id=(%d+)&')
-	end
-	
-	if lastChapter < 50 then lastChapter = 50 end
+		local s = x.XPathString('//div[@class="js-readable-product-list"]/@data-latest-list-endpoint')
+		local aggregateId = ''
+		if s ~= nil then
+			lastChapter = lastChapter + tonumber(s:match('number_since=(%d+)&'))
+			aggregateId = s:match('aggregate_id=(%d+)&')
+		end
 
-	while lastChapter > 1 do 
-		local url = MaybeFillHost(MODULE.RootURL, string.format(chapterListQuery, aggregateId, lastChapter))
-		if not HTTP.GET(url) then break end
-		x.ParseHTML(json.decode(HTTP.Document.ToString()).html)
-		for v in x.XPath('//li').Get() do
-		  local isChapterPrivate = v.GetAttribute('class'):find("private")
+		if lastChapter < 50 then lastChapter = 50 end
 
-		  local addChapter = true
-		  if MODULE.GetOption('luashowprivate') == false and isChapterPrivate ~= nil then addChapter = false end
+		while lastChapter > 1 do 
+			local url = MaybeFillHost(MODULE.RootURL, string.format(chapterListQuery, aggregateId, lastChapter))
+			if not HTTP.GET(url) then break end
+			x.ParseHTML(json.decode(HTTP.Document.ToString()).html)
+			for v in x.XPath('//li').Get() do
+				local isChapterPrivate = v.GetAttribute('class'):find("private")
 
-		  if addChapter == true then
-			local chapterLink = x.XPathString('a/@href', v)
-			if chapterLink ~= nil then
-			  MANGAINFO.ChapterLinks.Add(chapterLink)
-			  MANGAINFO.ChapterNames.Add(x.XPathString('a/div/h4/text()', v))
-			else
-			  MANGAINFO.ChapterLinks.Add(url)
-			  MANGAINFO.ChapterNames.Add(x.XPathString('div/h4/text()', v))
+				local addChapter = true
+				if MODULE.GetOption('luashowprivate') == false and isChapterPrivate ~= nil then addChapter = false end
+
+				if addChapter == true then
+				local chapterLink = x.XPathString('a/@href', v)
+				if chapterLink ~= nil then
+					MANGAINFO.ChapterLinks.Add(chapterLink)
+					MANGAINFO.ChapterNames.Add(x.XPathString('a/div/h4/text()', v))
+				else
+					MANGAINFO.ChapterLinks.Add(url)
+					MANGAINFO.ChapterNames.Add(x.XPathString('div/h4/text()', v))
+				end
 			end
-		  end
 		end
 		lastChapter = lastChapter - 50
 	end
@@ -73,33 +73,33 @@ function GetNameAndLink()
 end
 
 function GetPageNumber()
-  if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-	local x = CreateTXQuery(HTTP.Document)
-	local episodesJson = x.XPathString('//script[@id="episode-json"]/@data-value')
-	local episodes = json.decode(episodesJson).readableProduct.pageStructure.pages
+	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
+		local x = CreateTXQuery(HTTP.Document)
+		local episodesJson = x.XPathString('//script[@id="episode-json"]/@data-value')
+		local episodes = json.decode(episodesJson).readableProduct.pageStructure.pages
 
-	for _, page in ipairs(episodes) do
-	  if page.src ~= nil then
-		TASK.PageLinks.Add(page.src)
-	  end
+		for _, page in ipairs(episodes) do
+			if page.src ~= nil then
+				TASK.PageLinks.Add(page.src)
+			end
+		end
+		return no_error
 	end
-	return no_error
-  end
-  return net_problem
+	return net_problem
 end
 
 -- Get the page count for the current chapter.
 function DownloadImage()
-  if HTTP.GET(URL) then
-	local fragmentSize = 4
-	local puzzle = require('fmd.imagepuzzle').Create(fragmentSize, fragmentSize)
-	puzzle.Multiply = 8
-	for i=0, (fragmentSize*fragmentSize)-1 do
-	  puzzle.Matrix[i] = (i%fragmentSize) * fragmentSize + (i // fragmentSize)
+	if HTTP.GET(URL) then
+		local fragmentSize = 4
+		local puzzle = require('fmd.imagepuzzle').Create(fragmentSize, fragmentSize)
+		puzzle.Multiply = 8
+		for i=0, (fragmentSize*fragmentSize)-1 do
+			puzzle.Matrix[i] = (i%fragmentSize) * fragmentSize + (i // fragmentSize)
+		end
+		puzzle.DeScramble(HTTP.Document, HTTP.Document)
+		return true
 	end
-	puzzle.DeScramble(HTTP.Document, HTTP.Document)
-	return true
-  end
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -123,6 +123,9 @@ function Init()
 		local lang = {
 			['en'] = {
 				['showprivate'] = 'Show private chapters'
+			},
+			['id_ID'] = {
+				['showprivate'] = 'Tampilkan bab privat'
 			},
 			get =
 				function(self, key)
