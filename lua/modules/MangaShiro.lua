@@ -251,23 +251,6 @@ function GetNameAndLink()
 		if not HTTP.GET(dirurl) then return net_problem end
 		local x = CreateTXQuery(HTTP.Document)
 		x.XPathHREFTitleAll('//*[@class="ranking1"]/a', LINKS, NAMES)
-	elseif MODULE.ID == '4efbab5ca3364cd0bb63b776b895262e' then -- manhwatime
-		local dirurl = MODULE.RootURL .. '/manhwa/'
-		local x = CreateTXQuery()
-		local pages = 1
-		local p = 1
-		local u = dirurl
-		while p <= pages do
-			if p > 1 then u = dirurl .. 'page/' .. tostring(p) end
-			if not HTTP.GET(u) then return net_problem end
-			x.ParseHTML(HTTP.Document)
-			if p == pages then
-				local pg = x.XPathString('//div[@class="pagination"]/span/substring-after(., "Page 1 of ")')
-				if pg ~= '' then pages = tonumber(pg) end
-			end
-			x.XPathHREFTitleAll('//div[@class="animposx"]/a', LINKS, NAMES)
-			p = p + 1
-		end
 	else
 		-- full text based list
 		local dirs = {
@@ -275,17 +258,11 @@ function GetNameAndLink()
 			['b8206e754d4541689c1d367f7e19fd64'] = '/daftar-komik/?list', -- KomikCast
 			['35e1b3ff5dbf428889d0f316c3d881e6'] = '/manga-list/?list', -- WestManga
 			['031f3cc0ae3346ad9b8c33d5377891e9'] = '/manga-lists/?list', -- Kiryuu
-			['ee7abb21767d48d5b4b343ce701ae6e6'] = '/daftar-manga/?list', -- PecintaKomik
-			['63be65ab7f004093ac26fdeb30b466e4'] = '/manga-list/?list', -- MangaIndoNet
-			['2cf30e2a7f3d4b4a9b2d29c3fb04e23f'] = '/manga/list-mode/', -- KomikIndoWebId
-			['4ccdf84e05474a66adc14ea8a2edfd15'] = '/manga-list/?list', -- KazeManga
 			['ca571825056b4850bd3693e4e1437997'] = '/daftar-komik-manga-bahasa-indonesia.html', -- Mangacan
 			['fb5bd3aa549f4aefa112a8fe7547d2a9'] = '/manga-list/', -- MangaIndo
 			['6f8182f08d5444dbb5244ec882430db1'] = '/manga-list/?list', -- KomikMama
 			['7a74b2abda1d4b329ee1d1fa58866c03'] = '/manga-list/', -- MaidMangaID
 			['5c06401129894099bb6fc59c08a878d4'] = '/daftar-komik/?list', -- Ngomik
-			['c16adc6202924e558b977f74c7301bed'] = '/manga-list/?list', -- MangaPus
-			['0a6dd9c339c94a339dbc89c781b20d20'] = '/manga-list/?list', -- Mangaseno
 			['f9adee01635a4ff48fdff5164a65d6dd'] = '/manga/list-mode/', -- Komiktap
 			['fb34a56c83f54b19b57a9a92070fe899'] = '/manga/list-mode/', -- FlameScans
 			['b543e37b656e43ffb3faa034eee6c945'] = '/daftar-manga/?list', -- MangaKita
@@ -355,13 +332,8 @@ function Init()
 	AddWebsiteModule('b8206e754d4541689c1d367f7e19fd64', 'KomikCast', 'https://komikcast.com')
 	AddWebsiteModule('35e1b3ff5dbf428889d0f316c3d881e6', 'WestManga', 'https://westmanga.info')
 	AddWebsiteModule('031f3cc0ae3346ad9b8c33d5377891e9', 'Kiryuu', 'https://kiryuu.co')
-	AddWebsiteModule('965d172c0fbd4ad7b75f39fb5cec26ac', 'Kyuroku', 'https://kyuroku.com')
-	AddWebsiteModule('ee7abb21767d48d5b4b343ce701ae6e6', 'PecintaKomik', 'https://www.pecintakomik.net')
-	AddWebsiteModule('63be65ab7f004093ac26fdeb30b466e4', 'MangaIndoNet', 'https://mangaindo.net')
 	AddWebsiteModule('009bf49bc17a4a2a8e1c79cce6867651', 'KomikIndo', 'https://komikindo.co')
-	AddWebsiteModule('2cf30e2a7f3d4b4a9b2d29c3fb04e23f', 'KomikIndoWebId', 'https://komikindo.web.id')
 	AddWebsiteModule('5af0f26f0d034fb2b42ee65d7e4188ab', 'Komiku', 'https://komiku.id')
-	AddWebsiteModule('4ccdf84e05474a66adc14ea8a2edfd15', 'KazeManga', 'https://kazemanga.web.id')
 	AddWebsiteModule('ca571825056b4850bd3693e4e1437997', 'Mangacan', 'http://www.mangacanblog.com')
 	AddWebsiteModule('fb5bd3aa549f4aefa112a8fe7547d2a9', 'MangaIndo', 'https://mangaindo.web.id')
 	AddWebsiteModule('6f8182f08d5444dbb5244ec882430db1', 'KomikMama', 'https://komikmama.net')
@@ -369,12 +341,7 @@ function Init()
 	AddWebsiteModule('7a74b2abda1d4b329ee1d1fa58866c03', 'MaidMangaID', 'https://www.maid.my.id')
 	AddWebsiteModule('a70859360a2a474ba2abdb86bc48616c', 'KomikAV', 'https://komikav.com')
 	AddWebsiteModule('5c06401129894099bb6fc59c08a878d4', 'Ngomik', 'https://ngomik.net')
-	AddWebsiteModule('c16adc6202924e558b977f74c7301bed', 'MangaPus', 'https://mangapus.com')
-	AddWebsiteModule('0a6dd9c339c94a339dbc89c781b20d20', 'Mangaseno', 'https://mangaseno.com')
 	AddWebsiteModule('56f905ea80e24c4f8bbc37e05de2ad9a', 'Mangakyo', 'https://www.mangakyo.me')
-	AddWebsiteModule('76e6db9fe2cf4dd49589cfa9b1174684', 'MataKomik', 'https://matakomik.com')
-	AddWebsiteModule('cab72ea1fa4947d29e50ec8751d06c7d', 'KomikGoCoID', 'https://www.komikgo.co.id')
-	AddWebsiteModule('d2ffd187eadd4c39819428a160d752cf', 'MangaTsuki', 'https://mangatsuki.web.id')
 	AddWebsiteModule('f68bb6ee00e442418c8c05eb00759ae1', 'BacaKomik', 'https://bacakomik.co')
 	AddWebsiteModule('755ce08dc1a74f69b283cb45b7af56c1', 'Boosei', 'https://boosei.com')
 	AddWebsiteModule('13c6434a0c2541b18abee83a2c72e8f5', 'MangaKane', 'https://mangakane.com')
@@ -396,7 +363,6 @@ function Init()
 	
 	cat = 'English-Scanlation'
 	AddWebsiteModule('7103ae6839ea46ec80cdfc2c4b37c803', 'AsuraScans', 'https://asurascans.com')
-	AddWebsiteModule('4efbab5ca3364cd0bb63b776b895262e', 'ManhwaTime', 'https://manhwatime.xyz')
 	AddWebsiteModule('fb34a56c83f54b19b57a9a92070fe899', 'FlameScans', 'https://www.flame-scans.com')
 
 	cat = 'Spanish'
