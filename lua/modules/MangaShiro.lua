@@ -380,11 +380,13 @@ function Init()
 	AddWebsiteModule('13c6434a0c2541b18abee83a2c72e8f5', 'MangaKane', 'https://mangakane.com')
 	AddWebsiteModule('c69cbc947a6a42e194b2e097bba15047', 'MangaSusuWorld', 'https://mangasusu.world')
 	AddWebsiteModule('f8251e330c8044029d97dec382459eab', 'SheaManga', 'https://sheamanga.my.id')
+	AddWebsiteModule('46dcfabe757140e7980ec34c65bdb30f', 'SekteKomik', 'https://sektekomik.com')
+	AddWebsiteModule('1f1ec10a248c4a4f838c80b3e27fc4c7', 'SekaiKomik', 'https://www.sekaikomik.com')
+	AddWebsiteModule('f9adee01635a4ff48fdff5164a65d6dd', 'Komiktap', 'https://komiktap.in')
+	AddWebsiteModule('ec1a1ad5301f414592f0ba0402024813', 'Doujindesu', 'https://doujindesu.info')
 
 	cat = 'Webcomics'
-	AddWebsiteModule('46dcfabe757140e7980ec34c65bdb30f', 'SekteKomik', 'https://sektekomik.com')
 	AddWebsiteModule('e34c929129c74d8aaf8383da9f6ab378', 'BaekjinScans', 'https://baekjinscans.xyz')
-	AddWebsiteModule('1f1ec10a248c4a4f838c80b3e27fc4c7', 'SekaiKomik', 'https://www.sekaikomik.com')
 
 	cat = 'Raw'
 	AddWebsiteModule('21b0dfcb262d4ae28520679165282666', 'Rawkuma', 'https://rawkuma.com')
@@ -396,10 +398,6 @@ function Init()
 	AddWebsiteModule('7103ae6839ea46ec80cdfc2c4b37c803', 'AsuraScans', 'https://asurascans.com')
 	AddWebsiteModule('4efbab5ca3364cd0bb63b776b895262e', 'ManhwaTime', 'https://manhwatime.xyz')
 	AddWebsiteModule('fb34a56c83f54b19b57a9a92070fe899', 'FlameScans', 'https://www.flame-scans.com')
-
-	cat = 'H-Sites'
-	AddWebsiteModule('f9adee01635a4ff48fdff5164a65d6dd', 'Komiktap', 'https://komiktap.in')
-	AddWebsiteModule('ec1a1ad5301f414592f0ba0402024813', 'Doujindesu', 'https://doujindesu.info')
 
 	cat = 'Spanish'
 	AddWebsiteModule('41294a121062494489adfa601c442ef8', 'LegionAsia', 'https://legionasia.com')
