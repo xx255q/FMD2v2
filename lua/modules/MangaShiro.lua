@@ -256,39 +256,24 @@ function GetNameAndLink()
 		local dirs = {
 			['49602ce189e844f49bfe78f7a1484dbe'] = '/manga-lists/', -- MangaKid
 			['b8206e754d4541689c1d367f7e19fd64'] = '/daftar-komik/?list', -- KomikCast
-			['35e1b3ff5dbf428889d0f316c3d881e6'] = '/manga-list/?list', -- WestManga
-			['031f3cc0ae3346ad9b8c33d5377891e9'] = '/manga-lists/?list', -- Kiryuu
 			['ca571825056b4850bd3693e4e1437997'] = '/daftar-komik-manga-bahasa-indonesia.html', -- Mangacan
 			['fb5bd3aa549f4aefa112a8fe7547d2a9'] = '/manga-list/', -- MangaIndo
-			['6f8182f08d5444dbb5244ec882430db1'] = '/manga-list/?list', -- KomikMama
 			['7a74b2abda1d4b329ee1d1fa58866c03'] = '/manga-list/', -- MaidMangaID
 			['5c06401129894099bb6fc59c08a878d4'] = '/daftar-komik/?list', -- Ngomik
-			['f9adee01635a4ff48fdff5164a65d6dd'] = '/manga/list-mode/', -- Komiktap
-			['fb34a56c83f54b19b57a9a92070fe899'] = '/manga/list-mode/', -- FlameScans
-			['b543e37b656e43ffb3faa034eee6c945'] = '/daftar-manga/?list', -- MangaKita
 			['1f1ec10a248c4a4f838c80b3e27fc4c7'] = '/daftar-komik/?list', -- Sekaikomik
 			['f68bb6ee00e442418c8c05eb00759ae1'] = '/daftar-manga/?list', -- BacaKomik
-			['41294a121062494489adfa601c442ef8'] = '/manga/list-mode/', -- LegionAsia
 			['5af0f26f0d034fb2b42ee65d7e4188ab'] = '/daftar-komik/', -- Komiku
-			['755ce08dc1a74f69b283cb45b7af56c1'] = '/manga/list-mode/', -- Boosei
-			['363066add92f4043b39d2009b442ab32'] = '/manga/list-mode/', -- PhoenixFansub
-			['9f756fcbfa114ea4a9abb578004edf31'] = '/manga/list-mode/', -- SkyMangas
 			['ec1a1ad5301f414592f0ba0402024813'] = '/komik-list/?list', -- Doujindesu
 			['5c06401129894099bb6fc59c08a878d4'] = '/all-komik/?list', -- Ngomik
-			['a70859360a2a474ba2abdb86bc48616c'] = '/manga/list-mode/', -- KomikAV
 			['13c6434a0c2541b18abee83a2c72e8f5'] = '/daftar-komik/', -- MangaKane
 			['c8e02b7aaac1412180db86374fc799a8'] = '/manga-list/?list', -- ManhwasNet
-			['ac42a85566244b7e836679491ce679e6'] = '/manga/list-mode/', -- YugenMangas
-			['7103ae6839ea46ec80cdfc2c4b37c803'] = '/manga/list-mode/', -- AsuraScans
-			['c69cbc947a6a42e194b2e097bba15047'] = '/manga/list-mode/', -- MangaSusuWorld
-			['123fa1ed637e469b8cb4a154965a6423'] = '/manga/list-mode/', -- DragonTranslation
-			['f8251e330c8044029d97dec382459eab'] = '/manga/list-mode/', -- SheaManga
-			['cbb62ba41ad6440a8d112c3c30edc6f5'] = '/komik/list-mode/', -- KomikSave
-			['deb2a310668a40ebbbe3aaa45f78edc2'] = '/manga/list-mode/', -- GuruKomik
-			['adb6ae3e4d7c49fb89bb8d17bfbc9486'] = '/manga/list-mode/', -- KlanKomik
-			['06b9c968ec8c4c89b7d28b7d461d84e3'] = '/manga/list-mode/' -- Masterkomik
+			['b5586745030a45bba05d0c360caa6d1a'] = '/manga/?list', -- KomikStation
+			['009bf49bc17a4a2a8e1c79cce6867651'] = '/manga/?list', -- KomikIndo
+			['56f905ea80e24c4f8bbc37e05de2ad9a'] = '/manga/?list', -- Mangakyo
+			['0e45db2650604f74a0caeb7c1d69a749'] = '/manga/?list', -- MangaSWAT
+			['41294a121062494489adfa601c442ef8'] = '/manga-list/?list' -- LegionAsia
 		}
-		local dirurl = '/manga/?list'
+		local dirurl = '/manga/list-mode/'
 		if dirs[MODULE.ID] ~= nil then
 			dirurl = dirs[MODULE.ID]
 		end
@@ -332,7 +317,7 @@ function Init()
 	m.OnBeforeDownloadImage = 'BeforeDownloadImage'
 	AddWebsiteModule('b543e37b656e43ffb3faa034eee6c945', 'MangaKita', 'https://mangakita.net')
 	AddWebsiteModule('b5586745030a45bba05d0c360caa6d1a', 'KomikStation', 'https://www.komikstation.com')
-	AddWebsiteModule('49602ce189e844f49bfe78f7a1484dbe', 'MangaKid', 'https://mangakid.club')
+	AddWebsiteModule('49602ce189e844f49bfe78f7a1484dbe', 'MangaKid', 'https://mangakid.site')
 	AddWebsiteModule('b8206e754d4541689c1d367f7e19fd64', 'KomikCast', 'https://komikcast.com')
 	AddWebsiteModule('35e1b3ff5dbf428889d0f316c3d881e6', 'WestManga', 'https://westmanga.info')
 	AddWebsiteModule('031f3cc0ae3346ad9b8c33d5377891e9', 'Kiryuu', 'https://kiryuu.co')
