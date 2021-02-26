@@ -282,7 +282,11 @@ function GetNameAndLink()
 			['7103ae6839ea46ec80cdfc2c4b37c803'] = '/manga/list-mode/', -- AsuraScans
 			['c69cbc947a6a42e194b2e097bba15047'] = '/manga/list-mode/', -- MangaSusuWorld
 			['123fa1ed637e469b8cb4a154965a6423'] = '/manga/list-mode/', -- DragonTranslation
-			['f8251e330c8044029d97dec382459eab'] = '/manga/list-mode/' -- SheaManga
+			['f8251e330c8044029d97dec382459eab'] = '/manga/list-mode/', -- SheaManga
+			['cbb62ba41ad6440a8d112c3c30edc6f5'] = '/komik/list-mode/', -- KomikSave
+			['deb2a310668a40ebbbe3aaa45f78edc2'] = '/manga/list-mode/', -- GuruKomik
+			['adb6ae3e4d7c49fb89bb8d17bfbc9486'] = '/manga/list-mode/', -- KlanKomik
+			['06b9c968ec8c4c89b7d28b7d461d84e3'] = '/manga/list-mode/' -- Masterkomik
 		}
 		local dirurl = '/manga/?list'
 		if dirs[MODULE.ID] ~= nil then
@@ -351,6 +355,10 @@ function Init()
 	AddWebsiteModule('1f1ec10a248c4a4f838c80b3e27fc4c7', 'SekaiKomik', 'https://www.sekaikomik.com')
 	AddWebsiteModule('f9adee01635a4ff48fdff5164a65d6dd', 'Komiktap', 'https://komiktap.in')
 	AddWebsiteModule('ec1a1ad5301f414592f0ba0402024813', 'Doujindesu', 'https://doujindesu.info')
+	AddWebsiteModule('cbb62ba41ad6440a8d112c3c30edc6f5', 'KomikSave', 'https://komiksave.me')
+	AddWebsiteModule('deb2a310668a40ebbbe3aaa45f78edc2', 'GuruKomik', 'https://gurukomik.com')
+	AddWebsiteModule('adb6ae3e4d7c49fb89bb8d17bfbc9486', 'KlanKomik', 'https://klankomik.com')
+	AddWebsiteModule('06b9c968ec8c4c89b7d28b7d461d84e3', 'Masterkomik', 'https://masterkomik.com')
 
 	cat = 'Raw'
 	AddWebsiteModule('21b0dfcb262d4ae28520679165282666', 'Rawkuma', 'https://rawkuma.com')
@@ -360,7 +368,7 @@ function Init()
 	
 	cat = 'English-Scanlation'
 	AddWebsiteModule('7103ae6839ea46ec80cdfc2c4b37c803', 'AsuraScans', 'https://asurascans.com')
-	AddWebsiteModule('fb34a56c83f54b19b57a9a92070fe899', 'FlameScans', 'https://www.flame-scans.com')
+	AddWebsiteModule('fb34a56c83f54b19b57a9a92070fe899', 'FlameScans', 'https://flamescans.org')
 
 	cat = 'Spanish'
 	AddWebsiteModule('41294a121062494489adfa601c442ef8', 'LegionAsia', 'https://legionasia.com')
