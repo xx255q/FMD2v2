@@ -3,24 +3,18 @@ function getinfo()
 	HTTP.Cookies.Values['set'] = 'h=1'
 	if HTTP.GET(MANGAINFO.URL) then
 		local x=CreateTXQuery(HTTP.Document)
-		if MANGAINFO.Title == '' then
-			MANGAINFO.Title=x.XPathString('//h2'):gsub(' Manga$', '')
-		end
+		MANGAINFO.Title=x.XPathString('//h2'):gsub(' Manga$', '')
 		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//div[contains(@class, "cover")]/img/@src'))
 		MANGAINFO.Authors=x.XPathStringAll('//table[@class="attr"]//tr[contains(th,"Author")]/td/a')
 		MANGAINFO.Artists=x.XPathStringAll('//table[@class="attr"]//tr[contains(th,"Artist")]/td/a')
 		MANGAINFO.Genres=x.XPathStringAll('//table[@class="attr"]//tr[contains(th,"Genre")]/td/a')
 		MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//table[@class="attr"]//tr[contains(th,"Status")]/td'))
 		MANGAINFO.Summary=x.XPathString('//p[@class="summary"]')
-		local v = x.XPath('//div[@id="list"]/div[contains(@class, "stream")]')
-		for i = 1, v.Count do
-			local v1 = v.Get(i)
-			local stream = ' [' .. x.XPathString('div[@id]//a/span', v1) .. ']'
-			local w = x.XPath('div/ul[@class="chapter"]/li', v1)
-			for j = 1, w.Count do
-				local w1 = w.Get(j)
-				local link = x.XPathString('div/a/@href', w1)
-				local title = x.XPathString('div/a', w1) .. x.XPathString('div[contains(@class, "txt")]', w1)
+		local v for v in x.XPath('//div[@id="list"]/div[contains(@class, "stream")]').Get() do
+			local stream = ' [' .. x.XPathString('div[@id]//a/span', v) .. ']'
+			local w for w in x.XPath('div/div/ul[@class="chapter"]/li', v).Get() do
+				local link = x.XPathString('div/a/@href', w)
+				local title = x.XPathString('div/a', w) .. x.XPathString('div[contains(@class, "txt")]', w)
 				MANGAINFO.ChapterLinks.Add(link:gsub('/%d+$', ''))
 				MANGAINFO.ChapterNames.Add(title .. stream)
 			end
@@ -70,7 +64,6 @@ function Init()
 		m.Name = name
 		m.RootURL = url
 		m.Category = 'English'
-		m.LastUpdated = 'April 09, 2019'
 		m.OnGetInfo='getinfo'
 		m.OnGetPageNumber='getpagenumber'
 		m.OnGetNameAndLink='getnameandlink'
