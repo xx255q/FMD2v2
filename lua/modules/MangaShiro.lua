@@ -153,14 +153,6 @@ function getMangas(x)
 			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
 			MANGAINFO.ChapterNames.Add(x.XPathString('span[@class="ch"]',v))
 		end		
-	elseif MODULE.ID == '5c06401129894099bb6fc59c08a878d4' then -- Ngomik
-		local v = x.XPath('//div[contains(@class, "bxcl")]//li//*[contains(@class,"lch")]/a')
-		for i = 1, v.Count do
-			local v1 = v.Get(i)
-			local name = v1.GetAttribute('href')
-			MANGAINFO.ChapterNames.Add(name:gsub(MODULE.RootURL..'/',''))
-			MANGAINFO.ChapterLinks.Add(v1.GetAttribute('href'));
-		end
 	elseif MODULE.ID == '5af0f26f0d034fb2b42ee65d7e4188ab' then -- Komiku
 		x.XPathHREFTitleAll('//td[@class="judulseries"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 	elseif MODULE.ID == '421be2f0d918493e94f745c71090f359' then -- Mangafast
@@ -245,12 +237,26 @@ function GetPageNumber()
 	end
 end
 
+local AlphaList = '.ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
 function GetNameAndLink()
 	if MODULE.ID == '421be2f0d918493e94f745c71090f359' then -- Mangafast
 		local dirurl = MODULE.RootURL .. '/list-manga/'
 		if not HTTP.GET(dirurl) then return net_problem end
 		local x = CreateTXQuery(HTTP.Document)
 		x.XPathHREFTitleAll('//*[@class="ranking1"]/a', LINKS, NAMES)
+	elseif MODULE.ID == '5c06401129894099bb6fc59c08a878d4' then -- Ngomik
+		local s, i, x
+		if MODULE.CurrentDirectoryIndex == 0 then
+			s = '0-9'
+		else
+			i = MODULE.CurrentDirectoryIndex + 1
+			s = AlphaList:sub(i, i)
+		end
+		if not HTTP.GET(MODULE.RootURL .. '/all-komik/page/' .. (URL + 1) .. '/?show=' .. s) then return net_problem end
+		x = CreateTXQuery(HTTP.Document)
+		x.XPathHREFTitleAll('//div[@class="bsx"]/a', LINKS, NAMES)
+		UPDATELIST.CurrentDirectoryPageNumber = tonumber(x.XPathString('//div[@class="pagination"]/a[last()-1]')) or 1
 	else
 		-- full text based list
 		local dirs = {
@@ -259,12 +265,10 @@ function GetNameAndLink()
 			['ca571825056b4850bd3693e4e1437997'] = '/daftar-komik-manga-bahasa-indonesia.html', -- Mangacan
 			['fb5bd3aa549f4aefa112a8fe7547d2a9'] = '/manga-list/', -- MangaIndo
 			['7a74b2abda1d4b329ee1d1fa58866c03'] = '/manga-list/', -- MaidMangaID
-			['5c06401129894099bb6fc59c08a878d4'] = '/daftar-komik/?list', -- Ngomik
 			['1f1ec10a248c4a4f838c80b3e27fc4c7'] = '/daftar-komik/?list', -- Sekaikomik
 			['f68bb6ee00e442418c8c05eb00759ae1'] = '/daftar-manga/?list', -- BacaKomik
 			['5af0f26f0d034fb2b42ee65d7e4188ab'] = '/daftar-komik/', -- Komiku
 			['ec1a1ad5301f414592f0ba0402024813'] = '/komik-list/?list', -- Doujindesu
-			['5c06401129894099bb6fc59c08a878d4'] = '/all-komik/?list', -- Ngomik
 			['13c6434a0c2541b18abee83a2c72e8f5'] = '/daftar-komik/', -- MangaKane
 			['c8e02b7aaac1412180db86374fc799a8'] = '/manga-list/?list', -- ManhwasNet
 			['b5586745030a45bba05d0c360caa6d1a'] = '/manga/?list', -- KomikStation
@@ -311,6 +315,7 @@ function Init()
 		m.OnGetInfo         = 'GetInfo'
 		m.OnGetPageNumber   = 'GetPageNumber'
 		m.OnGetNameAndLink  = 'GetNameAndLink'
+		m.TotalDirectory    = AlphaList:len()
 		return m
 	end
 	local m = AddWebsiteModule('5eb57a1843d8462dab0fdfd0efc1eca5', 'MangaShiro', 'https://mangashiro.co')
