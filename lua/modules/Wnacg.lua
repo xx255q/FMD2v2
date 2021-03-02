@@ -42,7 +42,7 @@ function GetInfo()
 		MANGAINFO.Genres    = x.XPathStringAll('//div[@class="asTBcell uwconn"]/div[@class="addtags"]/a[not(@onclick)]')
 		MANGAINFO.Summary   = x.XPathString('//div[@class="asTBcell uwconn"]/p'):gsub('簡介：', '')
 
-		MANGAINFO.ChapterLinks.Add(x.XPathString('//div[@class="pic_box tb"]/a[1]/@href'))
+		MANGAINFO.ChapterLinks.Add(x.XPathString('(//div[@class="pic_box tb"])[1]/a/@href'))
 		MANGAINFO.ChapterNames.Add(MANGAINFO.Title)
 		return no_error
 	else
