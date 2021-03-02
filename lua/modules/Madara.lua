@@ -121,6 +121,14 @@ function Modules.Madara()
 					src = src:gsub('https://cdn.shortpixel.ai/client/q_glossy,ret_img/', '')
 					TASK.PageLinks.Add(src)
 				end
+			elseif MODULE.ID == 'f01040ee781d4ae1929031419b97d2e0' then -- VoidScans
+				local v for v in x.XPath('//div[contains(@class, "page-break")]/img').Get() do
+					local src = v.GetAttribute('src')
+					if src:find('src=') then
+						src = string.match(src, "src=(.*)&")
+						TASK.PageLinks.Add(src)
+					end
+				end
 			else
 				x.XPathStringAll('//div[contains(@class, "page-break")]/img/@data-src', TASK.PageLinks)
 			end
