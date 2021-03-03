@@ -224,7 +224,7 @@ function GetPageNumber()
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="chimg"]/img/@data-lazy-src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then
 				x.ParseHTML(GetBetween('run(', ');', x.XPathString('//script[contains(., "ts_reader")]')))
-				x.XPathStringAll('json(*).sources().images()', TASK.PageLinks)
+				x.XPathStringAll('json(*).sources()[1].images()', TASK.PageLinks)
 			end
 		end
 		for i = 0, TASK.PageLinks.Count - 1 do -- Bypass 'i0.wp.com' image CDN to ensure original images are loaded directly from host
