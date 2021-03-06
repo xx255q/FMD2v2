@@ -12,7 +12,7 @@ function Init()
 		m.SortedList                 = true
 		end
 	AddWebsiteModule('58a2dec76ebf43a5a9e7dc9b453e52e9', 'HentaiFox', 'https://hentaifox.com')
-	AddWebsiteModule('67e22e0c766c4c9c990e179350262b3c', 'IMHentai', 'https://imhentai.com')
+	AddWebsiteModule('67e22e0c766c4c9c990e179350262b3c', 'IMHentai', 'https://imhentai.xxx')
 end
 
 function GetDirectoryPageNumber()
@@ -85,7 +85,7 @@ function GetPageNumber()
 			if MODULE.ID == '58a2dec76ebf43a5a9e7dc9b453e52e9' then -- HentaiFox
 				TASK.PageLinks.Add('https://i.hentaifox.com/' .. dir .. '/' .. id .. '/' .. i1 .. ext[i2])
 			else
-				TASK.PageLinks.Add('https://m' .. server .. '.imhentai.com/' .. dir .. '/' .. id .. '/' .. i1 .. ext[i2])
+				TASK.PageLinks.Add('https://m' .. server .. '.imhentai.xxx/' .. dir .. '/' .. id .. '/' .. i1 .. ext[i2])
 			end
 		end
 		return true
