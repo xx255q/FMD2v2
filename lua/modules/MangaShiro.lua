@@ -315,7 +315,6 @@ function Init()
 		m.OnGetInfo         = 'GetInfo'
 		m.OnGetPageNumber   = 'GetPageNumber'
 		m.OnGetNameAndLink  = 'GetNameAndLink'
-		m.TotalDirectory    = AlphaList:len()
 		return m
 	end
 	local m = AddWebsiteModule('5eb57a1843d8462dab0fdfd0efc1eca5', 'MangaShiro', 'https://mangashiro.co')
@@ -333,7 +332,8 @@ function Init()
 	AddWebsiteModule('6f8182f08d5444dbb5244ec882430db1', 'KomikMama', 'https://komikmama.net')
 	AddWebsiteModule('7a74b2abda1d4b329ee1d1fa58866c03', 'MaidMangaID', 'https://www.maid.my.id')
 	AddWebsiteModule('a70859360a2a474ba2abdb86bc48616c', 'KomikAV', 'https://komikav.com')
-	AddWebsiteModule('5c06401129894099bb6fc59c08a878d4', 'Ngomik', 'https://ngomik.net')
+	m = AddWebsiteModule('5c06401129894099bb6fc59c08a878d4', 'Ngomik', 'https://ngomik.net')
+	m.TotalDirectory = AlphaList:len()
 	AddWebsiteModule('56f905ea80e24c4f8bbc37e05de2ad9a', 'Mangakyo', 'https://www.mangakyo.me')
 	AddWebsiteModule('f68bb6ee00e442418c8c05eb00759ae1', 'BacaKomik', 'https://bacakomik.co')
 	AddWebsiteModule('755ce08dc1a74f69b283cb45b7af56c1', 'Boosei', 'https://boosei.com')
