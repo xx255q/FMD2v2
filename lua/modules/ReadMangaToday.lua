@@ -42,9 +42,9 @@ end
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local x = CreateTXQuery(HTTP.Document)
-		x.ParseHTML(Trim(GetBetween('var images = ', ';', x.XPathString('//script[@type="text/javascript" and contains(., "var images")]'))))
-		for v in x.XPath('json(*)()("url")').Get() do
-			TASK.PageLinks.Add(v.ToString():gsub('///', '//'))
+		x.ParseHTML(GetBetween('var images = ', ';', x.XPathString('//script[contains(., "var images")]')))
+		local v for v in x.XPath('json(*)().url').Get() do
+			TASK.PageLinks.Add(v.ToString())
 		end
 		return true
 	else
