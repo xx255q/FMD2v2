@@ -157,7 +157,7 @@ function getMangas(x)
 		x.XPathHREFTitleAll('//td[@class="judulseries"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 	elseif MODULE.ID == '421be2f0d918493e94f745c71090f359' then -- Mangafast
 		x.XPathHREFTitleAll('//td[@class="jds"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-	elseif MODULE.ID == '13c6434a0c2541b18abee83a2c72e8f5' then -- MangaKane
+	elseif MODULE.ID == '13c6434a0c2541b18abee83a2c72e8f5' or MODULE.ID == 'b53534f8443e420ea088594c53a3ff39' then -- MangaKane, Manhwaland
 		x.XPathHREFTitleAll('//div[@class="flexch-infoz"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 	else
 		-- common
@@ -210,6 +210,8 @@ function GetPageNumber()
 			local result = duktape.ExecJS('var CryptoJS = require("utils/crypto-js.min.js");' .. execute ..'abcd(fff);ffff;')
 			x.ParseHTML(result)
 			x.XPathStringAll('//img/@src', TASK.PageLinks)
+		elseif MODULE.ID == 'b53534f8443e420ea088594c53a3ff39' then -- Manhwaland
+			x.XPathStringAll('//*[@class="reader-area"]//img[not(contains(@src,"data:image"))]/@src', TASK.PageLinks)
 		else
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="reader-area"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="readerarea"]//img/@src', TASK.PageLinks) end
@@ -275,7 +277,8 @@ function GetNameAndLink()
 			['009bf49bc17a4a2a8e1c79cce6867651'] = '/manga/?list', -- KomikIndo
 			['56f905ea80e24c4f8bbc37e05de2ad9a'] = '/manga/?list', -- Mangakyo
 			['0e45db2650604f74a0caeb7c1d69a749'] = '/manga/?list', -- MangaSWAT
-			['41294a121062494489adfa601c442ef8'] = '/manga-list/?list' -- LegionAsia
+			['41294a121062494489adfa601c442ef8'] = '/manga-list/?list', -- LegionAsia
+			['b53534f8443e420ea088594c53a3ff39'] = '/manhwa-list/' -- Manhwaland
 		}
 		local dirurl = '/manga/list-mode/'
 		if dirs[MODULE.ID] ~= nil then
@@ -293,7 +296,7 @@ function GetNameAndLink()
 		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="manga-list"]/a', LINKS, NAMES) end
 		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="ls4j"]//a', LINKS, NAMES) end
 		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="listttl"]//a', LINKS, NAMES) end
-		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="Manga"]/a', LINKS, NAMES) end
+		if LINKS.Count == 0 then x.XPathHREFAll('//*[@class="Manga" or @class="Manhwa"]/a', LINKS, NAMES) end
 	end
 	return no_error
 end
@@ -348,6 +351,7 @@ function Init()
 	AddWebsiteModule('deb2a310668a40ebbbe3aaa45f78edc2', 'GuruKomik', 'https://gurukomik.com')
 	AddWebsiteModule('adb6ae3e4d7c49fb89bb8d17bfbc9486', 'KlanKomik', 'https://klankomik.com')
 	AddWebsiteModule('06b9c968ec8c4c89b7d28b7d461d84e3', 'Masterkomik', 'https://masterkomik.com')
+	AddWebsiteModule('b53534f8443e420ea088594c53a3ff39', 'Manhwaland', 'https://manhwaland.xyz')
 
 	cat = 'Raw'
 	AddWebsiteModule('21b0dfcb262d4ae28520679165282666', 'Rawkuma', 'https://rawkuma.com')
