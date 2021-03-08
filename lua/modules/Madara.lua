@@ -301,6 +301,7 @@ function Init()
 	AddWebsiteModule('598672e8158d4fd781bea8d426534695', 'GourmetScans', 'https://gourmetscans.net')
 	AddWebsiteModule('813f780f2d3b41ab8de577aadcbd4d7a', 'ImmortalUpdates', 'https://immortalupdates.com')
 	AddWebsiteModule('5f60bc66acfa4605a3668857287eed1d', 'MangaGreat', 'https://mangagreat.com')
+	AddWebsiteModule('a3455b2005f8457f821acc93c2e821ab', 'PMScans', 'https://www.pmscans.com')
 
 	cat = 'French'
 	AddWebsiteModule('41867fa36f2f49959df9fef8aa53ffb5', 'WakaScan', 'https://wakascan.com')
@@ -317,6 +318,7 @@ function Init()
 	AddWebsiteModule('deafed31465943078a7b67ddf4885fda', 'KomikTap', 'https://manhwa.komiktap.co')
 	AddWebsiteModule('fce276573cab499fad96374d1df22121', 'Mangceh', 'https://mangceh.com')
 	AddWebsiteModule('1da2819dd79f4967a12953495ec52afe', 'Manhwaid', 'https://manhwaid.co')
+	AddWebsiteModule('4657d79e63dc4a9082a46b7981bde1b9', 'MangaBoruto', 'https://mangaboruto.xyz')
 
 	cat = 'H-Sites'
 	AddWebsiteModule('58bc6b05826e45e1b66e32d40ddc9fbd', 'ManhwaHand', 'https://manhwahand.com')
