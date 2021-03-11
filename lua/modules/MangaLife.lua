@@ -76,7 +76,7 @@ function GetPageNumber()
 	local body = HTTP.Document.ToString()
 	local vm = {}
 	vm.CurChapter = json.decode(body:match('vm.CurChapter = ({.-});'))
-	vm.CurPathName = body:match('vm.idkwhattonamethis = "(.-)"')
+	vm.CurPathName = body:match('vm.CurPathNames = "(.-)"')
 	vm.ChapterImage = function(ChapterString)
 		local Chapter = ChapterString:sub(2, -2)
 		local Odd = tonumber(ChapterString:sub(-1))
@@ -90,7 +90,7 @@ function GetPageNumber()
 		local s = "000" .. PageString;
 		return s:sub(-3)
 	end
-	vm.CurURI = body:match('ng%-src="(https?://{{vm%.idkwhattonamethis}}.-){{vm%.CurChapter%.Directory'):gsub('{{vm%.idkwhattonamethis}}', vm.CurPathName)
+	vm.CurURI = body:match('ng%-src="(https?://{{vm%.CurPathNames}}.-){{vm%.CurChapter%.Directory'):gsub('{{vm%.CurPathNames}}', vm.CurPathName)
 	if vm.CurChapter.Directory ~= '' then vm.CurURI = vm.CurURI .. vm.CurChapter.Directory .. '/' end
 	vm.CurURI = vm.CurURI .. vm.ChapterImage(vm.CurChapter.Chapter) .. '-'
 	
