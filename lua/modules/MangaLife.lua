@@ -76,24 +76,26 @@ function GetPageNumber()
 	local body = HTTP.Document.ToString()
 	local vm = {}
 	vm.CurChapter = json.decode(body:match('vm.CurChapter = ({.-});'))
-	vm.CurPathName = body:match('vm.CurPathNames = "(.-)"')
+	vm.IndexName = '/manga/' .. body:match('vm.IndexName = "(.-)"')
+	vm.Var = body:match('vm.fortheregexguy = ".-";(.-) = ')
+	vm.CurPathName = body:match(''.. vm.Var ..' = "(.-)"')
 	vm.ChapterImage = function(ChapterString)
 		local Chapter = ChapterString:sub(2, -2)
 		local Odd = tonumber(ChapterString:sub(-1))
-		if Odd == 0 then 
+		if Odd == 0 then
 			return Chapter
 		else
 			return Chapter .. "." .. Odd
 		end
-	end			
+	end
 	vm.PageImage = function(PageString)
-		local s = "000" .. PageString;
+		local s = "000" .. PageString
 		return s:sub(-3)
 	end
-	vm.CurURI = body:match('ng%-src="(https?://{{vm%.CurPathNames}}.-){{vm%.CurChapter%.Directory'):gsub('{{vm%.CurPathNames}}', vm.CurPathName)
+	vm.CurURI = vm.CurPathName .. vm.IndexName .. '/'
 	if vm.CurChapter.Directory ~= '' then vm.CurURI = vm.CurURI .. vm.CurChapter.Directory .. '/' end
 	vm.CurURI = vm.CurURI .. vm.ChapterImage(vm.CurChapter.Chapter) .. '-'
-	
+
 	local Page; for Page = 1, vm.CurChapter.Page do
 		TASK.PageLinks.Add(vm.CurURI .. vm.PageImage(Page) .. '.png')
 	end
