@@ -36,23 +36,14 @@ function GetInfo()
 end
 
 function GetPageNumber()
-	TASK.PageLinks.Clear()
-	TASK.PageNumber = 0
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x = CreateTXQuery(HTTP.Document)
-		local curCh = x.XPathString('//select[@id="chapter_select"]/option[@selected]/@value')
-		local s = x.XPathString('//script[contains(., "images")]')
-		local slug = Trim(GetBetween("var manga_slug =", ";", s):gsub('"', ''))
-		local chapter = Trim(GetBetween("var viewschapter =", ";", s):gsub('"', ''))
-		s = GetBetween("var images =", ";", s)
-		x.ParseHTML(s)
-		local v = x.XPath('json(*)()')
-		for i = 1, v.Count do
-			s = string.format("/manga/%s/%s/%s/%s", slug, chapter, curCh, v.Get(i).ToString())
-			s = string.gsub(s, '//', '/')
-			s = string.gsub(s, '///', '/')
-			s = string.gsub(s, '/ ', '/')
-			TASK.PageLinks.Add(MaybeFillHost(MODULE.RootURL, s))
+		local body     = HTTP.Document.ToString()
+		local comicloc = body:match('var comiclocation = "(.-)"')
+		local slug     = body:match('var manga_slug = "(.-)"')
+		local curCh    = body:match('var currentChapter = "(.-)"')
+		local images   = body:match("var images = %[([^%]]+)")
+		local i for i in images:gmatch('"([^",]+)') do
+			TASK.PageLinks.Add(MaybeFillHost(MODULE.RootURL, comicloc .. slug .. '/' .. curCh .. '/' .. i))
 		end
 	else
 		return false
