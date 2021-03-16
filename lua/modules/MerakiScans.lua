@@ -10,23 +10,19 @@ function Init()
 end
 
 function GetInfo()
-	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
+	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=CreateTXQuery(HTTP.Document)
-		if MANGAINFO.Title == '' then
-			MANGAINFO.Title=x.XPathString('//*[@id="manga_name"]')
-		end
-		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//img[@id="cover_img"]/@src'))
-		MANGAINFO.Authors=x.XPathString('//ul[@id="detail_list"]/li[contains(., "Author")]/substring-after(., ":")')
-		MANGAINFO.Artists=x.XPathString('//ul[@id="detail_list"]/li[contains(., "Artist")]/substring-after(., ":")')
-		MANGAINFO.Genres=x.XPathStringAll('//ul[@id="detail_list"]/li[contains(., "Genres")]/a')
-		MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//ul[@id="detail_list"]/li[contains(., "Status")]'))
-		MANGAINFO.Summary=x.XPathString('//ul[@id="detail_list"]/span')
-		local v = x.XPath('//table[@id="chapter_table"]//tr')
-		for i = 1, v.Count do
-			local v1 = v.Get(i)
-			MANGAINFO.ChapterLinks.Add(MaybeFillHost(MODULE.RootURL, v1.GetAttribute("data-href")))
-			MANGAINFO.ChapterNames.Add(x.XPathString("./td[1]", v1))
+		local x = CreateTXQuery(HTTP.Document)
+		MANGAINFO.Title     = x.XPathString('//*[@id="manga_name"]')
+		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//img[@id="cover_img"]/@src'))
+		MANGAINFO.Authors   = x.XPathString('//ul[@id="detail_list"]/li[contains(., "Author")]/substring-after(., ":")')
+		MANGAINFO.Artists   = x.XPathString('//ul[@id="detail_list"]/li[contains(., "Artist")]/substring-after(., ":")')
+		MANGAINFO.Genres    = x.XPathStringAll('//ul[@id="detail_list"]/li[contains(., "Genres")]/a')
+		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//ul[@id="detail_list"]/li[contains(., "Status")]'))
+		MANGAINFO.Summary   = x.XPathString('//ul[@id="detail_list"]/span')
+		local v for v in x.XPath('//table[@id="chapter_table"]//tr').Get() do
+			MANGAINFO.ChapterLinks.Add(MaybeFillHost(MODULE.RootURL, v.GetAttribute("data-href")))
+			MANGAINFO.ChapterNames.Add(x.XPathString('./td[1]', v))
 		end
 		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
@@ -45,20 +41,18 @@ function GetPageNumber()
 		local i for i in images:gmatch('"([^",]+)') do
 			TASK.PageLinks.Add(MaybeFillHost(MODULE.RootURL, comicloc .. slug .. '/' .. curCh .. '/' .. i))
 		end
+		return true
 	else
 		return false
 	end
-	return true
 end
 
 function GetNameAndLink()
 	if HTTP.GET(MODULE.RootURL .. '/manga/') then
 		local x = CreateTXQuery(HTTP.Document)
-		local v = x.XPath('//div[@id="all"]/div[@id="listitem"]/a')
-		for i = 1, v.Count do
-			local v1 = v.Get(i)
-			LINKS.Add(v1.GetAttribute('href'))
-			NAMES.Add(x.XPathString('./h1', v1))
+		local v for v in x.XPath('//div[@id="all"]/div[@id="listitem"]/a').Get() do
+			LINKS.Add(v.GetAttribute('href'))
+			NAMES.Add(x.XPathString('./h1', v))
 		end
 		return no_error
 	else
