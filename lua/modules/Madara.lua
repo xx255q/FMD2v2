@@ -304,6 +304,7 @@ function Init()
 	AddWebsiteModule('a3455b2005f8457f821acc93c2e821ab', 'PMScans', 'https://www.pmscans.com')
 	AddWebsiteModule('d2ce33fc01f34981ac9d1f3756d1b81b', 'LeviatanScansEN', 'https://leviatanscans.com')
 	AddWebsiteModule('1b7fba26de3e49d7af3ab6549921c567', 'SKScans', 'https://skscans.com')
+	AddWebsiteModule('716dab165a0f4f80b0ee49a4518866a2', 'GrazeScans', 'https://grazescans.com')
 
 	cat = 'French'
 	AddWebsiteModule('41867fa36f2f49959df9fef8aa53ffb5', 'WakaScan', 'https://wakascan.com')
