@@ -1935,6 +1935,10 @@ msgstr "Aç ..."
 msgid "Resume"
 msgstr "Devam et"
 
+#: tmainform.midownloaddownload.caption
+msgid "Redownload"
+msgstr ""
+
 #: tmainform.midownloadstop.caption
 msgid "Stop"
 msgstr "Dur"

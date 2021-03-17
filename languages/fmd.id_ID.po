@@ -1938,6 +1938,10 @@ msgstr "Buka ..."
 msgid "Resume"
 msgstr "Lanjutkan"
 
+#: tmainform.midownloaddownload.caption
+msgid "Redownload"
+msgstr "Unduh ulang"
+
 #: tmainform.midownloadstop.caption
 msgid "Stop"
 msgstr "Hentikan"
