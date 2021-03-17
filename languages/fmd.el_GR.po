@@ -1986,7 +1986,7 @@ msgstr "Άνοιγμα..."
 msgid "Resume"
 msgstr "Συνέχιση"
 
-#: tmainform.midownloaddownload.caption
+#: tmainform.midownloadredownload.caption
 msgid "Redownload"
 msgstr ""
 

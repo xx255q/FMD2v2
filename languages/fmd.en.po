@@ -1934,7 +1934,7 @@ msgstr "Open ..."
 msgid "Resume"
 msgstr "Resume"
 
-#: tmainform.midownloaddownload.caption
+#: tmainform.midownloadredownload.caption
 msgid "Redownload"
 msgstr "Redownload"
 

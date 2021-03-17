@@ -2012,7 +2012,7 @@ msgstr "Ouvrir..."
 msgid "Resume"
 msgstr "Reprendre"
 
-#: tmainform.midownloaddownload.caption
+#: tmainform.midownloadredownload.caption
 msgid "Redownload"
 msgstr ""
 
