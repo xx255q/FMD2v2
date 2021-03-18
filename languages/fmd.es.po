@@ -1931,13 +1931,13 @@ msgctxt "tmainform.midownloadopenwith.caption"
 msgid "Open ..."
 msgstr "Abrir ..."
 
-#: tmainform.midownloadresume.caption
-msgid "Resume"
-msgstr "Reanudar"
-
 #: tmainform.midownloadredownload.caption
 msgid "Redownload"
 msgstr ""
+
+#: tmainform.midownloadresume.caption
+msgid "Resume"
+msgstr "Reanudar"
 
 #: tmainform.midownloadstop.caption
 msgid "Stop"
@@ -2611,7 +2611,7 @@ msgstr "%d Manga(s) Completado(s) será(n) removido(s):"
 #: ufavoritesmanager.rs_lblnewchapterfound
 #, object-pascal-format
 msgid "Found %d new chapter from %d manga(s):"
-msgstr "Encontrado(s) %d nuevo(s) capítulo(s) de manga(s):"
+msgstr "Encontrado(s) %d nuevo(s) capítulo(s) %d de manga(s):"
 
 #: usilentthread.rs_silentthreadloadstatus
 #, object-pascal-format
@@ -2680,3 +2680,4 @@ msgstr "Actualizando Lista"
 #, object-pascal-format
 msgid "Can not load WebP codec library \"%s\". Check your installation."
 msgstr "No se puede cargar libreria de codec WebP \"%s\". Revisa tu instalación."
+

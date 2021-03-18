@@ -1914,13 +1914,13 @@ msgctxt "tmainform.midownloadopenwith.caption"
 msgid "Open ..."
 msgstr "Otwórz ..."
 
-#: tmainform.midownloadresume.caption
-msgid "Resume"
-msgstr "Wznów"
-
 #: tmainform.midownloadredownload.caption
 msgid "Redownload"
 msgstr ""
+
+#: tmainform.midownloadresume.caption
+msgid "Resume"
+msgstr "Wznów"
 
 #: tmainform.midownloadstop.caption
 msgid "Stop"
@@ -2660,3 +2660,4 @@ msgstr ""
 #, object-pascal-format
 msgid "Can not load WebP codec library \"%s\". Check your installation."
 msgstr ""
+

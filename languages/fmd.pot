@@ -1820,6 +1820,10 @@ msgctxt "tmainform.midownloadopenwith.caption"
 msgid "Open ..."
 msgstr ""
 
+#: tmainform.midownloadredownload.caption
+msgid "Redownload"
+msgstr ""
+
 #: tmainform.midownloadresume.caption
 msgid "Resume"
 msgstr ""

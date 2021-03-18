@@ -1934,13 +1934,13 @@ msgctxt "tmainform.midownloadopenwith.caption"
 msgid "Open ..."
 msgstr "Buka ..."
 
-#: tmainform.midownloadresume.caption
-msgid "Resume"
-msgstr "Lanjutkan"
-
 #: tmainform.midownloadredownload.caption
 msgid "Redownload"
 msgstr "Unduh ulang"
+
+#: tmainform.midownloadresume.caption
+msgid "Resume"
+msgstr "Lanjutkan"
 
 #: tmainform.midownloadstop.caption
 msgid "Stop"
@@ -2684,3 +2684,4 @@ msgstr "Memutakhirkan daftar"
 #, object-pascal-format
 msgid "Can not load WebP codec library \"%s\". Check your installation."
 msgstr "Tidak dapat memuat pustaka kodek WebP \"%s\". Periksa instalasi Anda."
+
