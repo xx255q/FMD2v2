@@ -61,6 +61,10 @@ function getpagenumber()
 	else
 		return false
 	end
+	for i = 0, TASK.PageLinks.Count - 1 do
+		TASK.PageLinks[i] = TASK.PageLinks[i]:gsub("i%d.wp.com/", "")
+		i = i + 1
+	end
 	else
 		return false
 	end
