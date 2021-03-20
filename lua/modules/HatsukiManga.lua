@@ -27,9 +27,16 @@ function GetInfo()
 		MANGAINFO.Genres     = x.XPathStringAll('//div[@class="generos-pag-obra"]/h4')
 		MANGAINFO.Summary    = x.XPathString('//div[@class="desc-obra"]/p')
 
-		local v for v in x.XPath('//div[@class="cuadro-obra"]').Get() do
-			MANGAINFO.ChapterLinks.Add(x.XPathString('ul/li/div[2]/a/@href', v))
-			MANGAINFO.ChapterNames.Add(x.XPathString('div/p', v) .. ' [' .. x.XPathString('ul/li/div[1]/a', v) .. ']')
+		HTTP.Reset()
+		HTTP.Headers.Values['Cache-Control'] = ' no-cache'
+		HTTP.MimeType = 'application/x-www-form-urlencoded'
+		local q = 'idObra=' .. URL:match('id=(%d+)')
+		if HTTP.POST(MODULE.RootURL .. '/src/get_all_caps.php', q) then
+			local x = CreateTXQuery(HTTP.Document)
+			local v for v in x.XPath('//div[@class="cuadro-obra"]').Get() do
+				MANGAINFO.ChapterLinks.Add(x.XPathString('ul/li/div[2]/a/@href', v))
+				MANGAINFO.ChapterNames.Add(x.XPathString('div/p', v) .. ' [' .. x.XPathString('ul/li/div[1]/a', v) .. ']')
+			end
 		end
 		return no_error
 	else
