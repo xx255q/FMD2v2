@@ -399,6 +399,7 @@ function Init()
 	AddWebsiteModule('fa9659f5511441c6a5b5cc969d91a204', 'MangaNeloLink', 'https://manganelo.link')
 	AddWebsiteModule('c7406bf3452343f8adb4cd257c9222cb', 'ComicKiba', 'https://comickiba.com')
 	AddWebsiteModule('38ee90a6e1f343e284478e090399d7d2', 'MMScans', 'https://mm-scans.com')
+	AddWebsiteModule('6d95277ed6864a16aeebf025ca667c3b', 'NovelMic', 'https://novelmic.com')
 
 	cat = 'Arabic-Scanlation'
 	AddWebsiteModule('7bda2905b61c49d1976777e9f2356361', '3asqOrg', 'https://3asq.org')
