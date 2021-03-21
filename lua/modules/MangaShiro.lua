@@ -278,7 +278,6 @@ function GetNameAndLink()
 		-- full text based list
 		local dirs = {
 			['49602ce189e844f49bfe78f7a1484dbe'] = '/manga-lists/', -- MangaKid
-			['b8206e754d4541689c1d367f7e19fd64'] = '/daftar-komik/?list', -- KomikCast
 			['ca571825056b4850bd3693e4e1437997'] = '/daftar-komik-manga-bahasa-indonesia.html', -- Mangacan
 			['fb5bd3aa549f4aefa112a8fe7547d2a9'] = '/manga-list/', -- MangaIndo
 			['7a74b2abda1d4b329ee1d1fa58866c03'] = '/manga-list/', -- MaidMangaID
@@ -293,7 +292,8 @@ function GetNameAndLink()
 			['56f905ea80e24c4f8bbc37e05de2ad9a'] = '/manga/?list', -- Mangakyo
 			['0e45db2650604f74a0caeb7c1d69a749'] = '/manga/?list', -- MangaSWAT
 			['41294a121062494489adfa601c442ef8'] = '/manga-list/?list', -- LegionAsia
-			['b53534f8443e420ea088594c53a3ff39'] = '/manhwa-list/' -- Manhwaland
+			['b53534f8443e420ea088594c53a3ff39'] = '/manhwa-list/', -- Manhwaland
+			['ff17b64aa945403dae45706753235872'] = '/latest-update/?list' -- KomikNesia
 		}
 		local dirurl = '/manga/list-mode/'
 		if dirs[MODULE.ID] ~= nil then
@@ -367,6 +367,8 @@ function Init()
 	AddWebsiteModule('adb6ae3e4d7c49fb89bb8d17bfbc9486', 'KlanKomik', 'https://klankomik.com')
 	AddWebsiteModule('06b9c968ec8c4c89b7d28b7d461d84e3', 'Masterkomik', 'https://masterkomik.com')
 	AddWebsiteModule('b53534f8443e420ea088594c53a3ff39', 'Manhwaland', 'https://manhwaland.xyz')
+	AddWebsiteModule('ff17b64aa945403dae45706753235872', 'KomikNesia', 'https://komiknesia.com')
+	AddWebsiteModule('545acbf017814caab2b6bb28e48779fa', 'MGKomik', 'https://mgkomik.my.id')
 
 	cat = 'Raw'
 	AddWebsiteModule('21b0dfcb262d4ae28520679165282666', 'Rawkuma', 'https://rawkuma.com')
