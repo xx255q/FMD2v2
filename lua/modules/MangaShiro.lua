@@ -51,6 +51,7 @@ function getCover(x)
 	if img == '' then img = x.XPathString('//div[@class="img"]/img[@itemprop="image"]/@src') end
 	if img == '' then img = x.XPathString('//div[@class="ims"]/img/@src') end
 	if img == '' then img = x.XPathString('//div[@class="komik_info-content-thumbnail"]/img/@src') end
+	if img == '' then img = x.XPathString('//img[@class="shadow"]/@src') end
 	return img
 end
 
@@ -160,7 +161,10 @@ function getMangas(x)
 	elseif MODULE.ID == '5af0f26f0d034fb2b42ee65d7e4188ab' then -- Komiku
 		x.XPathHREFTitleAll('//td[@class="judulseries"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 	elseif MODULE.ID == '421be2f0d918493e94f745c71090f359' then -- Mangafast
-		x.XPathHREFTitleAll('//td[@class="jds"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+		local v for v in x.XPath('//a[@class="chapter-link"]').Get() do
+			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
+			MANGAINFO.ChapterNames.Add(x.XPathString('div/span[@class="text-left"]', v))
+		end	
 	elseif MODULE.ID == '13c6434a0c2541b18abee83a2c72e8f5' or MODULE.ID == 'b53534f8443e420ea088594c53a3ff39' then -- MangaKane, Manhwaland
 		x.XPathHREFTitleAll('//div[@class="flexch-infoz"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 	elseif MODULE.ID == 'b8206e754d4541689c1d367f7e19fd64' then -- KomikCast
@@ -203,11 +207,7 @@ function GetPageNumber()
 		elseif MODULE.ID == '5af0f26f0d034fb2b42ee65d7e4188ab' then -- Komiku
 			x.XPathStringAll('//*[@id="Baca_Komik"]/img/@src', TASK.PageLinks)
 		elseif MODULE.ID == '421be2f0d918493e94f745c71090f359' then -- Mangafast
-			local v for v in x.XPath('//*[@id="Read"]/img').Get() do
-				local src = v.GetAttribute('onerror')
-				src = string.match(src, "src='(.*)'")
-				TASK.PageLinks.Add(src)
-			end
+			x.XPathStringAll('//*[@class="content-comic"]/img/@src', TASK.PageLinks)
 		elseif MODULE.ID == 'c8e02b7aaac1412180db86374fc799a8' then -- ManhwasNet
 			x.XPathStringAll('//*[@class="reader-area"]/img/@data-src', TASK.PageLinks)
 		elseif MODULE.ID == 'ca571825056b4850bd3693e4e1437997' then -- Mangacan
@@ -256,7 +256,10 @@ function GetNameAndLink()
 		local dirurl = MODULE.RootURL .. '/list-manga/'
 		if not HTTP.GET(dirurl) then return net_problem end
 		local x = CreateTXQuery(HTTP.Document)
-		x.XPathHREFTitleAll('//*[@class="ranking1"]/a', LINKS, NAMES)
+		local v for v in x.XPath('//div[@class="kan"]/a[1]').Get() do
+			LINKS.Add(v.GetAttribute('href'))
+			NAMES.Add(x.XPathString('h3', v))
+		end
 	elseif MODULE.ID == 'b8206e754d4541689c1d367f7e19fd64' then -- KomikCast
 		local dirurl = MODULE.RootURL .. '/daftar-komik/?list'
 		if not HTTP.GET(dirurl) then return net_problem end
