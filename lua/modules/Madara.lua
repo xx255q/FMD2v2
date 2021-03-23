@@ -73,6 +73,8 @@ function Modules.Madara()
 				x.XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]//a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			elseif MODULE.Name == 'Mangareceh' then
 				x.XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/a[1]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+			elseif MODULE.ID == '8c8adf7a1eba4b7cb449f1fd127fe696' then -- ShieldManga
+				x.XPathHREFAll('//li[contains(@class, "wp-manga-hapter")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			else
 				x.XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			end
@@ -400,6 +402,7 @@ function Init()
 	AddWebsiteModule('c7406bf3452343f8adb4cd257c9222cb', 'ComicKiba', 'https://comickiba.com')
 	AddWebsiteModule('38ee90a6e1f343e284478e090399d7d2', 'MMScans', 'https://mm-scans.com')
 	AddWebsiteModule('6d95277ed6864a16aeebf025ca667c3b', 'NovelMic', 'https://novelmic.com')
+	AddWebsiteModule('8c8adf7a1eba4b7cb449f1fd127fe696', 'ShieldManga', 'https://shieldmanga.club')
 
 	cat = 'Arabic-Scanlation'
 	AddWebsiteModule('7bda2905b61c49d1976777e9f2356361', '3asqOrg', 'https://3asq.org')
