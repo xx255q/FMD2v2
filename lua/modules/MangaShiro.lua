@@ -207,7 +207,7 @@ function GetPageNumber()
 		elseif MODULE.ID == '5af0f26f0d034fb2b42ee65d7e4188ab' then -- Komiku
 			x.XPathStringAll('//*[@id="Baca_Komik"]/img/@src', TASK.PageLinks)
 		elseif MODULE.ID == '421be2f0d918493e94f745c71090f359' then -- Mangafast
-			x.XPathStringAll('//*[@class="content-comic"]/img/@src', TASK.PageLinks)
+			x.XPathStringAll('//*[contains(@class, "content-comic")]/img/@src', TASK.PageLinks)
 		elseif MODULE.ID == 'c8e02b7aaac1412180db86374fc799a8' then -- ManhwasNet
 			x.XPathStringAll('//*[@class="reader-area"]/img/@data-src', TASK.PageLinks)
 		elseif MODULE.ID == 'ca571825056b4850bd3693e4e1437997' then -- Mangacan
