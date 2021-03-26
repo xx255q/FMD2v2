@@ -2,11 +2,10 @@
 	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
 	HTTP.Cookies.Values['has_js'] = '1'
 	if HTTP.GET(MANGAINFO.URL) then
-		local x=CreateTXQuery(HTTP.Document)
+		local x = CreateTXQuery(HTTP.Document)
 		if MANGAINFO.Title == '' then
 			MANGAINFO.Title = string.gsub(x.XPathString('//h1[@class="page-header"]'), ' Manga$', '')
 		end
-		MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//*[contains(@class,"field-status")]'))
 		x.XPathHREFAll('//table[contains(@class,"chlist")]//tr/td[1]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
@@ -34,11 +33,12 @@
 			return ''
 		end
 
-		MANGAINFO.Summary = getField(summaryQuery, '*')
-		MANGAINFO.Authors = getField(authorQuery, '//div[contains(@class, "field-item")]')
-		MANGAINFO.Artists = getField(artistQuery, '//div[contains(@class, "field-item")]')
+		MANGAINFO.Summary   = getField(summaryQuery, '*')
+		MANGAINFO.Authors   = getField(authorQuery, '//div[contains(@class, "field-item")]')
+		MANGAINFO.Artists   = getField(artistQuery, '//div[contains(@class, "field-item")]')
 		MANGAINFO.CoverLink = getField(coverQuery, '//img/@src')
-		MANGAINFO.Genres = getField(genresQuery, 'string-join(//a, ", ")')
+		MANGAINFO.Genres    = getField(genresQuery, 'string-join(//a, ", ")')
+		MANGAINFO.Status    = MangaInfoStatusIfPos(getField(statusQuery, '//div[contains(@class, "field-item")]'))
 
 		return no_error
 	else
@@ -47,10 +47,10 @@
 end
 
 function getpagenumber()
-	TASK.PageLinks.Clear()
-	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL .. '?page=all')) then
-		local x=CreateTXQuery(HTTP.Document)
-		x.XPathStringAll('//*[@id="images"]//img[not(contains(@src,"adsense"))]/@src', TASK.PageLinks)
+	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
+		local x = CreateTXQuery(HTTP.Document)
+		x.ParseHTML(GetBetween('settings,', ');', x.XPathString('//script[contains(., "jQuery.extend(Drupal")]')))
+		x.XPathStringAll('json(*).showmanga.paths()', TASK.PageLinks)
 	else
 		return false
 	end
@@ -93,7 +93,6 @@ function Init()
 		m.Category='English'
 		m.Name=site
 		m.RootURL=url
-		m.LastUpdated='April 5, 2018'
 		m.OnGetInfo='getinfo'
 		m.OnGetPageNumber='getpagenumber'
 		m.OnGetNameAndLink='getnameandlink'
