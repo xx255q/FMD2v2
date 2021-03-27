@@ -220,9 +220,11 @@ function GetPageNumber()
 			x.XPathStringAll('//*[@class="reader-area"]//img[not(contains(@src,"data:image"))]/@src', TASK.PageLinks)
 		elseif MODULE.ID == 'b8206e754d4541689c1d367f7e19fd64' then -- KomikCast
 			x.XPathStringAll('//*[@class="main-reading-area"]/img/@src', TASK.PageLinks)
-		elseif MODULE.ID == '7103ae6839ea46ec80cdfc2c4b37c803' then -- AsuraScans
-			x.XPathStringAll('//*[@id="readerarea"]/p//img[contains(@loading,"lazy")]/@src', TASK.PageLinks)
 		else
+			if TASK.PageLinks.Count == 0 then
+				x.ParseHTML(GetBetween('run(', ');', x.XPathString('//script[contains(., "ts_reader")]')))
+				x.XPathStringAll('json(*).sources()[1].images()', TASK.PageLinks)
+			end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="reader-area"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="readerarea"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="readerarea"]/p//img/@src', TASK.PageLinks) end
@@ -234,10 +236,6 @@ function GetPageNumber()
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="entry-content"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="bc"]/img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="chimg"]/img/@data-lazy-src', TASK.PageLinks) end
-			if TASK.PageLinks.Count == 0 then
-				x.ParseHTML(GetBetween('run(', ');', x.XPathString('//script[contains(., "ts_reader")]')))
-				x.XPathStringAll('json(*).sources()[1].images()', TASK.PageLinks)
-			end
 		end
 		for i = 0, TASK.PageLinks.Count - 1 do -- Bypass 'i0.wp.com' image CDN to ensure original images are loaded directly from host
 			TASK.PageLinks[i] = TASK.PageLinks[i]:gsub("i%d.wp.com/", "")
