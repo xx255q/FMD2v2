@@ -221,10 +221,10 @@ function GetPageNumber()
 		elseif MODULE.ID == 'b8206e754d4541689c1d367f7e19fd64' then -- KomikCast
 			x.XPathStringAll('//*[@class="main-reading-area"]/img/@src', TASK.PageLinks)
 		else
-			if TASK.PageLinks.Count == 0 then
-				x.ParseHTML(GetBetween('run(', ');', x.XPathString('//script[contains(., "ts_reader")]')))
-				x.XPathStringAll('json(*).sources()[1].images()', TASK.PageLinks)
-			end
+			-- common
+			x.ParseHTML(GetBetween('run(', ');', x.XPathString('//script[contains(., "ts_reader")]')))
+			x.XPathStringAll('json(*).sources()[1].images()', TASK.PageLinks)
+
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="reader-area"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="readerarea"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="readerarea"]/p//img/@src', TASK.PageLinks) end
