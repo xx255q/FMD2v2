@@ -163,7 +163,7 @@ function getMangas(x)
 	elseif MODULE.ID == '421be2f0d918493e94f745c71090f359' then -- Mangafast
 		local v for v in x.XPath('//a[@class="chapter-link"]').Get() do
 			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
-			MANGAINFO.ChapterNames.Add(x.XPathString('div/span[@class="text-left"]', v))
+			MANGAINFO.ChapterNames.Add(x.XPathString('div/span[@class="left"]', v))
 		end	
 	elseif MODULE.ID == '13c6434a0c2541b18abee83a2c72e8f5' or MODULE.ID == 'b53534f8443e420ea088594c53a3ff39' then -- MangaKane, Manhwaland
 		x.XPathHREFTitleAll('//div[@class="flexch-infoz"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
