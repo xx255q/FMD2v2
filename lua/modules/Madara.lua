@@ -405,6 +405,8 @@ function Init()
 	AddWebsiteModule('8c8adf7a1eba4b7cb449f1fd127fe696', 'ShieldManga', 'https://shieldmanga.club')
 	AddWebsiteModule('8e96a101438b401daf3a500590c91d62', 'Skymanhwa', 'https://skymanhwa.com')
 	AddWebsiteModule('ea0da11a1ec34dfeb65102d7768c897d', 'Manhuafast', 'https://manhuafast.com')
+	AddWebsiteModule('80eb1cd9d38a4cb3ae4ea57f993847eb', 'S2Manga', 'https://s2manga.com')
+	AddWebsiteModule('33618723b5a74da3a28275258a47ad67', 'FreeComicOnline', 'https://freecomiconline.me')
 
 	cat = 'Arabic-Scanlation'
 	AddWebsiteModule('7bda2905b61c49d1976777e9f2356361', '3asqOrg', 'https://3asq.org')
