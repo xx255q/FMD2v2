@@ -75,6 +75,8 @@ function Modules.Madara()
 				x.XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/a[1]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			elseif MODULE.ID == '8c8adf7a1eba4b7cb449f1fd127fe696' then -- ShieldManga
 				x.XPathHREFAll('//li[contains(@class, "wp-manga-hapter")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+			elseif MODULE.ID == '7f1b637a525940db9459f1cbf2f7cfc3' then -- Manga18fx
+				x.XPathHREFAll('//ul[@class="row-content-chapter"]//a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			else
 				x.XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			end
@@ -131,6 +133,8 @@ function Modules.Madara()
 						TASK.PageLinks.Add(src)
 					end
 				end
+			elseif MODULE.ID == '7f1b637a525940db9459f1cbf2f7cfc3' then -- Manga18fx
+				x.XPathStringAll('//div[@class="read-content"]/img/@src', TASK.PageLinks)
 			else
 				x.XPathStringAll('//div[contains(@class, "page-break")]/img/@data-src', TASK.PageLinks)
 			end
@@ -308,6 +312,7 @@ function Init()
 	AddWebsiteModule('1b7fba26de3e49d7af3ab6549921c567', 'SKScans', 'https://skscans.com')
 	AddWebsiteModule('716dab165a0f4f80b0ee49a4518866a2', 'GrazeScans', 'https://grazescans.com')
 	AddWebsiteModule('4eff54457e544446a33c569d2b85ced0', 'TritiniaScans', 'https://tritinia.com')
+	AddWebsiteModule('f1371b4a0cd04254ae4b1f5065a46dc8', 'GDScans', 'https://gdegenscans.xyz')
 
 	cat = 'French'
 	AddWebsiteModule('41867fa36f2f49959df9fef8aa53ffb5', 'WakaScan', 'https://wakascan.com')
@@ -338,6 +343,7 @@ function Init()
 	AddWebsiteModule('c87aeae76e884adc9de8bc6b9d56f2c6', 'ShosetsuManga', 'https://www.shosetsu-manga.org')
 	AddWebsiteModule('7fd5031b766a4d228fd0940c0cdb1424', 'MangaHentai', 'https://mangahentai.me')
 	AddWebsiteModule('58f8a130748443c285036e4c4bf49fe8', 'Hentaidexy', 'https://hentaidexy.com')
+	AddWebsiteModule('7f1b637a525940db9459f1cbf2f7cfc3', 'Manga18fx', 'https://manga18fx.com')
 
 	cat = 'Spanish-Scanlation'
 	AddWebsiteModule('eb72aedce86b4598b3d702bc055079e8', 'GodsRealmScan', 'https://godsrealmscan.com')
