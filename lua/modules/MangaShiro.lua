@@ -37,6 +37,7 @@ end
 
 function getCover(x)
 	local img = ''
+	if img == '' then img = x.XPathString('//div[@class="series-thumb"]/img/@data-src') end
 	if img == '' then img = x.XPathString('//div[@class="series-thumb"]/img/@src') end
 	if img == '' then img = x.XPathString('//div[@class="thumb"]/img/@data-lazy-src') end
 	if img == '' then img = x.XPathString('//div[@class="thumb"]/img/@data-src') end
@@ -216,8 +217,6 @@ function GetPageNumber()
 			local result = duktape.ExecJS('var CryptoJS = require("utils/crypto-js.min.js");' .. execute ..'abcd(fff);ffff;')
 			x.ParseHTML(result)
 			x.XPathStringAll('//img/@src', TASK.PageLinks)
-		elseif MODULE.ID == 'b53534f8443e420ea088594c53a3ff39' then -- Manhwaland
-			x.XPathStringAll('//*[@class="reader-area"]//img[not(contains(@src,"data:image"))]/@src', TASK.PageLinks)
 		elseif MODULE.ID == 'b8206e754d4541689c1d367f7e19fd64' then -- KomikCast
 			x.XPathStringAll('//*[@class="main-reading-area"]/img/@src', TASK.PageLinks)
 		elseif MODULE.ID == '7103ae6839ea46ec80cdfc2c4b37c803' then -- AsuraScans
@@ -231,6 +230,7 @@ function GetPageNumber()
 			x.ParseHTML(GetBetween('run(', ');', x.XPathString('//script[contains(., "ts_reader")]')))
 			x.XPathStringAll('json(*).sources()[1].images()', TASK.PageLinks)
 
+			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="reader-area"]//img/@data-src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="reader-area"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="readerarea"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="readerarea"]/p//img/@src', TASK.PageLinks) end
@@ -373,7 +373,7 @@ function Init()
 	AddWebsiteModule('deb2a310668a40ebbbe3aaa45f78edc2', 'GuruKomik', 'https://gurukomik.com')
 	AddWebsiteModule('adb6ae3e4d7c49fb89bb8d17bfbc9486', 'KlanKomik', 'https://klankomik.com')
 	AddWebsiteModule('06b9c968ec8c4c89b7d28b7d461d84e3', 'Masterkomik', 'https://masterkomik.com')
-	AddWebsiteModule('b53534f8443e420ea088594c53a3ff39', 'Manhwaland', 'https://manhwaland.xyz')
+	AddWebsiteModule('b53534f8443e420ea088594c53a3ff39', 'Manhwaland', 'https://manhwaland.net')
 	AddWebsiteModule('ff17b64aa945403dae45706753235872', 'KomikNesia', 'https://komiknesia.com')
 	AddWebsiteModule('545acbf017814caab2b6bb28e48779fa', 'MGKomik', 'https://mgkomik.my.id')
 	AddWebsiteModule('489dff6a5f894b6a9c1eed46feeec72e', 'WordHero', 'https://wordhero.my.id')
