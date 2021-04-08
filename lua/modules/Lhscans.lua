@@ -28,6 +28,7 @@ function Init()
 	AddWebsiteModule('3b7ab0c7342f4783910f7842ea05630b', 'EcchiScan', 'https://ecchiscan.com')
 	AddWebsiteModule('f488bcb1911b4f21baa1ab65ef9ca61c', 'HeroScan', 'https://heroscan.com')
 	AddWebsiteModule('154d7bdcaa964bcda16ca4dbc683cdb8', 'ManhwaSmut', 'https://manhwasmut.com')
+	AddWebsiteModule('9b325c488f6f443281b39315d6fa72d0', 'Manhwa18Net', 'https://manhwa18.net')
 	
 	cat = 'English-Scanlation'
 	AddWebsiteModule('7fb5fbed6d3a44fe923ecc7bf929e6cb', 'LHTranslation', 'https://lhtranslation.net')
