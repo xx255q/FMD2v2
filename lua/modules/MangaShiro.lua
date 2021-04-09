@@ -387,6 +387,7 @@ function Init()
 	cat = 'English-Scanlation'
 	AddWebsiteModule('7103ae6839ea46ec80cdfc2c4b37c803', 'AsuraScans', 'https://asurascans.com')
 	AddWebsiteModule('fb34a56c83f54b19b57a9a92070fe899', 'FlameScans', 'https://flamescans.org')
+	AddWebsiteModule('a3455b2005f8457f821acc93c2e821ab', 'PMScans', 'https://reader.pmscans.com')
 
 	cat = 'Spanish'
 	AddWebsiteModule('41294a121062494489adfa601c442ef8', 'LegionAsia', 'https://legionasia.com')
