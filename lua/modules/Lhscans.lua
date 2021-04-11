@@ -32,6 +32,7 @@ function Init()
 	
 	cat = 'English-Scanlation'
 	AddWebsiteModule('7fb5fbed6d3a44fe923ecc7bf929e6cb', 'LHTranslation', 'https://lhtranslation.net')
+	AddWebsiteModule('8313871a984b4b6c8de41860fc5ec96e', 'KSGroupScans', 'https://ksgroupscans.com')
 end
 
 function LoveHugLogin()
@@ -75,7 +76,7 @@ function LoveHugLogin()
 end
 
 function GetDirectoryPageNumber()
-	if MODULE.ID == '9054606f128e4914ae646032215915e5' then -- LoveHug
+	if MODULE.ID == '9054606f128e4914ae646032215915e5' or MODULE.ID == '8313871a984b4b6c8de41860fc5ec96e' then -- LoveHug, KSGroupScans
 		if HTTP.GET(MODULE.RootURL .. '/manga-list.html?page=1&sort=name&sort_type=ASC') then
 			PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//ul[contains(@class, "pagination")]/li[last()-1]')) or 1
 			return no_error
@@ -86,7 +87,7 @@ function GetDirectoryPageNumber()
 end
 
 function GetNameAndLink()
-	if MODULE.ID == '9054606f128e4914ae646032215915e5' then -- LoveHug
+	if MODULE.ID == '9054606f128e4914ae646032215915e5' or MODULE.ID == '8313871a984b4b6c8de41860fc5ec96e' then -- LoveHug, KSGroupScans
 		if HTTP.GET(MODULE.RootURL .. '/manga-list.html?page=' .. (URL + 1) .. '&sort=name&sort_type=ASC') then
 			local x = CreateTXQuery(HTTP.Document)
 			local v for v in x.XPath('//div[@class="row-last-update"]//div[contains(@class, "series-title")]/a').Get() do
@@ -121,6 +122,8 @@ function GetInfo()
 		local x = CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title      = Trim(SeparateLeft(x.XPathString('//div[@class="container"]//li[3]//span'), '- Raw'))
 		if MANGAINFO.Title   == '' then
+			MANGAINFO.Title = x.XPathString('//div[@class="container manga"]//li[3]//span')
+		else
 			MANGAINFO.Title = Trim(x.XPathString('//div[contains(@class, "container")]//li[3]//span'):gsub('- RAW', ''):gsub('%(MANGA%)', ''))
 		end
 		MANGAINFO.CoverLink  = MaybeFillHost(MODULE.RootURL, x.XPathString('//img[@class="thumbnail"]/@src'))
