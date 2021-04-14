@@ -2,7 +2,7 @@ function Init()
 	local m = NewWebsiteModule()
 	m.ID                         = '1a7b98800a114a3da5f48de91f45a880'
 	m.Name                       = 'ReadComicOnline'
-	m.RootURL                    = 'https://readcomiconline.to'
+	m.RootURL                    = 'https://readcomiconline.li'
 	m.Category                   = 'English'
 	m.OnGetDirectoryPageNumber   = 'GetDirectoryPageNumber'
 	m.OnGetNameAndLink           = 'GetNameAndLink'
