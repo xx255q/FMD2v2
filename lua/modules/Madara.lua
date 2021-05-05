@@ -329,6 +329,7 @@ function Init()
 	AddWebsiteModule('fce276573cab499fad96374d1df22121', 'Mangceh', 'https://mangceh.com')
 	AddWebsiteModule('1da2819dd79f4967a12953495ec52afe', 'Manhwaid', 'https://manhwaid.co')
 	AddWebsiteModule('4657d79e63dc4a9082a46b7981bde1b9', 'MangaBoruto', 'https://mangaboruto.xyz')
+	AddWebsiteModule('545acbf017814caab2b6bb28e48779fa', 'MGKomik', 'https://mgkomik.com')
 
 	cat = 'H-Sites'
 	AddWebsiteModule('58bc6b05826e45e1b66e32d40ddc9fbd', 'ManhwaHand', 'https://manhwahand.com')
