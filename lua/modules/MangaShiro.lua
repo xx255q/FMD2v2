@@ -11,6 +11,8 @@ function GetInfo()
 		MANGAINFO.Summary   = getSummary(x)
 		getMangas(x)
 		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
+		HTTP.Reset()
+		HTTP.Headers.Values['Referer'] = MANGAINFO.URL
 		return no_error
 	else
 		return net_problem
@@ -370,7 +372,8 @@ function Init()
 	AddWebsiteModule('13c6434a0c2541b18abee83a2c72e8f5', 'MangaKane', 'https://mangakane.com')
 	AddWebsiteModule('c69cbc947a6a42e194b2e097bba15047', 'MangaSusuBiz', 'https://mangasusu.biz')
 	AddWebsiteModule('f8251e330c8044029d97dec382459eab', 'SheaManga', 'https://sheamanga.my.id')
-	AddWebsiteModule('46dcfabe757140e7980ec34c65bdb30f', 'SekteKomik', 'https://sektekomik.com')
+	m = AddWebsiteModule('46dcfabe757140e7980ec34c65bdb30f', 'SekteKomik', 'https://sektekomik.com')
+	m.OnBeforeDownloadImage = 'BeforeDownloadImage'
 	AddWebsiteModule('1f1ec10a248c4a4f838c80b3e27fc4c7', 'SekaiKomik', 'https://www.sekaikomik.fun')
 	AddWebsiteModule('f9adee01635a4ff48fdff5164a65d6dd', 'Komiktap', 'https://komiktap.in')
 	AddWebsiteModule('ec1a1ad5301f414592f0ba0402024813', 'Doujindesu', 'https://doujindesu.info')
