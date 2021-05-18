@@ -198,21 +198,7 @@ end
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local x = CreateTXQuery(HTTP.Document)
-		if MODULE.ID == '031f3cc0ae3346ad9b8c33d5377891e9' then -- Kiryuu
-			local v; for v in x.XPath('//*[@id="readerarea"]//img').Get() do
-				if string.find(v.GetAttribute('src'), ".filerun.") == nil and
-					string.find(v.GetAttribute('src'), ",0.jpg") == nil and
-					string.find(v.GetAttribute('src'), ",5.jpg") == nil and
-					string.find(v.GetAttribute('src'), ".5.jpg") == nil and
-					string.find(v.GetAttribute('src'), "00.jpg") == nil and
-					string.find(v.GetAttribute('src'), "z10.jpg") == nil and
-					string.find(v.GetAttribute('src'), "Komeng.jpg") == nil and
-					string.find(v.GetAttribute('src'), "ZZ.jpg") == nil and
-					string.find(v.GetAttribute('src'), "Iklan.jpg") == nil then
-					TASK.PageLinks.Add(v.GetAttribute('src'))
-				end
-			end
-		elseif MODULE.ID == '5af0f26f0d034fb2b42ee65d7e4188ab' then -- Komiku
+		if MODULE.ID == '5af0f26f0d034fb2b42ee65d7e4188ab' then -- Komiku
 			x.XPathStringAll('//*[@id="Baca_Komik"]/img/@src', TASK.PageLinks)
 		elseif MODULE.ID == '421be2f0d918493e94f745c71090f359' then -- Mangafast
 			x.XPathStringAll('//*[contains(@class, "content-comic")]/img/@src', TASK.PageLinks)
@@ -355,7 +341,7 @@ function Init()
 	AddWebsiteModule('49602ce189e844f49bfe78f7a1484dbe', 'MangaKid', 'https://mangakid.site')
 	AddWebsiteModule('b8206e754d4541689c1d367f7e19fd64', 'KomikCast', 'https://komikcast.com')
 	AddWebsiteModule('35e1b3ff5dbf428889d0f316c3d881e6', 'WestManga', 'https://westmanga.info')
-	AddWebsiteModule('031f3cc0ae3346ad9b8c33d5377891e9', 'Kiryuu', 'https://kiryuu.co')
+	AddWebsiteModule('031f3cc0ae3346ad9b8c33d5377891e9', 'Kiryuu', 'https://kiryuu.id')
 	AddWebsiteModule('009bf49bc17a4a2a8e1c79cce6867651', 'KomikIndo', 'https://komikindo.co')
 	m = AddWebsiteModule('5af0f26f0d034fb2b42ee65d7e4188ab', 'Komiku', 'https://komiku.id')
 	m.OnBeforeDownloadImage = 'BeforeDownloadImage'
