@@ -238,14 +238,14 @@ function _m.bypass(self, METHOD, URL)
 	local py_cloudflare = [[lua\websitebypass\cloudflare.py]]
 	local js_cloudflare = [[lua\websitebypass\cloudflare.js]]
 	if fileExist([[lua\websitebypass\use_webdriver]]) then
-		if fileExist(js_cloudflare) then
-			use_webdriver = true
-			webdriver_exe = 'node'
-			webdriver_script = js_cloudflare
-		elseif fileExist(py_cloudflare) then
+		if fileExist(py_cloudflare) then
 			use_webdriver = true
 			webdriver_exe = 'python'
 			webdriver_script = py_cloudflare
+		elseif fileExist(js_cloudflare) then
+			use_webdriver = true
+			webdriver_exe = 'node'
+			webdriver_script = js_cloudflare
 		end
 	end
 
