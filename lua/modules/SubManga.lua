@@ -53,7 +53,7 @@ function Init()
 	local m = NewWebsiteModule()
 	m.ID = 'cdf8dd5f0f7b458f97e344a430e979ba'
 	m.Name = 'SubManga'
-	m.RootURL = 'https://submangas.net'
+	m.RootURL = 'https://submanga.io'
 	m.Category = 'Spanish'
 	m.OnGetInfo='getinfo'
 	m.OnGetPageNumber='getpagenumber'

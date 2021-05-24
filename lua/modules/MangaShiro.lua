@@ -293,7 +293,8 @@ function GetNameAndLink()
 			['0e45db2650604f74a0caeb7c1d69a749'] = '/manga/?list', -- MangaSWAT
 			['41294a121062494489adfa601c442ef8'] = '/manga-list/?list', -- LegionAsia
 			['b53534f8443e420ea088594c53a3ff39'] = '/manhwa-list/', -- Manhwaland
-			['ff17b64aa945403dae45706753235872'] = '/latest-update/?list' -- KomikNesia
+			['ff17b64aa945403dae45706753235872'] = '/latest-update/?list', -- KomikNesia
+			['5474e31b24ab4908a5258176d1f24f67'] = '/komik/list-mode/' -- ManhwaTaro
 		}
 		local dirurl = '/manga/list-mode/'
 		if dirs[MODULE.ID] ~= nil then
@@ -325,17 +326,17 @@ function Init()
 	local cat = 'Indonesian'
 	local function AddWebsiteModule(id, name, url)
 		local m = NewWebsiteModule()
-		m.ID                = id
-		m.Name              = name
-		m.RootURL           = url
-		m.Category          = cat
-		m.OnGetInfo         = 'GetInfo'
-		m.OnGetPageNumber   = 'GetPageNumber'
-		m.OnGetNameAndLink  = 'GetNameAndLink'
+		m.ID                    = id
+		m.Name                  = name
+		m.RootURL               = url
+		m.Category              = cat
+		m.OnGetInfo             = 'GetInfo'
+		m.OnGetPageNumber       = 'GetPageNumber'
+		m.OnGetNameAndLink      = 'GetNameAndLink'
+		m.OnBeforeDownloadImage = 'BeforeDownloadImage'
 		return m
 	end
-	local m = AddWebsiteModule('5eb57a1843d8462dab0fdfd0efc1eca5', 'MangaShiro', 'https://mangashiro.co')
-	m.OnBeforeDownloadImage = 'BeforeDownloadImage'
+	AddWebsiteModule('5eb57a1843d8462dab0fdfd0efc1eca5', 'MangaShiro', 'https://mangashiro.co')
 	AddWebsiteModule('b543e37b656e43ffb3faa034eee6c945', 'MangaKita', 'https://mangakita.net')
 	AddWebsiteModule('b5586745030a45bba05d0c360caa6d1a', 'KomikStation', 'https://www.komikstation.com')
 	AddWebsiteModule('49602ce189e844f49bfe78f7a1484dbe', 'MangaKid', 'https://mangakid.site')
@@ -343,8 +344,7 @@ function Init()
 	AddWebsiteModule('35e1b3ff5dbf428889d0f316c3d881e6', 'WestManga', 'https://westmanga.info')
 	AddWebsiteModule('031f3cc0ae3346ad9b8c33d5377891e9', 'Kiryuu', 'https://kiryuu.id')
 	AddWebsiteModule('009bf49bc17a4a2a8e1c79cce6867651', 'KomikIndo', 'https://komikindo.co')
-	m = AddWebsiteModule('5af0f26f0d034fb2b42ee65d7e4188ab', 'Komiku', 'https://komiku.id')
-	m.OnBeforeDownloadImage = 'BeforeDownloadImage'
+	AddWebsiteModule('5af0f26f0d034fb2b42ee65d7e4188ab', 'Komiku', 'https://komiku.id')
 	AddWebsiteModule('ca571825056b4850bd3693e4e1437997', 'Mangacan', 'http://www.mangacanblog.com')
 	AddWebsiteModule('fb5bd3aa549f4aefa112a8fe7547d2a9', 'MangaIndo', 'https://mangaindo.web.id')
 	AddWebsiteModule('6f8182f08d5444dbb5244ec882430db1', 'KomikMama', 'https://komikmama.net')
@@ -358,8 +358,7 @@ function Init()
 	AddWebsiteModule('13c6434a0c2541b18abee83a2c72e8f5', 'MangaKane', 'https://mangakane.com')
 	AddWebsiteModule('c69cbc947a6a42e194b2e097bba15047', 'MangaSusuBiz', 'https://mangasusu.biz')
 	AddWebsiteModule('f8251e330c8044029d97dec382459eab', 'SheaManga', 'https://sheamanga.my.id')
-	m = AddWebsiteModule('46dcfabe757140e7980ec34c65bdb30f', 'SekteKomik', 'https://sektekomik.com')
-	m.OnBeforeDownloadImage = 'BeforeDownloadImage'
+	AddWebsiteModule('46dcfabe757140e7980ec34c65bdb30f', 'SekteKomik', 'https://sektekomik.com')
 	AddWebsiteModule('1f1ec10a248c4a4f838c80b3e27fc4c7', 'SekaiKomik', 'https://www.sekaikomik.fun')
 	AddWebsiteModule('f9adee01635a4ff48fdff5164a65d6dd', 'Komiktap', 'https://komiktap.in')
 	AddWebsiteModule('ec1a1ad5301f414592f0ba0402024813', 'Doujindesu', 'https://doujindesu.info')
@@ -370,6 +369,7 @@ function Init()
 	AddWebsiteModule('b53534f8443e420ea088594c53a3ff39', 'Manhwaland', 'https://manhwaland.net')
 	AddWebsiteModule('ff17b64aa945403dae45706753235872', 'KomikNesia', 'https://komiknesia.com')
 	AddWebsiteModule('489dff6a5f894b6a9c1eed46feeec72e', 'WordHero', 'https://wordhero.my.id')
+	AddWebsiteModule('5474e31b24ab4908a5258176d1f24f67', 'ManhwaTaro', 'https://manhwataro.xyz')
 
 	cat = 'Raw'
 	AddWebsiteModule('21b0dfcb262d4ae28520679165282666', 'Rawkuma', 'https://rawkuma.com')
@@ -382,6 +382,7 @@ function Init()
 	AddWebsiteModule('fb34a56c83f54b19b57a9a92070fe899', 'FlameScans', 'https://flamescans.org')
 	AddWebsiteModule('a3455b2005f8457f821acc93c2e821ab', 'PMScans', 'https://reader.pmscans.com')
 	AddWebsiteModule('568f2731188d4f058c5542e89603a030', 'AzureManga', 'https://azuremanga.com')
+	AddWebsiteModule('f8c92a9a83f64deebee5ec58b7b15bdf', 'xCaliBRScans', 'https://xcalibrscans.com')
 
 	cat = 'Spanish'
 	AddWebsiteModule('41294a121062494489adfa601c442ef8', 'LegionAsia', 'https://legionasia.com')

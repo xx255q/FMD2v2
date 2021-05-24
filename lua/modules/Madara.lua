@@ -312,6 +312,7 @@ function Init()
 	AddWebsiteModule('716dab165a0f4f80b0ee49a4518866a2', 'GrazeScans', 'https://grazescans.com')
 	AddWebsiteModule('4eff54457e544446a33c569d2b85ced0', 'TritiniaScans', 'https://tritinia.com')
 	AddWebsiteModule('f1371b4a0cd04254ae4b1f5065a46dc8', 'GDScans', 'https://gdegenscans.xyz')
+	AddWebsiteModule('b94734480a0e4f25a21c0f01cd5e9779', 'XuNScans', 'https://reader.xunscans.xyz')
 
 	cat = 'French'
 	AddWebsiteModule('41867fa36f2f49959df9fef8aa53ffb5', 'WakaScan', 'https://wakascan.com')
@@ -365,6 +366,8 @@ function Init()
 	AddWebsiteModule('06e732a1ccdc4894877e5dee6e065df1', 'LeviatanScans', 'https://es.leviatanscans.com')
 	AddWebsiteModule('aeb97b0ab5db4fbfa12990119f1904e2', 'MangaFenix', 'https://manga-fenix.com')
 	AddWebsiteModule('8bb50a7089ca41439e99813df2c8bf49', 'HZmangas', 'https://hzmangas.com')
+	AddWebsiteModule('48d4e659f6ed4498a8586258371a4015', 'AncientEmpireScan', 'https://www.ancientempirescan.website')
+	AddWebsiteModule('73cfa250c661470c81428d99cdb8a140', 'MangaCrab', 'https://mangacrab.com')
 
 	cat = 'Webcomics'
 	AddWebsiteModule('2e6196018ffc4c92bc7ff332e41d52d4', 'ManyToon', 'https://manytoon.me')
@@ -451,4 +454,5 @@ function Init()
 	AddWebsiteModule('22c481c279c740b897ffc906ab808502', 'TuMangaNet', 'https://tumanga.net')
 	AddWebsiteModule('89caa2c18f5b40e6a18b7ecc78a0d1c1', 'TopComicPorno', 'https://topcomicporno.com')
 	AddWebsiteModule('36b0f19e144a4642a2839ec9cb728c3a', 'RagnarokScan', 'https://ragnarokscan.com')
+	AddWebsiteModule('e4a3a8ed254e4e9a9113693c098bb743', 'MangaFenix', 'https://manga-fenix.com')
 end
