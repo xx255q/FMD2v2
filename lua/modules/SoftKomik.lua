@@ -26,7 +26,7 @@ function GetNameAndLink()
 	if HTTP.GET(API_URL .. '/komik-list?page=' .. (URL + 1)) then
 		local x = CreateTXQuery(HTTP.Document)
 		local v for v in x.XPath('json(*).DataByName.data()').Get() do
-			LINKS.Add(API_URL .. '/lihat-komik/' .. x.XPathString('title_slug', v))
+			LINKS.Add(MODULE.RootURL .. '/' .. x.XPathString('title_slug', v))
 			NAMES.Add(x.XPathString('title', v))
 		end
 		return no_error
