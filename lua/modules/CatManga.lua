@@ -26,25 +26,13 @@ function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
 		local x = CreateTXQuery(HTTP.Document)
-		local minfo   = x.XPath('json(//script[@type="application/json"])')
-		local authors = x.XPath('json(//script[@type="application/json"]).props.pageProps.series.authors()')
-		local genres  = x.XPath('json(//script[@type="application/json"]).props.pageProps.series.genres()')
+		local minfo = x.XPath('json(//script[@type="application/json"])')
 		MANGAINFO.Title      = x.XPathString('props/pageProps/series/title', minfo)
 		MANGAINFO.CoverLink  = x.XPathString('props/pageProps/series/cover_art/source', minfo)
-		MANGAINFO.Authors    = authors.Get(1).ToString()
-		MANGAINFO.Genres     = genres.Get(1).ToString()
+		MANGAINFO.Authors    = x.XPathStringAll('json(//script[@type="application/json"]).props.pageProps.series.authors()')
+		MANGAINFO.Genres     = x.XPathStringAll('json(//script[@type="application/json"]).props.pageProps.series.genres()')
 		MANGAINFO.Status     = MangaInfoStatusIfPos(x.XPathString('props/pageProps/series/status', minfo))
 		MANGAINFO.Summary    = x.XPathString('props/pageProps/series/description', minfo)
-		if authors.Count > 1 then
-			for i = 2, genres.authors do
-				MANGAINFO.Authors = MANGAINFO.Authors .. ', ' .. authors.Get(i).ToString()
-			end
-		end
-		if genres.Count > 1 then
-			for i = 2, genres.Count do
-				MANGAINFO.Genres = MANGAINFO.Genres .. ', ' .. genres.Get(i).ToString()
-			end
-		end
 
 		local series   = x.XPathString('props/pageProps/series/series_id', minfo)
 		local chapters = x.XPath('json(//script[@type="application/json"]).props.pageProps.series.chapters()')
