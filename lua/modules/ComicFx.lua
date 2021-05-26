@@ -51,10 +51,7 @@ function GetInfo()
 	MANGAINFO.Genres    = x.XPathStringAll('//b[text()="Genres:"]/following-sibling::a')
 	MANGAINFO.Summary   = x.XPathString('//div[@class="sinopsis"]/p')
 
-	for v in x.XPath('//div[@class="chaplist"]/ul/li/span').Get() do
-		MANGAINFO.ChapterLinks.Add(x.XPathString('a/@href', v))
-		MANGAINFO.ChapterNames.Add(x.XPathString('normalize-space(.)', v))
-	end
+	x.XPathHREFTitleAll('//div[@class="chaplist"]/ul/li/div/span[1]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
 	return no_error
