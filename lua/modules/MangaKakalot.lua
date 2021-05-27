@@ -12,7 +12,8 @@ function Init()
 		m.OnBeforeDownloadImage      = 'BeforeDownloadImage'
 	end
 	AddWebsiteModule('74674292e13c496699b8c5e4efd4b583', 'MangaKakalot', 'https://mangakakalot.com')
-	AddWebsiteModule('fa8bb4d1ceea4c8fa0e98c00755f95d4', 'MangaNelo', 'https://manganelo.com')
+	AddWebsiteModule('fa8bb4d1ceea4c8fa0e98c00755f95d4', 'Manganato', 'https://manganato.com')
+	AddWebsiteModule('fa8bb4d1ceea4c8fa0e98c00755f95d4', 'Manganato', 'https://readmanganato.com')
 	AddWebsiteModule('ed4175a390e74aedbe4b4f622f3767c6', 'MangaKakalots', 'https://mangakakalots.com')
 end
 
@@ -26,7 +27,7 @@ function GetInfo()
 			end
 		end
 		MANGAINFO.URL = u
-		local id = MODULE.ID; if u:lower():find('manganelo.com', 1, true) then id = '' end
+		local id = MODULE.ID; if u:lower():find('manganato.com', 1, true) then id = '' end
 		local x = CreateTXQuery(HTTP.Document)
 		if (id == '74674292e13c496699b8c5e4efd4b583')	-- mangakakalot
 			or (id == 'ed4175a390e74aedbe4b4f622f3767c6')	-- mangakakalots
@@ -59,6 +60,9 @@ function GetPageNumber()
 	TASK.PageLinks.Clear()
 	TASK.PageNumber=0
 	local u = MaybeFillHost(MODULE.RootURL, URL)
+	if u:find('https://manganato.com') then
+		u = u:gsub('https://manganato.com', 'https://readmanganato.com')
+	end
 	HTTP.Cookies.Values['content_server'] = 'server2'
 	if HTTP.GET(u) then
 		local s = string.match(HTTP.Document.ToString(), 'window%.location%.assign%([\'"]([^\'"]+)')
