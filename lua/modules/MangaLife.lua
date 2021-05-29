@@ -102,6 +102,12 @@ function GetPageNumber()
 	return no_error
 end
 
+-- Prepare the URL, http header and/or http cookies before downloading an image.
+function BeforeDownloadImage()
+	HTTP.Headers.Values['Referer'] = MODULE.RootURL
+	return true
+end
+
 ----------------------------------------------------------------------------------------------------
 -- Module Initialization
 ----------------------------------------------------------------------------------------------------
@@ -116,6 +122,7 @@ function Init()
 		m.OnGetInfo             = 'GetInfo'
 		m.OnGetNameAndLink      = 'GetNameAndLink'
 		m.OnGetPageNumber       = 'GetPageNumber'
+		m.OnBeforeDownloadImage = 'BeforeDownloadImage'
 	end
 
 	AddWebsiteModule('4c1e8bcc433d4ebca8e6b4d86ce100cf', 'MangaLife', 'https://manga4life.com')
