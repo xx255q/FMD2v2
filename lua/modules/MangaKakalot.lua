@@ -19,6 +19,9 @@ end
 
 function GetInfo()
 	local u = MaybeFillHost(MODULE.RootURL, URL)
+	if u:find('https://manganato.com') then
+		u = u:gsub('https://manganato.com', 'https://readmanganato.com')
+	end
 	if HTTP.GET(u) then
 		local s = string.match(HTTP.Document.ToString(), 'window%.location%.assign%([\'"]([^\'"]+)')
 		if s ~= nil then u = s;
