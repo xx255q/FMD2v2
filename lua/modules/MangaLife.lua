@@ -1,6 +1,45 @@
 ----------------------------------------------------------------------------------------------------
+-- Module Initialization
+----------------------------------------------------------------------------------------------------
+
+function Init()
+	function AddWebsiteModule(id, name, url)
+		local m = NewWebsiteModule()
+		m.ID                    = id
+		m.Name                  = name
+		m.RootURL               = url
+		m.Category              = 'English'
+		m.OnGetNameAndLink      = 'GetNameAndLink'
+		m.OnGetInfo             = 'GetInfo'
+		m.OnGetPageNumber       = 'GetPageNumber'
+		m.OnBeforeDownloadImage = 'BeforeDownloadImage'
+	end
+
+	AddWebsiteModule('4c1e8bcc433d4ebca8e6b4d86ce100cf', 'MangaLife', 'https://manga4life.com')
+	AddWebsiteModule('3db42782cfc441e3a3498afa91f70a80', 'MangaSee', 'https://mangasee123.com')
+end
+
+----------------------------------------------------------------------------------------------------
 -- Event Functions
 ----------------------------------------------------------------------------------------------------
+
+-- Get links and names from the manga list of the current website.
+function GetNameAndLink()
+	local u = MODULE.RootURL .. '/directory/'
+
+	if not HTTP.GET(u) then return net_problem end
+
+	local x = CreateTXQuery(HTTP.Document)
+	json = GetBetween('vm.FullDirectory = ', '}]};', x.XPathString('//script[contains(., "vm.FullDirectory = ")]')) .. '}]}'
+	json = json:gsub('\\"', ''):gsub('\\u2019', '\''):gsub('&#', '')
+	x.ParseHTML(json)
+	local v for v in x.XPath('json(*).Directory()').Get() do
+		NAMES.Add(x.XPathString('s', v))
+		LINKS.Add('/manga/' .. x.XPathString('i', v))
+	end
+
+	return no_error
+end
 
 -- Get info and chapter list for current manga.
 function GetInfo()
@@ -50,24 +89,6 @@ function GetInfo()
 	return no_error
 end
 
--- Get LINKS and NAMES from the manga list of the current website.
-function GetNameAndLink()
-	local u = MODULE.RootURL .. '/directory/'
-
-	if not HTTP.GET(u) then return net_problem end
-
-	local x = CreateTXQuery(HTTP.Document)
-	json = GetBetween('vm.FullDirectory = ', '}]};', x.XPathString('//script[contains(., "vm.FullDirectory = ")]')) .. '}]}'
-	json = json:gsub('\\"', ''):gsub('\\u2019', '\''):gsub('&#', '')
-	x.ParseHTML(json)
-	local v for v in x.XPath('json(*).Directory()').Get() do
-		NAMES.Add(x.XPathString('s', v))
-		LINKS.Add(MODULE.RootURL .. '/manga/' .. x.XPathString('i', v))
-	end
-
-	return no_error
-end
-
 -- Get the page count for the current chapter.
 function GetPageNumber()
 	if not HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then return net_problem end
@@ -106,25 +127,4 @@ end
 function BeforeDownloadImage()
 	HTTP.Headers.Values['Referer'] = MODULE.RootURL
 	return true
-end
-
-----------------------------------------------------------------------------------------------------
--- Module Initialization
-----------------------------------------------------------------------------------------------------
-
-function Init()
-	function AddWebsiteModule(id, name, url)
-		local m = NewWebsiteModule()
-		m.ID                    = id
-		m.Name                  = name
-		m.RootURL               = url
-		m.Category              = 'English'
-		m.OnGetInfo             = 'GetInfo'
-		m.OnGetNameAndLink      = 'GetNameAndLink'
-		m.OnGetPageNumber       = 'GetPageNumber'
-		m.OnBeforeDownloadImage = 'BeforeDownloadImage'
-	end
-
-	AddWebsiteModule('4c1e8bcc433d4ebca8e6b4d86ce100cf', 'MangaLife', 'https://manga4life.com')
-	AddWebsiteModule('3db42782cfc441e3a3498afa91f70a80', 'MangaSee', 'https://mangasee123.com')
 end
