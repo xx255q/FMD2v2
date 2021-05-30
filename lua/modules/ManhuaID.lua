@@ -16,12 +16,12 @@ function GetInfo()
 	if not HTTP.GET(u) then return net_problem end
 
 	x = CreateTXQuery(HTTP.Document)
-	MANGAINFO.Title     = x.XPathString('//title/text()'):gsub('Bahasa Indonesia', ''):gsub('ManhuaID.com', ''):gsub('-', '')
-	MANGAINFO.CoverLink = x.XPathString('//div[contains(@class, "col-md-4")]/img/@src')
+	MANGAINFO.Title     = x.XPathString('//div[@class="col-md"]/h1')
+	MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//div[contains(@class, "col-md-4")]/img/@src'))
 	MANGAINFO.Authors   = x.XPathString('//th[contains(., "Author(s)")]/following-sibling::td'):gsub(',', ', ')
 	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//th[contains(., "Status")]/following-sibling::td/span'))
-	MANGAINFO.Genres    = x.XPathStringAll('//span[contains(@class, "badge badge-info mr-1 mb-1")]')
-	MANGAINFO.Summary   = x.XPathString('//div[contains(@class, "mb-4")]//p[2]')
+	MANGAINFO.Genres    = x.XPathStringAll('//th[contains(., "Genre")]/following-sibling::td/a')
+	MANGAINFO.Summary   = x.XPathString('//p[contains(., "Synopsis")]/following-sibling::div')
 	x.XPathHREFAll('//table[contains(@class,"table-striped")]//tr/td[1]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
@@ -43,13 +43,15 @@ end
 
 -- Get the page count for the current chapter.
 function GetPageNumber()
-	local x = nil
+	local v, x = nil
 	local u = MaybeFillHost(MODULE.RootURL, URL)
 
 	if not HTTP.GET(u) then return net_problem end
 
 	x = CreateTXQuery(HTTP.Document)
-	x.XPathStringAll('//div[@class="col-md-12"]/img/@src', TASK.PageLinks)
+	for v in x.XPath('//div[@class="col-md-12"]/img').Get() do
+		TASK.PageLinks.Add(MaybeFillHost(MODULE.RootURL, v.GetAttribute('src')))
+	end
 
 	return no_error
 end
