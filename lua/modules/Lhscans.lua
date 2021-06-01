@@ -121,7 +121,7 @@ function GetInfo()
 		local x = CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title      = Trim(SeparateLeft(x.XPathString('//div[@class="container"]//li[3]//span'), '- Raw'))
 		if MANGAINFO.Title   == '' then
-			MANGAINFO.Title = Trim(x.XPathString('//div[@class="container manga"]//li[3]//span'):gsub('- RAW', ''):gsub('%(MANGA%)', ''))
+			MANGAINFO.Title = Trim(x.XPathString('//div[@class="container manga"]//li[3]/a/@title'):gsub('- RAW', ''):gsub('%(MANGA%)', ''))
 		end
 		MANGAINFO.CoverLink  = MaybeFillHost(MODULE.RootURL, x.XPathString('//img[@class="thumbnail"]/@src'))
 		MANGAINFO.Status     = MangaInfoStatusIfPos(x.XPathString('//ul[@class="manga-info"]/li[contains(., "Status")]//a'))
