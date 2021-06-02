@@ -64,12 +64,15 @@ function GetPageNumber()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = CreateTXQuery(HTTP.Document)
-	x.ParseHTML('[' .. GetBetween('var pages = [', '];', x.XPathString('//script[contains(., "var pages")]')) .. ']')
-	x.XPathStringAll('json(*)().page_image', TASK.PageLinks)
-	for i = 0, TASK.PageLinks.Count - 1 do
-		TASK.PageLinks[i] = TASK.PageLinks[i]:gsub("i%d.wp.com/", "")
-		i = i + 1
+	local body = HTTP.Document.ToString()
+	local pages = body:match('var pages = (%[.-%]);')
+	if pages then
+		local json = require "utils.json"
+		local crypto = require "fmd.crypto"
+		local pages = json.decode(pages)
+		local i, v; for i, v in ipairs(pages) do
+			TASK.PageLinks.Add(crypto.DecodeURL(crypto.DecodeBase64(v.page_image:gsub('https://img.comicfx.net/img/.-/', ''):gsub('.jpg', ''))):gsub('i%d.wp.com/', ''):gsub('cdn.statically.io/img/', ''))
+		end
 	end
 
 	return no_error
