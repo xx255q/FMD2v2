@@ -1,144 +1,342 @@
-htmlEntities = require('utils.htmlEntities')
-local API_URL = 'https://api.mangadex.org/v2' -- This is the url to the JSON API. Call this url to look at the API documentation.
-local API_PARAMS = '?include=chapters' -- This parameter minimizes the calls to the API by combining the info and chapter parts into one call instead of two. Getting manga info should only be one call overall.
-local API_CHAPTER_PARAMS = '?saver=false' -- This parameter forces the API to always deliver the source images instead of the data-saver low quality images. Default of the API is actually false, but this prevents that you download data-saver images if the default will ever be changed.
+local API_URL = 'https://api.mangadex.org' -- This is the url to the JSON API. Call this url to look at the API documentation.
+local API_PARAMS = '?includes[]=author&includes[]=artist&includes[]=cover_art'
+local COVER_URL = 'https://uploads.mangadex.org/covers'
+local GUID_PATTERN = '(%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x)'
+local MAPPING_FILE = 'userdata/mangadex_v5_mapping.txt'
+
+function Init()
+	local m = NewWebsiteModule()
+	m.ID                 = 'd07c9c2425764da8ba056505f57cf40c'
+	m.Name               = 'MangaDex'
+	m.RootURL            = 'https://mangadex.org'
+	m.Category           = 'English'
+	m.OnGetNameAndLink   = 'GetNameAndLink'
+	m.OnGetInfo          = 'GetInfo'
+	m.OnGetPageNumber    = 'GetPageNumber'
+	m.MaxTaskLimit       = 1
+	m.MaxonnectionLimit  = 2
+
+	local fmd = require 'fmd.env'
+	local slang = fmd.SelectedLanguage
+	local lang = {
+		['en'] = {
+			['delay'] = 'Delay (s) between requests',
+			['showscangroup'] = 'Show scanlation group',
+			['showchaptertitle'] = 'Show chapter title',
+			['lang'] = 'Language:'
+		},
+		['id_ID'] = {
+			['delay'] = 'Tunda (d) antara permintaan',
+			['showscangroup'] = 'Tampilkan grup scanlation',
+			['showchaptertitle'] = 'Tampilkan judul bab',
+			['lang'] = 'Bahasa:'
+		},
+		get =
+			function(self, key)
+				local sel = self[slang]
+				if sel == nil then sel = self['en'] end
+				return sel[key]
+			end
+	}
+	m.AddOptionSpinEdit('mdx_delay', lang:get('delay'), 1)
+	m.AddOptionCheckBox('luashowscangroup', lang:get('showscangroup'), false)
+	m.AddOptionCheckBox('luashowchaptertitle', lang:get('showchaptertitle'), true)
+
+	local items = 'All'
+	local t = GetLangList()
+	for k, v in ipairs(t) do items = items .. '\r\n' .. v; end
+	m.AddOptionComboBox('lualang', lang:get('lang'), items, 11)
+end
+
+function GetNameAndLink()
+	local crypto = require 'fmd.crypto'
+
+	local demographics = {
+		[1] = 'shounen',
+		[2] = 'shoujo',
+		[3] = 'josei',
+		[4] = 'seinen',
+		[5] = 'none'
+	}
+	local mangastatus = {
+		[1] = 'ongoing',
+		[2] = 'completed',
+		[3] = 'hiatus',
+		[4] = 'cancelled'
+	}
+	local contentrating = {
+		[1] = 'none',
+		[2] = 'safe',
+		[3] = 'suggestive',
+		[4] = 'erotica',
+		[5] = 'pornographic'
+	}
+	
+	-- Delay this task if configured:
+	Delay()
+
+	for _, dg in ipairs(demographics) do
+		for _, ms in ipairs(mangastatus) do
+			for _, cr in ipairs(contentrating) do
+				local total = 1
+				local offset = 0
+				local offmaxlimit = 0
+				local order = 'asc'
+
+				while total > offset do
+					if total > 10000 and offset >= 10000 and order == 'asc' then
+						offset = 0
+						order = 'desc'
+					end
+
+					if offset < 10000 and HTTP.GET(API_URL .. '/manga?limit=100&offset=' .. offset ..'&order[createdAt]=' .. order ..'&publicationDemographic[]=' .. dg .. '&status[]=' .. ms .. '&contentRating[]=' .. cr) then
+						UPDATELIST.UpdateStatusText('Loading page ' .. dg .. ', ' .. ms .. ', ' .. cr .. ' (' .. order .. ')' or '')
+						local x = CreateTXQuery(crypto.HTMLEncode(HTTP.Document.ToString()))
+
+						local ninfo    = x.XPath('json(*)')
+						local nstatus  = x.XPathString('result', ninfo)
+						local nmessage = x.XPathString('errors/detail', ninfo)
+
+						if nstatus == 'error' then
+							print(nstatus .. ': ' .. nmessage)
+						else
+							if order == 'asc' then
+								total = tonumber(x.XPathString('json(*).total'))
+							else
+								total = tonumber(x.XPathString('json(*).total')) - 10000
+							end
+							offset = offset + tonumber(x.XPathString('json(*).limit'))
+							if total > 10000 then
+								offmaxlimit = total - 10000
+								print('Total Over Max Limit: ' .. offmaxlimit .. ' are over the max limit!')
+							end
+
+							local results for results in x.XPath('json(*).results()').Get() do
+								LINKS.Add('title/' .. x.XPathString('data/id', results))
+								NAMES.Add(x.XPathString('data/attributes/title/en', results))
+							end
+						end
+					elseif offset >= 10000 then
+						print('Offset for fetching manga list is over the max limit: ' .. offset .. ' (Total: ' .. total .. ')')
+					else
+						print('List could not be fetched. Please check if you can access the Manga page and read the chapter in your browser.')
+						return net_problem
+					end
+				end
+			end
+		end
+	end
+	return no_error
+end
 
 function GetInfo()
-	-- Extract Manga ID which is needed for getting info and chapter list:
-	local mid = URL:match('title/(%d+)')
-	if mid == nil then mid = URL:match('manga/(%d+)') end
+	local crypto = require 'fmd.crypto'
+	local MAPPING = {}
+
+	-- Extract manga GUID which is needed for getting info and chapter list:
+	local mid = URL:match('title/' .. GUID_PATTERN) -- When pasting a link from browser.
+
+	-- Delay this task if configured:
+	Delay()
+
+	-- If no GUID (v5) was found, check if old ID (v3) is present:
+	if mid == nil then
+		local newid
+		mid = URL:match('%a%a%a%a%a/(%d+)')
+		if mid ~= nil then -- When input is old ID (v3) check in the local mapping table if the new GUID (v5) already has been mapped.
+			-- Read local mapping file for old (v3) to new (v5) manga IDs and add them to the global table.
+			-- Sadly this can't be loaded globally and therefore needs to be read again everytime:
+			local mfile = io.open(MAPPING_FILE, 'r')
+			if mfile then
+				for line in io.lines(MAPPING_FILE) do
+					for old, new in line:gmatch('(%d+);' .. GUID_PATTERN) do
+						MAPPING[old] = new
+					end
+				end
+				mfile:close()
+				newid = MAPPING[mid]
+			end
+			if newid ~= nil then -- When mapping has been found, use the GUID (v5) for the rest of this function.
+				mid = newid
+			-- print('MangaDex: Legacy ID Mapping found in local mapping file: ' .. mid)
+			else
+				-- If the GUID (v5) has not been mapped yet, get it from the legacy endpoint of the API:
+				HTTP.MimeType = 'application/json'
+				if HTTP.POST(API_URL .. '/legacy/mapping', '{"type":"manga", "ids":[' .. mid .. ']}') then
+					newid = CreateTXQuery(crypto.HTMLEncode(HTTP.Document.ToString())).XPathString('json(*)()[1].data.attributes.newId')
+					print('MangaDex: Legacy ID Mapping has been executed. The new ID is: ' .. newid)
+					if newid ~= nil then -- If a valid GUID (v5) has been returned, map it to the global mapping table and save it to the mapping file.
+						MAPPING[mid] = newid
+						local mfile = io.open(MAPPING_FILE, 'a')
+						io.output(mfile)
+						io.write(mid .. ';' .. newid .. '\n')
+						mfile:close()
+						mid = newid
+					else
+						print('ERROR: ' .. MANGAINFO.Title)
+						print('ID: ' .. mid)
+						return net_problem
+					end
+				else
+					print('ERROR: ' .. MANGAINFO.Title)
+					print('ID: ' .. mid)
+					return net_problem
+				end
+			end
+		else
+			print('ERROR: ' .. MANGAINFO.Title)
+			print('ID: ' .. mid)
+			return net_problem
+		end
+	end
+
+	-- Fetch JSON from API:
+	if HTTP.GET(API_URL .. '/manga/' .. mid .. API_PARAMS) then
+
+		local x	= CreateTXQuery(crypto.HTMLEncode(HTTP.Document.ToString()))
+		local minfo    = x.XPath('json(*)')
+		local mstatus  = x.XPathString('result', minfo)
+		local mmessage = x.XPathString('errors/detail', minfo)
+
+		if mstatus == 'ok' then
+			MANGAINFO.Title     = x.XPathString('data/attributes/title/en', minfo)
+			MANGAINFO.Summary   = x.XPathString('data/attributes/description/en', minfo)
+			MANGAINFO.Authors   = x.XPathStringAll('json(*).relationships()[type="author"].attributes.name')
+			MANGAINFO.Artists   = x.XPathStringAll('json(*).relationships()[type="artist"].attributes.name')
+			MANGAINFO.CoverLink = COVER_URL .. '/' .. mid .. '/' .. x.XPathString('json(*).relationships()[type="cover_art"].attributes.fileName')
+
+			-- Fetch genre/demographic
+			MANGAINFO.Genres    = x.XPathStringAll('json(*).data.attributes.tags().attributes.name.en')
+			local demographic = GetDemographic(x.XPathString('json(*).data.attributes.publicationDemographic'))
+			if demographic ~= 'null' then MANGAINFO.Genres = MANGAINFO.Genres .. ', ' .. demographic end
+
+			-- Set status to 'completed' if it's not 'ongoing' or 'hiatus'. The status 'cancelled' will also be set to 'completed':
+			local status = x.XPathString('data/attributes/status', minfo)
+			if (status == 'ongoing') or (status == 'hiatus') then
+				status = 'ongoing'
+			else
+				status = 'completed'
+			end
+			MANGAINFO.Status = MangaInfoStatusIfPos(status, 'ongoing', 'completed')
+
+			-- Get user defined options for fetching all chapters respecting these options:
+			local optgroup   = MODULE.GetOption('luashowscangroup')
+			local opttitle   = MODULE.GetOption('luashowchaptertitle')
+			local optlangid  = FindLanguage(MODULE.GetOption('lualang'))
+			local limitparam = 50
+			local langparam
+
+			-- If all languages are selected, the remove the filter parameter:
+			if optlangid == nil then langparam = '' else langparam = '&translatedLanguage[]=' .. optlangid end
+			
+			-- Workaround: Because there is a bug in the JSON navigation of internet tools, it's not possible to get a sub sequence (in this case "relationships").
+			-- Because of that the complete JSON needs to be queried for each chapter to get the scanlation group names. This is extremely heavy on local performance.
+			-- To work around that performance issue this check sets the limit per request to 50 instead of the maximum of 500 because it works much faster even with more requests.
+			-- If optgroup then limitparam = 50 else limitparam = 500 end
+
+			local total  = 1
+			local offset = 0
+
+			-- The API has a limit of 500 chapters per request.
+			-- The first request provides the overall total of the query, which will be used to check if there are still some chapters left to fetch.
+			while total > offset do
+			if HTTP.GET(API_URL .. '/manga/' .. mid .. '/feed' .. '?limit=' .. limitparam .. '&offset=' .. offset .. langparam .. '&includes[]=scanlation_group&order[chapter]=asc') then
+				local x = CreateTXQuery(crypto.HTMLEncode(HTTP.Document.ToString()))
+				local chapters = x.XPath('json(*).results()')
+				total = tonumber(x.XPathString('json(*).total'))
+				offset = offset + tonumber(x.XPathString('json(*).limit'))
+				for ic = 1, chapters.Count do
+					local ignore = false
+
+					-- Check if the group that released the chapter is on the built-in ignore list, otherwise skip the chapter:
+					local groupids = x.XPath('json(*).results()[' .. ic .. '].relationships()[type="scanlation_group"]')
+					local groups = {}
+					if ignore == false then
+						for gid = 1, groupids.Count do
+							local groupid = x.XPathString('id', groupids.Get(gid))
+							if ignore == false then -- Chapter should be ignored if at least one group is on the ignore list. This check prevents that the ignore value is being set back to false if a second group is not in the list.
+								ignore = IgnoreChaptersByGroupId(groupid)
+							end
+							groups[gid] = x.XPathString('attributes/name', groupids.Get(gid))
+						end
+					end
+
+					if ignore == false then
+						local volume     = x.XPathString('data/attributes/volume', chapters.Get(ic))
+						local chapter    = x.XPathString('data/attributes/chapter', chapters.Get(ic))
+						local title      = x.XPathString('data/attributes/title', chapters.Get(ic))
+						local language   = x.XPathString('data/attributes/translatedLanguage', chapters.Get(ic))
+						local scanlators = ' [' .. table.concat(groups, ", ") .. ']'
+
+						-- Remove title if user option is disabled:
+						if opttitle == false then title = '' end
+
+						-- Add prefix to title if it's not empty:
+						if title ~= '' then title = ' - ' .. title end
+
+						-- Format volume and chapter strings if not empty:
+						volume = volume ~= 'null' and string.format('Vol. %s ', volume) or ''
+						chapter = chapter ~= 'null' and string.format('Ch. %s', chapter) or ''
+
+						if volume == '' and chapter == '' and title == '' then chapter = 'Ch. ' .. ic end
+
+						-- Append language id if user option is set to "All":
+						if optlangid == nil then language = string.format(' [%s]', language) else language = '' end
+
+						-- Remove group names if option is disabled:
+						if optgroup == false then scanlators = '' end
+
+						-- Add chapter name and link to the manga info list:
+						MANGAINFO.ChapterLinks.Add(x.XPathString('data/id', chapters.Get(ic)))
+						MANGAINFO.ChapterNames.Add(volume .. chapter .. title .. language .. scanlators)
+					end
+				end
+			end
+		end
+
+		elseif mstatus == 'error' then
+			MANGAINFO.Summary = mstatus .. ': ' .. mmessage
+			print(mstatus .. ': ' .. mmessage)
+			return no_error
+		end
+		return no_error
+	else
+		return net_problem
+	end
+end
+
+function GetPageNumber()
+	TASK.PageLinks.Clear()
+	local crypto = require 'fmd.crypto'
 
 	-- Delay this task if configured:
 	Delay()
 
 	-- Fetch JSON from API:
-	if HTTP.GET(API_URL .. '/manga/' .. mid .. API_PARAMS) then
-		local crypto = require 'fmd.crypto'
+	if HTTP.GET(API_URL .. '/chapter' .. URL) then
 		local x = CreateTXQuery(crypto.HTMLEncode(HTTP.Document.ToString()))
 
-		local minfo    = x.XPath('json(*)')
-		local mcode    = x.XPathString('code', minfo)
-		local mstatus  = x.XPathString('status', minfo)
-		local mmessage = x.XPathString('message', minfo)
+		local cinfo    = x.XPath('json(*)')
+		local cstatus  = x.XPathString('result', cinfo)
+		local cmessage = x.XPathString('errors/detail', cinfo)
 
-		-- Handle the returned JSON if code is 200. Any other code will result in an error that is being shown in the description of the Mangainfo.
-		-- If no code is returned, the API certainly didn't respond. It's probably not reachable if that happens.
-		if mcode == '200' then
-			MANGAINFO.Title     = x.XPathString('data/manga/title', minfo)
-			MANGAINFO.CoverLink = x.XPathString('data/manga/mainCover', minfo)
-			MANGAINFO.Authors   = x.XPathStringAll('json(*).data.manga.author()')
-			MANGAINFO.Artists   = x.XPathStringAll('json(*).data.manga.artist()')
-			MANGAINFO.Summary   = htmlEntities.decode(x.XPathString('data/manga/description', minfo))
-			MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('data/manga/publication/status', minfo), '1', '2')
+		if cstatus == 'ok' then
+			-- Get the base server url of MangaDex@Home (MDH):
+			if HTTP.GET(API_URL .. '/at-home/server' .. URL) then
+				local server = CreateTXQuery(HTTP.Document).XPathString('json(*).baseUrl')
+				local hash   = x.XPathString('data/attributes/hash', cinfo)
 
-			-- Fetch genre/demographic IDs and match them against an array with corresponding names:
-			local gids = x.XPath('json(*).data.manga.tags()')
-			local dgid = x.XPathString('data/manga/publication/demographic', minfo)
-			MANGAINFO.Genres = GetGenre(gids.Get(1).ToString())
-			if gids.Count > 1 then
-				for i = 2, gids.Count do
-					MANGAINFO.Genres = MANGAINFO.Genres .. ', ' .. GetGenre(gids.Get(i).ToString())
-				end
-			end
-			if (dgid ~= '0') and (MANGAINFO.Genres ~= '') then
-				MANGAINFO.Genres = GetDemographic(dgid) .. ', ' .. MANGAINFO.Genres
-			elseif (dgid ~= '0') and (MANGAINFO.Genres == '') then
-				MANGAINFO.Genres = GetDemographic(dgid)
-			end
-
-			-- If Manga is Hentai, add it to genre list:
-			if x.XPathString('data/manga/isHentai', minfo) == 'true' then
-				if MANGAINFO.Genres ~= '' then MANGAINFO.Genres =  'Hentai, ' .. MANGAINFO.Genres else MANGAINFO.Genres = 'Hentai' end
-			end
-
-			-- Fetch and map all groups involved with the current manga chapters. The following array can be further used to get the group name by id:
-			local grouplist = {}
-			local g for g in x.XPath('json(*).data.groups()').Get() do
-				grouplist[x.XPathString('id', g)] = x.XPathString('name', g)
-			end
-
-			-- Get user defined options for fetching all chapters respecting these options:
-			local optlang  = MODULE.GetOption('lualang')
-			local optgroup = MODULE.GetOption('luashowscangroup')
-			local opttitle = MODULE.GetOption('luashowchaptertitle')
-
-			-- Map options with values/IDs from arrays:
-			local optlangid = FindLanguage(optlang)
-
-			-- Get all chapters:
-			local chapters = x.XPath('json(*).data.chapters()')
-			for ic = 1, chapters.Count do
-				local ignore = false
-
-				-- Check if the language of the chapter is matching with the user selection, otherwise skip the chapter:
-				local language = x.XPathString('language', chapters.Get(ic))
-				if (optlangid ~= language) and (optlang > 0) then ignore = true end
-
-				-- Check if the timestamp is in the future, skip the chapter if true:
-				local timestamp = tonumber(x.XPathString('timestamp', chapters.Get(ic)))
-				if timestamp > os.time() then ignore = true end
-
-				-- Check if the group that released the chapter is on the built-in ignore list, otherwise skip the chapter:
-				local groupids = x.XPath('json(*).data.chapters()[' .. ic .. '].groups()') -- This is a fuckin' workaround because the direct approach by using "x.XPath('groups').Get(i).ToString" does not work as the array will be combined to a single string.
-				if ignore == false then
-					for i = 1, groupids.Count do
-						if ignore == false then -- Chapter should be ignored if at least one group is on the ignore list. This check prevents that the ignore value is being set back to false if a second group is not in the list.
-							ignore = IgnoreChaptersByGroupId(groupids.Get(i).ToString())
-						end
-					end
-				end
-
-				-- If at least one group is in the ignore list or if the timestamp is in the future skip the current chapter:
-				if ignore == false then
-
-					-- Initialize some variables for building the chapter name:
-					local title   = x.XPathString('title', chapters.Get(ic))
-					local volume  = x.XPathString('volume', chapters.Get(ic))
-					local chapter = x.XPathString('chapter', chapters.Get(ic))
-					local group   = ''
-
-					-- Remove title if user option is disabled:
-					if opttitle == false then title = '' end
-
-					-- Add prefix to title, if it's not empty:
-					if title ~= '' then title = ' - ' .. title end
-
-					-- Complete volume and chapter strings if not empty:
-					if volume ~= '' then volume = string.format('Vol. %s ', volume) end
-					if chapter ~= '' then chapter = string.format('Ch. %s', chapter) end
-
-					-- Append language id if user option is set to "All":
-					if optlang == 0 then language = string.format(' [%s]', language) else language = '' end
-
-					-- Get the group names if the user option is enabled:
-					if optgroup then
-						group = ' [' .. grouplist[groupids.Get(1).ToString()]
-						if groupids.Count > 1 then
-							for i = 2, groupids.Count do
-								group = group .. ', ' .. grouplist[groupids.Get(i).ToString()]
-							end
-						end
-						group = group .. ']'
-					end
-
-					-- Add chapter name and link to the manga info list:
-					MANGAINFO.ChapterNames.Add(volume .. chapter .. title .. language .. group)
-					MANGAINFO.ChapterLinks.Add('/chapter/' .. x.XPathString('id', chapters.Get(ic)))
-
+				local pages for pages in x.XPath('json(*).data.attributes.data()').Get() do
+					TASK.PageLinks.Add(server .. '/data/' .. hash .. '/' .. pages.ToString())
 				end
 			end
 
-			-- Sort the chapter list from oldest to latest:
-			MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
-
-		elseif mcode == '' then
-			MANGAINFO.Summary = 'Manga information could not be fetched. Please check if you can access the Manga page in your browser.'
+		elseif cstatus == 'error' then
+			print(cstatus .. ': ' .. cmessage)
 			return net_problem
-
 		else
-			MANGAINFO.Summary = mstatus .. ' (' .. mcode .. '):   ' .. mmessage
+			print('Chapter could not be fetched. Please check if you can access the Manga page and read the chapter in your browser.')
 			return net_problem
-
 		end
 		return no_error
 	else
@@ -148,7 +346,7 @@ end
 
 function IgnoreChaptersByGroupId(id)
 	local groups = {
-		["9097"] = "MangaPlus"
+		["4f1de6a2-f0c5-4ac5-bce5-02c7dbb67deb"] = "MangaPlus"
 	}
 
 	if groups[id] ~= nil then
@@ -158,158 +356,63 @@ function IgnoreChaptersByGroupId(id)
 	end
 end
 
-function GetGenre(genre)
-	local genres = {
-		["1"] = "4-koma",
-		["2"] = "Action",
-		["3"] = "Adventure",
-		["4"] = "Award Winning",
-		["5"] = "Comedy",
-		["6"] = "Cooking",
-		["7"] = "Doujinshi",
-		["8"] = "Drama",
-		["9"] = "Ecchi",
-		["10"] = "Fantasy",
-		["11"] = "Gyaru",
-		["12"] = "Harem",
-		["13"] = "Historical",
-		["14"] = "Horror",
-		["15"] = "Josei",
-		["16"] = "Martial Arts",
-		["17"] = "Mecha",
-		["18"] = "Medical",
-		["19"] = "Music",
-		["20"] = "Mystery",
-		["21"] = "Oneshot",
-		["22"] = "Psychological",
-		["23"] = "Romance",
-		["24"] = "School Life",
-		["25"] = "Sci-Fi",
-		["26"] = "Seinen",
-		["27"] = "Shoujo",
-		["28"] = "Shoujo Ai",
-		["29"] = "Shounen",
-		["30"] = "Shounen Ai",
-		["31"] = "Slice of Life",
-		["32"] = "Smut",
-		["33"] = "Sports",
-		["34"] = "Supernatural",
-		["35"] = "Tragedy",
-		["36"] = "Long Strip",
-		["37"] = "Yaoi",
-		["38"] = "Yuri",
-		["39"] = "[no chapters]",
-		["40"] = "Video Games",
-		["41"] = "Isekai",
-		["42"] = "Adaptation",
-		["43"] = "Anthology",
-		["44"] = "Web Comic",
-		["45"] = "Full Color",
-		["46"] = "User Created",
-		["47"] = "Official Colored",
-		["48"] = "Fan Colored",
-		["49"] = "Gore",
-		["50"] = "Sexual Violence",
-		["51"] = "Crime",
-		["52"] = "Magical Girls",
-		["53"] = "Philosophical",
-		["54"] = "Superhero",
-		["55"] = "Thriller",
-		["56"] = "Wuxia",
-		["57"] = "Aliens",
-		["58"] = "Animals",
-		["59"] = "Crossdressing",
-		["60"] = "Demons",
-		["61"] = "Delinquents",
-		["62"] = "Genderswap",
-		["63"] = "Ghosts",
-		["64"] = "Monster Girls",
-		["65"] = "Loli",
-		["66"] = "Magic",
-		["67"] = "Military",
-		["68"] = "Monsters",
-		["69"] = "Ninja",
-		["70"] = "Office Workers",
-		["71"] = "Police",
-		["72"] = "Post-Apocalyptic",
-		["73"] = "Reincarnation",
-		["74"] = "Reverse Harem",
-		["75"] = "Samurai",
-		["76"] = "Shota",
-		["77"] = "Survival",
-		["78"] = "Time Travel",
-		["79"] = "Vampires",
-		["80"] = "Traditional Games",
-		["81"] = "Virtual Reality",
-		["82"] = "Zombies",
-		["83"] = "Incest",
-		["84"] = "Mafia",
-		["85"] = "Villainess"
-	}
-	if genres[genre] ~= nil then
-		return genres[genre]
-	else
-		return genre
-	end
-end
-
-function GetDemographic(demograhic)
+function GetDemographic(demographic)
 	local demographics = {
-		["1"] = "Shounen",
-		["2"] = "Shoujo",
-		["3"] = "Seinen",
-		["4"] = "Josei"
+		["shounen"] = "Shounen",
+		["shoujo"] = "Shoujo",
+		["seinen"] = "Seinen",
+		["josei"] = "Josei"
 	}
-	if demographics[demograhic] ~= nil then
-		return demographics[demograhic]
+	if demographics[demographic] ~= nil then
+		return demographics[demographic]
 	else
-		return demograhic
+		return demographic
 	end
 end
 
 local Langs = {
-	["sa"] = "Arabic",
-	["bd"] = "Bengali",
+	["ar"] = "Arabic",
+	["bn"] = "Bengali",
 	["bg"] = "Bulgarian",
-	["mm"] = "Burmese",
-	["ct"] = "Catalan",
-	["cn"] = "Chinese (Simp)",
-	["hk"] = "Chinese (Trad)",
-	["cz"] = "Czech",
-	["dk"] = "Danish",
+	["my"] = "Burmese",
+	["ca"] = "Catalan",
+	["zh"] = "Chinese (Simp)",
+	["zh-hk"] = "Chinese (Trad)",
+	["cs"] = "Czech",
+	["da"] = "Danish",
 	["nl"] = "Dutch",
-	["gb"] = "English",
-	["ph"] = "Filipino",
+	["en"] = "English",
+	["tl"] = "Filipino",
 	["fi"] = "Finnish",
 	["fr"] = "French",
 	["de"] = "German",
-	["gr"] = "Greek",
-	["il"] = "Hebrew",
-	["in"] = "Hindi",
+	["el"] = "Greek",
+	["he"] = "Hebrew",
+	["hi"] = "Hindi",
 	["hu"] = "Hungarian",
 	["id"] = "Indonesian",
 	["it"] = "Italian",
-	["jp"] = "Japanese",
-	["kr"] = "Korean",
+	["ja"] = "Japanese",
+	["ko"] = "Korean",
 	["lt"] = "Lithuanian",
-	["my"] = "Malay",
+	["ms"] = "Malay",
 	["mn"] = "Mongolian",
 	["no"] = "Norwegian",
-	[" "] = "Other",
-	["ir"] = "Persian",
+	["NULL"] = "Other",
+	["fa"] = "Persian",
 	["pl"] = "Polish",
-	["br"] = "Portuguese (Br)",
+	["pt-br"] = "Portuguese (Br)",
 	["pt"] = "Portuguese (Pt)",
 	["ro"] = "Romanian",
 	["ru"] = "Russian",
-	["rs"] = "Serbo-Croatian",
+	["sh"] = "Serbo-Croatian",
 	["es"] = "Spanish (Es)",
-	["mx"] = "Spanish (LATAM)",
-	["se"] = "Swedish",
+	["es-la"] = "Spanish (LATAM)",
+	["sv"] = "Swedish",
 	["th"] = "Thai",
 	["tr"] = "Turkish",
-	["ua"] = "Ukrainian",
-	["vn"] = "Vietnamese"
+	["uk"] = "Ukrainian",
+	["vi"] = "Vietnamese"
 }
 
 function GetLang(lang)
@@ -341,81 +444,9 @@ function FindLanguage(lang)
 	return nil
 end
 
-function GetPageNumber()
-	-- Extract chapter ID which is needed for getting info about the current chapter:
-	local cid = URL:match('chapter/(%d+)')
-
-	-- Delay this task if configured:
-	Delay()
-
-	-- Fetch JSON from API:
-	if HTTP.GET(API_URL .. '/chapter/' .. cid .. API_CHAPTER_PARAMS) then
-		local crypto = require 'fmd.crypto'
-		local x = CreateTXQuery(crypto.HTMLEncode(HTTP.Document.ToString():gsub('<', ''):gsub('>', ''):gsub('&quot;', ''))) -- Some characters may not be correctly escaped and create issues for the parser. That's why these will be removed.
-
-		local cinfo    = x.XPath('json(*)')
-		local ccode    = x.XPathString('code', cinfo)
-		local cstatus  = x.XPathString('status', cinfo)
-		local cmessage = x.XPathString('message', cinfo)
-
-		-- Handle the returned JSON if code is 200. Any other code will result in an error that is being shown in the log if enabled.
-		-- If no code is returned, the API certainly didn't respond. It's probably not reachable if that happens.
-		if ccode == '200' then
-			local hash   = x.XPathString('data/hash', cinfo)
-			local server = x.XPathString('data/server', cinfo)
-
-			-- If the base url of the image server misses or has a '/' too much, the download won't work. This check prevents that:
-			if server:sub(-1) ~= '/' then server = server .. '/' end
-
-			local pages for pages in x.XPath('json(*).data.pages()').Get() do
-				TASK.PageLinks.Add(server .. hash .. '/' .. pages.ToString())
-			end
-
-		elseif ccode == '' then
-			print('Chapter could not be fetched. Please check if you can access the Manga page and read the chapter in your browser.')
-			return net_problem
-
-		else
-			print(cstatus .. ' (' .. ccode .. '):   ' .. cmessage)
-			return net_problem
-
-		end
-
-		return no_error
-	else
-		return net_problem
-	end
-end
-
-local dirurl='/titles/2'
-
-function GetDirectoryPageNumber()
-	HTTP.Cookies.Values['mangadex_title_mode'] = '2'
-	Delay()
-	if HTTP.GET(MODULE.RootURL .. dirurl) then
-		local x = CreateTXQuery(HTTP.Document)
-		PAGENUMBER = tonumber(x.XPathString('(//ul[contains(@class,"pagination")]/li/a)[last()]/@href'):match('/2/(%d+)')) or 1
-		return no_error
-	else
-		return net_problem
-	end
-end
-
-function GetNameAndLink()
-	HTTP.Cookies.Values['mangadex_title_mode'] = '2'
-	Delay()
-	if HTTP.GET(MODULE.RootURL .. dirurl .. '/' .. (URL + 1) .. '/') then
-		local x = CreateTXQuery(HTTP.Document)
-		x.XPathHREFAll('//a[contains(@class, "manga_title")]', LINKS, NAMES)
-		return no_error
-	else
-		return net_problem
-	end
-end
-
 function Delay()
 	local lastDelay = tonumber(MODULE.Storage['lastDelay']) or 1
-	local mdx_delay = tonumber(MODULE.GetOption('mdx_delay')) or 2 -- * MODULE.ActiveConnectionCount
+	local mdx_delay = tonumber(MODULE.GetOption('mdx_delay')) or 1 -- * MODULE.ActiveConnectionCount
 	if lastDelay ~= '' then
 		lastDelay = os.time() - lastDelay
 		if lastDelay < mdx_delay then
@@ -423,125 +454,4 @@ function Delay()
 		end
 	end
 	MODULE.Storage['lastDelay'] = os.time()
-end
-
-function Login()
-	MODULE.ClearCookies()
-	MODULE.Account.Status = asChecking
-	local login_url=MODULE.RootURL .. '/login'
-	if not HTTP.GET(login_url) then
-		MODULE.Account.Status = asUnknown
-		return false
-	end
-	local login_post_url = CreateTXQuery(HTTP.Document).XPathString('//form[@id="login_form"]/@action') or ''
-	if login_post_url == '' then
-		MODULE.Account.Status = asUnknown
-		return false
-	end
-	login_post_url = MODULE.RootURL .. login_post_url:gsub('&nojs=1','')
-	HTTP.Reset()
-
-	HTTP.Headers.Values['Origin'] = ' ' .. MODULE.RootURL
-	HTTP.Headers.Values['Referer'] = ' ' .. login_url
-	HTTP.Headers.Values['Accept'] = ' */*'
-	HTTP.Headers.Values['X-Requested-With'] = ' XMLHttpRequest'
-
-	function getFormData(formData)
-		local t = tostring(os.time())
-		local b = string.rep('-',39-t:len()) .. t
-		local crlf = string.char(13) .. string.char(10)
-		local r = ''
-		for k, v in pairs(formData) do
-			r = r .. '--' .. b .. crlf ..
-				'Content-Disposition: form-data; name="' .. k .. '"' .. crlf ..
-				crlf ..
-				v .. crlf
-		end
-		r=r .. '--' .. b .. '--' .. crlf
-		return 'multipart/form-data; boundary=' .. b, r
-	end
-	local post_data
-	HTTP.MimeType,post_data = getFormData({
-		login_username = MODULE.Account.Username,
-		login_password = MODULE.Account.Password,
-		two_factor = '',
-		remember_me = '1'})
-
-	HTTP.POST(login_post_url,post_data)
-	if HTTP.ResultCode == 200 then
-		if HTTP.Cookies.Values['mangadex_rememberme_token'] ~= '' then
-			MODULE.Account.Status = asValid
-		else
-			MODULE.Account.Status = asInvalid
-		end
-	else
-		MODULE.Account.Status = asUnknown
-	end
-	return true
-end
-
-function AccountState()
-	local cookies = ''
-	if MODULE.Account.Enabled then
-		cookies = MODULE.Account.Cookies
-		if cookies ~= '' then
-			MODULE.AddServerCookies(MODULE.Account.Cookies)
-		end
-	else
-		cookies = MODULE.GetServerCookies('mangadex.org', 'mangadex_rememberme_token')
-		if cookies ~= '' then
-			MODULE.Account.Cookies = cookies
-			MODULE.RemoveCookies('mangadex.org', 'mangadex_rememberme_token')
-		end
-	end
-	return true
-end
-
-function Init()
-	local m = NewWebsiteModule()
-	m.ID                       = 'd07c9c2425764da8ba056505f57cf40c'
-	m.Name                     = 'MangaDex'
-	m.RootURL                  = 'https://mangadex.org'
-	m.Category                 = 'English'
-	m.OnGetInfo                = 'GetInfo'
-	m.OnGetPageNumber          = 'GetPageNumber'
-	m.OnGetNameAndLink         = 'GetNameAndLink'
-	m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
-	m.MaxTaskLimit             = 1
-	m.MaxConnectionLimit       = 2
-	m.AccountSupport           = true
-	m.OnLogin                  = 'Login'
-	m.OnAccountState           = 'AccountState'
-	m.AddServerCookies('mangadex.org', 'mangadex_h_toggle=1; max-age=31556952')
-
-	local fmd = require 'fmd.env'
-	local slang = fmd.SelectedLanguage
-	local lang = {
-		['en'] = {
-			['delay'] = 'Delay (s) between requests',
-			['showscangroup'] = 'Show scanlation group',
-			['showchaptertitle'] = 'Show chapter title',
-			['lang'] = 'Language:'
-		},
-		['id_ID'] = {
-			['delay'] = 'Tunda (detik) antara permintaan',
-			['showscangroup'] = 'Tampilkan grup scanlation',
-			['showchaptertitle'] = 'Tampilkan judul bab',
-			['lang'] = 'Bahasa:'
-		},
-		get =
-			function(self, key)
-				local sel = self[slang]
-				if sel == nil then sel = self['en'] end
-				return sel[key]
-			end
-	}
-	m.AddOptionSpinEdit('mdx_delay', lang:get('delay'), 2)
-	m.AddOptionCheckBox('luashowscangroup', lang:get('showscangroup'), false)
-	m.AddOptionCheckBox('luashowchaptertitle', lang:get('showchaptertitle'), true)
-
-	local items = 'All'
-	local t = GetLangList()
-	for k, v in ipairs(t) do items = items .. '\r\n' .. v; end
-	m.AddOptionComboBox('lualang', lang:get('lang'), items, 11)
 end
