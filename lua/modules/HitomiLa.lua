@@ -47,10 +47,10 @@ function GetPageNumber()
 
 			local g = tonumber(m, b) or nil
 			if g then
-				if (g < 0x80) then
+				if (g < 0x70) then
 					number_of_frontends = 2
 				end
-				if (g < 0x59) then
+				if (g < 0x49) then
 					g = 1
 				end
 				retval = subdomain_from_galleryid(g, number_of_frontends) .. retval
