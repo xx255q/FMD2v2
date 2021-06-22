@@ -18,13 +18,13 @@ function Init()
 	AddWebsiteModule('d25308907620480496bd73f50451d67f', 'NhatTruyen', 'http://nhattruyentranh.com', cat)
 
 	cat = 'English'
-	AddWebsiteModule('d2f24dec90e841b1aab4bea145ffb638', 'MangaNT', 'https://mangant.com', cat)
+	AddWebsiteModule('d2f24dec90e841b1aab4bea145ffb638', 'MangaToro', 'https://www.mangatoro.com', cat)
 end
 
 local dirurl = {
 	['ef7f922bd45f4f9d9c559a55f987004d'] = '/the-loai?status=-1&sort=15&page=%s', -- truyenchon
 	['567780dbaa3149e7ad698f11ce68ea9b'] = '/tim-truyen?status=-1&sort=15&page=%s', -- nettruyen
-	['d2f24dec90e841b1aab4bea145ffb638'] = '/genres?status=-1&sort=15&page=%s', -- mangant
+	['d2f24dec90e841b1aab4bea145ffb638'] = '/genres?status=-1&sort=15&page=%s', -- mangatoro
 	['d25308907620480496bd73f50451d67f'] = '/the-loai?status=-1&sort=15&page=%s' -- nhattruyen
 }
 
@@ -57,7 +57,10 @@ end
 function GetPageNumber()
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		CreateTXQuery(HTTP.Document).XPathStringAll('//div[@class="page-chapter"]/img/@data-original', TASK.PageLinks)
+		local x = CreateTXQuery(HTTP.Document)
+		local v for v in x.XPath('//div[@class="page-chapter"]/img/@data-original').Get() do
+			TASK.PageLinks.Add(v.ToString():gsub('^//', 'https://'))
+		end
 	else
 		return false
 	end
