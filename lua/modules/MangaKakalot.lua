@@ -15,6 +15,8 @@ function Init()
 	AddWebsiteModule('fa8bb4d1ceea4c8fa0e98c00755f95d4', 'Manganato', 'https://manganato.com')
 	AddWebsiteModule('fa8bb4d1ceea4c8fa0e98c00755f95d4', 'Manganato', 'https://readmanganato.com')
 	AddWebsiteModule('ed4175a390e74aedbe4b4f622f3767c6', 'MangaKakalots', 'https://mangakakalots.com')
+	AddWebsiteModule('2234588abb544fc6a279c7811f2a9733', 'MangaBat', 'https://m.mangabat.com')
+	AddWebsiteModule('2234588abb544fc6a279c7811f2a9733', 'MangaBat', 'https://read.mangabat.com')
 end
 
 function GetInfo()
@@ -30,7 +32,7 @@ function GetInfo()
 			end
 		end
 		MANGAINFO.URL = u
-		local id = MODULE.ID; if u:lower():find('manganato.com', 1, true) then id = '' end
+		local id = MODULE.ID
 		local x = CreateTXQuery(HTTP.Document)
 		if (id == '74674292e13c496699b8c5e4efd4b583')	-- mangakakalot
 			or (id == 'ed4175a390e74aedbe4b4f622f3767c6')	-- mangakakalots
@@ -44,13 +46,13 @@ function GetInfo()
 			x.XPathHREFAll('//div[@class="chapter-list"]/div[@class="row"]/span/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		else
-			MANGAINFO.Title     = x.XPathString('//title'):match('(.+) Manga Online Free')
+			MANGAINFO.Title     = x.XPathString('//h1')
 			MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//span[@class="info-image"]/img/@src'))
 			MANGAINFO.Authors   = x.XPathStringAll('//td[contains(., "Author(s)")]/following-sibling::td/a')
 			MANGAINFO.Genres    = x.XPathStringAll('//td[contains(., "Genres")]/following-sibling::td/a')
 			MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//td[contains(., "Status")]/following-sibling::td'))
 			MANGAINFO.Summary   = x.XPathStringAll('//div[@class="panel-story-info-description"]/text()', '')
-			x.XPathHREFAll('//ul[@class="row-content-chapter"]/li/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+			x.XPathHREFAll('//ul[@class="row-content-chapter"]/li/a[contains(@class, "chapter-name")]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		end
 		return no_error
