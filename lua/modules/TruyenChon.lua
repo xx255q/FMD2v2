@@ -14,7 +14,7 @@ function Init()
 	end
 	local cat = 'Vietnamese'
 	AddWebsiteModule('ef7f922bd45f4f9d9c559a55f987004d', 'TruyenChon', 'http://truyenchon.com', cat)
-	AddWebsiteModule('567780dbaa3149e7ad698f11ce68ea9b', 'NetTruyen', 'http://www.nettruyen.com', cat)
+	AddWebsiteModule('567780dbaa3149e7ad698f11ce68ea9b', 'NetTruyen', 'http://www.nettruyentop.com', cat)
 	AddWebsiteModule('d25308907620480496bd73f50451d67f', 'NhatTruyen', 'http://nhattruyentranh.com', cat)
 
 	cat = 'English'
@@ -59,7 +59,7 @@ function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local x = CreateTXQuery(HTTP.Document)
 		local v for v in x.XPath('//div[@class="page-chapter"]/img/@data-original').Get() do
-			TASK.PageLinks.Add(v.ToString():gsub('^//', 'https://'))
+			TASK.PageLinks.Add(v.ToString():gsub('^//', 'http://'))
 		end
 	else
 		return false
