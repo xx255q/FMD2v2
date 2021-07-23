@@ -23,13 +23,15 @@ function Init()
 			['delay'] = 'Delay (s) between requests',
 			['showscangroup'] = 'Show scanlation group',
 			['showchaptertitle'] = 'Show chapter title',
-			['lang'] = 'Language:'
+			['lang'] = 'Language:',
+			['datasaver'] = 'Data saver'
 		},
 		['id_ID'] = {
 			['delay'] = 'Tunda (d) antara permintaan',
 			['showscangroup'] = 'Tampilkan grup scanlation',
 			['showchaptertitle'] = 'Tampilkan judul bab',
-			['lang'] = 'Bahasa:'
+			['lang'] = 'Bahasa:',
+			['datasaver'] = 'Penghemat data'
 		},
 		get =
 			function(self, key)
@@ -41,6 +43,7 @@ function Init()
 	m.AddOptionSpinEdit('mdx_delay', lang:get('delay'), 1)
 	m.AddOptionCheckBox('luashowscangroup', lang:get('showscangroup'), false)
 	m.AddOptionCheckBox('luashowchaptertitle', lang:get('showchaptertitle'), true)
+	m.AddOptionCheckBox('luadatasaver', lang:get('datasaver'), false)
 
 	local items = 'All'
 	local t = GetLangList()
@@ -326,8 +329,14 @@ function GetPageNumber()
 				local server = CreateTXQuery(HTTP.Document).XPathString('json(*).baseUrl')
 				local hash   = x.XPathString('data/attributes/hash', cinfo)
 
-				local pages for pages in x.XPath('json(*).data.attributes.data()').Get() do
-					TASK.PageLinks.Add(server .. '/data/' .. hash .. '/' .. pages.ToString())
+				if MODULE.GetOption('luadatasaver') then -- Use data saver
+					local pages for pages in x.XPath('json(*).data.attributes.dataSaver()').Get() do
+						TASK.PageLinks.Add(server .. '/data-saver/' .. hash .. '/' .. pages.ToString())
+					end
+				else
+					local pages for pages in x.XPath('json(*).data.attributes.data()').Get() do
+						TASK.PageLinks.Add(server .. '/data/' .. hash .. '/' .. pages.ToString())
+					end
 				end
 			end
 
