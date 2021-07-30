@@ -8,6 +8,7 @@ function Init()
 	m.OnGetPageNumber            = 'GetPageNumber'
 	m.OnGetNameAndLink           = 'GetNameAndLink'
 	m.OnGetDirectoryPageNumber   = 'GetDirectoryPageNumber'
+	m.OnBeforeDownloadImage      = 'BeforeDownloadImage'
 	m.SortedList                 = true
 end
 
@@ -69,4 +70,9 @@ function GetDirectoryPageNumber()
 	else
 		return net_problem
 	end
+end
+
+function BeforeDownloadImage()
+	HTTP.Headers.Values['Referer'] = ' ' .. MaybeFillHost(MODULE.RootURL, TASK.ChapterLinks[TASK.CurrentDownloadChapterPtr])
+	return true
 end
