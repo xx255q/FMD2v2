@@ -1,17 +1,13 @@
 function Init()
-	local function AddWebsiteModule(id, name, url)
-		local m = NewWebsiteModule()
-		m.ID                         = id
-		m.Name                       = name
-		m.RootURL                    = url
-		m.Category                   = 'H-Sites'
-		m.OnGetDirectoryPageNumber   = 'GetDirectoryPageNumber'
-		m.OnGetNameAndLink           = 'GetNameAndLink'
-		m.OnGetInfo                  = 'GetInfo'
-		m.OnGetPageNumber            = 'GetPageNumber'
-	end
-	AddWebsiteModule('c3a863e704054a1a86eeafbbaae67513', 'VerMangasPorno', 'https://vermangasporno.com')
-	AddWebsiteModule('951d32dd4fc4468692d3a3b7572a707c', 'VerComicsPorno', 'https://vercomicsporno.com')
+	local m = NewWebsiteModule()
+	m.ID                         = 'c3a863e704054a1a86eeafbbaae67513'
+	m.Name                       = 'VerMangasPorno'
+	m.RootURL                    = 'https://vermangasporno.com'
+	m.Category                   = 'Spanish'
+	m.OnGetDirectoryPageNumber   = 'GetDirectoryPageNumber'
+	m.OnGetNameAndLink           = 'GetNameAndLink'
+	m.OnGetInfo                  = 'GetInfo'
+	m.OnGetPageNumber            = 'GetPageNumber'
 end
 
 function GetDirectoryPageNumber()
