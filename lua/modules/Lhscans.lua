@@ -17,9 +17,9 @@ function Init()
 	AddWebsiteModule('4c089029492f43c98d9f27a23403247b', 'HanaScan', 'https://hanascan.com')
 	AddWebsiteModule('010777f53bf2414fad039b9567c8a9ce', 'KissAway', 'https://kissaway.net')
 	AddWebsiteModule('794187d0e92e4933bf63812438d69017', 'Manhwa18', 'https://manhwa18.com')
-	local m = AddWebsiteModule('9054606f128e4914ae646032215915e5', 'LoveHug', 'https://lovehug.net')
+	local m = AddWebsiteModule('9054606f128e4914ae646032215915e5', 'WeLoveManga', 'https://welovemanga.net')
 	m.AccountSupport = true
-	m.OnLogin        = 'LoveHugLogin'
+	m.OnLogin        = 'WeLoveMangaLogin'
 
 	cat = 'English'
 	AddWebsiteModule('80427d9a7b354f04a8f432b345f0f640', 'MangaWeek', 'https://mangaweek.com')
@@ -34,7 +34,7 @@ function Init()
 	AddWebsiteModule('8313871a984b4b6c8de41860fc5ec96e', 'KSGroupScans', 'https://ksgroupscans.com')
 end
 
-function LoveHugLogin()
+function WeLoveMangaLogin()
 	if MODULE.Account.Enabled == false then return false end
 	MODULE.Account.Status = asChecking
 	if HTTP.GET(MODULE.RootURL) then
@@ -75,7 +75,7 @@ function LoveHugLogin()
 end
 
 function GetDirectoryPageNumber()
-	if MODULE.ID == '9054606f128e4914ae646032215915e5' or MODULE.ID == '8313871a984b4b6c8de41860fc5ec96e' then -- LoveHug, KSGroupScans
+	if MODULE.ID == '9054606f128e4914ae646032215915e5' or MODULE.ID == '8313871a984b4b6c8de41860fc5ec96e' then -- WeLoveManga, KSGroupScans
 		if HTTP.GET(MODULE.RootURL .. '/manga-list.html?page=1&sort=name&sort_type=ASC') then
 			PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//ul[contains(@class, "pagination")]/li[last()-1]')) or 1
 			return no_error
@@ -86,7 +86,7 @@ function GetDirectoryPageNumber()
 end
 
 function GetNameAndLink()
-	if MODULE.ID == '9054606f128e4914ae646032215915e5' or MODULE.ID == '8313871a984b4b6c8de41860fc5ec96e' then -- LoveHug, KSGroupScans
+	if MODULE.ID == '9054606f128e4914ae646032215915e5' or MODULE.ID == '8313871a984b4b6c8de41860fc5ec96e' then -- WeLoveManga, KSGroupScans
 		if HTTP.GET(MODULE.RootURL .. '/manga-list.html?page=' .. (URL + 1) .. '&sort=name&sort_type=ASC') then
 			local x = CreateTXQuery(HTTP.Document)
 			local v for v in x.XPath('//div[@class="row-last-update"]//div[contains(@class, "series-title")]/a').Get() do
@@ -158,7 +158,7 @@ function GetPageNumber()
 		local x = CreateTXQuery(HTTP.Document)
 		if MODULE.ID == 'f488bcb1911b4f21baa1ab65ef9ca61c' then -- HeroScan
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-original', TASK.PageLinks)
-		elseif MODULE.ID == '010777f53bf2414fad039b9567c8a9ce' or MODULE.ID == '9054606f128e4914ae646032215915e5' or MODULE.ID == '694ff34a6ae4469fbdaecf8d3aebb6eb' then -- KissAway, LoveHug, ManhuaScan
+		elseif MODULE.ID == '010777f53bf2414fad039b9567c8a9ce' or MODULE.ID == '9054606f128e4914ae646032215915e5' or MODULE.ID == '694ff34a6ae4469fbdaecf8d3aebb6eb' then -- KissAway, WeLoveManga, ManhuaScan
 			local v for v in x.XPath('//img[contains(@class, "chapter-img")]/@data-aload').Get() do
 				TASK.PageLinks.Add(MaybeFillHost(MODULE.RootURL, v.ToString()))
 			end
