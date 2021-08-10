@@ -207,10 +207,12 @@ function GetInfo()
 			MANGAINFO.Artists   = x.XPathStringAll('json(*).relationships()[type="artist"].attributes.name')
 			MANGAINFO.CoverLink = COVER_URL .. '/' .. mid .. '/' .. x.XPathString('json(*).relationships()[type="cover_art"].attributes.fileName')
 
-			-- Fetch genre/demographic
+			-- Fetch genre, demographic, and rating:
 			MANGAINFO.Genres    = x.XPathStringAll('json(*).data.attributes.tags().attributes.name.en')
 			local demographic = GetDemographic(x.XPathString('json(*).data.attributes.publicationDemographic'))
 			if demographic ~= 'null' then MANGAINFO.Genres = MANGAINFO.Genres .. ', ' .. demographic end
+			local rating = GetRating(x.XPathString('json(*).data.attributes.contentRating'))
+			if rating ~= 'null' then MANGAINFO.Genres = MANGAINFO.Genres .. ', ' .. rating end
 
 			-- Set status to 'completed' if it's not 'ongoing' or 'hiatus'. The status 'cancelled' will also be set to 'completed':
 			local status = x.XPathString('data/attributes/status', minfo)
@@ -379,6 +381,20 @@ function GetDemographic(demographic)
 		return demographics[demographic]
 	else
 		return demographic
+	end
+end
+
+function GetRating(rating)
+	local ratings = {
+		["safe"] = "Safe",
+		["suggestive"] = "Suggestive",
+		["erotica"] = "Erotica",
+		["pornographic"] = "Pornographic"
+	}
+	if ratings[rating] ~= nil then
+		return ratings[rating]
+	else
+		return rating
 	end
 end
 
