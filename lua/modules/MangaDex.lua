@@ -282,7 +282,8 @@ function GetInfo()
 						volume = volume ~= 'null' and string.format('Vol. %s ', volume) or ''
 						chapter = chapter ~= 'null' and string.format('Ch. %s', chapter) or ''
 
-						if volume == '' and chapter == '' and title == '' then chapter = 'Ch. ' .. ic end
+						-- Make unnumbered chapter as oneshot
+						if volume == '' and chapter == '' then chapter = 'Oneshot' end
 
 						-- Append language id if user option is set to "All":
 						if optlangid == nil then language = string.format(' [%s]', language) else language = '' end
