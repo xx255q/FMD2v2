@@ -8,6 +8,7 @@ function Init()
 		m.OnGetNameAndLink           = 'GetNameAndLink'
 		m.OnGetInfo                  = 'GetInfo'
 		m.OnGetPageNumber            = 'GetPageNumber'
+		m.OnBeforeDownloadImage      = 'BeforeDownloadImage'
 	end
 	AddWebsiteModule('fa2359317a72416a958a16682050acb0', 'Manga1000', 'https://manga1000.com')
 	AddWebsiteModule('1d09f3bea8f148fa9e9215fc578fedcd', 'Manga1001', 'https://manga1001.com')
@@ -68,4 +69,9 @@ function GetPageNumber()
 	else
 		return false
 	end
+end
+
+function BeforeDownloadImage()
+	HTTP.Headers.Values['Referer'] = MaybeFillHost(MODULE.RootURL, TASK.ChapterLinks[TASK.CurrentDownloadChapterPtr])
+	return true
 end
