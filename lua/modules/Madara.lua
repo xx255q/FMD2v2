@@ -88,16 +88,26 @@ function Modules.Madara()
 			else
 				x.XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			end
-			local idmanga = x.XPathString('//div[contains(@id, "manga-chapters-holder")]/@data-id')
-			if MANGAINFO.ChapterLinks.Count < 1 then
+			if MANGAINFO.ChapterLinks.Count == 0 then
 				HTTP.Reset()
-				HTTP.Headers.Values['Cache-Control'] = ' no-cache'
-				HTTP.Headers.Values['X-Requested-With'] = ' XMLHttpRequest'
+				HTTP.Headers.Values['Cache-Control'] = 'no-cache'
+				HTTP.Headers.Values['X-Requested-With'] = 'XMLHttpRequest'
+				HTTP.Headers.Values['Content-Length'] = '0'
+				if HTTP.POST(MANGAINFO.URL .. 'ajax/chapters') then
+					local x = CreateTXQuery(HTTP.Document)
+					x.XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/a[1]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+				end
+			end
+			if MANGAINFO.ChapterLinks.Count == 0 then
+				HTTP.Reset()
+				HTTP.Headers.Values['Cache-Control'] = 'no-cache'
+				HTTP.Headers.Values['X-Requested-With'] = 'XMLHttpRequest'
 				HTTP.MimeType = 'application/x-www-form-urlencoded; charset=UTF-8'
+				local idmanga = x.XPathString('//div[contains(@id, "manga-chapters-holder")]/@data-id')
 				local q = 'action=manga_get_chapters&manga=' .. idmanga
 				if HTTP.POST(MODULE.RootURL .. '/wp-admin/admin-ajax.php', q) then
-						local x = CreateTXQuery(HTTP.Document)
-						x.XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/a[1]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+					local x = CreateTXQuery(HTTP.Document)
+					x.XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/a[1]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 				end
 			end
 			MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
