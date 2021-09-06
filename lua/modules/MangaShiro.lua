@@ -21,8 +21,7 @@ end
 
 function getTitle(x)
 	local title = ''
-
-	if title == '' then title = x.XPathString('//div[@class="thumb"]/img/@alt')
+	if title == '' then title = x.XPathString('//div[@class="thumb"]/img/@alt') end
 	if title == '' then title = x.XPathString('//*[@id="judul"]/h1') end
 	if title == '' then title = x.XPathString('//*[@id="judul_komik"]/h1') end
 	if title == '' then title = x.XPathString('//div[@class="infox"]/h1') end
