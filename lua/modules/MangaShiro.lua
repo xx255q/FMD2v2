@@ -10,7 +10,7 @@ function GetInfo()
 		MANGAINFO.Status    = MangaInfoStatusIfPos(getStatus(x))
 		MANGAINFO.Summary   = getSummary(x)
 		getMangas(x)
-		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
+		reverseLinksAndChapters()
 		HTTP.Reset()
 		HTTP.Headers.Values['Referer'] = MANGAINFO.URL
 		return no_error
@@ -21,6 +21,8 @@ end
 
 function getTitle(x)
 	local title = ''
+
+	if title == '' then title = x.XPathString('//div[@class="thumb"]/img/@alt')
 	if title == '' then title = x.XPathString('//*[@id="judul"]/h1') end
 	if title == '' then title = x.XPathString('//*[@id="judul_komik"]/h1') end
 	if title == '' then title = x.XPathString('//div[@class="infox"]/h1') end
@@ -32,7 +34,7 @@ function getTitle(x)
 	if title == '' then title = x.XPathString('//h1') end
 	if title == '' then title = x.XPathString('//h2') end
 	title = title:gsub('Bahasa Indonesia$', ''):gsub(' Indonesia|Baca"', ''):gsub('Bahasa Indonesia', ''):gsub('Komik', ''):gsub(' Raw', ''):gsub(' Indonesia Terbaru','')
-	title = title:gsub('Manga', ''):gsub('Indonesia', ''):gsub('Baca', ''):gsub('bahasa', ''):gsub('indonesia', ''):gsub('can', ''):gsub('|', '')
+	title = title:gsub('Manga', ''):gsub('Indonesia', ''):gsub('Baca', ''):gsub('bahasa', ''):gsub('indonesia', ''):gsub('|', '')
 	title = title:gsub(string.gsub(MODULE.Name, 'https://', ''), '')
 	return title
 end
@@ -168,7 +170,7 @@ function getMangas(x)
 			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
 			MANGAINFO.ChapterNames.Add(x.XPathString('div/span[@class="left"]', v))
 		end	
-	elseif MODULE.ID == '13c6434a0c2541b18abee83a2c72e8f5' or MODULE.ID == 'b53534f8443e420ea088594c53a3ff39' then -- MangaKane, Manhwaland
+	elseif MODULE.ID == '13c6434a0c2541b18abee83a2c72e8f5' then -- MangaKane
 		x.XPathHREFTitleAll('//div[@class="flexch-infoz"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 	elseif MODULE.ID == 'b8206e754d4541689c1d367f7e19fd64' then -- KomikCast
 		x.XPathHREFAll('//div[@class="komik_info-chapters"]//a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
@@ -291,7 +293,7 @@ function GetNameAndLink()
 			['56f905ea80e24c4f8bbc37e05de2ad9a'] = '/manga/?list', -- Mangakyo
 			['0e45db2650604f74a0caeb7c1d69a749'] = '/manga/?list', -- MangaSWAT
 			['41294a121062494489adfa601c442ef8'] = '/manga-list/?list', -- LegionAsia
-			['b53534f8443e420ea088594c53a3ff39'] = '/manhwa-list/', -- Manhwaland
+			['b53534f8443e420ea088594c53a3ff39'] = '/series/list-mode', -- Manhwaland
 			['ff17b64aa945403dae45706753235872'] = '/latest-update/?list', -- KomikNesia
 			['5474e31b24ab4908a5258176d1f24f67'] = '/komik/list-mode/', -- ManhwaTaro
 			['f794803973af4e5daab21683d4de873a'] = '/series/list-mode/' -- LuminousScans
@@ -319,6 +321,16 @@ end
 
 function BeforeDownloadImage()
 	HTTP.Headers.Values['referer'] = MODULE.RootURL
+	return true
+end
+
+function reverseLinksAndChapters()
+	local doNotReverse = {
+		['4657d79e63dc4a9082a46b7981bde1b9'] = '' -- MangaBoruto
+	}
+	if doNotReverse[MODULE.ID] == nil then
+		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
+	end
 	return true
 end
 
@@ -366,11 +378,12 @@ function Init()
 	AddWebsiteModule('deb2a310668a40ebbbe3aaa45f78edc2', 'GuruKomik', 'https://gurukomik.com')
 	AddWebsiteModule('adb6ae3e4d7c49fb89bb8d17bfbc9486', 'KlanKomik', 'https://klankomik.com')
 	AddWebsiteModule('06b9c968ec8c4c89b7d28b7d461d84e3', 'Masterkomik', 'https://masterkomik.com')
-	AddWebsiteModule('b53534f8443e420ea088594c53a3ff39', 'Manhwaland', 'https://manhwaland.net')
+	AddWebsiteModule('b53534f8443e420ea088594c53a3ff39', 'Manhwaland', 'https://manhwaland.me')
 	AddWebsiteModule('ff17b64aa945403dae45706753235872', 'KomikNesia', 'https://komiknesia.com')
 	AddWebsiteModule('489dff6a5f894b6a9c1eed46feeec72e', 'WordHero', 'https://wordhero.my.id')
 	AddWebsiteModule('5474e31b24ab4908a5258176d1f24f67', 'ManhwaTaro', 'https://manhwataro.xyz')
 	AddWebsiteModule('180a930232614f81816720cefeea7954', 'KoMBatch', 'https://kombatch.com')
+	AddWebsiteModule('4657d79e63dc4a9082a46b7981bde1b9', 'MangaBoruto', 'https://mangaboruto.xyz')
 
 	cat = 'Raw'
 	AddWebsiteModule('21b0dfcb262d4ae28520679165282666', 'Rawkuma', 'https://rawkuma.com')
@@ -402,7 +415,9 @@ function Init()
 	AddWebsiteModule('7872813350a45e11a301816c2911c87a', 'FusionScanlation', 'https://fusionscanlation.com')
 	AddWebsiteModule('529038945bc84174b4be556b922bfb4a', 'OniScans', 'https://www.oniscans.com')
 	AddWebsiteModule('529038924bc84174b4be556b922bfb4a', 'ShadowMangas', 'https://shadowmangas.com')
+	AddWebsiteModule('760d177b1f6d4763a08971c0c1b5572b', 'OlympusScanlation', 'https://olympusscanlation.com')
 
 	cat = 'English'
 	AddWebsiteModule('421be2f0d918493e94f745c71090f359', 'Mangafast', 'https://mangafast.net')
+	AddWebsiteModule('b5512eeeebbe4aa1a9194f58e8401ca2', 'KumaScans', 'https://kumascans.com')
 end
