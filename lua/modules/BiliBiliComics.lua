@@ -1,20 +1,23 @@
-
-local API_URL = ' https://www.bilibilicomics.com/twirp/comic.v2.Comic'
+local API_URL = '/twirp/comic.v2.Comic'
 local API_PARAMS = '?device=pc&platform=web'
 
 function Init()
-	local m = NewWebsiteModule()
-	m.ID                       = 'ba5c1a22af434aaca6c8c6874b7f54ec'
-	m.Name                     = 'BiliBiliComics'
-	m.RootURL                  = 'https://www.bilibilicomics.com'
-	m.Category                 = 'English'
-	m.OnGetNameAndLink         = 'GetNameAndLink'
-	m.OnGetInfo                = 'GetInfo'
-	m.OnGetPageNumber          = 'GetPageNumber'
+	local function AddWebsiteModule(id, name, url, cat)
+		local m = NewWebsiteModule()
+		m.ID                 = id
+		m.Name               = name
+		m.RootURL            = url
+		m.Category           = cat
+		m.OnGetNameAndLink   = 'GetNameAndLink'
+		m.OnGetInfo          = 'GetInfo'
+		m.OnGetPageNumber    = 'GetPageNumber'
+	end
+	AddWebsiteModule('ba5c1a22af434aaca6c8c6874b7f54ec', 'BiliBiliComics', 'https://www.bilibilicomics.com', 'English')
+	AddWebsiteModule('5d84cd0ac31d42c39ac35b5ca5908ee0', 'BiliBiliManhua', 'https://manga.bilibili.com', 'Raw')
 end
 
 function GetNameAndLink()
-	x, requestJSON = ApiCall(API_URL .. '/ClassPage' .. API_PARAMS .. '&page_size=1000&page_num=1')
+	x, requestJSON = ApiCall(MODULE.RootURL .. API_URL .. '/ClassPage' .. API_PARAMS .. '&page_size=1000&page_num=1')
 
 	local results for results in x.XPath('json(*).data()').Get() do
 		LINKS.Add('detail/mc' .. x.XPathString('season_id', results))
@@ -24,10 +27,9 @@ function GetNameAndLink()
 end
 
 function GetInfo()
-
 	-- Extract manga GUID which is needed for getting info and chapter list:
 	local mangaId = URL:match('%d+')
-	x, requestJSON = ApiCall(API_URL .. '/ComicDetail' .. API_PARAMS .. '&comic_id=' .. mangaId, true)
+	x, requestJSON = ApiCall(MODULE.RootURL .. API_URL .. '/ComicDetail' .. API_PARAMS .. '&comic_id=' .. mangaId, true)
 
 	MANGAINFO.Title     = x.XPathString('data/title', requestJSON)
 	MANGAINFO.Summary   = x.XPathString('data/evaluate', requestJSON)
@@ -67,7 +69,7 @@ function GetPageNumber()
 	TASK.PageLinks.Clear()
 	local json = require "utils.json"
 	
-	x, requestJSON = ApiCall(API_URL .. '/GetImageIndex' .. API_PARAMS .. '&ep_id=' .. URL:gsub('/', ''))
+	x, requestJSON = ApiCall(MODULE.RootURL .. API_URL .. '/GetImageIndex' .. API_PARAMS .. '&ep_id=' .. URL:gsub('/', ''))
 	imagesPaths = {}
 	local imagesData = x.XPath('json(*).data.images()')
 	for ic = 1, imagesData.Count do
@@ -80,7 +82,7 @@ function GetPageNumber()
 end
 
 function GetPageToken(paths)
-	x, requestJSON = ApiCall(API_URL .. '/ImageToken' .. API_PARAMS .. '&urls=' .. paths)
+	x, requestJSON = ApiCall(MODULE.RootURL .. API_URL .. '/ImageToken' .. API_PARAMS .. '&urls=' .. paths)
 
 	local imagesToken = x.XPath('json(*).data()')
 	for ic = 1, imagesToken.Count do
