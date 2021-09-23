@@ -162,6 +162,8 @@ function GetPageNumber()
 			local v for v in x.XPath('//img[contains(@class, "chapter-img")]/@data-aload').Get() do
 				TASK.PageLinks.Add(MaybeFillHost(MODULE.RootURL, v.ToString()))
 			end
+		elseif MODULE.ID == '9054606f128e4914ae646032215915e5' then -- WeLoveManga
+			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@*[contains(., "https")]', TASK.PageLinks)
 		else
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-src', TASK.PageLinks)
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//img[contains(@class, "chapter-img")]/src', TASK.PageLinks) end
