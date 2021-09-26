@@ -3,12 +3,17 @@ function getinfo()
 	if HTTP.GET(MANGAINFO.URL) then
 		x=CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title=x.XPathString('//h2[@class="tag-title"]/b')
+		if MANGAINFO.Title == '' then MANGAINFO.Title = x.XPathString('//h3[@id="chapter-title"]/b') end
 		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL,x.XPathString('//img[@class="thumbnail"]/@src'))
 		MANGAINFO.Authors=x.XPathString('string-join(//a[contains(@href,"/authors/")],", ")')
 		MANGAINFO.Genres=x.XPathStringAll('//*[@class="label" or @class="doujin_tags"]')
 		MANGAINFO.Status=MangaInfoStatusIfPos(x.XPathString('//h2[@class="tag-title"]/small'))
 		MANGAINFO.Summary=x.XPathString('//*[@class="description"]')
 		x.XPathHREFAll('//dl[@class="chapter-list"]/dd/a[1]',MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
+		if MANGAINFO.ChapterLinks.Count == 0 then
+			MANGAINFO.ChapterLinks.Add(URL)
+			MANGAINFO.ChapterNames.Add(MANGAINFO.Title)
+		end
 		return no_error
 	else
 		return net_problem
@@ -52,7 +57,6 @@ function Init()
 	m.Category                 = 'English-Scanlation'
 	m.Name                     = 'DynastyScans'
 	m.RootURL                  = 'https://dynasty-scans.com'
-	m.LastUpdated              = 'February 17, 2018'
 	m.OnGetInfo                = 'getinfo'
 	m.OnGetPageNumber          = 'getpagenumber'
 	m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
