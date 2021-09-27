@@ -205,7 +205,7 @@ function GetInfo()
 			MANGAINFO.Summary   = x.XPathString('data/attributes/description/en', minfo)
 			MANGAINFO.Authors   = x.XPathStringAll('json(*).data.relationships()[type="author"].attributes.name')
 			MANGAINFO.Artists   = x.XPathStringAll('json(*).data.relationships()[type="artist"].attributes.name')
-			MANGAINFO.CoverLink = COVER_URL .. '/' .. mid .. '/' .. x.XPathString('json(*).data.relationships()[type="cover_art"].attributes.fileName')
+			MANGAINFO.CoverLink = COVER_URL .. '/' .. mid .. '/' .. x.XPathString('json(*).data.relationships()[type="cover_art"].attributes.fileName') .. '.256.jpg'
 
 			-- Fetch genre, demographic, and rating:
 			MANGAINFO.Genres    = x.XPathStringAll('json(*).data.attributes.tags().attributes.name.en')
