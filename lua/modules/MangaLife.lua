@@ -43,7 +43,9 @@ end
 
 -- Get info and chapter list for current manga.
 function GetInfo()
-	if not HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then return net_problem end
+	local u = MaybeFillHost(MODULE.RootURL, URL)
+	if MODULE.ID == '3db42782cfc441e3a3498afa91f70a80' then u = u .. '/001.png' end -- MangaSee
+	if not HTTP.GET(u) then return net_problem end
 
 	local x = CreateTXQuery(HTTP.Document)
 	MANGAINFO.Title     = x.XPathString('//meta[@property="og:title"]/@content'):gsub(' | %w+$', '')
@@ -91,7 +93,9 @@ end
 
 -- Get the page count for the current chapter.
 function GetPageNumber()
-	if not HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then return net_problem end
+	local u = MaybeFillHost(MODULE.RootURL, URL)
+	if MODULE.ID == '3db42782cfc441e3a3498afa91f70a80' then u = u .. '/001.png' end -- MangaSee
+	if not HTTP.GET(u) then return net_problem end
 	
 	local json = require "utils.json"
 	local body = HTTP.Document.ToString()
