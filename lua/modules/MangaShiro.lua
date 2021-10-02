@@ -178,6 +178,11 @@ function getMangas(x)
 			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
 			MANGAINFO.ChapterNames.Add(x.XPathString('div/div/span[@class="chapternum"]',v))
 		end
+	elseif MODULE.ID == 'f8c92a9a83f64deebee5ec58b7b15bdf' then -- xCaliBRScans
+		local v for v in x.XPath('//*[@id="chapterlist"]//*[@class="eph-num"]/a').Get() do
+			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
+			MANGAINFO.ChapterNames.Add(x.XPathString('../span[@class="chapternum"]',v))
+		end
 	else
 		-- common
 		local v for v in x.XPath('//*[@id="chapterlist"]//*[@class="eph-num"]/a').Get() do
