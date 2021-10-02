@@ -20,6 +20,7 @@ function Init()
 	local m = AddWebsiteModule('9054606f128e4914ae646032215915e5', 'WeLoveManga', 'https://welovemanga.net')
 	m.AccountSupport = true
 	m.OnLogin        = 'WeLoveMangaLogin'
+	AddWebsiteModule('462c20a8842e44e4a6e1811fab1c78e2', 'WeLoMa', 'https://weloma.net')
 
 	cat = 'English'
 	AddWebsiteModule('80427d9a7b354f04a8f432b345f0f640', 'MangaWeek', 'https://mangaweek.com')
@@ -75,7 +76,7 @@ function WeLoveMangaLogin()
 end
 
 function GetDirectoryPageNumber()
-	if MODULE.ID == '9054606f128e4914ae646032215915e5' or MODULE.ID == '8313871a984b4b6c8de41860fc5ec96e' then -- WeLoveManga, KSGroupScans
+	if MODULE.ID == '9054606f128e4914ae646032215915e5' or MODULE.ID == '8313871a984b4b6c8de41860fc5ec96e' or MODULE.ID == '462c20a8842e44e4a6e1811fab1c78e2' then -- WeLoveManga, KSGroupScans, WeLoMa
 		if HTTP.GET(MODULE.RootURL .. '/manga-list.html?page=1&sort=name&sort_type=ASC') then
 			PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//ul[contains(@class, "pagination")]/li[last()-1]')) or 1
 			return no_error
@@ -86,7 +87,7 @@ function GetDirectoryPageNumber()
 end
 
 function GetNameAndLink()
-	if MODULE.ID == '9054606f128e4914ae646032215915e5' or MODULE.ID == '8313871a984b4b6c8de41860fc5ec96e' then -- WeLoveManga, KSGroupScans
+	if MODULE.ID == '9054606f128e4914ae646032215915e5' or MODULE.ID == '8313871a984b4b6c8de41860fc5ec96e' or MODULE.ID == '462c20a8842e44e4a6e1811fab1c78e2' then -- WeLoveManga, KSGroupScans, WeLoMa
 		if HTTP.GET(MODULE.RootURL .. '/manga-list.html?page=' .. (URL + 1) .. '&sort=name&sort_type=ASC') then
 			local x = CreateTXQuery(HTTP.Document)
 			local v for v in x.XPath('//div[@class="row-last-update"]//div[contains(@class, "series-title")]/a').Get() do
@@ -162,7 +163,7 @@ function GetPageNumber()
 			local v for v in x.XPath('//img[contains(@class, "chapter-img")]/@data-aload').Get() do
 				TASK.PageLinks.Add(MaybeFillHost(MODULE.RootURL, v.ToString()))
 			end
-		elseif MODULE.ID == '9054606f128e4914ae646032215915e5' then -- WeLoveManga
+		elseif MODULE.ID == '9054606f128e4914ae646032215915e5' or MODULE.ID == '462c20a8842e44e4a6e1811fab1c78e2' then -- WeLoveManga, WeLoMa
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@*[contains(., "https")]', TASK.PageLinks)
 		else
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-src', TASK.PageLinks)
