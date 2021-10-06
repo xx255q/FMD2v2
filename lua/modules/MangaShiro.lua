@@ -173,7 +173,7 @@ function getMangas(x)
 		x.XPathHREFTitleAll('//div[@class="flexch-infoz"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 	elseif MODULE.ID == 'b8206e754d4541689c1d367f7e19fd64' then -- KomikCast
 		x.XPathHREFAll('//div[@class="komik_info-chapters"]//a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-	elseif MODULE.ID == 'fb34a56c83f54b19b57a9a92070fe899' or MODULE.ID == 'f794803973af4e5daab21683d4de873a' then -- FlameScans, LuminousScans
+	elseif MODULE.ID == 'fb34a56c83f54b19b57a9a92070fe899' then -- FlameScans
 		local v for v in x.XPath('//*[@id="chapterlist"]//li/a').Get() do
 			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
 			MANGAINFO.ChapterNames.Add(x.XPathString('div/div/span[@class="chapternum"]',v))
