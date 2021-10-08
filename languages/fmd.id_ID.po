@@ -206,7 +206,7 @@ msgstr "Memeriksa..."
 
 #: frmmain.rs_custom
 msgid "Custom"
-msgstr "Pilihan"
+msgstr "Ubah suai"
 
 #: frmmain.rs_dlgcannotconnecttoserver
 msgid "Cannot connect to the server."
@@ -670,7 +670,7 @@ msgstr "Kata sandi"
 
 #: tcustomcolorform.caption
 msgid "CustomColorForm"
-msgstr "Form Kustomisasi Warna"
+msgstr "Form Mengubahsuaikan Warna"
 
 #: tcustomcolorform.tsbasiclist.caption
 msgid "Basic list"
@@ -1794,7 +1794,7 @@ msgstr "Ganti jumlah digit"
 
 #: tmainform.lboptionretryfailedtask.caption
 msgid "Number of retry times if task failed"
-msgstr "Jumlah pengulangan pada tugas unduhan yang memiliki masalah"
+msgstr "Jumlah pengulangan pada unduhan yang memiliki masalah"
 
 #: tmainform.lboptionuser.caption
 msgctxt "tmainform.lboptionuser.caption"
@@ -2110,7 +2110,7 @@ msgstr "Centang semua"
 
 #: tmainform.mnfiltergenreallindeterminate.caption
 msgid "Indeterminate all"
-msgstr "Tak tentu semua"
+msgstr "Isikan semua"
 
 #: tmainform.mnfiltergenrealluncheck.caption
 msgctxt "tmainform.mnfiltergenrealluncheck.caption"
@@ -2674,7 +2674,7 @@ msgstr "Menyimpan data"
 
 #: uupdatethread.rs_synchronizingdata
 msgid "Synchronizing data"
-msgstr "Sinkronisasi data"
+msgstr "Menyelaraskan data"
 
 #: uupdatethread.rs_updatinglist
 msgid "Updating list"
