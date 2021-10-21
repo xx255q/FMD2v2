@@ -122,7 +122,7 @@ function GetInfo()
 		local x = CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title      = Trim(SeparateLeft(x.XPathString('//div[@class="container"]//li[3]//span'), '- Raw'))
 		if MANGAINFO.Title   == '' then
-			MANGAINFO.Title = Trim(x.XPathString('//div[@class="container manga"]//li[3]/a/@title'):gsub('- RAW', ''):gsub('%(MANGA%)', ''))
+			MANGAINFO.Title = x.XPathString('//meta[@name="description"]/@content/substring-before(substring-after(., "Read Manga"), "- RAW Online")')
 		end
 		MANGAINFO.CoverLink  = MaybeFillHost(MODULE.RootURL, x.XPathString('//img[@class="thumbnail"]/@src'))
 		MANGAINFO.Status     = MangaInfoStatusIfPos(x.XPathString('//ul[@class="manga-info"]/li[contains(., "Status")]//a'))
@@ -138,6 +138,20 @@ function GetInfo()
 			x.XPathHREFAll('//div[@id="list-chapters"]//a[@class="chapter"]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		end
 		if MANGAINFO.ChapterLinks.Count == 0 then
+			x.XPathHREFTitleAll('//ul[contains(@class, "list-chapters")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+		end
+		if MANGAINFO.ChapterLinks.Count == 0 then
+			local function HexToStr(str)
+				return str:gsub('%x%x',function(c)return c.char(tonumber(c,16))end)
+			end
+			local s = x.XPathString('//script[contains(., "unescape")]')
+			local decoded_hex
+			if MODULE.ID == '9054606f128e4914ae646032215915e5' then -- WeLoveManga
+				decoded_hex = HexToStr(s:match("lovemanga%+%=\'.*\';"):gsub("[lovemanga+=.;%'\n]", ''))
+			elseif MODULE.ID == '462c20a8842e44e4a6e1811fab1c78e2' then -- WeLoMa
+				decoded_hex = HexToStr(s:match("weloma_data%+%=\'.*\';"):gsub("[weloma_data+=.;%'\n]", ''))
+			end
+			x.ParseHTML(decoded_hex)
 			x.XPathHREFTitleAll('//ul[contains(@class, "list-chapters")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		end
 		for i = 0, MANGAINFO.ChapterLinks.Count - 1 do
