@@ -36,7 +36,7 @@ function GetPageNumber()
 				retval = base
 			end
 
-			local number_of_frontends = 3
+			local number_of_frontends = 2
 			local b = 16
 
 			local r = '^.*/%w/(%w%w)/.*$'
@@ -48,11 +48,8 @@ function GetPageNumber()
 			local g = tonumber(m, b) or nil
 			if g then
 				local o = 0
-				if (g < 0x88) then
+				if (g < 0x7c) then
 					o = 1
-				end
-				if (g < 0x44) then
-					o = 2
 				end
 				-- retval = subdomain_from_galleryid(g, number_of_frontends) .. retval
 				retval = string.char(97 + o) .. retval
