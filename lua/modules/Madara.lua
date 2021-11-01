@@ -90,6 +90,11 @@ function Modules.Madara()
 					MANGAINFO.ChapterLinks.Add(x.XPathString('a/@href', v))
 					MANGAINFO.ChapterNames.Add(x.XPathString('a/text()[normalize-space()]', v))
 				end
+			elseif MODULE.ID == 'ac42a85566244b7e836679491ce679e6' then -- YugenMangas
+				local v for v in x.XPath('//li[contains(@class, "wp-manga-chapter")]').Get() do
+					MANGAINFO.ChapterLinks.Add(x.XPathString('a/@href', v))
+					MANGAINFO.ChapterNames.Add(x.XPathString('a/text()[not(parent::span)]', v))
+				end
 			else
 				x.XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			end
@@ -493,4 +498,5 @@ function Init()
 	AddWebsiteModule('a8ad2a81768742caa7135047f28c2b00', 'SwordManga', 'https://swordmanga.com')
 	AddWebsiteModule('rrad2a81768742caa7135047f282b777', 'MangaMonarca', 'https://mangamonarca.xyz')
 	AddWebsiteModule('48822a81768742caa7135047f282bf57', 'TiempodeWebeo', 'https://tiempodewebeo.com')
+	AddWebsiteModule('ac42a85566244b7e836679491ce679e6', 'YugenMangas', 'https://yugenmangas.com')
 end
