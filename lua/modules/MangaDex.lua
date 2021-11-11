@@ -203,6 +203,7 @@ function GetInfo()
 		if mstatus == 'ok' then
 			local mtitle = x.XPathString('data/attributes/title/en', minfo)
 			if mtitle == '' then mtitle = x.XPathString('data/attributes/title/ja', minfo) end
+			if mtitle == '' then mtitle = x.XPathString('data/attributes/title/jp', minfo) end
 			MANGAINFO.Title     = mtitle
 			MANGAINFO.Summary   = x.XPathString('data/attributes/description/en', minfo)
 			MANGAINFO.Authors   = x.XPathStringAll('json(*).data.relationships()[type="author"].attributes.name')
