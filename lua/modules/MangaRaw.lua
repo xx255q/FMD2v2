@@ -56,7 +56,7 @@ end
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local x = CreateTXQuery(HTTP.Document)
-		CreateTXQuery(HTTP.Document).XPathStringAll('//section[@class="page-in content-wrap"]/div//img/@src', TASK.PageLinks)
+		CreateTXQuery(HTTP.Document).XPathStringAll('//section[@class="page-in content-wrap"]//div/center/img/@src', TASK.PageLinks)
 		return true
 	else
 		return false
