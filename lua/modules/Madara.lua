@@ -86,9 +86,9 @@ function Modules.Madara()
 					MANGAINFO.ChapterNames.Add(name)
 				end
 			elseif MODULE.ID == 'fb042c961d06479582edb2fa582e3a41' then -- ReaperScans
-				local v for v in x.XPath('//div[contains(@class, "chapter-link")]').Get() do
-					MANGAINFO.ChapterLinks.Add(x.XPathString('a/@href', v))
-					MANGAINFO.ChapterNames.Add(x.XPathString('a/text()[normalize-space()]', v))
+				local v for v in x.XPath('//div[@class="chapter-link"]/a').Get() do
+					MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
+					MANGAINFO.ChapterNames.Add(x.XPathString('p', v))
 				end
 			elseif MODULE.ID == 'ac42a85566244b7e836679491ce679e6' or MODULE.ID == '123fa1ed637e469b8cb4a154965a6423' then -- YugenMangas, DragonTranslation
 				local v for v in x.XPath('//li[contains(@class, "wp-manga-chapter")]').Get() do
