@@ -76,9 +76,16 @@ function WeLoveMangaLogin()
 end
 
 function GetDirectoryPageNumber()
-	if MODULE.ID == '9054606f128e4914ae646032215915e5' or MODULE.ID == '8313871a984b4b6c8de41860fc5ec96e' or MODULE.ID == '462c20a8842e44e4a6e1811fab1c78e2' then -- WeLoveManga, KSGroupScans, WeLoMa
+	if MODULE.ID == '9054606f128e4914ae646032215915e5' or MODULE.ID == '8313871a984b4b6c8de41860fc5ec96e' or MODULE.ID == '462c20a8842e44e4a6e1811fab1c78e2' or MODULE.ID == '9b325c488f6f443281b39315d6fa72d0' then -- WeLoveManga, KSGroupScans, WeLoMa, Manhwa18Net
 		if HTTP.GET(MODULE.RootURL .. '/manga-list.html?page=1&sort=name&sort_type=ASC') then
 			PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//ul[contains(@class, "pagination")]/li[last()-1]')) or 1
+			return no_error
+		else
+			return net_problem
+		end
+	elseif MODULE.ID == '794187d0e92e4933bf63812438d69017' then -- Manhwa18
+		if HTTP.GET(MODULE.RootURL .. '/manga-list?page=1') then
+			PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//div[@class="pagination_wrap"]/a[last()]/@href'):match('?page=(%d+)')) or 1
 			return no_error
 		else
 			return net_problem
@@ -87,13 +94,20 @@ function GetDirectoryPageNumber()
 end
 
 function GetNameAndLink()
-	if MODULE.ID == '9054606f128e4914ae646032215915e5' or MODULE.ID == '8313871a984b4b6c8de41860fc5ec96e' or MODULE.ID == '462c20a8842e44e4a6e1811fab1c78e2' then -- WeLoveManga, KSGroupScans, WeLoMa
+	if MODULE.ID == '9054606f128e4914ae646032215915e5' or MODULE.ID == '8313871a984b4b6c8de41860fc5ec96e' or MODULE.ID == '462c20a8842e44e4a6e1811fab1c78e2' or MODULE.ID == '9b325c488f6f443281b39315d6fa72d0' then -- WeLoveManga, KSGroupScans, WeLoMa, Manhwa18Net
 		if HTTP.GET(MODULE.RootURL .. '/manga-list.html?page=' .. (URL + 1) .. '&sort=name&sort_type=ASC') then
 			local x = CreateTXQuery(HTTP.Document)
-			local v for v in x.XPath('//div[@class="row-last-update"]//div[contains(@class, "series-title")]/a').Get() do
+			local v for v in x.XPath('//div[contains(@class, "series-title")]/a').Get() do
 				NAMES.Add(Trim(SeparateLeft(v.ToString(), '- Raw')))
 				LINKS.Add(v.GetAttribute('href'))
 			end
+			return no_error
+		else
+			return net_problem
+		end
+	elseif MODULE.ID == '794187d0e92e4933bf63812438d69017' then -- Manhwa18
+		if HTTP.GET(MODULE.RootURL .. '/manga-list?page=' .. (URL + 1)) then
+			CreateTXQuery(HTTP.Document).XPathHREFTitleAll('//div[contains(@class, "series-title")]/a', LINKS, NAMES)
 			return no_error
 		else
 			return net_problem
@@ -131,11 +145,23 @@ function GetInfo()
 		MANGAINFO.Status     = MangaInfoStatusIfPos(x.XPathString('//ul[@class="manga-info"]/li[contains(., "Status")]//a'))
 		MANGAINFO.Authors    = x.XPathString('//ul[@class="manga-info"]/li[contains(., "Author")]//a')
 		MANGAINFO.Genres     = x.XPathStringAll('//ul[@class="manga-info"]/li[contains(., "Genre")]//a')
-		MANGAINFO.Summary    = x.XPathString('string-join(//div[./h3="Description"]//p, "\r\n")')
+		MANGAINFO.Summary    = x.XPathString('string-join(//div[(./h3="Description") or (./h3="Summary")]//p, "\r\n")')
 		if MANGAINFO.Summary == '' then
 			MANGAINFO.Summary = x.XPathString('//div[@class="detail"]/div[@class="content"]')
 		end
-
+		if MODULE.ID == '794187d0e92e4933bf63812438d69017' then -- Manhwa18
+			MANGAINFO.Title     = x.XPathString('//span[@class="series-name"]/a')
+			MANGAINFO.CoverLink = x.XPathString('//div[@class="series-cover"]//@style'):match("background%-image: url%('(.-)'%)")
+			MANGAINFO.Authors   = x.XPathStringAll('//div[@class="series-information"]/div[./span="Author:"]/span/a')
+			MANGAINFO.Genres    = x.XPathStringAll('//div[@class="series-information"]/div[./span="Genre:"]/span/a')
+			MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//div[@class="series-information"]/div[./span="Status:"]/span/a'), 'On going', 'Completed')
+		elseif MODULE.ID == '9b325c488f6f443281b39315d6fa72d0' then -- Manhwa18Net
+			MANGAINFO.Title     = x.XPathString('//ol[contains(@class, "breadcrumb")]/li[3]')
+			MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//div[@class="info-cover"]/img/@src'))
+			MANGAINFO.Authors   = x.XPathStringAll('//ul[contains(@class, "manga-info")]/li[./b="Author(s)"]/a')
+			MANGAINFO.Genres    = x.XPathStringAll('//ul[contains(@class, "manga-info")]/li[./b="Genre(s)"]/a')
+			MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//ul[contains(@class, "manga-info")]/li[./b="Status"]/a'), 'On going', 'Completed')
+		end
 		x.XPathHREFAll('//div[@id="tab-chapper"]//table/tbody/tr/td/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		if MANGAINFO.ChapterLinks.Count == 0 then
 			x.XPathHREFAll('//div[@id="list-chapters"]//a[@class="chapter"]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
@@ -157,9 +183,6 @@ function GetInfo()
 			x.ParseHTML(decoded_hex)
 			x.XPathHREFTitleAll('//ul[contains(@class, "list-chapters")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		end
-		for i = 0, MANGAINFO.ChapterLinks.Count - 1 do
-			MANGAINFO.ChapterLinks[i] = MODULE.RootURL .. '/' .. MANGAINFO.ChapterLinks[i]
-		end
 		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		HTTP.Reset()
 		HTTP.Headers.Values['Referer'] = MANGAINFO.URL
@@ -173,6 +196,7 @@ function GetPageNumber()
 	TASK.PageLinks.Clear()
 	local u = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(u) then
+		HTTP.Document.SaveToFile("manga18.html")
 		local x = CreateTXQuery(HTTP.Document)
 		if MODULE.ID == 'f488bcb1911b4f21baa1ab65ef9ca61c' then -- HeroScan
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-original', TASK.PageLinks)
@@ -182,6 +206,8 @@ function GetPageNumber()
 			end
 		elseif MODULE.ID == '9054606f128e4914ae646032215915e5' or MODULE.ID == '462c20a8842e44e4a6e1811fab1c78e2' then -- WeLoveManga, WeLoMa
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@*[contains(., "https")]', TASK.PageLinks)
+		elseif MODULE.ID == '794187d0e92e4933bf63812438d69017' then -- Manhwa18
+			x.XPathStringAll('//div[@id="chapter-content"]/img/@data-src', TASK.PageLinks)
 		else
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-src', TASK.PageLinks)
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//img[contains(@class, "chapter-img")]/@src', TASK.PageLinks) end
