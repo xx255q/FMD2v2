@@ -183,6 +183,11 @@ function GetInfo()
 			x.ParseHTML(decoded_hex)
 			x.XPathHREFTitleAll('//ul[contains(@class, "list-chapters")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		end
+		for i = 0, MANGAINFO.ChapterLinks.Count - 1 do
+			if MANGAINFO.ChapterLinks[i]:find(MODULE.RootURL) == nil then
+				MANGAINFO.ChapterLinks[i] = MODULE.RootURL .. '/' .. MANGAINFO.ChapterLinks[i]
+			end
+		end
 		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		HTTP.Reset()
 		HTTP.Headers.Values['Referer'] = MANGAINFO.URL
