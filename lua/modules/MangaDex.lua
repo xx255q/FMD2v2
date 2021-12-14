@@ -14,7 +14,7 @@ function Init()
 	m.OnGetInfo          = 'GetInfo'
 	m.OnGetPageNumber    = 'GetPageNumber'
 	m.MaxTaskLimit       = 1
-	m.MaxonnectionLimit  = 2
+	m.MaxConnectionLimit = 2
 
 	local fmd = require 'fmd.env'
 	local slang = fmd.SelectedLanguage
@@ -115,7 +115,7 @@ function GetNameAndLink()
 
 							local data for data in x.XPath('json(*).data()').Get() do
 								LINKS.Add('title/' .. x.XPathString('id', data))
-								NAMES.Add(x.XPathString('attributes/title/en', data))
+								NAMES.Add(x.XPathString('attributes/title/*', data))
 							end
 						end
 					elseif offset >= 10000 then
@@ -201,10 +201,7 @@ function GetInfo()
 		local mmessage = x.XPathString('errors/detail', minfo)
 
 		if mstatus == 'ok' then
-			local mtitle = x.XPathString('data/attributes/title/en', minfo)
-			if mtitle == '' then mtitle = x.XPathString('data/attributes/title/ja', minfo) end
-			if mtitle == '' then mtitle = x.XPathString('data/attributes/title/jp', minfo) end
-			MANGAINFO.Title     = mtitle
+			MANGAINFO.Title     = x.XPathString('data/attributes/title/*', minfo)
 			MANGAINFO.Summary   = x.XPathString('data/attributes/description/en', minfo)
 			MANGAINFO.Authors   = x.XPathStringAll('json(*).data.relationships()[type="author"].attributes.name')
 			MANGAINFO.Artists   = x.XPathStringAll('json(*).data.relationships()[type="artist"].attributes.name')
@@ -416,7 +413,6 @@ local Langs = {
 	["da"] = "Danish",
 	["nl"] = "Dutch",
 	["en"] = "English",
-	["tl"] = "Filipino",
 	["fi"] = "Finnish",
 	["fr"] = "French",
 	["de"] = "German",
@@ -431,6 +427,7 @@ local Langs = {
 	["lt"] = "Lithuanian",
 	["ms"] = "Malay",
 	["mn"] = "Mongolian",
+	["ne"] = "Nepali",
 	["no"] = "Norwegian",
 	["NULL"] = "Other",
 	["fa"] = "Persian",
@@ -443,6 +440,7 @@ local Langs = {
 	["es"] = "Spanish (Es)",
 	["es-la"] = "Spanish (LATAM)",
 	["sv"] = "Swedish",
+	["tl"] = "Tagalog",
 	["th"] = "Thai",
 	["tr"] = "Turkish",
 	["uk"] = "Ukrainian",
