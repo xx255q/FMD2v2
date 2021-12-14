@@ -92,7 +92,7 @@ function GetNameAndLink()
 					end
 
 					if offset < 10000 and HTTP.GET(API_URL .. '/manga?limit=100&offset=' .. offset ..'&order[createdAt]=' .. order ..'&publicationDemographic[]=' .. dg .. '&status[]=' .. ms .. '&contentRating[]=' .. cr) then
-						UPDATELIST.UpdateStatusText('Loading page ' .. dg .. ', ' .. ms .. ', ' .. cr .. ' (' .. order .. ')' or '')
+						UPDATELIST.UpdateStatusText('Loading page of ' .. dg .. '/' .. ms .. '/' .. cr .. ' (' .. order .. ')' or '')
 						local x = CreateTXQuery(crypto.HTMLEncode(HTTP.Document.ToString()))
 
 						local ninfo    = x.XPath('json(*)')
@@ -113,9 +113,9 @@ function GetNameAndLink()
 								print('Total Over Max Limit: ' .. offmaxlimit .. ' are over the max limit!')
 							end
 
-							local results for results in x.XPath('json(*).results()').Get() do
-								LINKS.Add('title/' .. x.XPathString('data/id', results))
-								NAMES.Add(x.XPathString('data/attributes/title/en', results))
+							local data for data in x.XPath('json(*).data()').Get() do
+								LINKS.Add('title/' .. x.XPathString('id', data))
+								NAMES.Add(x.XPathString('attributes/title/en', data))
 							end
 						end
 					elseif offset >= 10000 then
