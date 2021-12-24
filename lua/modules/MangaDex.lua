@@ -97,7 +97,7 @@ function GetNameAndLink()
 
 						local ninfo    = x.XPath('json(*)')
 						local nstatus  = x.XPathString('result', ninfo)
-						local nmessage = x.XPathString('errors/detail', ninfo)
+						local nmessage = x.XPathString('json(*).errors().detail')
 
 						if nstatus == 'error' then
 							print(nstatus .. ': ' .. nmessage)
@@ -198,7 +198,7 @@ function GetInfo()
 		local x	= CreateTXQuery(crypto.HTMLEncode(HTTP.Document.ToString()))
 		local minfo    = x.XPath('json(*)')
 		local mstatus  = x.XPathString('result', minfo)
-		local mmessage = x.XPathString('errors/detail', minfo)
+		local mmessage = x.XPathString('json(*).errors().detail')
 
 		if mstatus == 'ok' then
 			MANGAINFO.Title     = x.XPathString('data/attributes/title/*', minfo)
@@ -282,7 +282,7 @@ function GetInfo()
 						volume = volume ~= 'null' and string.format('Vol. %s ', volume) or ''
 						chapter = chapter ~= 'null' and string.format('Ch. %s', chapter) or ''
 
-						-- Make unnumbered chapter as oneshot
+						-- Set unnumbered chapter as oneshot:
 						if volume == '' and chapter == '' then chapter = 'Oneshot' end
 
 						-- Append language id if user option is set to "All":
@@ -322,27 +322,24 @@ function GetPageNumber()
 	Delay()
 
 	-- Fetch JSON from API:
-	if HTTP.GET(API_URL .. '/chapter' .. URL) then
+	if HTTP.GET(API_URL .. '/at-home/server' .. URL) then
 		local x = CreateTXQuery(crypto.HTMLEncode(HTTP.Document.ToString()))
 
 		local cinfo    = x.XPath('json(*)')
 		local cstatus  = x.XPathString('result', cinfo)
-		local cmessage = x.XPathString('errors/detail', cinfo)
+		local cmessage = x.XPathString('json(*).errors().detail')
 
 		if cstatus == 'ok' then
-			-- Get the base server url of MangaDex@Home (MDH):
-			if HTTP.GET(API_URL .. '/at-home/server' .. URL) then
-				local server = CreateTXQuery(HTTP.Document).XPathString('json(*).baseUrl')
-				local hash   = x.XPathString('data/attributes/hash', cinfo)
+			local server = x.XPathString('baseUrl', cinfo)
+			local hash   = x.XPathString('chapter/hash', cinfo)
 
-				if MODULE.GetOption('luadatasaver') then -- Use data saver
-					local pages for pages in x.XPath('json(*).data.attributes.dataSaver()').Get() do
-						TASK.PageLinks.Add(server .. '/data-saver/' .. hash .. '/' .. pages.ToString())
-					end
-				else
-					local pages for pages in x.XPath('json(*).data.attributes.data()').Get() do
-						TASK.PageLinks.Add(server .. '/data/' .. hash .. '/' .. pages.ToString())
-					end
+			if MODULE.GetOption('luadatasaver') then -- Use data saver
+				local pages for pages in x.XPath('json(*).chapter.dataSaver()').Get() do
+					TASK.PageLinks.Add(server .. '/data-saver/' .. hash .. '/' .. pages.ToString())
+				end
+			else
+				local pages for pages in x.XPath('json(*).chapter.data()').Get() do
+					TASK.PageLinks.Add(server .. '/data/' .. hash .. '/' .. pages.ToString())
 				end
 			end
 
