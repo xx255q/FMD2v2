@@ -17,7 +17,7 @@ local cdnurl = 'http://static.hentaicdn.com/hentai';
 
 function GetDirectoryPageNumber()
 	if HTTP.GET(MODULE.RootURL .. dirurl) then
-		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).x.XPathString('//ul[starts-with(@class,"pagination")]/li[last()-1]/a')) or 1
+		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//ul[starts-with(@class,"pagination")]/li[last()-1]/a')) or 1
 		return no_error
 	else
 		return net_problem
@@ -44,11 +44,11 @@ function GetInfo()
 
 		MANGAINFO.CoverLink = MaybeFillHost(cdnurl, x.XPathString('//img[@class="img-responsive border-black-op"]/@src'))
 		MANGAINFO.Title     = x.XPathString('//h3[@class="block-title"]/a/text()')
-		MANGAINFO.Authors   = x.XPathStringAll('//ul[contains(@class,"list-simple-mini")]/li[starts-with(.,"Author")]/a')
-		MANGAINFO.Artists   = x.XPathStringAll('//ul[contains(@class,"list-simple-mini")]/li[starts-with(.,"Artist")]/a')
-		MANGAINFO.Genres    = x.XPathStringAll('//ul[contains(@class,"list-simple-mini")]/li/a')
-		MANGAINFO.Summary   = x.XPathString('//ul[contains(@class,"list-simple-mini")]/li[starts-with(.,"Storyline")]/*[position()>1]')
-		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//ul[contains(@class,"list-simple-mini")]/li[starts-with(.,"Status")]'))
+		MANGAINFO.Authors   = x.XPathStringAll('//ul[contains(@class,"list-simple-mini")]/li[b="Author"]/a')
+		MANGAINFO.Artists   = x.XPathStringAll('//ul[contains(@class,"list-simple-mini")]/li[b="Artist"]/a')
+		MANGAINFO.Genres    = x.XPathStringAll('//ul[contains(@class,"list-simple-mini")]/li[b=("Category","Content")]/a')
+		MANGAINFO.Summary   = x.XPathString('//ul[contains(@class,"list-simple-mini")]/li[b="Storyline"]/*[position()>1]')
+		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//ul[contains(@class,"list-simple-mini")]/li[b="Status"]'))
 
 		local v for v in x.XPath('//ul[contains(@class,"nav-chapters")]/li/div/a').Get() do
 			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
