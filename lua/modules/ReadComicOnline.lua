@@ -9,6 +9,24 @@ function Init()
 	m.OnGetInfo                  = 'GetInfo'
 	m.OnGetPageNumber            = 'GetPageNumber'
 	m.SortedList                 = true
+
+	local fmd = require 'fmd.env'
+	local slang = fmd.SelectedLanguage
+	local lang = {
+		['en'] = {
+			['datasaver'] = 'Data saver'
+		},
+		['id_ID'] = {
+			['datasaver'] = 'Penghemat data'
+		},
+		get =
+			function(self, key)
+				local sel = self[slang]
+				if sel == nil then sel = self['en'] end
+				return sel[key]
+			end
+	}
+	m.AddOptionCheckBox('datasaver', lang:get('datasaver'), false)
 end
 
 function GetDirectoryPageNumber()
@@ -35,7 +53,7 @@ function GetNameAndLink()
 end
 
 function GetInfo()
-	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
+	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
 		local x = CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title     = x.XPathString('//a[@class="bigChar"]')
@@ -54,8 +72,11 @@ function GetInfo()
 end
 
 function GetPageNumber()
-	HTTP.Cookies.Values['rco_quality'] = 'hq'
-	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
+	local u = MaybeFillHost(MODULE.RootURL, URL .. '&quality=hq')
+	if MODULE.GetOption('datasaver') then
+		u = MaybeFillHost(MODULE.RootURL, URL .. '&quality=lq')
+	end
+	if HTTP.GET(u) then
 		local body = HTTP.Document.ToString()
 		local s = body:match('var%s+lstImages%s+.-;(.-)%s+var%s')
 		local i; for i in s:gmatch('%("(.-)"%)') do

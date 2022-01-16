@@ -33,7 +33,7 @@ function getTitle(x)
 	if title == '' then title = x.XPathString('//h1') end
 	if title == '' then title = x.XPathString('//h2') end
 	title = title:gsub('Bahasa Indonesia$', ''):gsub(' Indonesia|Baca"', ''):gsub('Bahasa Indonesia', ''):gsub('Komik', ''):gsub(' Raw', ''):gsub(' Indonesia Terbaru','')
-	title = title:gsub('Manga', ''):gsub('Indonesia', ''):gsub('Baca', ''):gsub('bahasa', ''):gsub('indonesia', ''):gsub('|', '')
+	title = title:gsub('Indonesia', ''):gsub('Baca', ''):gsub('bahasa', ''):gsub('indonesia', ''):gsub('|', ''):gsub('-', '')
 	title = title:gsub(string.gsub(MODULE.Name, 'https://', ''), '')
 	return title
 end
@@ -240,6 +240,7 @@ function GetPageNumber()
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="entry-content"]//img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@class="bc"]/img/@src', TASK.PageLinks) end
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="chimg"]/img/@data-lazy-src', TASK.PageLinks) end
+			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//*[@id="readerarea"]/img/@data-src', TASK.PageLinks) end
 		end
 		for i = 0, TASK.PageLinks.Count - 1 do -- Bypass 'i0.wp.com' image CDN to ensure original images are loaded directly from host
 			TASK.PageLinks[i] = TASK.PageLinks[i]:gsub("i%d.wp.com/", "")
@@ -400,6 +401,7 @@ function Init()
 
 	cat = 'Raw'
 	AddWebsiteModule('21b0dfcb262d4ae28520679165282666', 'Rawkuma', 'https://rawkuma.com')
+	AddWebsiteModule('5c3737434b964df7b76e5b27c2ad442c', 'MangasRaw', 'https://mangas-raw.com')
 
 	cat = 'Arabic'
 	AddWebsiteModule('0e45db2650604f74a0caeb7c1d69a749', 'MangaSWAT', 'https://mangaswat.com')
