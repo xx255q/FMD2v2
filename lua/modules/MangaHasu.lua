@@ -2,7 +2,7 @@ function Init()
 	local m = NewWebsiteModule()
 	m.ID                         = 'e30f500d4eb0413e858dc071616228f1'
 	m.Name                       = 'MangaHasu'
-	m.RootURL                    = 'http://mangahasu.se'
+	m.RootURL                    = 'https://mangahasu.se'
 	m.Category                   = 'English'
 	m.OnGetNameAndLink           = 'GetNameAndLink'
 	m.OnGetDirectoryPageNumber   = 'GetDirectoryPageNumber'
@@ -43,7 +43,7 @@ function GetInfo()
 		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//div[contains(b, "Status")]/span/a'))
 		MANGAINFO.Summary   = x.XPathString('//h3[contains(.,"Summary")]/following-sibling::*')
 
-		x.XPathHREFAll('//div[@class="list-chapter"]/table//td[@class="name"]/a',MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
+		x.XPathHREFAll('//div[contains(@class, "list-chapter")]/table//td[@class="name"]/a',MANGAINFO.ChapterLinks,MANGAINFO.ChapterNames)
 		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
 		HTTP.Reset()
@@ -55,11 +55,8 @@ function GetInfo()
 end
 
 function GetPageNumber()
-	TASK.PageLinks.Clear()
-	TASK.PageNumber = 0
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x = CreateTXQuery(HTTP.Document)
-		x.XPathStringAll('//div[@class="img"]/img/@src', TASK.PageLinks)
+		CreateTXQuery(HTTP.Document).XPathStringAll('//div[@class="img"]/img/@src', TASK.PageLinks)
 	else
 		return false
 	end
