@@ -323,6 +323,7 @@ function Init()
 	AddWebsiteModule('89497fea6b55470c89fac1eb8f75f61a', 'MangaHyphenTx', 'https://manga-tx.com')
 	AddWebsiteModule('e62d472cc686400b91528c5b52ed0452', 'MangaBin', 'https://mangabin.com')
 	AddWebsiteModule('27433894c7594c97ad00ea083947c28c', 'Manga1stOnline', 'https://manga1st.online')
+	AddWebsiteModule('e4e226f0270440b7b906171082c8a02f', 'ColoredManga', 'https://coloredmanga.com')
 
 	cat = 'English-Scanlation'
 	AddWebsiteModule('f17a22a1a24640ecb2ae4f51c47a45c8', 'TrashScanlations', 'https://trashscanlations.com')
@@ -471,6 +472,7 @@ function Init()
 	AddWebsiteModule('287f665620664e468d4e05f5d76f5a44', 'HadesNoFansub', 'https://mangareaderpro.com/es')
 	AddWebsiteModule('287f665618784e468d4e05f5d76f5a45', 'EroManhwas', 'https://eromanhwas.com')
 	AddWebsiteModule('d9615a731b1243538663e96f0c1ad595', 'Manga347', 'https://manga347.com')
+	AddWebsiteModule('99bb0476a95e4590848c8fdc0c03817c', 'MangaCultivator', 'https://mangacultivator.com')
 
 	cat = 'Arabic-Scanlation'
 	AddWebsiteModule('7bda2905b61c49d1976777e9f2356361', '3asqOrg', 'https://3asq.org')
