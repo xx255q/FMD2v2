@@ -76,6 +76,7 @@ function GetPageNumber()
 	if MODULE.GetOption('datasaver') then
 		u = MaybeFillHost(MODULE.RootURL, URL .. '&quality=lq')
 	end
+	sleep(3000)
 	if HTTP.GET(u) then
 		local body = HTTP.Document.ToString()
 		local s = body:match('var%s+lstImages%s+.-;(.-)%s+var%s')
