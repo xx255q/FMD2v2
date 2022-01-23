@@ -52,7 +52,7 @@ function GetInfo()
 	MANGAINFO.Authors   = x.XPathString('//div[@class="content"]/div[contains(@class, "author")]/div/div')
 	MANGAINFO.Artists   = x.XPathString('//div[@class="content"]/div[contains(@class, "artist")]/div/div')
 	MANGAINFO.Genres    = x.XPathStringAll('//div[@class="content"]/div[contains(@class, "genres")]//a')
-	MANGAINFO.Status    = x.XPathString('//div[@class="content"]/div[contains(@class, "status")]/div/div')
+	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//div[@class="content"]/div[contains(@class, "status")]/div/div'))
 	MANGAINFO.Summary   = x.XPathString('//div[contains(@class, "summary")]//p')
 
 	x.XPathHREFAll('//table[contains(@class, "chlist")]/tbody//a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)

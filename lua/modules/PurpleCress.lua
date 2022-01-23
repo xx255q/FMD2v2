@@ -39,7 +39,7 @@ function GetInfo()
 	MANGAINFO.CoverLink = x.XPathString('//img[contains(@class, "series__img")]/@src')
 	MANGAINFO.Authors   = x.XPathString('//p[@class="series__author"]/substring-after(.,"by ")')
 	MANGAINFO.Genres    = x.XPathStringAll('//span[@class="series__tag"]')
-	MANGAINFO.Status    = x.XPathString('//span[contains(@class, "series__status")]')
+	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//span[contains(@class, "series__status")]'))
 	MANGAINFO.Summary   = x.XPathStringAll('//p[@class="description-pagagraph"]')
 
 	local v for v in x.XPath('//div[@class="chapters__container"]/a').Get() do
