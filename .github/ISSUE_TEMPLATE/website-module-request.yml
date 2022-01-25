@@ -20,7 +20,7 @@ body:
     attributes:
       label: Directory list URL
       placeholder: |
-        https://example.com/manga/?list
+        https://example.com/manga/directory
     validations:
       required: true
   - type: input
@@ -36,7 +36,7 @@ body:
     attributes:
       label: Example chapter URL
       placeholder: |
-        https://example.com/viewer/chapter-1
+        https://example.com/viewer/title/chapter-1
     validations:
       required: true
   - type: dropdown
