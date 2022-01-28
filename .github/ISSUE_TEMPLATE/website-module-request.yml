@@ -20,7 +20,7 @@ body:
     attributes:
       label: Directory list URL
       placeholder: |
-        https://example.com/manga/directory
+        https://example.com/directory
     validations:
       required: true
   - type: input
@@ -42,7 +42,7 @@ body:
   - type: dropdown
     id: download
     attributes:
-      label: Languages
+      label: Language
       options:
         - Arabic
         - English
