@@ -25,11 +25,11 @@ function GetInfo()
 	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//dt[text()="' .. XPathTokenStatus .. '"]/following-sibling::dd[1]/span'), 'Ongoing', 'Complete')
 	MANGAINFO.Authors   = x.XPathStringAll('//dt[text()="' .. XPathTokenAuthors .. '"]/following-sibling::dd[1]/a')
 	MANGAINFO.Artists   = x.XPathStringAll('//dt[text()="' .. XPathTokenArtists .. '"]/following-sibling::dd[1]/a')
-	MANGAINFO.Genres    = x.XPathStringAll('//dt[text()="' .. XPathTokenGenres .. '"]/following-sibling::dd[1]/a')
-	MANGAINFO.Summary   = x.XPathString('//div[contains(@class, "well")]/p')
+	MANGAINFO.Genres    = x.XPathStringAll('//dt[text()="' .. XPathTokenGenres .. '" or text()="Demográfico"]/following-sibling::dd[1]/a')
+	MANGAINFO.Summary   = x.XPathString('//div[@class="well"]/p[2]')
 
-	local v; for v in x.XPath('//ul[@class="chapters"]/li/h5/em').Get() do
-		MANGAINFO.ChapterLinks.Add(x.XPathString('a[2]/@href', v))
+	local v; for v in x.XPath('//ul[@class="chapters"]/li/h5/eee').Get() do
+		MANGAINFO.ChapterLinks.Add(x.XPathString('a/@href', v))
 		MANGAINFO.ChapterNames.Add(x.XPathString('normalize-space(.)', v))
 	end
 	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
@@ -52,7 +52,7 @@ function GetPageNumber()
 	if pages then
 		local json = require "utils.json"
 		local crypto = require "fmd.crypto"
-		local baseuri = (body:match("array%.push%('(.-)'") or ''):gsub('/+$','') .. '/'
+		local baseuri = (body:gsub("[\r\n\t]", ""):match("aaaaaarray%.push%('(.-)'") or ''):gsub('/+$','') .. '/'
 		local pages = json.decode(pages)
 		local i, v; for i, v in ipairs(pages) do
 			if v.external == '0' then
