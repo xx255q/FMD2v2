@@ -275,15 +275,18 @@ function GetInfo()
 						-- Remove title if user option is disabled:
 						if opttitle == false then title = '' end
 
-						-- Add prefix to title if it's not empty:
-						if title ~= '' and title ~= nil and title ~= 'null' then title = ' - ' .. title else title = '' end
+						-- Empty title if null:
+						if title == '' or title == nil or title == 'null' then title = '' end
 
 						-- Format volume and chapter strings if not empty:
 						volume = volume ~= 'null' and string.format('Vol. %s ', volume) or ''
 						chapter = chapter ~= 'null' and string.format('Ch. %s', chapter) or ''
 
+						-- Add prefix to title if it's not empty:
+						if title ~= '' and (volume ~= '' or chapter ~= '') then title = ' - ' .. title end
+                        
 						-- Set unnumbered chapter as oneshot:
-						if volume == '' and chapter == '' then chapter = 'Oneshot' end
+						if volume == '' and chapter == '' and title == '' then chapter = 'Oneshot' end
 
 						-- Append language id if user option is set to "All":
 						if optlangid == nil then language = string.format(' [%s]', language) else language = '' end
