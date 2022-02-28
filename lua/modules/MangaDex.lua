@@ -86,6 +86,7 @@ function GetNameAndLink()
 				local order = 'asc'
 
 				while total > offset do
+					sleep(5000)
 					if total > 10000 and offset >= 10000 and order == 'asc' then
 						offset = 0
 						order = 'desc'
