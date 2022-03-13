@@ -87,7 +87,7 @@ function Modules.Madara()
 					name = name:match("(.*)" .. rem .. "$")
 					MANGAINFO.ChapterNames.Add(name)
 				end
-			elseif MODULE.ID == 'fb042c961d06479582edb2fa582e3a41' or MODULE.ID == 'ac42a85566244b7e836679491ce679e6' then -- ReaperScans, YugenMangas
+			elseif MODULE.ID == 'fb042c961d06479582edb2fa582e3a41' then -- ReaperScans
 				local v for v in x.XPath('//div[@class="chapter-link"]/a').Get() do
 					MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
 					MANGAINFO.ChapterNames.Add(x.XPathString('p', v))
@@ -110,6 +110,12 @@ function Modules.Madara()
 				if HTTP.POST(MANGAINFO.URL .. 'ajax/chapters') then
 					local x = CreateTXQuery(HTTP.Document)
 					x.XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/a[1]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+					if MANGAINFO.ChapterLinks.Count == 0 then
+						local v for v in x.XPath('//div[@class="chapter-link"]/a').Get() do
+							MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
+							MANGAINFO.ChapterNames.Add(x.XPathString('p', v))
+						end
+					end
 				end
 			end
 			if MANGAINFO.ChapterLinks.Count == 0 then
