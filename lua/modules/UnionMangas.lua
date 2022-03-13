@@ -59,7 +59,7 @@ function Init()
 	m.ID                       = '6fffdd27e49c47f9958ea98f2fdca0b1'
 	m.Category                 = 'Portuguese'
 	m.Name                     = 'UnionMangas'
-	m.RootURL                  = 'https://unionmangas.top'
+	m.RootURL                  = 'https://unionleitor.top'
 	m.OnGetInfo                = 'getinfo'
 	m.OnGetPageNumber          = 'getpagenumber'
 	m.OnGetNameAndLink         = 'getnameandlink'
