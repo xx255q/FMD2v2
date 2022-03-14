@@ -33,7 +33,7 @@ The following packages and components are used for building FMD:
 ![RichMemo (18.01.2020)](https://img.shields.io/badge/RichMemo-OPM%20(18.01.2020)-Blue.svg)  
 ![LCL Extensions 0.6.1](https://img.shields.io/badge/LCL%20Extensions-OPM%20(0.6.1)-Blue.svg) <sup>(Compile before "Virtual TreeView")</sup>  
 ![Virtual TreeView 5.5.3.1](https://img.shields.io/badge/Virtual%20TreeView-OPM%20(5.5.3.1)-Blue.svg)  
-[![MultiLog (02.12.2019)](https://img.shields.io/badge/MultiLog-git%20master%20commit%20fd700fa5343c1b0e08063f88a1e6761036b10efc%20(02.12.2019)-Blue.svg)](https://github.com/blikblum/multilog)  
+[![MultiLog (18.01.2022)](https://img.shields.io/badge/MultiLog-git%20master%20commit%206d95af3d0ca143e3cae3a68fafbb9f040ebdc7f4%20(18.01.2022)-Blue.svg)](https://github.com/blikblum/multilog)  
 [![InternetTools](https://img.shields.io/badge/InternetTools-Blue.svg)](https://github.com/benibela/internettools)  
   
 After everything is installed, open the file `md.lpi` by using Lazarus IDE.  
