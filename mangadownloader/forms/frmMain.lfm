@@ -450,7 +450,7 @@ object MainForm: TMainForm
                 OnClick = tbmiDownloadMoveBottomClick
               end
             end
-            object vtDownload: TVirtualStringTree
+            object vtDownload: TLazVirtualStringTree
               Left = 29
               Height = 548
               Top = 0
@@ -560,7 +560,7 @@ object MainForm: TMainForm
           ChildSizing.VerticalSpacing = 4
           ClientWidth = 200
           ClientHeight = 574
-          object vtMangaList: TVirtualStringTree
+          object vtMangaList: TLazVirtualStringTree
             AnchorSideTop.Control = lbMode
             AnchorSideTop.Side = asrBottom
             Left = 0
@@ -1010,7 +1010,7 @@ object MainForm: TMainForm
                   ClientHeight = 277
                   ClientWidth = 632
                   TabOrder = 2
-                  object clbChapterList: TVirtualStringTree
+                  object clbChapterList: TLazVirtualStringTree
                     AnchorSideLeft.Control = edFilterMangaInfoChapters
                     AnchorSideTop.Control = edFilterMangaInfoChapters
                     AnchorSideRight.Control = btChecks
@@ -2439,7 +2439,7 @@ object MainForm: TMainForm
       ChildSizing.TopBottomSpacing = 4
       ClientHeight = 582
       ClientWidth = 845
-      object vtFavorites: TVirtualStringTree
+      object vtFavorites: TLazVirtualStringTree
         AnchorSideTop.Control = edFavoritesSearch
         AnchorSideTop.Side = asrBottom
         Left = 0
@@ -4554,7 +4554,7 @@ object MainForm: TMainForm
               Caption = 'Websites'
               ClientHeight = 428
               ClientWidth = 821
-              object vtOptionMangaSiteSelection: TVirtualStringTree
+              object vtOptionMangaSiteSelection: TLazVirtualStringTree
                 Left = 0
                 Height = 393
                 Top = 35

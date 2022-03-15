@@ -18,7 +18,7 @@ uses
   FakeActiveX,
   {$endif}
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, LCLType,
-  ExtCtrls, ComCtrls, Buttons, Spin, Menus, VirtualTrees, RichMemo, simpleipc, process,
+  ExtCtrls, ComCtrls, Buttons, Spin, Menus, Laz.VirtualTrees, RichMemo, simpleipc, process,
   lclproc, types, LCLIntf, EditBtn, PairSplitter, MultiLog,
   FileChannel, FileUtil, LazUTF8Classes, LazStringUtils, TAGraph, TASources, TASeries, TATools,
   AnimatedGif, uBaseUnit, uDownloadsManager, uFavoritesManager,
@@ -444,11 +444,11 @@ type
     tsOption: TTabSheet;
     tsInformation: TTabSheet;
     tsDownload: TTabSheet;
-    clbChapterList: TVirtualStringTree;
-    vtOptionMangaSiteSelection: TVirtualStringTree;
-    vtFavorites: TVirtualStringTree;
-    vtDownload: TVirtualStringTree;
-    vtMangaList: TVirtualStringTree;
+    clbChapterList: TLazVirtualStringTree;
+    vtOptionMangaSiteSelection: TLazVirtualStringTree;
+    vtFavorites: TLazVirtualStringTree;
+    vtDownload: TLazVirtualStringTree;
+    vtMangaList: TLazVirtualStringTree;
     mangaCover: TPicture;
 
     procedure appPropertiesMainShowHint(var HintStr: String;
@@ -4434,7 +4434,7 @@ procedure TMainForm.vtDownloadPaintText(Sender: TBaseVirtualTree;
   TextType: TVSTTextType);
 begin
   if not DLManager[Node^.Index].Enabled then
-    TargetCanvas.Font.Color := TVirtualStringTree(Sender).Colors.DisabledColor;
+    TargetCanvas.Font.Color := TLazVirtualStringTree(Sender).Colors.DisabledColor;
 end;
 
 procedure TMainForm.vtFavoritesBeforeCellPaint(Sender: TBaseVirtualTree;
@@ -4606,7 +4606,7 @@ procedure TMainForm.vtFavoritesPaintText(Sender: TBaseVirtualTree;
   TextType: TVSTTextType);
 begin
   if not FavoriteManager[Node^.Index].Enabled then
-    TargetCanvas.Font.Color := TVirtualStringTree(Sender).Colors.DisabledColor;
+    TargetCanvas.Font.Color := TLazVirtualStringTree(Sender).Colors.DisabledColor;
 end;
 
 procedure TMainForm.vtMangaListChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
@@ -5852,7 +5852,7 @@ end;
 
 procedure TMainForm.LoadFormInformation;
 
-  procedure restorevt(const vt: VirtualTrees.TVirtualStringTree; const name: String);
+  procedure restorevt(const vt: Laz.VirtualTrees.TLazVirtualStringTree; const name: String);
   var
     i: Integer;
   begin
@@ -5939,7 +5939,7 @@ end;
 
 procedure TMainForm.SaveFormInformation;
 
-  procedure savevt(const vt: VirtualTrees.TVirtualStringTree; const name: String);
+  procedure savevt(const vt: Laz.VirtualTrees.TLazVirtualStringTree; const name: String);
   var
     i: Integer;
   begin

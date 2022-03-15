@@ -12,7 +12,7 @@ object LuaModulesUpdaterForm: TLuaModulesUpdaterForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   LCLVersion = '2.1.0.0'
-  object vtLuaModulesRepos: TVirtualStringTree
+  object vtLuaModulesRepos: TLazVirtualStringTree
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = btCheckUpdate
     AnchorSideTop.Side = asrBottom

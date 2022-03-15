@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons, Menus, ExtCtrls,
-  VirtualTrees, uFavoritesManager, DBDataProcess;
+  Laz.VirtualTrees, uFavoritesManager, DBDataProcess;
 
 type
 
@@ -23,7 +23,7 @@ type
     rbAll: TRadioButton;
     rbValid: TRadioButton;
     rbInvalid: TRadioButton;
-    vtFavs: TVirtualStringTree;
+    vtFavs: TLazVirtualStringTree;
     procedure btCancelClick(Sender: TObject);
     procedure btOKClick(Sender: TObject);
     procedure cbWebsitesEditingDone(Sender: TObject);
