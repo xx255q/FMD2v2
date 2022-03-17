@@ -36,7 +36,7 @@ function GetInfo()
 	if HTTP.GET(MANGAINFO.URL) then
 		local x = CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title     = x.XPathString('//h1[contains(@class, "title")]')
-		MANGAINFO.CoverLink = x.XPathString('//meta[@property="og:image"]/@content')
+		MANGAINFO.CoverLink = x.XPathString('//figure[@class="cover"]/img/@data-src')
 		MANGAINFO.Authors   = x.XPathString('//span[@itemprop="author"]')
 		MANGAINFO.Genres    = x.XPathStringAll('//div[@class="categories"]//a')
 		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//span[contains(., "Status")]/parent::*'))
@@ -56,7 +56,7 @@ end
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local x = CreateTXQuery(HTTP.Document)
-		CreateTXQuery(HTTP.Document).XPathStringAll('//section[@class="page-in content-wrap"]//center/img/@src', TASK.PageLinks)
+		CreateTXQuery(HTTP.Document).XPathStringAll('//section[@class="page-in content-wrap"]//center/div/img/@src', TASK.PageLinks)
 		return true
 	else
 		return false
