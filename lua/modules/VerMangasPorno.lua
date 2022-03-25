@@ -12,7 +12,7 @@ end
 
 function GetDirectoryPageNumber()
 	if HTTP.GET(MODULE.RootURL) then
-		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//ul[@class="pagination"]/li[last()]/a/@href'):match('page/(%d+)')) or 1
+		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//div[@class="wp-pagenavi"]/a[last()]/@href'):match('page/(%d+)')) or 1
 		return no_error
 	else
 		return net_problem
@@ -20,12 +20,8 @@ function GetDirectoryPageNumber()
 end
 
 function GetNameAndLink()
-	if HTTP.GET(MODULE.RootURL .. '/page/' .. (URL + 1)) then
-		local x = CreateTXQuery(HTTP.Document)
-		local v; for v in x.XPath('//div[@class="gallery"]').Get() do
-			LINKS.Add(x.XPathString('a/@href', v))
-			NAMES.Add(x.XPathString('a/img/@alt', v))
-		end
+	if HTTP.GET(MODULE.RootURL .. '/xxx/page/' .. (URL + 1)) then
+		CreateTXQuery(HTTP.Document).XPathHREFTitleAll('//h2[@class="information"]/a', LINKS, NAMES)
 		return no_error
 	else
 		return net_problem
@@ -36,11 +32,9 @@ function GetInfo()
 	MANGAINFO.URL = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(MANGAINFO.URL) then
 		local x = CreateTXQuery(HTTP.Document)
-		MANGAINFO.Title      = x.XPathString('//title')
-		MANGAINFO.CoverLink  = x.XPathString('//div[@class="comicimg"]/p/img/@data-lazy-src')
-		if MANGAINFO.CoverLink == '' then MANGAINFO.CoverLink = x.XPathString('//div[@class="comicimg"]/p/a/img/@data-lazy-src') end
-		if MANGAINFO.CoverLink == '' then MANGAINFO.CoverLink = x.XPathString('//div[@class="comicimg"]/p/img/@src') end
-		MANGAINFO.Genres     = x.XPathStringAll('//div[@id="tagsin"]/a')
+		MANGAINFO.Title      = x.XPathString('//h1')
+		MANGAINFO.CoverLink  = x.XPathString('//div[@class="wp-content"]/p[contains(img/@src, "http")][1]/img[1]/@src')
+		MANGAINFO.Genres     = x.XPathStringAll('//div[@class="tax_box"]//a')
 
 		MANGAINFO.ChapterLinks.Add(URL)
 		MANGAINFO.ChapterNames.Add(MANGAINFO.Title)
@@ -53,9 +47,7 @@ end
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local x = CreateTXQuery(HTTP.Document)
-		x.XPathStringAll('//div[@class="comicimg"]/p/img/@data-lazy-src', TASK.PageLinks)
-		if TASK.PageLinks.Count == 0 then x.XPathStringAll('//div[@class="comicimg"]/p/a/img/@data-lazy-src', TASK.PageLinks) end
-		if TASK.PageLinks.Count == 0 then x.XPathStringAll('//div[@class="comicimg"]/p/img/@src', TASK.PageLinks) end
+		x.XPathStringAll('//div[@class="wp-content"]/p/img/@src', TASK.PageLinks)
 		return true
 	else
 		return false
