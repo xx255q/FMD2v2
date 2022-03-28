@@ -5,7 +5,7 @@ function Init()
 	local m = NewWebsiteModule()
 	m.ID                      = '2a7d69a1e1d24f90851b4e2598cffdcd'
 	m.Name                    = 'Toonkor'
-	m.RootURL                 = 'https://tkor.cloud'
+	m.RootURL                 = 'https://tkor.watch'
 	m.Category                = 'Raw'
 	m.OnGetNameAndLink        = 'GetNameAndLink'
 	m.OnGetInfo               = 'GetInfo'
@@ -28,7 +28,7 @@ function GetInfo()
 	if HTTP.GET(MANGAINFO.URL) then
 		local x = CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title     = x.XPathString('//table[@class="bt_view1"]//td[@class="bt_title"]')
-		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//*[@class="bt_thumb"]/a/img/@src'))
+		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//table[@class="bt_view1"]//td[@class="bt_thumb"]/a/img/@src'))
 		MANGAINFO.Authors   = x.XPathString('//table[@class="bt_view1"]//span[contains(., "작가")]/following-sibling::span')
 		MANGAINFO.Summary   = x.XPathString('//table[@class="bt_view1"]//td[@class="bt_over"]')
 		local v for v in x.XPath('//table[@class="web_list"]/tbody//tr/td[@class="content__title"]').Get() do
