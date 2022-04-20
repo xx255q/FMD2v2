@@ -85,6 +85,8 @@ function GetInfo()
 			MANGAINFO.ChapterNames.Add(x.XPathString('./div/p[@class="title3"]', v))
 		end
 		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
+		HTTP.Reset()
+		HTTP.Headers.Values['Referer'] = MANGAINFO.URL
 		return no_error
 	else
 		return net_problem
@@ -141,7 +143,7 @@ function GetPageNumber()
 end
 
 function BeforeDownloadImage()
-	HTTP.Headers.Values['referer'] = MODULE.RootURL
+	HTTP.Headers.Values['Referer'] = MODULE.RootURL
 	return true
 end
 
