@@ -8,6 +8,7 @@ function Init()
 		m.OnGetNameAndLink         = 'GetNameAndLink'
 		m.OnGetInfo                = 'GetInfo'
 		m.OnGetPageNumber          = 'GetPageNumber'
+		m.OnBeforeDownloadImage    = 'BeforeDownloadImage'
 		return m
 	end
 
@@ -137,6 +138,11 @@ function GetPageNumber()
 	else
 		return false
 	end
+end
+
+function BeforeDownloadImage()
+	HTTP.Headers.Values['referer'] = MODULE.RootURL
+	return true
 end
 
 function AfterImageSaved()
