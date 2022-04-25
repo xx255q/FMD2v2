@@ -306,7 +306,6 @@ function GetNameAndLink()
 			['1f1ec10a248c4a4f838c80b3e27fc4c7'] = '/daftar-komik/?list', -- Sekaikomik
 			['f68bb6ee00e442418c8c05eb00759ae1'] = '/daftar-manga/?list', -- BacaKomik
 			['5af0f26f0d034fb2b42ee65d7e4188ab'] = '/daftar-komik/', -- Komiku
-			['ec1a1ad5301f414592f0ba0402024813'] = '/komik-list/?list', -- Doujindesu
 			['13c6434a0c2541b18abee83a2c72e8f5'] = '/daftar-komik/', -- MangaKane
 			['c8e02b7aaac1412180db86374fc799a8'] = '/manga-list/?list', -- ManhwasNet
 			['b5586745030a45bba05d0c360caa6d1a'] = '/manga/?list', -- KomikStation
