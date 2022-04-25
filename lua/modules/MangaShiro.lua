@@ -290,6 +290,12 @@ function GetNameAndLink()
 		x = CreateTXQuery(HTTP.Document)
 		x.XPathHREFTitleAll('//div[@class="bsx"]/a', LINKS, NAMES)
 		UPDATELIST.CurrentDirectoryPageNumber = tonumber(x.XPathString('//div[@class="pagination"]/a[last()-1]')) or 1
+	elseif MODULE.ID == 'ec1a1ad5301f414592f0ba0402024813' then -- Doujindesu
+		local dirurl = MODULE.RootURL .. '/komik-list/page/' .. (URL + 1)
+		if not HTTP.GET(dirurl) then return net_problem end
+		local x = CreateTXQuery(HTTP.Document)
+		x.XPathHREFTitleAll('//div[@class="animposx"]/a', LINKS, NAMES)
+		UPDATELIST.CurrentDirectoryPageNumber = tonumber(x.XPathString('//div[@class="pagination"]/span[1]/substring-after(., "Page 1 of ")')) or 1
 	else
 		-- full text based list
 		local dirs = {
@@ -390,7 +396,7 @@ function Init()
 	AddWebsiteModule('46dcfabe757140e7980ec34c65bdb30f', 'SekteKomik', 'https://sektekomik.com')
 	AddWebsiteModule('1f1ec10a248c4a4f838c80b3e27fc4c7', 'SekaiKomik', 'https://www.sekaikomik.site')
 	AddWebsiteModule('f9adee01635a4ff48fdff5164a65d6dd', 'Komiktap', 'https://komiktap.in')
-	AddWebsiteModule('ec1a1ad5301f414592f0ba0402024813', 'Doujindesu', 'https://doujindesu.id')
+	AddWebsiteModule('ec1a1ad5301f414592f0ba0402024813', 'Doujindesu', 'https://212.32.226.234')
 	AddWebsiteModule('cbb62ba41ad6440a8d112c3c30edc6f5', 'KomikSave', 'https://komiksave.me')
 	AddWebsiteModule('deb2a310668a40ebbbe3aaa45f78edc2', 'GuruKomik', 'https://gurukomik.com')
 	AddWebsiteModule('adb6ae3e4d7c49fb89bb8d17bfbc9486', 'KlanKomik', 'https://klankomik.com')
