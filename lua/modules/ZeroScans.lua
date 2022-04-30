@@ -43,7 +43,7 @@ function GetNameAndLink()
 
 	local x = CreateTXQuery(HTTP.Document)
 	local v for v in x.XPath('json(*).data.comics()').Get() do
-		LINKS.Add('/comics/' .. x.XPathString('slug', v))
+		LINKS.Add('comics/' .. x.XPathString('slug', v))
 		NAMES.Add(x.XPathString('name', v))
 	end
 
@@ -75,7 +75,7 @@ function GetInfo()
 	if HTTP.GET(MODULE.RootURL .. '/swordflake/comic/' .. mangaSlug .. '/chapters/' .. firstchapId) then
 		local x = CreateTXQuery(HTTP.Document)
 		local v for v in x.XPath('json(*).data.chapters()').Get() do
-			MANGAINFO.ChapterLinks.Add('/swordflake/comic/' .. mangaSlug .. '/chapters/' .. v.GetProperty('id').ToString())
+			MANGAINFO.ChapterLinks.Add('swordflake/comic/' .. mangaSlug .. '/chapters/' .. v.GetProperty('id').ToString())
 			MANGAINFO.ChapterNames.Add('Chapter ' .. v.GetProperty('name').ToString())
 		end
 	end
