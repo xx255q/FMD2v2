@@ -13,7 +13,7 @@ function getinfo()
 		for i=1,v.Count do
 			v2=v.Get(i)
 			MANGAINFO.ChapterLinks.Add(x.XPathString('a/@href',v2))
-			MANGAINFO.ChapterNames.Add(x.XPathString('string-join((a/text(),span[not(@class)])," ")',v2))
+			MANGAINFO.ChapterNames.Add(x.XPathString('string-join((a/text(),span[not(@class)])," - ")',v2))
 		end
 		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 		return no_error
@@ -38,7 +38,7 @@ function getimageurl()
 	 s=s:gsub('/+$', '') .. '/'..(WORKID+1)..'.html'
 	end
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL,s)) then
-		TASK.PageLinks[WORKID]=CreateTXQuery(HTTP.Document).XPathString('//*[@id="viewer"]//img[@alt]/@src')
+		TASK.PageLinks[WORKID]=CreateTXQuery(HTTP.Document).XPathString('//*[@id="viewer"]//img[@alt]/@src'):gsub('^//', 'http://')
 		return true
 	end
 	return false
@@ -62,16 +62,21 @@ function getnameandlink()
 	end
 end
 
+function BeforeDownloadImage()
+	HTTP.Headers.Values['Referer'] = MODULE.RootURL
+	return true
+end
+
 function Init()
 	local m = NewWebsiteModule()
 	m.ID = '4b5f8afd9a174af7b386a6de8ed83a2f'
 	m.Category='English'
 	m.Name='MangaTown'
 	m.RootURL='http://www.mangatown.com'
-	m.LastUpdated='February 17, 2018'
 	m.OnGetInfo='getinfo'
 	m.OnGetPageNumber='getpagenumber'
 	m.OnGetImageURL='getimageurl'
 	m.OnGetDirectoryPageNumber='getdirectorypagenumber'
 	m.OnGetNameAndLink='getnameandlink'
+	m.OnBeforeDownloadImage    = 'BeforeDownloadImage'
 end
