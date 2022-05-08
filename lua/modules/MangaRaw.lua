@@ -1,21 +1,25 @@
-local dirurl = '/browse/?genre=All&results=%s&filter=New'
+local dirurl = '/browse-comics/?results=%s&filter=New'
 
 function Init()
-	local m = NewWebsiteModule()
-	m.ID                         = '8b08552360e14892a2b715dab6957bfe'
-	m.Name                       = 'MangaRaw'
-	m.RootURL                    = 'https://www.manga-raw.club'
-	m.Category                   = 'English'
-	m.OnGetDirectoryPageNumber   = 'GetDirectoryPageNumber'
-	m.OnGetNameAndLink           = 'GetNameAndLink'
-	m.OnGetInfo                  = 'GetInfo'
-	m.OnGetPageNumber            = 'GetPageNumber'
-	m.SortedList                 = true
+	local function AddWebsiteModule(id, name, url)
+		local m = NewWebsiteModule()
+		m.ID                         = id
+		m.Name                       = name
+		m.RootURL                    = url
+		m.Category                   = 'English'
+		m.OnGetDirectoryPageNumber   = 'GetDirectoryPageNumber'
+		m.OnGetNameAndLink           = 'GetNameAndLink'
+		m.OnGetInfo                  = 'GetInfo'
+		m.OnGetPageNumber            = 'GetPageNumber'
+		m.SortedList                 = true
+	end
+	AddWebsiteModule('8b08552360e14892a2b715dab6957bfe', 'MangaRaw', 'https://www.manga-raw.club')
+	AddWebsiteModule('d297f1eb6b784ded9b50d3b85cee5276', 'MCReader', 'https://www.mcreader.net')
 end
 
 function GetDirectoryPageNumber()
 	if HTTP.GET(MODULE.RootURL .. dirurl:format('1')) then
-		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//ul[@class="pagination"]/li[last()-1]')) or 1
+		PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//*[@id="Result"]//ul[@class="pagination"]/li[last()-1]')) or 1
 		return no_error
 	else
 		return net_problem
