@@ -255,6 +255,7 @@ function GetPageNumber()
 end
 
 local AlphaList = '.ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+local dirpageskraw = {'list-manhwa', 'list-manhua', 'list-manga'}
 
 function GetNameAndLink()
 	if MODULE.ID == '421be2f0d918493e94f745c71090f359' then -- Mangafast
@@ -296,6 +297,11 @@ function GetNameAndLink()
 		local x = CreateTXQuery(HTTP.Document)
 		x.XPathHREFTitleAll('//div[@class="animposx"]/a', LINKS, NAMES)
 		UPDATELIST.CurrentDirectoryPageNumber = tonumber(x.XPathString('//div[@class="pagination"]/span[1]/substring-after(., "Page 1 of ")')) or 1
+	elseif MODULE.ID == 'abe29b9f5f9e4fff94068fe547a93cef' then -- Kraw
+		if not HTTP.GET(MODULE.RootURL .. '/' .. dirpageskraw[MODULE.CurrentDirectoryIndex + 1] .. '/page/' .. (URL + 1)) then return net_problem end
+		x = CreateTXQuery(HTTP.Document)
+		x.XPathHREFTitleAll('//div[@class="bsx"]/a', LINKS, NAMES)
+		UPDATELIST.CurrentDirectoryPageNumber = tonumber(x.XPathString('//div[@class="pagination"]/a[last()-1]')) or 1
 	else
 		-- full text based list
 		local dirs = {
@@ -448,4 +454,8 @@ function Init()
 	cat = 'English'
 	AddWebsiteModule('421be2f0d918493e94f745c71090f359', 'Mangafast', 'https://mangafast.net')
 	AddWebsiteModule('b5512eeeebbe4aa1a9194f58e8401ca2', 'KumaScans', 'https://kumascans.com')
+
+	cat = 'H-Sites'
+	m = AddWebsiteModule('abe29b9f5f9e4fff94068fe547a93cef', 'Kraw', 'https://kraw.org')
+	m.TotalDirectory = #dirpageskraw
 end
