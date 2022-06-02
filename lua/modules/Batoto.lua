@@ -18,6 +18,9 @@ function Init()
 	AddWebsiteModule('41e43d6fa1434937afad3bc04a1e8603', 'Batotoo', 'https://batotoo.com')
 	AddWebsiteModule('53347251db9d4d5eb92ef8bc6101e5f7', 'Battwo', 'https://battwo.com')
 	AddWebsiteModule('cf8702f7f5d24bd2a1b9b9904beb246b', 'Mangatoto', 'https://mangatoto.com')
+	AddWebsiteModule('c7908a2cdb0c4966bff604ebedc9f468', 'Wto', 'https://wto.to')
+	AddWebsiteModule('4040307fbc04489587bb71ffcefb3ccf', 'Mto', 'https://mto.to')
+	AddWebsiteModule('02e8d0899c8b48c8bfdde57e5e3b8f38', 'Batotwo', 'https://batotwo.com')
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -75,17 +78,21 @@ function GetPageNumber()
 	if not HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then return net_problem end
 	
 	local x = CreateTXQuery(HTTP.Document)
-	local script = x.XPathString('//script[contains(.,"const batojs")]');
-	local server = require("fmd.duktape").ExecJS(script .. [[
+	local script = x.XPathString('//script[contains(.,"const batoPass")]')
+	local ext = require("fmd.duktape").ExecJS(script .. [[
 
 var CryptoJS = require("utils/crypto-js.min.js");
-JSON.parse(CryptoJS.AES.decrypt(server, batojs).toString(CryptoJS.enc.Utf8));
+JSON.parse(CryptoJS.AES.decrypt(batoWord, batoPass).toString(CryptoJS.enc.Utf8));
 
 ]])
-	if server:find('^//') then server = 'https:' .. server end
-	local images = script:match('const images = %[([^%]]+)')
-	local i for i in images:gmatch('"([^",]+)') do
-		TASK.PageLinks.Add(server .. i)
+	local delimiter = ','
+	ext = ext .. delimiter
+	local images = script:match('const imgHttpLis = %[([^%]]+)')
+	local mtch = ''
+	local image for image in images:gmatch('"([^",]+)') do
+		mtch = ext:match("(.-)" .. delimiter)
+		TASK.PageLinks.Add(image .. "?" .. mtch)
+		ext = ext:gsub((mtch .. delimiter):gsub("-", "%%-"), "")
 	end
 
 	return no_error
