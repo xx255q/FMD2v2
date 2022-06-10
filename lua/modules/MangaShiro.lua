@@ -217,7 +217,8 @@ function GetPageNumber()
 			x.ParseHTML(result)
 			x.XPathStringAll('//img/@src', TASK.PageLinks)
 		elseif MODULE.ID == 'b8206e754d4541689c1d367f7e19fd64' then -- KomikCast
-			x.XPathStringAll('//*[@class="main-reading-area"]/img/@src', TASK.PageLinks)
+			x.ParseHTML(GetBetween('"nrm":', '} |', x.XPathString('//script[contains(., "chapterImages")]')):gsub('\\/', '/'):gsub('\\"', ''))
+			x.XPathStringAll('//img/@src', TASK.PageLinks)
 		elseif MODULE.ID == '7103ae6839ea46ec80cdfc2c4b37c803' then -- AsuraScans
 			local v for v in x.XPath('//*[@id="readerarea"]/p/img').Get() do
 				if string.find(v.GetAttribute('src'), "panda") == nil then
@@ -347,7 +348,7 @@ function GetNameAndLink()
 end
 
 function BeforeDownloadImage()
-	HTTP.Headers.Values['referer'] = MODULE.RootURL
+	HTTP.Headers.Values['Referer'] = MODULE.RootURL
 	return true
 end
 
@@ -379,7 +380,7 @@ function Init()
 	AddWebsiteModule('b543e37b656e43ffb3faa034eee6c945', 'MangaKita', 'https://mangakita.net')
 	AddWebsiteModule('b5586745030a45bba05d0c360caa6d1a', 'KomikStation', 'https://www.komikstation.com')
 	AddWebsiteModule('49602ce189e844f49bfe78f7a1484dbe', 'MangaKid', 'https://mangakid.site')
-	AddWebsiteModule('b8206e754d4541689c1d367f7e19fd64', 'KomikCast', 'https://komikcast.com')
+	AddWebsiteModule('b8206e754d4541689c1d367f7e19fd64', 'KomikCast', 'https://komikcast.me')
 	AddWebsiteModule('35e1b3ff5dbf428889d0f316c3d881e6', 'WestManga', 'https://westmanga.info')
 	AddWebsiteModule('031f3cc0ae3346ad9b8c33d5377891e9', 'Kiryuu', 'https://kiryuu.id')
 	AddWebsiteModule('009bf49bc17a4a2a8e1c79cce6867651', 'KomikIndo', 'https://komikindo.co')
