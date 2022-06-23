@@ -217,15 +217,14 @@ function GetPageNumber()
 	TASK.PageLinks.Clear()
 	local u = MaybeFillHost(MODULE.RootURL, URL)
 	if HTTP.GET(u) then
-		HTTP.Document.SaveToFile("manga18.html")
 		local x = CreateTXQuery(HTTP.Document)
 		if MODULE.ID == 'f488bcb1911b4f21baa1ab65ef9ca61c' then -- HeroScan
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-original', TASK.PageLinks)
-		elseif MODULE.ID == '010777f53bf2414fad039b9567c8a9ce' or MODULE.ID == '694ff34a6ae4469fbdaecf8d3aebb6eb' then -- KissAway, ManhuaScan
+		elseif MODULE.ID == '010777f53bf2414fad039b9567c8a9ce' or MODULE.ID == '694ff34a6ae4469fbdaecf8d3aebb6eb' or MODULE.ID == '462c20a8842e44e4a6e1811fab1c78e2' then -- KissAway, ManhuaScan, NeneG9
 			local v for v in x.XPath('//img[contains(@class, "chapter-img")]/@data-aload').Get() do
 				TASK.PageLinks.Add(MaybeFillHost(MODULE.RootURL, v.ToString()))
 			end
-		elseif MODULE.ID == '9054606f128e4914ae646032215915e5' or MODULE.ID == '462c20a8842e44e4a6e1811fab1c78e2' or MODULE.ID == '437660e89f824183901cf05c24e35eae' then -- 4uView, NeneG9, WeLoveMangaOne
+		elseif MODULE.ID == '9054606f128e4914ae646032215915e5' or MODULE.ID == '437660e89f824183901cf05c24e35eae' then -- 4uView, WeLoveMangaOne
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@*[contains(., "https")]', TASK.PageLinks)
 		elseif MODULE.ID == '794187d0e92e4933bf63812438d69017' then -- Manhwa18
 			x.XPathStringAll('//div[@id="chapter-content"]/img/@data-src', TASK.PageLinks)
