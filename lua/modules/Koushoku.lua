@@ -13,6 +13,8 @@ function Init()
 	m.OnGetInfo                = 'GetInfo'
 	m.OnGetPageNumber          = 'GetPageNumber'
 	m.OnGetImageURL            = 'GetImageURL'
+	m.MaxTaskLimit             = 1
+	m.MaxConnectionLimit       = 2
 	m.SortedList               = true
 end
 
@@ -44,9 +46,9 @@ function GetInfo()
 
 	local x = CreateTXQuery(HTTP.Document)
 	MANGAINFO.Title     = x.XPathString('//h1')
-	MANGAINFO.CoverLink = x.XPathString('//*[@class="thumbnail"]//img/@src')
-	MANGAINFO.Artists   = x.XPathStringAll('//tr[@Class="artists"]//a')
-	MANGAINFO.Genres    = x.XPathStringAll('//div[@Class="tags"]/a')
+	MANGAINFO.CoverLink = x.XPathString('//img[contains(@alt, "Thumbnail")]/@src')
+	MANGAINFO.Artists   = x.XPathStringAll('//tr[./td="Artist"]//a')
+	MANGAINFO.Genres    = x.XPathStringAll('//div[@class="tags"]/a')
 
 	MANGAINFO.ChapterLinks.Add(URL)
 	MANGAINFO.ChapterNames.Add(MANGAINFO.Title)
