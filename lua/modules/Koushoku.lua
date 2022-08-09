@@ -14,7 +14,7 @@ function Init()
 	m.OnGetPageNumber          = 'GetPageNumber'
 	m.OnGetImageURL            = 'GetImageURL'
 	m.MaxTaskLimit             = 1
-	m.MaxConnectionLimit       = 2
+	m.MaxConnectionLimit       = 1
 	m.SortedList               = true
 end
 
@@ -70,7 +70,7 @@ end
 -- Extract/Build/Repair image urls before downloading them.
 function GetImageURL()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, TASK.PageContainerLinks[WORKID])) then
-		TASK.PageLinks[WORKID] = CreateTXQuery(HTTP.Document).XPathString('//div[@class="main"]//img/@src')
+		TASK.PageLinks[WORKID] = MaybeFillHost(MODULE.RootURL, CreateTXQuery(HTTP.Document).XPathString('//div[@class="main"]//img/@src'))
 		return true
 	end
 
