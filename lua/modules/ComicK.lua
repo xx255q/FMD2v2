@@ -1,4 +1,5 @@
 local API_URL = 'https://api.comick.fun'
+local CDN_URL = 'https://meo.comick.pictures'
 
 function Init()
 	local m = NewWebsiteModule()
@@ -55,7 +56,7 @@ function GetInfo()
 	if HTTP.GET(s) then
 		local x = CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title      = x.XPathString('json(*).comic.title')
-		MANGAINFO.CoverLink  = x.XPathString('json(*).comic.md_covers().gpurl')
+		MANGAINFO.CoverLink  = CDN_URL .. '/' .. x.XPathString('json(*).comic.md_covers().b2key')
 		MANGAINFO.Authors    = x.XPathStringAll('json(*).authors().name')
 		MANGAINFO.Artists    = x.XPathStringAll('json(*).artists().name')
 		MANGAINFO.Status     = MangaInfoStatusIfPos(x.XPathString('json(*).comic.status'), '1', '2')
@@ -125,12 +126,8 @@ end
 function GetPageNumber()
 	if HTTP.GET(API_URL .. '/chapter' .. URL) then
 		local x = CreateTXQuery(HTTP.Document)
-		local server = x.XPathString('json(*).chapter.server')
-		local hash   = x.XPathString('json(*).chapter.hash')
-		local mdid   = x.XPathString('json(*).chapter.mdid')
-		if mdid ~= 'null' then server = server .. '/data' end
-		local v for v in x.XPath('json(*).chapter.md_images().name').Get() do
-			TASK.PageLinks.Add(server .. '/' .. hash .. '/' .. v.ToString())
+		local v for v in x.XPath('json(*).chapter.md_images().b2key').Get() do
+			TASK.PageLinks.Add(CDN_URL .. '/' .. v.ToString())
 		end
 		return true
 	else
