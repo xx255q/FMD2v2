@@ -421,7 +421,7 @@ function Init()
 	AddWebsiteModule('5c3737434b964df7b76e5b27c2ad442c', 'MangasRaw', 'https://mangas-raw.com')
 
 	cat = 'Arabic'
-	AddWebsiteModule('0e45db2650604f74a0caeb7c1d69a749', 'MangaSWAT', 'https://mangaswat.com')
+	AddWebsiteModule('0e45db2650604f74a0caeb7c1d69a749', 'SWATManga', 'https://swatmanga.me')
 	
 	cat = 'English-Scanlation'
 	AddWebsiteModule('7103ae6839ea46ec80cdfc2c4b37c803', 'AsuraScans', 'https://asurascans.com')
