@@ -25,6 +25,8 @@ function Modules.Madara()
 				MANGAINFO.Title=x.XPathStringAll('//div[@class="post-title post-sigle-title"]/*[self::h1 or self::h2 or self::h3]/text()', '')
 			elseif MODULE.Name == 'GetManhwa' then
 				MANGAINFO.Title=x.XPathStringAll('//div[@class="post-title-dpage"]/h3')
+			elseif MODULE.ID == '38ee90a6e1f343e284478e090399d7d2' then -- MMScans
+				MANGAINFO.Title = x.XPathString('//div[@class="series-title"]/h1')
 			end
 			if MANGAINFO.Title == '' then
 				MANGAINFO.Title = x.XPathStringAll('//*[@id="manga-title"]/h1/text()')
@@ -44,6 +46,9 @@ function Modules.Madara()
 			end
 			if MODULE.Name == 'GetManhwa' then
 				MANGAINFO.CoverLink=x.XPathString('//div[@class="my_profile-manga"]/@style'):match('background%-image:URL%((.-)%)')
+			end
+			if MODULE.ID == '38ee90a6e1f343e284478e090399d7d2' then -- MMScans
+				MANGAINFO.CoverLink = x.XPathString('//div[@class="series-img"]/img/@data-src')
 			end
 			MANGAINFO.Authors=x.XPathStringAll('//div[@class="author-content"]/a')
 			if MANGAINFO.Authors == '' then
@@ -110,6 +115,12 @@ function Modules.Madara()
 						local v for v in x.XPath('//div[@class="chapter-link"]/a').Get() do
 							MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
 							MANGAINFO.ChapterNames.Add(x.XPathString('p', v))
+						end
+					end
+					if MANGAINFO.ChapterLinks.Count == 0 then
+						local v for v in x.XPath('//li[@class="chapter-li"]/a').Get() do
+							MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
+							MANGAINFO.ChapterNames.Add(x.XPathString('div/p', v))
 						end
 					end
 				end
