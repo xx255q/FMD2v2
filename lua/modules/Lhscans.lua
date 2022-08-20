@@ -26,6 +26,7 @@ function Init()
 	m = AddWebsiteModule('462c20a8842e44e4a6e1811fab1c78e2', 'NeneG9', 'https://nng9.com')
 	m.AccountSupport = true
 	m.OnLogin        = 'WeLoveMangaLogin'
+	AddWebsiteModule('a42db88f4b564e12acbba33a944d180e', 'Manga1000', 'https://manga1000.top')
 
 	cat = 'English'
 	AddWebsiteModule('80427d9a7b354f04a8f432b345f0f640', 'MangaWeek', 'https://mangaweek.com')
@@ -121,7 +122,7 @@ function GetNameAndLink()
 		else
 			return net_problem
 		end
-	elseif MODULE.ID == '462c20a8842e44e4a6e1811fab1c78e2' or MODULE.ID == '437660e89f824183901cf05c24e35eae' then -- WeLoMa, WeLoveMangaOne
+	elseif MODULE.ID == '462c20a8842e44e4a6e1811fab1c78e2' or MODULE.ID == '437660e89f824183901cf05c24e35eae' or MODULE.ID == 'a42db88f4b564e12acbba33a944d180e' then -- WeLoMa, WeLoveMangaOne, Manga1000
 		if HTTP.GET(MODULE.RootURL .. '/manga-list.html?page=' .. (URL + 1) .. '&sort=name&sort_type=ASC') then
 			CreateTXQuery(HTTP.Document).XPathHREFAll('//div[@class="thumb-wrapper"]/a', LINKS, NAMES)
 			return no_error
@@ -228,6 +229,8 @@ function GetPageNumber()
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@*[contains(., "https")]', TASK.PageLinks)
 		elseif MODULE.ID == '794187d0e92e4933bf63812438d69017' then -- Manhwa18
 			x.XPathStringAll('//div[@id="chapter-content"]/img/@data-src', TASK.PageLinks)
+		elseif MODULE.ID == 'a42db88f4b564e12acbba33a944d180e' then -- Manga1000
+			x.XPathStringAll('//div[@class="chapter-content"]/img/@data-src', TASK.PageLinks)
 		else
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-src', TASK.PageLinks)
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//img[contains(@class, "chapter-img")]/@src', TASK.PageLinks) end
