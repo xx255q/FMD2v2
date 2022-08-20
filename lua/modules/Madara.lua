@@ -502,7 +502,7 @@ function Init()
 
 	cat = 'Arabic-Scanlation'
 	AddWebsiteModule('7bda2905b61c49d1976777e9f2356361', '3asqOrg', 'https://3asq.org')
-	AddWebsiteModule('27c2c6db9ce24942a89a28aa6c6ed35d', 'AzoraManga', 'https://www.azoramanga.com')
+	AddWebsiteModule('27c2c6db9ce24942a89a28aa6c6ed35d', 'AzoraManga', 'https://azoraworld.com')
 
 	cat = 'Turkish'
 	AddWebsiteModule('baeb4d0c63d9456dbc8da6f1d29faf60', 'AdonisFansub', 'https://manga.adonisfansub.com')
