@@ -23,7 +23,7 @@ function Init()
 	m = AddWebsiteModule('437660e89f824183901cf05c24e35eae', 'WeLoveMangaOne', 'https://welovemanga.one')
 	m.AccountSupport = true
 	m.OnLogin        = 'WeLoveMangaLogin'
-	m = AddWebsiteModule('462c20a8842e44e4a6e1811fab1c78e2', 'NeneG9', 'https://nng9.com')
+	m = AddWebsiteModule('462c20a8842e44e4a6e1811fab1c78e2', '5sLive', 'https://5slive.net')
 	m.AccountSupport = true
 	m.OnLogin        = 'WeLoveMangaLogin'
 	AddWebsiteModule('a42db88f4b564e12acbba33a944d180e', 'Manga1000', 'https://manga1000.top')
@@ -44,11 +44,7 @@ end
 function WeLoveMangaLogin()
 	if MODULE.Account.Enabled == false then return false end
 	MODULE.Account.Status = asChecking
-	local u = MODULE.RootURL .. '/ucp/index.html'
-	if MODULE.ID == '462c20a8842e44e4a6e1811fab1c78e2' then -- WeLoMa
-		u = MODULE.RootURL .. '/ucp/login.html'
-	end
-	if HTTP.GET(u) then
+	if HTTP.GET(MODULE.RootURL .. '/ucp/login.html') then
 		local x = CreateTXQuery(HTTP.Document)
 
 		local isLoggedIn = x.XPathString('//form[contains(@id, "logout")]/@action')
