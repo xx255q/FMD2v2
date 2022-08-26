@@ -30,6 +30,7 @@ function getTitle(x)
 	if title == '' then title = x.XPathString('//div[@class="info1"]/*') end
 	if title == '' then title = x.XPathString('//div[@class="mangainfo"]/h1') end
 	if title == '' then title = x.XPathString('//h2[@class="entry-title"]') end
+	if title == '' then title = x.XPathString('//div[@class="series-title"]/h2') end
 	if title == '' then title = x.XPathString('//h1') end
 	if title == '' then title = x.XPathString('//h2') end
 	title = title:gsub('Bahasa Indonesia$', ''):gsub(' Indonesia|Baca"', ''):gsub('Bahasa Indonesia', ''):gsub('Komik', ''):gsub(' Raw', ''):gsub(' Indonesia Terbaru','')
@@ -157,10 +158,10 @@ function getSummary(x)
 end
 
 function getMangas(x)
-	if MODULE.ID == '7a74b2abda1d4b329ee1d1fa58866c03' then -- MaidMangaID
+	if MODULE.ID == '7a74b2abda1d4b329ee1d1fa58866c03' or MODULE.ID == '46dcfabe757140e7980ec34c65bdb30f' then -- MaidMangaID, SekteKomik
 		local v for v in x.XPath('//ul[@class="series-chapterlist"]//a').Get() do
 			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
-			MANGAINFO.ChapterNames.Add(x.XPathString('span[@class="ch"]',v))
+			MANGAINFO.ChapterNames.Add(x.XPathString('span[1]/text()', v))
 		end		
 	elseif MODULE.ID == '5af0f26f0d034fb2b42ee65d7e4188ab' then -- Komiku
 		x.XPathHREFTitleAll('//td[@class="judulseries"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
