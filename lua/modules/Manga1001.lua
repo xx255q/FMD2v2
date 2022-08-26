@@ -1,14 +1,19 @@
 function Init()
-	local m = NewWebsiteModule()
-	m.ID                         = '1d09f3bea8f148fa9e9215fc578fedcd'
-	m.Name                       = 'Manga1001'
-	m.RootURL                    = 'https://manga1001.in'
-	m.Category                   = 'Raw'
-	m.OnGetDirectoryPageNumber   = 'GetDirectoryPageNumber'
-	m.OnGetNameAndLink           = 'GetNameAndLink'
-	m.OnGetInfo                  = 'GetInfo'
-	m.OnGetPageNumber            = 'GetPageNumber'
-	m.OnBeforeDownloadImage      = 'BeforeDownloadImage'
+	function AddWebsiteModule(id, name, url)
+		local m = NewWebsiteModule()
+		m.ID                         = id
+		m.Name                       = name
+		m.RootURL                    = url
+		m.Category                   = 'Raw'
+		m.OnGetDirectoryPageNumber   = 'GetDirectoryPageNumber'
+		m.OnGetNameAndLink           = 'GetNameAndLink'
+		m.OnGetInfo                  = 'GetInfo'
+		m.OnGetPageNumber            = 'GetPageNumber'
+		m.OnBeforeDownloadImage      = 'BeforeDownloadImage'
+	end
+	AddWebsiteModule('1d09f3bea8f148fa9e9215fc578fedcd', 'Manga1001', 'https://manga1001.in')
+	AddWebsiteModule('67e79aff105946dc8586a220ed5763ef', 'SyoSetu', 'https://syosetu.top')
+	AddWebsiteModule('cf43153ce70c4501b1deb7a0f039f3fd', 'Manga9', 'https://manga9.co')
 end
 
 function GetDirectoryPageNumber()
