@@ -88,7 +88,7 @@ function Modules.Madara()
 				x.XPathHREFAll('//li[contains(@class, "wp-manga-hapter")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			elseif MODULE.ID == '7f1b637a525940db9459f1cbf2f7cfc3' then -- Manga18fx
 				x.XPathHREFAll('//ul[@class="row-content-chapter"]//a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-			elseif MODULE.ID == 'fb042c961d06479582edb2fa582e3a41' then -- ReaperScans
+			elseif MODULE.ID == 'fb042c961d06479582edb2fa582e3a41' or MODULE.ID == '187417a02af74223a390dce786bb2a9f' then -- ReaperScans, ManhwasMen
 				local v for v in x.XPath('//div[@class="chapter-link"]/a').Get() do
 					MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
 					MANGAINFO.ChapterNames.Add(x.XPathString('p', v))
@@ -499,6 +499,7 @@ function Init()
 	AddWebsiteModule('d9615a731b1243538663e96f0c1ad595', 'Manga347', 'https://manga347.com')
 	AddWebsiteModule('99bb0476a95e4590848c8fdc0c03817c', 'MangaCultivator', 'https://mangacultivator.com')
 	AddWebsiteModule('441c6a5b5cwt6590848c8fdd9d9b67a7', 'EroMangacrab', 'https://ero.mangacrab.com')
+	AddWebsiteModule('187417a02af74223a390dce786bb2a9f', 'ManhwasMen', 'https://manhwas.men')
 
 	cat = 'Arabic-Scanlation'
 	AddWebsiteModule('27c2c6db9ce24942a89a28aa6c6ed35d', 'AzoraManga', 'https://azoraworld.com')
