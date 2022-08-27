@@ -420,6 +420,7 @@ function Init()
 	cat = 'Raw'
 	AddWebsiteModule('21b0dfcb262d4ae28520679165282666', 'Rawkuma', 'https://rawkuma.com')
 	AddWebsiteModule('5c3737434b964df7b76e5b27c2ad442c', 'MangasRaw', 'https://mangas-raw.com')
+	AddWebsiteModule('452f504992704f11add27f30f47e388a', 'J9jp', 'https://j9jp.com')
 
 	cat = 'Arabic'
 	AddWebsiteModule('0e45db2650604f74a0caeb7c1d69a749', 'SWATManga', 'https://swatmanga.me')
