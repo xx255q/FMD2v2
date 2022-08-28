@@ -355,7 +355,8 @@ end
 
 function reverseLinksAndChapters()
 	local doNotReverse = {
-		['4657d79e63dc4a9082a46b7981bde1b9'] = '' -- MangaBoruto
+		['4657d79e63dc4a9082a46b7981bde1b9'] = '', -- MangaBoruto
+		['4420b10f54ea4d3d812318bdd10cd729'] = '' -- ElarcPage
 	}
 	if doNotReverse[MODULE.ID] == nil then
 		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
@@ -440,6 +441,7 @@ function Init()
 	AddWebsiteModule('a51ebfb8979045d589cd867c48a095c0', 'ManhwaFreak', 'https://manhwafreak.com')
 	AddWebsiteModule('f53627f1cad44232ac9dbc02a613aeb5', 'MajesticScans', 'https://majesticscans.com')
 	AddWebsiteModule('f01040ee781d4ae1929031419b97d2e0', 'VoidScans', 'https://void-scans.com')
+	AddWebsiteModule('752cda75b5e24f6ab4256079c564eba2', 'OmegaScans', 'https://omegascans.org')
 
 	cat = 'Spanish'
 	AddWebsiteModule('41294a121062494489adfa601c442ef8', 'LegionAsia', 'https://legionasia.com')
@@ -462,4 +464,7 @@ function Init()
 	cat = 'H-Sites'
 	m = AddWebsiteModule('abe29b9f5f9e4fff94068fe547a93cef', 'Kraw', 'https://kraw.org')
 	m.TotalDirectory = #dirpageskraw
+
+	cat = 'Webcomics'
+	AddWebsiteModule('4420b10f54ea4d3d812318bdd10cd729', 'ElarcPage', 'https://elarcpage.com')
 end
