@@ -400,7 +400,7 @@ function Init()
 	AddWebsiteModule('273d639c63fa4cafb4f27a4b6e0679d9', 'PojokManga', 'https://pojokmanga.com')
 	AddWebsiteModule('deafed31465943078a7b67ddf4885fda', 'KomikTap', 'https://manhwa.komiktap.co')
 	AddWebsiteModule('fce276573cab499fad96374d1df22121', 'Mangceh', 'https://mangceh.me')
-	AddWebsiteModule('1da2819dd79f4967a12953495ec52afe', 'Manhwaid', 'https://manhwaid.co')
+	AddWebsiteModule('1da2819dd79f4967a12953495ec52afe', 'Manhwaid', 'https://manhwaid.club')
 	AddWebsiteModule('545acbf017814caab2b6bb28e48779fa', 'MGKomik', 'https://mgkomik.com')
 
 	cat = 'H-Sites'
