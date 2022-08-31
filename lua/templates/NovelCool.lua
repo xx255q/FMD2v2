@@ -46,14 +46,14 @@ function _M.GetInfo()
 	if not HTTP.GET(u) then return net_problem end
 
 	x = CreateTXQuery(HTTP.Document)
-	MANGAINFO.Title     = x.XPathString('//div[@class="bookinfo-info"]/h1')
-	MANGAINFO.CoverLink = x.XPathString('//img[@class="bookinfo-pic-img"]/@src')
-	MANGAINFO.Authors   = x.XPathStringAll('//div[@class="bookinfo-author"]/a/span')
-	MANGAINFO.Genres    = x.XPathStringAll('(//div[@class="bookinfo-category-list"])[1]/span/a')
-	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('(//div[contains(@class, "bookinfo-category-list")])[3]/a'))
-	MANGAINFO.Summary   = x.XPathString('//div[@class="bookinfo-summary"]/span')
+	MANGAINFO.Title     = x.XPathString('//h1[@class="bookinfo-title"]')
+	MANGAINFO.CoverLink = x.XPathString('//div[@class="bk-intro"]//img[@class="bookinfo-pic-img"]/@src')
+	MANGAINFO.Authors   = x.XPathStringAll('//div[@class="bk-intro"]//div[@class="bookinfo-author"]/a/span')
+	MANGAINFO.Genres    = x.XPathStringAll('(//div[@class="bookinfo-category-list"])[1]//span')
+	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('(//div[@class="bk-status"]//a'))
+	MANGAINFO.Summary   = x.XPathString('//div[@class="bk-summary-txt"]')
 
-	x.XPathHREFTitleAll('//div[@class="chapter-item-list"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+	x.XPathHREFTitleAll('//div[@class="chp-item"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
 	return no_error
