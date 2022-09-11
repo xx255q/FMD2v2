@@ -168,6 +168,5 @@ function Init()
 		m.OnGetDirectoryPageNumber = 'getdirectorypagenumber'
 		m.OnGetNameAndLink         = 'getnameandlink'
 	end
-	AddWebsiteModule('90067f671b7645de866ab83465fd22f9', '3asq', 'http://www.3asq.info', 'Arabic-Scanlation')
 	AddWebsiteModule('d7fb3441b0ad4fb9b01df3491ee43b31', 'ReadHentaiManga', 'http://readhentaimanga.com', 'H-Sites')
 end
