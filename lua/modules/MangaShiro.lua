@@ -31,7 +31,7 @@ function getTitle(x)
 	if title == '' then title = x.XPathString('//div[@class="mangainfo"]/h1') end
 	if title == '' then title = x.XPathString('//h2[@class="entry-title"]') end
 	if title == '' then title = x.XPathString('//div[@class="series-title"]/h2') end
-	if title == '' then title = x.XPathString('//h1') end
+	if title == '' then title = x.XPathString('//h1/text()') end
 	if title == '' then title = x.XPathString('//h2') end
 	title = title:gsub('Bahasa Indonesia$', ''):gsub(' Indonesia|Baca"', ''):gsub('Bahasa Indonesia', ''):gsub('Komik', ''):gsub(' Raw', ''):gsub(' Indonesia Terbaru','')
 	title = title:gsub('Indonesia', ''):gsub('Baca', ''):gsub('bahasa', ''):gsub('indonesia', ''):gsub('|', ''):gsub('-', '')
@@ -57,6 +57,7 @@ function getCover(x)
 	if img == '' then img = x.XPathString('//div[@class="ims"]/img/@src') end
 	if img == '' then img = x.XPathString('//div[@class="komik_info-content-thumbnail"]/img/@src') end
 	if img == '' then img = x.XPathString('//img[@class="shadow"]/@src') end
+	if img == '' then img = x.XPathString('//div[@class="wrapper"]//figure[@class="thumbnail"]//img/@src') end
 	return img
 end
 
@@ -115,6 +116,7 @@ function getGenres(x)
 	if genre == '' then genre = x.XPathStringAll('//div[@class="genre-info"]/a') end
 	if genre == '' then genre = x.XPathStringAll('//table[@class="inftable"]//tr[contains(td, "Genres")]/td/a') end
 	if genre == '' then genre = x.XPathStringAll('//div[@class="series-genres"]/a') end
+	if genre == '' then genre = x.XPathStringAll('//div[@class="tags"]/a') end
 	return genre
 end
 
@@ -228,6 +230,8 @@ function GetPageNumber()
 			end
 		elseif MODULE.ID == 'edf6b037808442508a3aaeb1413699bf' then -- KomikIndoID
 			x.XPathStringAll('//*[@id="Baca_Komik"]//img/@src', TASK.PageLinks)
+		elseif MODULE.ID == 'ec1a1ad5301f414592f0ba0402024813' then -- Doujindesu
+			x.XPathStringAll('//div[@class="main"]//img/@src', TASK.PageLinks)
 		else
 			-- common
 			x.ParseHTML(GetBetween('run(', ');', x.XPathString('//script[contains(., "ts_reader")]')))
@@ -294,11 +298,11 @@ function GetNameAndLink()
 		x.XPathHREFTitleAll('//div[@class="bsx"]/a', LINKS, NAMES)
 		UPDATELIST.CurrentDirectoryPageNumber = tonumber(x.XPathString('//div[@class="pagination"]/a[last()-1]')) or 1
 	elseif MODULE.ID == 'ec1a1ad5301f414592f0ba0402024813' then -- Doujindesu
-		local dirurl = MODULE.RootURL .. '/komik-list/page/' .. (URL + 1)
+		local dirurl = MODULE.RootURL .. '/manga/page/' .. (URL + 1)
 		if not HTTP.GET(dirurl) then return net_problem end
 		local x = CreateTXQuery(HTTP.Document)
-		x.XPathHREFTitleAll('//div[@class="animposx"]/a', LINKS, NAMES)
-		UPDATELIST.CurrentDirectoryPageNumber = tonumber(x.XPathString('//div[@class="pagination"]/span[1]/substring-after(., "Page 1 of ")')) or 1
+		x.XPathHREFTitleAll('//div[@class="entries"]//a', LINKS, NAMES)
+		UPDATELIST.CurrentDirectoryPageNumber = tonumber(x.XPathString('//nav[@class="pagination"]//li[last()-1]/a')) or 1
 	elseif MODULE.ID == 'abe29b9f5f9e4fff94068fe547a93cef' then -- Kraw
 		if not HTTP.GET(MODULE.RootURL .. '/' .. dirpageskraw[MODULE.CurrentDirectoryIndex + 1] .. '/page/' .. (URL + 1)) then return net_problem end
 		x = CreateTXQuery(HTTP.Document)
