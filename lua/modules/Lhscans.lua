@@ -222,7 +222,7 @@ function GetPageNumber()
 				TASK.PageLinks.Add(MaybeFillHost(MODULE.RootURL, v.ToString()))
 			end
 		elseif MODULE.ID == '9054606f128e4914ae646032215915e5' or MODULE.ID == '437660e89f824183901cf05c24e35eae' then -- Ney5, WeLoveMangaOne
-			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@*[contains(., "https")]', TASK.PageLinks)
+			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@*[contains(., "https")]/replace(., "&site=mm2r.net", "")', TASK.PageLinks)
 		elseif MODULE.ID == '794187d0e92e4933bf63812438d69017' then -- Manhwa18
 			x.XPathStringAll('//div[@id="chapter-content"]/img/@data-src', TASK.PageLinks)
 		elseif MODULE.ID == 'a42db88f4b564e12acbba33a944d180e' then -- Manga1000
