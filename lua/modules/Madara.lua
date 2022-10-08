@@ -88,7 +88,7 @@ function Modules.Madara()
 				x.XPathHREFAll('//li[contains(@class, "wp-manga-hapter")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			elseif MODULE.ID == '7f1b637a525940db9459f1cbf2f7cfc3' then -- Manga18fx
 				x.XPathHREFAll('//ul[@class="row-content-chapter"]//a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-			elseif MODULE.ID == 'fb042c961d06479582edb2fa582e3a41' or MODULE.ID == '187417a02af74223a390dce786bb2a9f' then -- ReaperScans, ManhwasMen
+			elseif MODULE.ID == '187417a02af74223a390dce786bb2a9f' then -- ManhwasMen
 				local v for v in x.XPath('//div[@class="chapter-link"]/a').Get() do
 					MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
 					MANGAINFO.ChapterNames.Add(x.XPathString('p', v))
@@ -371,7 +371,6 @@ function Init()
 	AddWebsiteModule('5aca1e42e8544aff8420b617c7a3983e', 'ComicDom', 'https://comicdom.org')
 	AddWebsiteModule('4e56f26935a74ffca73f698fa4c9de5c', 'HScans', 'https://hscans.com')
 	AddWebsiteModule('1b102a7854e64a45bab1aa8462582f17', 'ItsYourRightManhua', 'https://itsyourightmanhua.com')
-	AddWebsiteModule('fb042c961d06479582edb2fa582e3a41', 'ReaperScans', 'https://reaperscans.com')
 	AddWebsiteModule('b38c7f7e79164060b0a7da37476e0e9c', 'Manhuaga', 'https://manhuaga.com')
 	AddWebsiteModule('5b0c4c616c7f4a759d40d5b6924e535b', 'SetsuScans', 'https://setsuscans.com')
 	AddWebsiteModule('825fa36408ca4f7ab2eb7c4ad7777aca', 'LevelerScans', 'https://levelerscans.xyz')
