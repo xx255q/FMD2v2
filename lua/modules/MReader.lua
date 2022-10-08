@@ -1,20 +1,16 @@
 local dirurl = '/browse-comics/?results=%s&filter=New'
 
 function Init()
-	local function AddWebsiteModule(id, name, url)
-		local m = NewWebsiteModule()
-		m.ID                         = id
-		m.Name                       = name
-		m.RootURL                    = url
-		m.Category                   = 'English'
-		m.OnGetDirectoryPageNumber   = 'GetDirectoryPageNumber'
-		m.OnGetNameAndLink           = 'GetNameAndLink'
-		m.OnGetInfo                  = 'GetInfo'
-		m.OnGetPageNumber            = 'GetPageNumber'
-		m.SortedList                 = true
-	end
-	AddWebsiteModule('8b08552360e14892a2b715dab6957bfe', 'MangaRaw', 'https://www.manga-raw.club')
-	AddWebsiteModule('d297f1eb6b784ded9b50d3b85cee5276', 'MCReader', 'https://www.mcreader.net')
+	local m = NewWebsiteModule()
+	m.ID                         = 'd297f1eb6b784ded9b50d3b85cee5276'
+	m.Name                       = 'MReader'
+	m.RootURL                    = 'https://www.mreader.co'
+	m.Category                   = 'English'
+	m.OnGetDirectoryPageNumber   = 'GetDirectoryPageNumber'
+	m.OnGetNameAndLink           = 'GetNameAndLink'
+	m.OnGetInfo                  = 'GetInfo'
+	m.OnGetPageNumber            = 'GetPageNumber'
+	m.SortedList                 = true
 end
 
 function GetDirectoryPageNumber()
@@ -59,7 +55,6 @@ end
 
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x = CreateTXQuery(HTTP.Document)
 		CreateTXQuery(HTTP.Document).XPathStringAll('//section[@class="page-in content-wrap"]//center/div/img/@src', TASK.PageLinks)
 		return true
 	else
