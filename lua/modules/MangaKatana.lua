@@ -51,7 +51,7 @@ end
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local x = CreateTXQuery(HTTP.Document)
-		x.ParseHTML(GetBetween('var ytaw=', ';function', x.XPathString('//script[contains(., "ytaw")]')))
+		x.ParseHTML(GetBetween('var thzq=', ';function', x.XPathString('//script[contains(., "thzq")]')))
 		x.XPathStringAll('json(*)()', TASK.PageLinks)
 		return true
 	else
