@@ -1,10 +1,11 @@
 function Init()
-	function AddWebsiteModule(id, name, url, category)
+	local cat = 'Vietnamese'
+	function AddWebsiteModule(id, name, url)
 		local m = NewWebsiteModule()
 		m.ID                       = id
 		m.Name                     = name
 		m.RootURL                  = url
-		m.Category                 = category
+		m.Category                 = cat
 		m.SortedList               = true
 		m.OnGetInfo                = 'GetInfo'
 		m.OnGetPageNumber          = 'GetPageNumber'
@@ -12,13 +13,12 @@ function Init()
 		m.OnGetNameAndLink         = 'GetNameAndLink'
 		m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
 	end
-	local cat = 'Vietnamese'
-	AddWebsiteModule('ef7f922bd45f4f9d9c559a55f987004d', 'TruyenChon', 'http://truyenchon.com', cat)
-	AddWebsiteModule('567780dbaa3149e7ad698f11ce68ea9b', 'NetTruyen', 'http://www.nettruyentop.com', cat)
-	AddWebsiteModule('d25308907620480496bd73f50451d67f', 'NhatTruyen', 'http://nhattruyentranh.com', cat)
+	AddWebsiteModule('ef7f922bd45f4f9d9c559a55f987004d', 'TruyenChon', 'http://truyenchon.com')
+	AddWebsiteModule('567780dbaa3149e7ad698f11ce68ea9b', 'NetTruyen', 'https://www.nettruyenme.com')
+	AddWebsiteModule('d25308907620480496bd73f50451d67f', 'NhatTruyen', 'http://nhattruyentranh.com')
 
 	cat = 'English'
-	AddWebsiteModule('d2f24dec90e841b1aab4bea145ffb638', 'MangaToro', 'https://www.mangatoro.com', cat)
+	AddWebsiteModule('d2f24dec90e841b1aab4bea145ffb638', 'MangaToro', 'https://www.mangatoro.com')
 end
 
 local dirurl = {
