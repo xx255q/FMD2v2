@@ -70,7 +70,7 @@ end
 function GetPageNumber()
 	if not HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then return net_problem end
 
-	CreateTXQuery(HTTP.Document).XPathStringAll('//p[@class="py-4"]//img/@src', TASK.PageLinks)
+	CreateTXQuery(HTTP.Document).XPathStringAll('//img[contains(@class, "max-w-full")]/@src', TASK.PageLinks)
 
 	return no_error
 end
