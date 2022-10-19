@@ -80,8 +80,37 @@ function GetPageNumber()
 	if HTTP.GET(u) then
 		local body = HTTP.Document.ToString()
 		local s = body:match('var%s+lstImages%s+.-;(.-)%s+var%s')
-		local i; for i in s:gmatch('%("(.-)"%)') do
-			TASK.PageLinks.Add(i)
+		local i; for i in s:gmatch("%('(.-)'%)") do
+			--new code based on https://readcomiconline.li/Scripts/rguard.min.js?v=1.2.4
+			wv = i:gsub("_x236", "d")
+			wv = wv:gsub("_x945", "g")
+			if (string.find(wv, "https", nil, true) or 0) - 1 ~= 0 then
+			    local m = wv
+			    local containsS = (string.find(m, "=s0?", nil, true) or 0) - 1 > 0
+			    local xq = string.find(m,"?",nil,true)
+			    local x = string.sub(m, xq, -1)
+
+			    if containsS then
+			        m0q = string.find(m, "=s0?",nil,true) - 1
+			        m = string.sub(m, 1, m0q)
+			    else
+			        m0q = string.find(m, "=s1600?",nil,true) - 1
+			        m = string.sub(m, 1, m0q)
+			    end
+			    m = string.sub(m, 5,22) .. string.sub(m, 26)
+			    m = string.sub(m, 1, -7) .. string.sub(m, -2, -2) .. string.sub(m, -1, -1)
+			    local crypto = require 'fmd.crypto'
+			    m = crypto.DecodeBase64(m)
+			    m = string.sub(m, 1, 13) .. string.sub(m, 18)
+			    if containsS then
+			        m = string.sub(m, 1, -3) .. "=s0"
+			    else
+			        m = string.sub(m, 1, -3) .. "=s1600"
+			    end
+			    m = m .. x
+			    wv = "https://2.bp.blogspot.com/" .. m
+			end
+			TASK.PageLinks.Add(wv)
 		end
 		return true
 	else
