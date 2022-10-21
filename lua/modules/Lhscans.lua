@@ -222,7 +222,7 @@ function GetPageNumber()
 				TASK.PageLinks.Add(MaybeFillHost(MODULE.RootURL, v.ToString()))
 			end
 		elseif MODULE.ID == '9054606f128e4914ae646032215915e5' or MODULE.ID == '437660e89f824183901cf05c24e35eae' or MODULE.ID == '462c20a8842e44e4a6e1811fab1c78e2' then -- Ney5, WeLoveMangaOne, 5sLive
-			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@*[contains(., "https")]/replace(., "&site=mm2r.net", "")', TASK.PageLinks)
+			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@*[contains(., "https")]', TASK.PageLinks)
 		elseif MODULE.ID == '794187d0e92e4933bf63812438d69017' then -- Manhwa18
 			x.XPathStringAll('//div[@id="chapter-content"]/img/@data-src', TASK.PageLinks)
 		elseif MODULE.ID == 'a42db88f4b564e12acbba33a944d180e' then -- Manga1000
@@ -230,6 +230,10 @@ function GetPageNumber()
 		else
 			x.XPathStringAll('//img[contains(@class, "chapter-img")]/@data-src', TASK.PageLinks)
 			if TASK.PageLinks.Count == 0 then x.XPathStringAll('//img[contains(@class, "chapter-img")]/@src', TASK.PageLinks) end
+		end
+		for i = 0, TASK.PageLinks.Count - 1 do
+			TASK.PageLinks[i] = TASK.PageLinks[i]:gsub("[\r\n\t]", "")
+			i = i + 1
 		end
 	else
 		return false
