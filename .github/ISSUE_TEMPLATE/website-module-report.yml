@@ -1,5 +1,5 @@
 name: Website module report
-description: Create a report to help us improve
+description: Report a website issue in the application
 title: "[bug-website module] "
 body:
   - type: checkboxes
@@ -20,7 +20,7 @@ body:
       description: |
         Your operating system.
       placeholder: |
-        Windows 10 21H1 x64
+        Windows 10 22H2 x64
     validations:
       required: true
 
