@@ -1,5 +1,5 @@
 name: Website module report
-description: Report a website issue in the application
+description: Report a website module issue
 title: "[bug-website module] "
 body:
   - type: checkboxes

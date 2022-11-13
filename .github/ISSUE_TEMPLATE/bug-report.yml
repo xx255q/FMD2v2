@@ -11,7 +11,7 @@ body:
           required: true
         - label: All website modules are up to date.
           required: true
-        - label: This is not a website issue.
+        - label: This is not a website module issue.
           required: true
 
   - type: input
