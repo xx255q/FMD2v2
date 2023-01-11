@@ -27,11 +27,11 @@ function _M.GetInfo()
   x = CreateTXQuery(HTTP.Document)
   rtitle              = x.XPathString('//h1[@class="NAMES"]/span[@class="name"]')
   MANGAINFO.Title     = x.XPathString('//h1[@class="NAMES"]/span[@class="eng-name"]')
-  MANGAINFO.CoverLink = x.XPathString('//div[@class="picture-fotorama"]/img/@src')
+  MANGAINFO.CoverLink = x.XPathString('//div[@class="picture-fotorama"]/img[1]/@src')
   MANGAINFO.Authors   = x.XPathStringAll('//p[@class="elementList"]/span[contains(@class, "elem_author")]/a[@class="person-link"]/text()|//p[@class="elementList"]/span[contains(@class, "elem_screenwriter")]/a[@class="person-link"]/text()')
   MANGAINFO.Artists   = x.XPathStringAll('//p[@class="elementList"]/span[contains(@class, "elem_illustrator")]/a[@class="person-link"]/text()')
   MANGAINFO.Genres    = x.XPathStringAll('//p[@class="elementList"]/span[contains(@class, "elem_genre")]/a/text()|//p[@class="elementList"]/span[contains(@class, "elem_tag")]/a/text()')
-  MANGAINFO.Summary   = x.XPathString('//div[@class="manga-description"]')
+  MANGAINFO.Summary   = x.XPathString('(//div[@class="manga-description"])[1]')
 
   if MANGAINFO.Title == '' then MANGAINFO.Title = rtitle end
   if string.find(x.XPathString('//*[starts-with(@class,"subject-meta")]/*[starts-with(.,"Перевод:")]'), 'продолжается', 1, true) then MANGAINFO.Status = 1 else MANGAINFO.Status = 0 end

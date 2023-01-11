@@ -33,7 +33,20 @@ end
 
 -- Get the page count for the current chapter.
 function GetPageNumber()
-	Template.GetPageNumber()
+	local json, x = nil
+	local u = MaybeFillHost(MODULE.RootURL, URL)
+
+	if string.find(URL, 'mtr=1', 1, true) == nil then u = u .. '?mtr=1' end
+
+	if not HTTP.GET(u) then return net_problem end
+
+	x = CreateTXQuery(HTTP.Document)
+	json = GetBetween('[[', ', 0, ', Trim(GetBetween('rm_h.init(', 'false);', x.XPathString('//script[@type="text/javascript" and contains(., "rm_h.init")]'))))
+	json = json:gsub('%],%[', ';'):gsub('\'', ''):gsub('"', ''):gsub(']]', ';')
+	for i in json:gmatch('(.-);') do
+		i1, i2 = i:match('(.-),.-,(.-),.-,.-')
+		TASK.PageLinks.Add(i1 .. i2:gsub('?t.-$', ''))
+	end
 
 	return no_error
 end
