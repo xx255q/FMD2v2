@@ -86,7 +86,7 @@ function _M.GetPageNumber()
   json = json:gsub('%],%[', ';'):gsub('\'', ''):gsub('"', ''):gsub(']]', ';')
   for i in json:gmatch('(.-);') do
     i1, i2 = i:match('(.-),.-,(.-),.-,.-')
-    TASK.PageLinks.Add(i1 .. i2:gsub('?t.-$', ''))
+    TASK.PageLinks.Add(i1 .. i2)
   end
 
   return no_error
