@@ -3,8 +3,8 @@ local dirurl = '/browse-comics/?results=%s&filter=New'
 function Init()
 	local m = NewWebsiteModule()
 	m.ID                         = 'd297f1eb6b784ded9b50d3b85cee5276'
-	m.Name                       = 'MReader'
-	m.RootURL                    = 'https://www.mreader.co'
+	m.Name                       = 'MangaNeko'
+	m.RootURL                    = 'https://www.mangageko.com'
 	m.Category                   = 'English'
 	m.OnGetDirectoryPageNumber   = 'GetDirectoryPageNumber'
 	m.OnGetNameAndLink           = 'GetNameAndLink'
