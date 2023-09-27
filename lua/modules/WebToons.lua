@@ -24,7 +24,7 @@ function getinfo()
 				MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
 				MANGAINFO.ChapterNames.Add(x.XPathString('.//span[@class="subj"]/span', v))
 			end
-			p = x.XPathString('//div[@class="paginate"]/a[@href="#"]/following-sibling::a/@href')
+			p = x.XPathString('//div[@class="paginate"]/a[@href="#"]/following-sibling::a[1]/@href')
 			if p == '' then	break end
 			if HTTP.GET(MaybeFillHost(MODULE.RootURL, p)) then
 				x.ParseHTML(HTTP.Document)
