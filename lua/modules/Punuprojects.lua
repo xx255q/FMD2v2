@@ -4,9 +4,9 @@
 
 function Init()
 	local m = NewWebsiteModule()
-	m.ID                       = 'ac42a85566244b7e836679491ce679e6'
-	m.Name                     = 'YugenMangas'
-	m.RootURL                  = 'https://yugenmangas.lat'
+	m.ID                       = 'ac42a85566244b7e836679491ce679ey'
+	m.Name                     = 'Punuprojects'
+	m.RootURL                  = 'https://punuprojects.com'
 	m.Category                 = 'Spanish'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
 	m.OnGetInfo                = 'GetInfo'
@@ -18,7 +18,7 @@ end
 ----------------------------------------------------------------------------------------------------
 
 local Template = require 'templates.HeanCms'
-API_URL = 'https://api.yugenmangas.net'
+API_URL = 'https://api.punuprojects.com'
 
 ----------------------------------------------------------------------------------------------------
 -- Event Functions
