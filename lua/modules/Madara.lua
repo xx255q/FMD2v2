@@ -86,7 +86,7 @@ function Modules.Madara()
 				x.XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/a[1]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			elseif MODULE.ID == '8c8adf7a1eba4b7cb449f1fd127fe696' then -- ShieldManga
 				x.XPathHREFAll('//li[contains(@class, "wp-manga-hapter")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-			elseif MODULE.ID == '7f1b637a525940db9459f1cbf2f7cfc3' then -- Manga18SX
+			elseif MODULE.ID == '7f1b637a525940db9459f1cbf2f7cfc3' then -- Manga18FX
 				x.XPathHREFAll('//ul[@class="row-content-chapter"]//a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			elseif MODULE.ID == '187417a02af74223a390dce786bb2a9f' then -- ManhwasMen
 				local v for v in x.XPath('//div[@class="chapter-link"]/a').Get() do
@@ -184,7 +184,7 @@ function Modules.Madara()
 						TASK.PageLinks.Add(src)
 					end
 				end
-			elseif MODULE.ID == '7f1b637a525940db9459f1cbf2f7cfc3' then -- Manga18SX
+			elseif MODULE.ID == '7f1b637a525940db9459f1cbf2f7cfc3' then -- Manga18FX
 				x.XPathStringAll('//div[@class="read-content"]/img/@src', TASK.PageLinks)
 			elseif MODULE.ID == '123fa1ed637aswet8cb4a154965a6423' then -- LeerManga
 				x.XPathStringAll('//*[@id="images_chapter"]//img/@data-src', TASK.PageLinks)
@@ -421,7 +421,7 @@ function Init()
 	AddWebsiteModule('c87aeae76e884adc9de8bc6b9d56f2c6', 'ShosetsuManga', 'https://www.shosetsu-manga.org')
 	AddWebsiteModule('7fd5031b766a4d228fd0940c0cdb1424', 'MangaHentai', 'https://mangahentai.me')
 	AddWebsiteModule('58f8a130748443c285036e4c4bf49fe8', 'Hentaidexy', 'https://hentaidexy.com')
-	AddWebsiteModule('7f1b637a525940db9459f1cbf2f7cfc3', 'Manga18SX', 'https://manga18sx.com')
+	AddWebsiteModule('7f1b637a525940db9459f1cbf2f7cfc3', 'Manga18FX', 'https://manga18fx.com')
 	AddWebsiteModule('9bdde4abb0a24e1783c8f3681839d064', 'HManhwa', 'https://hmanhwa.com')
 
 	cat = 'Spanish-Scanlation'
