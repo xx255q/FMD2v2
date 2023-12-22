@@ -32,20 +32,20 @@ end
 -- Get info and chapter list for current manga.
 function _M.GetInfo()
 	local thumbnail, title, series, v, x = nil
-	local u = API_URL .. '/series/' .. URL:match('/series/(.-)$')
+	local u = API_URL .. '/series/' .. URL:match('/.-/(.-)$')
 
 	if not HTTP.GET(u) then return net_problem end
 
 	x = CreateTXQuery(HTTP.Document)
 	MANGAINFO.Title     = x.XPathString('json(*).title')
-	thumbnail		= x.XPathString('json(*).thumbnail')
+	MANGAINFO.Authors   = x.XPathString('json(*).author')
+	MANGAINFO.Genres    = x.XPathStringAll('json(*).tags().name')
+	MANGAINFO.Summary   = x.XPathString('json(*).description')
+	thumbnail = x.XPathString('json(*).thumbnail')
 	if string.find(thumbnail, 'media', 1, true) == nil then
 		thumbnail = API_URL .. '/' .. thumbnail
 	end
 	MANGAINFO.CoverLink = thumbnail
-	MANGAINFO.Authors   = x.XPathString('json(*).author')
-	MANGAINFO.Genres    = x.XPathStringAll('json(*).tags().name')
-	MANGAINFO.Summary   = x.XPathString('json(*).description')
 
 	series = '/' .. x.XPathString('json(*).series_slug') .. '/'
 	for v in x.XPath('json(*).seasons().chapters()').Get() do
