@@ -445,7 +445,6 @@ function Init()
 	AddWebsiteModule('3593adad980d454abe489c42e7158032', 'RealmScans', 'https://realmscans.com')
 	AddWebsiteModule('a51ebfb8979045d589cd867c48a095c0', 'ManhwaFreak', 'https://manhwafreak.com')
 	AddWebsiteModule('f01040ee781d4ae1929031419b97d2e0', 'VoidScans', 'https://void-scans.com')
-	AddWebsiteModule('752cda75b5e24f6ab4256079c564eba2', 'OmegaScans', 'https://omegascans.org')
 	AddWebsiteModule('3b9b01c5fde14e00a540dda2c60ada36', 'NightScans', 'https://nightscans.org')
 	AddWebsiteModule('e5fb41d65454402499e5cadcf18cd1c2', 'AnigliScans', 'https://anigliscans.com')
 
