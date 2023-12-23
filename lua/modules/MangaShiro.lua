@@ -437,7 +437,7 @@ function Init()
 	
 	cat = 'English-Scanlation'
 	AddWebsiteModule('7103ae6839ea46ec80cdfc2c4b37c803', 'AsuraScans', 'https://asuratoon.com')
-	AddWebsiteModule('fb34a56c83f54b19b57a9a92070fe899', 'FlameScans', 'https://flamescans.org')
+	AddWebsiteModule('fb34a56c83f54b19b57a9a92070fe899', 'FlameComics', 'https://flamecomics.com')
 	AddWebsiteModule('568f2731188d4f058c5542e89603a030', 'AzureManga', 'https://azuremanga.com')
 	AddWebsiteModule('f8c92a9a83f64deebee5ec58b7b15bdf', 'xCaliBRScans', 'https://xcalibrscans.com')
 	AddWebsiteModule('f794803973af4e5daab21683d4de873a', 'LuminousScans', 'https://luminousscans.com')
