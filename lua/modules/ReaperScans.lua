@@ -6,7 +6,7 @@ function Init()
 	local m = NewWebsiteModule()
 	m.ID                       = 'fb042c961d06479582edb2fa582e3a41'
 	m.Name                     = 'ReaperScans'
-	m.RootURL                  = 'https://reapercomics.com'
+	m.RootURL                  = 'https://reaperscans.com'
 	m.Category                 = 'English-Scanlation'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
 	m.OnGetInfo                = 'GetInfo'
