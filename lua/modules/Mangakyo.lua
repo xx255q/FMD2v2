@@ -4,9 +4,9 @@
 
 function Init()
 	local m = NewWebsiteModule()
-	m.ID                       = '5eb57a1843d8462dab0fdfd0efc1eca5'
-	m.Name                     = 'MangaShiro'
-	m.RootURL                  = 'https://mangashiro.me'
+	m.ID                       = '56f905ea80e24c4f8bbc37e05de2ad9a'
+	m.Name                     = 'Mangakyo'
+	m.RootURL                  = 'https://mangakyo.vip'
 	m.Category                 = 'Indonesian'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
 	m.OnGetInfo                = 'GetInfo'
@@ -18,9 +18,9 @@ end
 ----------------------------------------------------------------------------------------------------
 
 local Template = require 'templates.MangaThemesia'
--- DirectoryPagination = '/manga/list-mode/'
--- XPathTokenAuthors   = 'Author'
--- XPathTokenArtists   = 'Artist'
+DirectoryPagination = '/komik/list-mode/'
+XPathTokenAuthors   = 'Pengarang'
+XPathTokenArtists   = 'Pemeran'
 
 ----------------------------------------------------------------------------------------------------
 -- Event Functions

@@ -4,9 +4,9 @@
 
 function Init()
 	local m = NewWebsiteModule()
-	m.ID                       = '5eb57a1843d8462dab0fdfd0efc1eca5'
-	m.Name                     = 'MangaShiro'
-	m.RootURL                  = 'https://mangashiro.me'
+	m.ID                       = '5af0f26f0d034fb2b42ee65d7e4188ab'
+	m.Name                     = 'Komiku'
+	m.RootURL                  = 'https://komiku.id'
 	m.Category                 = 'Indonesian'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
 	m.OnGetInfo                = 'GetInfo'
@@ -18,8 +18,8 @@ end
 ----------------------------------------------------------------------------------------------------
 
 local Template = require 'templates.MangaThemesia'
--- DirectoryPagination = '/manga/list-mode/'
--- XPathTokenAuthors   = 'Author'
+DirectoryPagination = '/daftar-komik/'
+XPathTokenAuthors   = 'Komikus'
 -- XPathTokenArtists   = 'Artist'
 
 ----------------------------------------------------------------------------------------------------
@@ -30,6 +30,8 @@ local Template = require 'templates.MangaThemesia'
 function GetNameAndLink()
 	Template.GetNameAndLink()
 
+	CreateTXQuery(HTTP.Document).XPathHREFAll('//div[@class="ls4j"]//a', LINKS, NAMES)
+
 	return no_error
 end
 
@@ -37,12 +39,23 @@ end
 function GetInfo()
 	Template.GetInfo()
 
+	x = CreateTXQuery(HTTP.Document)
+	MANGAINFO.Title     = x.XPathString('//h1[@itemprop="name"]'):gsub('Komik', '')
+	MANGAINFO.CoverLink = x.XPathString('//div[@class="ims"]/img/@src')
+	MANGAINFO.Genres    = x.XPathStringAll('//ul[@class="genre"]//a')
+	MANGAINFO.Summary   = x.XPathString('//p[@class="desc"]')
+
+	x.XPathHREFTitleAll('//td[@class="judulseries"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
+
 	return no_error
 end
 
 -- Get the page count for the current chapter.
 function GetPageNumber()
 	Template.GetPageNumber()
+
+	CreateTXQuery(HTTP.Document).XPathStringAll('//*[@id="Baca_Komik"]/img/@src', TASK.PageLinks)
 
 	return no_error
 end

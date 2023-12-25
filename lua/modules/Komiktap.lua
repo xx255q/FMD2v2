@@ -4,9 +4,9 @@
 
 function Init()
 	local m = NewWebsiteModule()
-	m.ID                       = '5eb57a1843d8462dab0fdfd0efc1eca5'
-	m.Name                     = 'MangaShiro'
-	m.RootURL                  = 'https://mangashiro.me'
+	m.ID                       = 'f9adee01635a4ff48fdff5164a65d6dd'
+	m.Name                     = 'Komiktap'
+	m.RootURL                  = 'https://komiktap.me'
 	m.Category                 = 'Indonesian'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
 	m.OnGetInfo                = 'GetInfo'

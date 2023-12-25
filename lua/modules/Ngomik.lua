@@ -4,9 +4,9 @@
 
 function Init()
 	local m = NewWebsiteModule()
-	m.ID                       = '5eb57a1843d8462dab0fdfd0efc1eca5'
-	m.Name                     = 'MangaShiro'
-	m.RootURL                  = 'https://mangashiro.me'
+	m.ID                       = '5c06401129894099bb6fc59c08a878d4'
+	m.Name                     = 'Ngomik'
+	m.RootURL                  = 'https://ngomik.net'
 	m.Category                 = 'Indonesian'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
 	m.OnGetInfo                = 'GetInfo'
@@ -18,7 +18,7 @@ end
 ----------------------------------------------------------------------------------------------------
 
 local Template = require 'templates.MangaThemesia'
--- DirectoryPagination = '/manga/list-mode/'
+DirectoryPagination = '/all-komik/page/'
 -- XPathTokenAuthors   = 'Author'
 -- XPathTokenArtists   = 'Artist'
 
@@ -29,6 +29,12 @@ local Template = require 'templates.MangaThemesia'
 -- Get links and names from the manga list of the current website.
 function GetNameAndLink()
 	Template.GetNameAndLink()
+	local u = MODULE.RootURL .. DirectoryPagination .. (URL + 1)
+
+	if not HTTP.GET(u) then return net_problem end
+
+	CreateTXQuery(HTTP.Document).XPathHREFTitleAll('//div[@class="bsx"]/a', LINKS, NAMES)
+	UPDATELIST.CurrentDirectoryPageNumber = tonumber(x.XPathString('//div[@class="pagination"]/a[last()-1]')) or 1
 
 	return no_error
 end

@@ -4,9 +4,9 @@
 
 function Init()
 	local m = NewWebsiteModule()
-	m.ID                       = '5eb57a1843d8462dab0fdfd0efc1eca5'
-	m.Name                     = 'MangaShiro'
-	m.RootURL                  = 'https://mangashiro.me'
+	m.ID                       = 'ca571825056b4850bd3693e4e1437997'
+	m.Name                     = 'Mangacan'
+	m.RootURL                  = 'https://mangacanblog.com'
 	m.Category                 = 'Indonesian'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
 	m.OnGetInfo                = 'GetInfo'
@@ -18,7 +18,7 @@ end
 ----------------------------------------------------------------------------------------------------
 
 local Template = require 'templates.MangaThemesia'
--- DirectoryPagination = '/manga/list-mode/'
+DirectoryPagination = '/daftar-komik-manga-bahasa-indonesia.html'
 -- XPathTokenAuthors   = 'Author'
 -- XPathTokenArtists   = 'Artist'
 
@@ -37,12 +37,17 @@ end
 function GetInfo()
 	Template.GetInfo()
 
+	x = CreateTXQuery(HTTP.Document)
+	MANGAINFO.Summary   = ''
+
 	return no_error
 end
 
 -- Get the page count for the current chapter.
 function GetPageNumber()
 	Template.GetPageNumber()
+
+	CreateTXQuery(HTTP.Document).XPathStringAll('//img[@class="ts-main-image"]/@src', TASK.PageLinks)
 
 	return no_error
 end

@@ -4,13 +4,14 @@
 
 function Init()
 	local m = NewWebsiteModule()
-	m.ID                       = '5eb57a1843d8462dab0fdfd0efc1eca5'
-	m.Name                     = 'MangaShiro'
-	m.RootURL                  = 'https://mangashiro.me'
+	m.ID                       = '6f8182f08d5444dbb5244ec882430db1'
+	m.Name                     = 'KomikMama'
+	m.RootURL                  = 'https://komik-mama.com'
 	m.Category                 = 'Indonesian'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
 	m.OnGetInfo                = 'GetInfo'
 	m.OnGetPageNumber          = 'GetPageNumber'
+	m.OnBeforeDownloadImage    = 'BeforeDownloadImage'
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -18,7 +19,7 @@ end
 ----------------------------------------------------------------------------------------------------
 
 local Template = require 'templates.MangaThemesia'
--- DirectoryPagination = '/manga/list-mode/'
+DirectoryPagination = '/komik/list-mode/'
 -- XPathTokenAuthors   = 'Author'
 -- XPathTokenArtists   = 'Artist'
 
@@ -45,4 +46,11 @@ function GetPageNumber()
 	Template.GetPageNumber()
 
 	return no_error
+end
+
+-- Prepare the URL, http header and/or http cookies before downloading an image.
+function BeforeDownloadImage()
+	HTTP.Headers.Values['Referer'] = MODULE.RootURL
+
+	return true
 end

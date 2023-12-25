@@ -4,9 +4,9 @@
 
 function Init()
 	local m = NewWebsiteModule()
-	m.ID                       = '5eb57a1843d8462dab0fdfd0efc1eca5'
-	m.Name                     = 'MangaShiro'
-	m.RootURL                  = 'https://mangashiro.me'
+	m.ID                       = 'b8206e754d4541689c1d367f7e19fd64'
+	m.Name                     = 'KomikCast'
+	m.RootURL                  = 'https://komikcast.lol'
 	m.Category                 = 'Indonesian'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
 	m.OnGetInfo                = 'GetInfo'
@@ -18,7 +18,7 @@ end
 ----------------------------------------------------------------------------------------------------
 
 local Template = require 'templates.MangaThemesia'
--- DirectoryPagination = '/manga/list-mode/'
+DirectoryPagination = '/daftar-komik/?list'
 -- XPathTokenAuthors   = 'Author'
 -- XPathTokenArtists   = 'Artist'
 
@@ -30,6 +30,12 @@ local Template = require 'templates.MangaThemesia'
 function GetNameAndLink()
 	Template.GetNameAndLink()
 
+	x = CreateTXQuery(HTTP.Document)
+	for v in x.XPath('//div[@class="list-update"]//ul//a').Get() do
+		LINKS.Add(v.GetAttribute('href'))
+		NAMES.Add(x.XPathString('normalize-space(.)', v):gsub('Bahasa Indonesia$', ''))
+	end
+
 	return no_error
 end
 
@@ -37,12 +43,24 @@ end
 function GetInfo()
 	Template.GetInfo()
 
+	x = CreateTXQuery(HTTP.Document)
+	MANGAINFO.Title     = x.XPathString('//h1[@class="komik_info-content-body-title"]'):gsub('Bahasa Indonesia$', '')
+	MANGAINFO.Authors   = x.XPathString('//span[@class="komik_info-content-info" and contains(b, "Author")]/text()')
+	MANGAINFO.Genres    = x.XPathStringAll('//span[@class="komik_info-content-genre"]/a')
+	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//span[@class="komik_info-content-info" and contains(b, "Status")]/text()'))
+	MANGAINFO.Summary   = x.XPathString('//div[@class="komik_info-description-sinopsis"]/p')
+
+	x.XPathHREFAll('//div[@class="komik_info-chapters"]//a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
+
 	return no_error
 end
 
 -- Get the page count for the current chapter.
 function GetPageNumber()
 	Template.GetPageNumber()
+
+	CreateTXQuery(HTTP.Document).XPathStringAll('//div[@class="main-reading-area"]/img/@src', TASK.PageLinks)
 
 	return no_error
 end
