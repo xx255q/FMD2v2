@@ -223,12 +223,6 @@ function GetPageNumber()
 		elseif MODULE.ID == 'b8206e754d4541689c1d367f7e19fd64' then -- KomikCast
 			x.ParseHTML(GetBetween('"nrm":', '} |', x.XPathString('//script[contains(., "chapterImages")]')):gsub('\\/', '/'):gsub('\\"', ''))
 			x.XPathStringAll('//img/@src', TASK.PageLinks)
-		elseif MODULE.ID == '7103ae6839ea46ec80cdfc2c4b37c803' then -- AsuraScans
-			local v for v in x.XPath('//*[@id="readerarea"]/p/img').Get() do
-				if string.find(v.GetAttribute('src'), "panda") == nil then
-					TASK.PageLinks.Add(v.GetAttribute('src'))
-				end
-			end
 		elseif MODULE.ID == 'edf6b037808442508a3aaeb1413699bf' then -- KomikIndoID
 			x.XPathStringAll('//*[@id="Baca_Komik"]//img/@src', TASK.PageLinks)
 		elseif MODULE.ID == 'ec1a1ad5301f414592f0ba0402024813' then -- Doujindesu
