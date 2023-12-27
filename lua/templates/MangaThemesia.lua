@@ -67,14 +67,14 @@ end
 function GetAuthors(x)
 	local authors = x.XPathString('//td[contains(., "' .. XPathTokenAuthors .. '")]/following-sibling::td')
 	if authors == '' then authors = x.XPathString('//div[@class="fmed" and contains(b, "' .. XPathTokenAuthors .. '")]/span') end
-	if authors == '' then authors = x.XPathString('//div[@class="imptdt" and contains(., "' .. XPathTokenAuthors .. '")]/i') end
+	if authors == '' then authors = x.XPathString('(//div[@class="imptdt" and contains(., "' .. XPathTokenAuthors .. '")]/i)[1]') end
 	return authors
 end
 
 function GetArtists(x)
 	local artists = x.XPathString('//td[contains(., "' .. XPathTokenArtists .. '")]/following-sibling::td')
 	if artists == '' then artists = x.XPathString('//div[@class="fmed" and contains(b, "' .. XPathTokenArtists .. '")]/span') end
-	if artists == '' then artists = x.XPathString('//div[@class="imptdt" and contains(., "' .. XPathTokenArtists .. '")]/i') end
+	if artists == '' then artists = x.XPathString('(//div[@class="imptdt" and contains(., "' .. XPathTokenArtists .. '")]/i)[1]') end
 	return artists
 end
 

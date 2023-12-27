@@ -397,25 +397,12 @@ function Init()
 	AddWebsiteModule('55cefd61a4144b56874108a666857ff0', 'WorldRomanceTranslation', 'https://wrt.my.id')
 
 	cat = 'Raw'
-	AddWebsiteModule('21b0dfcb262d4ae28520679165282666', 'Rawkuma', 'https://rawkuma.com')
 	AddWebsiteModule('5c3737434b964df7b76e5b27c2ad442c', 'MangasRaw', 'https://mangas-raw.com')
-	AddWebsiteModule('452f504992704f11add27f30f47e388a', 'J9jp', 'https://j9jp.com')
-
-	cat = 'Arabic'
-	AddWebsiteModule('0e45db2650604f74a0caeb7c1d69a749', 'SWATManga', 'https://swatmanga.me')
 	
 	cat = 'English-Scanlation'
-	AddWebsiteModule('7103ae6839ea46ec80cdfc2c4b37c803', 'AsuraScans', 'https://asuratoon.com')
-	AddWebsiteModule('fb34a56c83f54b19b57a9a92070fe899', 'FlameComics', 'https://flamecomics.com')
 	AddWebsiteModule('568f2731188d4f058c5542e89603a030', 'AzureManga', 'https://azuremanga.com')
-	AddWebsiteModule('f8c92a9a83f64deebee5ec58b7b15bdf', 'xCaliBRScans', 'https://xcalibrscans.com')
-	AddWebsiteModule('f794803973af4e5daab21683d4de873a', 'LuminousScans', 'https://luminousscans.com')
 	AddWebsiteModule('15fc68c57ce141f497b872af157d72ac', 'ShimadaScans', 'https://shimadascans.com')
-	AddWebsiteModule('3593adad980d454abe489c42e7158032', 'RealmScans', 'https://rizzcomic.com')
 	AddWebsiteModule('a51ebfb8979045d589cd867c48a095c0', 'ManhwaFreak', 'https://manhwafreak.com')
-	AddWebsiteModule('f01040ee781d4ae1929031419b97d2e0', 'VoidScans', 'https://void-scans.com')
-	AddWebsiteModule('3b9b01c5fde14e00a540dda2c60ada36', 'NightScans', 'https://nightscans.org')
-	AddWebsiteModule('e5fb41d65454402499e5cadcf18cd1c2', 'AnigliScans', 'https://anigliscans.com')
 
 	cat = 'Spanish'
 	AddWebsiteModule('363066add92f4043b39d2009b442ab32', 'PhoenixFansub', 'https://phoenixfansub.com')
