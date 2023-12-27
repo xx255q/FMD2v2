@@ -41,7 +41,7 @@ function _M.GetInfo()
 	MANGAINFO.Artists   = GetArtists(x)
 	MANGAINFO.Genres    = GetGenres(x)
 	MANGAINFO.Status    = MangaInfoStatusIfPos(GetStatus(x))
-	MANGAINFO.Summary   = x.XPathString('//div[@itemprop="description"]/string-join(.//text(), " ")')
+	MANGAINFO.Summary   = x.XPathString('//div[@itemprop="description"]')
 
 	for v in x.XPath('//div[@id="chapterlist"]//div[@class="eph-num"]/a').Get() do
 		MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
