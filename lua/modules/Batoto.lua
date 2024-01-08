@@ -87,7 +87,7 @@ JSON.parse(CryptoJS.AES.decrypt(batoWord, batoPass).toString(CryptoJS.enc.Utf8))
 ]])
 	local delimiter = ','
 	ext = ext .. delimiter
-	local images = script:match('const imgHttpLis = %[([^%]]+)')
+	local images = script:match('const imgHttps = %[([^%]]+)')
 	local mtch = ''
 	local image for image in images:gmatch('"([^",]+)') do
 		mtch = ext:match("(.-)" .. delimiter)
