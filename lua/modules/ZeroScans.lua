@@ -6,7 +6,7 @@ function Init()
 	local m = NewWebsiteModule()
 	m.ID                       = 'a0505ce2903c4903b398eaabb5cf1d72'
 	m.Name                     = 'ZeroScans'
-	m.RootURL                  = 'https://zeroscans.com'
+	m.RootURL                  = 'https://zscans.com'
 	m.Category                 = 'English-Scanlation'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
 	m.OnGetInfo                = 'GetInfo'
