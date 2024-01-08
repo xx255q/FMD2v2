@@ -9,6 +9,7 @@ local _M = {}
 ----------------------------------------------------------------------------------------------------
 
 API_URL = ''
+DirectoryPagination = '/query?series_type=Comic&order=asc&perPage=100&page='
 
 ----------------------------------------------------------------------------------------------------
 -- Event Functions
@@ -17,7 +18,7 @@ API_URL = ''
 -- Get links and names from the manga list of the current website.
 function _M.GetNameAndLink()
 	local v, x = nil
-	if not HTTP.GET(API_URL .. '/query?series_type=Comic&order=asc&perPage=100' .. '&page=' .. (URL + 1)) then return net_problem end
+	if not HTTP.GET(API_URL .. DirectoryPagination .. (URL + 1)) then return net_problem end
 
 	x = CreateTXQuery(HTTP.Document)
 	for v in x.XPath('json(*).data()').Get() do
@@ -66,12 +67,16 @@ end
 
 -- Get the page count for the current chapter.
 function _M.GetPageNumber()
-	local v, x = nil
+	local image, v, x = nil
 	if not HTTP.GET(API_URL .. URL) then return net_problem end
 
 	x = CreateTXQuery(HTTP.Document)
 	for v in x.XPath('json(*).data()').Get() do
-		TASK.PageLinks.Add(v.ToString())
+		image = v.ToString()
+		if string.find(image, 'media', 1, true) == nil then
+			image = API_URL .. '/' .. image
+		end
+		TASK.PageLinks.Add(image)
 	end
 
 	return no_error
