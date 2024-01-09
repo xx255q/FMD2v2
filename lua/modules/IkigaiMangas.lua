@@ -41,11 +41,12 @@ end
 
 -- Get info and chapter list for current manga.
 function GetInfo()
+	local chapter, next_page, title, v, x = nil
 	local u = API_URL .. '/series/' .. URL:match('/series/comic%-(.-)$')
 
 	if not HTTP.GET(u) then return net_problem end
 	
-	local x = CreateTXQuery(HTTP.Document)
+	x = CreateTXQuery(HTTP.Document)
 	MANGAINFO.Title     = x.XPathString('json(*).series.name')
 	MANGAINFO.CoverLink = x.XPathString('json(*).series.cover')
 	MANGAINFO.Genres    = x.XPathStringAll('json(*).series.genres().name')
@@ -54,18 +55,25 @@ function GetInfo()
 
 	u = u .. '/chapters?page=1'  
 	while u do
-	  if not HTTP.GET(u) then return net_problem end
-	  x = CreateTXQuery(HTTP.Document)
+		if not HTTP.GET(u) then return net_problem end
+		
+		x = CreateTXQuery(HTTP.Document)
+		for v in x.XPath('json(*).data()').Get() do
+			chapter = x.XPathString('name', v)
+			title = x.XPathString('title', v)
 
-	  local v for v in x.XPath('json(*).data()').Get() do
-		MANGAINFO.ChapterLinks.Add(x.XPathString('id', v))
-		MANGAINFO.ChapterNames.Add(x.XPathString('name', v))
-	  end  
+			if title == 'null' then title = '' end
+			if title ~= '' then title = ': ' .. title end
 
-	  local next_page = x.XPathString('json(*).links.next')
-	  u = next_page ~= 'null' and next_page or nil
+			MANGAINFO.ChapterLinks.Add(x.XPathString('id', v))
+			MANGAINFO.ChapterNames.Add('Capítulo ' .. chapter .. title)
+		end  
+
+		next_page = x.XPathString('json(*).links.next')
+		u = next_page ~= 'null' and next_page or nil
 	end
 	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
+
 	return no_error
 end
 
