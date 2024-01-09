@@ -18,6 +18,7 @@ end
 ----------------------------------------------------------------------------------------------------
 
 API_URL = 'https://dashboard.olympusvisor.com/api'
+DirectoryPagination = '/series?page='
 
 ----------------------------------------------------------------------------------------------------
 -- Event Functions
@@ -26,60 +27,45 @@ API_URL = 'https://dashboard.olympusvisor.com/api'
 
 -- Get links and names from the manga list of the current website.
 function GetNameAndLink()
-	local u = MaybeFillHost(API_URL, '/series?direction=asc&type=comic')
-	if not HTTP.GET(u) then return net_problem end
-	
-	local x = CreateTXQuery(HTTP.Document)
-	local v for v in x.XPath('json(*).data().series().data()').Get() do
-		LINKS.Add(MODULE.RootURL .. '/series/comic-' .. x.XPathString('slug', v))
+	local v, x = nil
+	if not HTTP.GET(API_URL .. DirectoryPagination .. (URL + 1)) then return net_problem end
+
+	x = CreateTXQuery(HTTP.Document)
+	for v in x.XPath('json(*).data.series.data()').Get() do
+		LINKS.Add('series/comic-' .. x.XPathString('slug', v))
 		NAMES.Add(x.XPathString('name', v))
 	end
+	UPDATELIST.CurrentDirectoryPageNumber = tonumber(x.XPathString('json(*).data.series.last_page')) or 1
+
 	return no_error
 end
 
 -- Get info and chapter list for current manga.
 function GetInfo()
-	local u = MaybeFillHost(MODULE.RootURL, URL)
-	local slug = string.gsub(u, "https://olympusvisor%.com/series/comic%-", "") 
-	local jd = API_URL .. '/search?name=' .. slug
+	local next_page, v, x = nil
+	local slug = URL:match('/series/comic%-(.-)$')
+	local u = API_URL .. '/series/' .. slug
 
-	if not HTTP.GET(jd) then return net_problem end
+	if not HTTP.GET(u) then return net_problem end
+	
+	x = CreateTXQuery(HTTP.Document)
+	MANGAINFO.Title     = x.XPathString('json(*).data.name')
+	MANGAINFO.CoverLink = x.XPathString('json(*).data.cover')
+	MANGAINFO.Genres    = x.XPathStringAll('json(*).data.genres().name')
+	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('json(*).data.status.name'), 'Activo', 'Finalizado')
+	MANGAINFO.Summary   = x.XPathString('json(*).data.summary')
 
-	local x = CreateTXQuery(HTTP.Document)
-	local desiredSlug = slug 
-	local foundSlug = nil
-	local numIterations = 0
-	local v for v in x.XPath('json(*).data()').Get() do
-		MANGAINFO.Title     = x.XPathString('name', v)
-		MANGAINFO.CoverLink = x.XPathString('cover', v)
-	    foundSlug = x.XPathString('slug', v)
-	    slug = foundSlug -- Actualizar slug con el valor de foundSlug en cada iteración
-	    numIterations = numIterations + 1
-	    if foundSlug == desiredSlug then
-	        break
-	    end	
-	end
-
-	if numIterations == 1 then
-	    MANGAINFO.Title = MANGAINFO.Title or x.XPathString('name', x)
-	    MANGAINFO.CoverLink = MANGAINFO.CoverLink or x.XPathString('cover', x)
-	end	
-
-	if slug == nil then
-		return net_problem
-	end
-
-	local u = API_URL .. '/series/' .. slug .. '/chapters?page=1'
+	u = u .. '/chapters?page=1'  
 	while u do
 	  if not HTTP.GET(u) then return net_problem end
 	  x = CreateTXQuery(HTTP.Document)
 
-	  local v for v in x.XPath('json(*).data()').Get() do
-	    MANGAINFO.ChapterLinks.Add(slug .. '/chapters/' .. x.XPathString('id', v))
-	    MANGAINFO.ChapterNames.Add(x.XPathString('name', v))
-	  end   
+	  for v in x.XPath('json(*).data()').Get() do
+		MANGAINFO.ChapterLinks.Add(slug .. '/chapters/' .. x.XPathString('id', v))
+		MANGAINFO.ChapterNames.Add('Capítulo ' .. x.XPathString('name', v))
+	  end  
 
-	  local next_page = x.XPathString('json(*).links.next')
+	  next_page = x.XPathString('json(*).links.next')
 	  u = next_page ~= 'null' and next_page or nil
 	end
 
