@@ -103,6 +103,9 @@ function _M.GetPageNumber()
 	x.XPathStringAll('json(*).sources()[1].images()', TASK.PageLinks)
 	for i = 0, TASK.PageLinks.Count - 1 do -- Bypass 'i0.wp.com' image CDN to ensure original images are loaded directly from host
 		TASK.PageLinks[i] = TASK.PageLinks[i]:gsub("i%d.wp.com/", "")
+		if string.find(TASK.PageLinks[i], "blogger") or string.find(TASK.PageLinks[i], "blogspot") then
+			TASK.PageLinks[i] = TASK.PageLinks[i]:gsub("/s1600/", "/s0/")
+		end
 		i = i + 1
 	end
 
