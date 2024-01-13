@@ -1,11 +1,11 @@
-local API_URL = 'https://api.comick.app'
+local API_URL = 'https://api.comick.ink'
 local CDN_URL = 'https://meo3.comick.pictures'
 
 function Init()
 	local m = NewWebsiteModule()
 	m.ID                         = '214e30f0afec420cafddefe22b4d973c'
 	m.Name                       = 'ComicK'
-	m.RootURL                    = 'https://comick.app'
+	m.RootURL                    = 'https://comick.cc'
 	m.Category                   = 'English'
 	m.OnGetNameAndLink           = 'GetNameAndLink'
 	m.OnGetInfo                  = 'GetInfo'
@@ -37,7 +37,7 @@ function Init()
 end
 
 function GetNameAndLink()
-	if HTTP.GET(API_URL .. '/v1.0/search/?page=' .. (URL + 1) .. '&sort=uploaded') then
+	if HTTP.GET(API_URL .. '/v1.0/search?limit=300&page=' .. (URL + 1) .. '&sort=uploaded') then
 		local x = CreateTXQuery(HTTP.Document)
 		if x.XPathString('json(*)().title') == '' then return no_error end
 		local v for v in x.XPath('json(*)()').Get() do
