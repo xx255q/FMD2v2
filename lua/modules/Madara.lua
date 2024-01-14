@@ -98,8 +98,6 @@ function Modules.Madara()
 					MANGAINFO.ChapterLinks.Add(x.XPathString('a/@href', v))
 					MANGAINFO.ChapterNames.Add(x.XPathString('a/text()[not(parent::span)]', v))
 				end
-			elseif MODULE.ID == '287f665620664e468d4e05f5d76f5a43' then -- ResetScans
-				x.XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/div/a[1]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			else
 				x.XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			end
@@ -110,6 +108,9 @@ function Modules.Madara()
 				HTTP.Headers.Values['Content-Length'] = '0'
 				if HTTP.POST(MANGAINFO.URL .. 'ajax/chapters') then
 					local x = CreateTXQuery(HTTP.Document)
+					if MODULE.ID == '287f665620664e468d4e05f5d76f5a43' then -- ResetScans
+						x.XPathHREFAll('//div[@class="li__text"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+					end
 					x.XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/a[1]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 					if MANGAINFO.ChapterLinks.Count == 0 then
 						local v for v in x.XPath('//div[@class="chapter-link"]/a').Get() do
@@ -495,7 +496,7 @@ function Init()
 	AddWebsiteModule('ea0da11a1ec34dfeb65102d7768c897d', 'Manhuafast', 'https://manhuafast.com')
 	AddWebsiteModule('80eb1cd9d38a4cb3ae4ea57f993847eb', 'S2Manga', 'https://s2manga.com')
 	AddWebsiteModule('33618723b5a74da3a28275258a47ad67', 'FreeComicOnline', 'https://freecomiconline.me')
-	AddWebsiteModule('287f665620664e468d4e05f5d76f5a43', 'ResetScans', 'https://reset-scans.com')
+	AddWebsiteModule('287f665620664e468d4e05f5d76f5a43', 'ResetScans', 'https://reset-scans.us')
 	AddWebsiteModule('287f665620664e468d4e05f5d76f5a44', 'HadesNoFansub', 'https://mangareaderpro.com/es')
 	AddWebsiteModule('287f665618784e468d4e05f5d76f5a45', 'EroManhwas', 'https://eromanhwas.com')
 	AddWebsiteModule('d9615a731b1243538663e96f0c1ad595', 'Manga347', 'https://manga347.com')
