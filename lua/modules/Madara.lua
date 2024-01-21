@@ -34,9 +34,6 @@ function Modules.Madara()
 			if string.match(MANGAINFO.Title:upper(), ' RAW$') ~= nil then
 				MANGAINFO.Title = MANGAINFO.Title:sub(1, -5)
 			end
-			if string.match(MANGAINFO.Title:upper(), ' – MANHUAUS') ~= nil then
-				MANGAINFO.Title = MANGAINFO.Title:sub(1, -14)
-			end
 			MANGAINFO.CoverLink=x.XPathString('//div[@class="summary_image"]//img/@data-src')
 			if MANGAINFO.CoverLink == '' then
 				MANGAINFO.CoverLink=x.XPathString('//div[@class="summary_image"]//img/@data-lazy-src')
@@ -183,8 +180,6 @@ function Modules.Madara()
 				x.XPathStringAll('//div[@class="read-content"]/img/@src', TASK.PageLinks)
 			elseif MODULE.ID == '123fa1ed637aswet8cb4a154965a6423' then -- LeerManga
 				x.XPathStringAll('//*[@id="images_chapter"]//img/@data-src', TASK.PageLinks)
-			elseif MODULE.ID == '283a39fb8ac44c41a3bd7080c5dd73cf' then -- Manhuaus
-				x.XPathStringAll('//div[@class="reading-content"]//img/@data-src', TASK.PageLinks)
 			else
 				x.XPathStringAll('//div[contains(@class, "page-break")]/img/@data-src', TASK.PageLinks)
 			end
@@ -329,7 +324,7 @@ function Init()
 	AddWebsiteModule('0d904cb0bdf6475e9b36ad835cd3050c', 'MangaStreamCC', 'https://www.mangastream.cc')
 	AddWebsiteModule('d42f178a248241c89f943fa1b77c5df8', 'TeabeerComics', 'https://teabeercomics.com')
 	AddWebsiteModule('71c569e7fec94cf1a3a0a01523ffd1ef', 'MangaSushi', 'https://mangasushi.org')
-	AddWebsiteModule('283a39fb8ac44c41a3bd7080c5dd73cf', 'Manhuaus', 'https://manhuaus.com')
+	AddWebsiteModule('283a39fb8ac44c41a3bd7080c5dd73cf', 'Manhuaus', 'https://manhuaus.org')
 	AddWebsiteModule('5cca6c0272c84ae98a92b55d2106d6e0', 'MangaNeloTeam', 'https://manganeloteam.com')
 	AddWebsiteModule('b618f80c4b0242ce9f39af4178d03be1', 'AstralLibrary', 'https://astrallibrary.net')
 	AddWebsiteModule('c01aa037f7f1459984e7cd8676fe9658', 'MangaRead', 'https://www.mangaread.org')
