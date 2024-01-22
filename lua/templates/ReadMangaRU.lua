@@ -82,7 +82,7 @@ function _M.GetPageNumber()
   if not HTTP.GET(u) then return net_problem end
 
   x = CreateTXQuery(HTTP.Document)
-  json = GetBetween('[[', ', 0, ', Trim(GetBetween('rm_h.init(', 'false);', x.XPathString('//script[@type="text/javascript" and contains(., "rm_h.init")]'))))
+  json = GetBetween('[[', ', 0, ', Trim(GetBetween('rm_h.readerDoInit(', 'false);', x.XPathString('//script[@type="text/javascript" and contains(., "rm_h.readerDoInit")]'))))
   json = json:gsub('%],%[', ';'):gsub('\'', ''):gsub('"', ''):gsub(']]', ';')
   for i in json:gmatch('(.-);') do
     i1, i2 = i:match('(.-),.-,(.-),.-,.-')
