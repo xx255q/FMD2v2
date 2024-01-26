@@ -32,7 +32,8 @@ end
 
 -- Get info and chapter list for current manga.
 function _M.GetInfo()
-	local thumbnail, title, series, v, x = nil
+	local chapters, i, j, thumbnail, title, seasons, series, v, x = nil
+	local season_prefix = ''
 	local u = API_URL .. '/series/' .. URL:match('/.-/(.-)$')
 
 	if not HTTP.GET(u) then return net_problem end
@@ -49,16 +50,22 @@ function _M.GetInfo()
 	MANGAINFO.CoverLink = thumbnail
 
 	series = '/' .. x.XPathString('json(*).series_slug') .. '/'
-	for v in x.XPath('json(*).seasons().chapters()').Get() do
-		title = x.XPathString('chapter_title', v)
+	seasons = x.XPath('json(*).seasons()')
+	for i = 1, seasons.Count do
+		if (seasons.Count) > 1 then season_prefix = 'S' .. x.XPathString('json(*).seasons()[' .. i .. '].index') .. ' - ' end
+		chapters = x.XPath('json(*).seasons()[' .. i .. '].chapters()')
+		for j = 1, chapters.Count do
+			v = chapters.Get(j)
 
-		-- Empty title if null:
-		if title == '' or title == nil or title == 'null' then title = '' end
-		-- Add prefix to title if it's not empty:
-		if title ~= '' then title = ' - ' .. title end
+			title = x.XPathString('chapter_title', v)
+			-- Empty title if null:
+			if title == 'null' then title = '' end
+			-- Add prefix to title if it's not empty:
+			if title ~= '' then title = ' - ' .. title end
 
-		MANGAINFO.ChapterLinks.Add('chapter' .. series .. x.XPathString('chapter_slug', v))
-		MANGAINFO.ChapterNames.Add(x.XPathString('chapter_name', v) .. title)
+			MANGAINFO.ChapterLinks.Add('chapter' .. series .. x.XPathString('chapter_slug', v))
+			MANGAINFO.ChapterNames.Add(season_prefix .. x.XPathString('chapter_name', v) .. title)
+		end
 	end
 	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
