@@ -71,7 +71,7 @@ function GetInfo()
 	if magazine ~= '' then
 		MANGAINFO.Title = MANGAINFO.Title .. ' (' .. magazine .. ')'
 	else
-		MANGAINFO.Title = MANGAINFO.Title .. ' (' .. MANGAINFO.Authors .. ')'
+		MANGAINFO.Title = MANGAINFO.Title .. ' [' .. MANGAINFO.Authors .. ']'
 	end
 	if MANGAINFO.Artists ~= '' then MANGAINFO.Title = '[' .. MANGAINFO.Artists .. '] ' .. MANGAINFO.Title end
 
