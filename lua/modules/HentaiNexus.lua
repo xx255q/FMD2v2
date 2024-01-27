@@ -60,15 +60,20 @@ function GetInfo()
 	if not HTTP.GET(u) then return net_problem end
 
 	x = CreateTXQuery(HTTP.Document)
-	MANGAINFO.CoverLink = x.XPathString('//figure[@class="image"][1]/img/@src')
+	MANGAINFO.CoverLink = x.XPathString('(//figure[@class="image"]/img/@src)[1]')
 	MANGAINFO.Authors   = x.XPathString('//table[@class="view-page-details"]//a[contains(@href, "=publisher:")]/text()')
 	MANGAINFO.Artists   = x.XPathString('//table[@class="view-page-details"]//a[contains(@href, "=artist:")]/text()')
-	MANGAINFO.Title     = '[' .. MANGAINFO.Artists .. '] ' .. x.XPathString('//h1[@class="title"]/text()')
+	MANGAINFO.Title     = x.XPathString('//h1[@class="title"]/text()')
 	MANGAINFO.Genres    = x.XPathStringAll('//table[@class="view-page-details"]//a[contains(@href, "=tag:")]/substring-before(., "(")')
 	MANGAINFO.Summary   = x.XPathString('//table[@class="view-page-details"]//td[contains(., "Description")]/following-sibling::td/text()')
 
 	magazine = x.XPathString('//table[@class="view-page-details"]//a[contains(@href, "=magazine:")]/text()')
-	if magazine ~= '' then MANGAINFO.Title = MANGAINFO.Title .. ' (' .. magazine .. ')' end
+	if magazine ~= '' then
+		MANGAINFO.Title = MANGAINFO.Title .. ' (' .. magazine .. ')'
+	else
+		MANGAINFO.Title = MANGAINFO.Title .. ' (' .. MANGAINFO.Authors .. ')'
+	end
+	if MANGAINFO.Artists ~= '' then MANGAINFO.Title = '[' .. MANGAINFO.Artists .. '] ' .. MANGAINFO.Title end
 
 	MANGAINFO.ChapterLinks.Add(URL)
 	MANGAINFO.ChapterNames.Add(MANGAINFO.Title)
