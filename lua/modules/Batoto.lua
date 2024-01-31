@@ -90,9 +90,13 @@ JSON.parse(CryptoJS.AES.decrypt(batoWord, batoPass).toString(CryptoJS.enc.Utf8))
 	local images = script:match('const imgHttps = %[([^%]]+)')
 	local mtch = ''
 	local image for image in images:gmatch('"([^",]+)') do
-		mtch = ext:match("(.-)" .. delimiter)
-		TASK.PageLinks.Add(image .. "?" .. mtch)
-		ext = ext:gsub((mtch .. delimiter):gsub("-", "%%-"), "")
+		if ext ~= ',' then
+			mtch = ext:match("(.-)" .. delimiter)
+			TASK.PageLinks.Add(image .. "?" .. mtch)
+			ext = ext:gsub((mtch .. delimiter):gsub("-", "%%-"), "")
+		else
+			TASK.PageLinks.Add(image)
+		end
 	end
 
 	return no_error
