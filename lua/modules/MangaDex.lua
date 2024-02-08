@@ -3,18 +3,20 @@ local API_PARAMS = '?includes[]=author&includes[]=artist&includes[]=cover_art'
 local COVER_URL = 'https://uploads.mangadex.org/covers'
 local GUID_PATTERN = '(%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x)'
 local MAPPING_FILE = 'userdata/mangadex_v5_mapping.txt'
+local USER_AGENT = 'FreeMangaDownloader'
 
 function Init()
 	local m = NewWebsiteModule()
-	m.ID                 = 'd07c9c2425764da8ba056505f57cf40c'
-	m.Name               = 'MangaDex'
-	m.RootURL            = 'https://mangadex.org'
-	m.Category           = 'English'
-	m.OnGetNameAndLink   = 'GetNameAndLink'
-	m.OnGetInfo          = 'GetInfo'
-	m.OnGetPageNumber    = 'GetPageNumber'
-	m.MaxTaskLimit       = 2
-	m.MaxConnectionLimit = 4
+	m.ID                    = 'd07c9c2425764da8ba056505f57cf40c'
+	m.Name                  = 'MangaDex'
+	m.RootURL               = 'https://mangadex.org'
+	m.Category              = 'English'
+	m.OnGetNameAndLink      = 'GetNameAndLink'
+	m.OnGetInfo             = 'GetInfo'
+	m.OnGetPageNumber       = 'GetPageNumber'
+	m.OnBeforeDownloadImage = 'BeforeDownloadImage'
+	m.MaxTaskLimit          = 2
+	m.MaxConnectionLimit    = 4
 
 	local fmd = require 'fmd.env'
 	local slang = fmd.SelectedLanguage
@@ -52,6 +54,7 @@ function Init()
 end
 
 function GetNameAndLink()
+	HTTP.UserAgent = USER_AGENT
 	local crypto = require 'fmd.crypto'
 
 	local demographics = {
@@ -133,6 +136,7 @@ function GetNameAndLink()
 end
 
 function GetInfo()
+	HTTP.UserAgent = USER_AGENT
 	local crypto = require 'fmd.crypto'
 	local MAPPING = {}
 
@@ -326,6 +330,7 @@ function GetInfo()
 end
 
 function GetPageNumber()
+	HTTP.UserAgent = USER_AGENT
 	TASK.PageLinks.Clear()
 	local crypto = require 'fmd.crypto'
 
@@ -365,6 +370,12 @@ function GetPageNumber()
 	else
 		return net_problem
 	end
+end
+
+function BeforeDownloadImage()
+	HTTP.UserAgent = USER_AGENT
+
+	return true
 end
 
 function IgnoreChaptersByGroupId(id)
