@@ -1,4 +1,4 @@
-local API_URL = 'https://api.comick.ink'
+local API_URL = 'https://api.comick.fun'
 local CDN_URL = 'https://meo3.comick.pictures'
 
 function Init()
