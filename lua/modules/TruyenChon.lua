@@ -14,7 +14,7 @@ function Init()
 		m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
 	end
 	AddWebsiteModule('ef7f922bd45f4f9d9c559a55f987004d', 'TruyenChon', 'http://truyenchon.com')
-	AddWebsiteModule('567780dbaa3149e7ad698f11ce68ea9b', 'NetTruyen', 'https://www.nettruyenme.com')
+	AddWebsiteModule('567780dbaa3149e7ad698f11ce68ea9b', 'NetTruyen', 'https://nettruyenviet.com')
 	AddWebsiteModule('d25308907620480496bd73f50451d67f', 'NhatTruyen', 'http://nhattruyentranh.com')
 
 	cat = 'English'
@@ -34,7 +34,7 @@ function GetInfo()
 		local x = CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title     = x.XPathString('//h1[@class="title-detail"]')
 		MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//div[contains(@class, "col-image")]/img/@src'))
-		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//li[contains(@class, "status")]/p[2]'), 'Đang tiến hành', 'Hoàn thành')
+		MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//li[contains(@class, "status")]/p[2]'), 'Đang Cập Nhật', 'Hoàn Thành')
 		if MANGAINFO.Status == '' then
 			MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//p[contains(., "status")]/following-sibling::p'))
 		end
@@ -44,7 +44,7 @@ function GetInfo()
 		end
 		MANGAINFO.Artists   = x.XPathString('//h4[starts-with(./label,"Artista")]/substring-after(.,":")')
 		MANGAINFO.Genres    = x.XPathStringAll('//li[contains(@class, "kind")]/p[2]/a')
-		MANGAINFO.Summary   = x.XPathString('//div[@class="detail-content"]/p')
+		MANGAINFO.Summary   = x.XPathString('//div[@class="detail-content"]/div')
 
 		x.XPathHREFAll('//div[@class="list-chapter"]//ul/li/div[contains(@class, "chapter")]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
@@ -57,11 +57,7 @@ end
 function GetPageNumber()
 	TASK.PageLinks.Clear()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
-		local x = CreateTXQuery(HTTP.Document)
-		local v for v in x.XPath('//div[@class="page-chapter"]/img/@data-original').Get() do
-			TASK.PageLinks.Add(v.ToString():gsub('^//', 'http://'))
-		end
-	else
+		CreateTXQuery(HTTP.Document).XPathStringAll('//div[@class="page-chapter"]/img/@data-src', TASK.PageLinks)
 		return false
 	end
 	return true
