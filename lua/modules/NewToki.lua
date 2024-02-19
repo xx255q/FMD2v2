@@ -2,14 +2,15 @@ local dirpages = {'webtoon', 'comic'}
 
 function Init()
 	local m = NewWebsiteModule()
-	m.ID                   = '8b8a11bb9b0e4cd8b30c8577c762d19c'
-	m.Name                 = 'NewToki'
-	m.RootURL              = 'https://newtoki95.com'
-	m.Category             = 'Raw'
-	m.OnGetNameAndLink     = 'GetNameAndLink'
-	m.OnGetInfo            = 'GetInfo'
-	m.OnGetPageNumber      = 'GetPageNumber'
-	m.TotalDirectory       = #dirpages
+	m.ID                    = '8b8a11bb9b0e4cd8b30c8577c762d19c'
+	m.Name                  = 'NewToki'
+	m.RootURL               = 'https://newtoki325.com'
+	m.Category              = 'Raw'
+	m.OnGetNameAndLink      = 'GetNameAndLink'
+	m.OnGetInfo             = 'GetInfo'
+	m.OnGetPageNumber       = 'GetPageNumber'
+	m.OnBeforeDownloadImage = 'BeforeDownloadImage'
+	m.TotalDirectory        = #dirpages
 
 	local fmd = require 'fmd.env'
 	local slang = fmd.SelectedLanguage
@@ -51,15 +52,14 @@ function GetInfo()
 			MANGAINFO.CoverLink = MaybeFillHost(MODULE.RootURL, x.XPathString('//meta[@property="og:image"]/@content'))
 			MANGAINFO.Authors   = x.XPathString('//meta[@property="og:author"]/@content')
 			MANGAINFO.Summary   = x.XPathString('//div[@class="view-title"]//div[@class="col-sm-8"]/div[2]')
-			local v for v in x.XPath('//div[@class="wr-subject"]').Get() do
-				MANGAINFO.ChapterLinks.Add(x.XPathString('a/@href', v))
-				local removenumber = x.XPathString('a/span[contains(@class, "orangered")]', v)
-				local name = x.XPathString('normalize-space(a)', v)
-				name = name:match("^" .. removenumber .. "(.*)")
-				name = name:match("(.*)" .. removenumber .. "$")
-				MANGAINFO.ChapterNames.Add(name)
+			local v for v in x.XPath('//div[@class="wr-subject"]/a').Get() do
+				MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
+				MANGAINFO.ChapterNames.Add(x.XPathString('text()', v))
 			end
 			MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
+
+			HTTP.Reset()
+			HTTP.Headers.Values['Referer'] = MANGAINFO.URL
 			return no_error
 		else
 			return net_problem
@@ -93,4 +93,10 @@ function Delay()
 		end
 	end
 	MODULE.Storage['lastDelay'] = os.time()
+end
+
+function BeforeDownloadImage()
+	HTTP.Headers.Values['Referer'] = MODULE.RootURL
+
+	return true
 end
