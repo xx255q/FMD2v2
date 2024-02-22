@@ -18,7 +18,7 @@ end
 ----------------------------------------------------------------------------------------------------
 
 local Template = require 'templates.HeanCms'
-API_URL = 'https://api.templescan.net'
+API_URL = 'https://templescan.net/apiv1'
 
 ----------------------------------------------------------------------------------------------------
 -- Event Functions
