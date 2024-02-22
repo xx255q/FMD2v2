@@ -440,6 +440,7 @@ function Init()
 	AddWebsiteModule('5ad6ebfe79f04b3b954829180052cb9e', 'SamuraiScan', 'https://samuraiscan.org')
 	AddWebsiteModule('a29b6757649f4683b72d2e669d9fbffc', 'MHscans', 'https://mhscans.com')
 	AddWebsiteModule('b29b6757649f4683b72d2r0r9d9fbffr', 'WantedFansub', 'https://wantedfansub.com')
+	AddWebsiteModule('uy8tter98y97k9er008971c0c1b557tr', 'DaoScan', 'https://tresdaos.com')
 	
 	AddWebsiteModule('73cfa250c661470c81428d99cdb8a140', 'Mangastk18', 'https://mangastk18.com')
 
