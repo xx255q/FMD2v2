@@ -15,7 +15,7 @@ function Init()
 	AddWebsiteModule('fa8bb4d1ceea4c8fa0e98c00755f95d4', 'Manganato', 'https://manganato.com')
 	AddWebsiteModule('fa8bb4d1ceea4c8fa0e98c00755f95d4', 'Manganato', 'https://chapmanganato.to')
 	AddWebsiteModule('ed4175a390e74aedbe4b4f622f3767c6', 'MangaKakalots', 'https://mangakakalots.com')
-	AddWebsiteModule('2234588abb544fc6a279c7811f2a9733', 'MangaBat', 'https://m.mangabat.com')
+	AddWebsiteModule('2234588abb544fc6a279c7811f2a9733', 'MangaBat', 'https://h.mangabat.com')
 	AddWebsiteModule('0625a58a9af94a99a8a5cff216ce27f0', 'ReadMangaBat', 'https://readmangabat.com')
 	AddWebsiteModule('449a92c8c176488b9ae2509ba50725cb', 'Manganelo', 'https://chapmanganelo.com')
 end
