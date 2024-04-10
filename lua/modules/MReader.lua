@@ -56,7 +56,7 @@ function GetInfo()
 	if not HTTP.GET(u) then return net_problem end
 
 	x = CreateTXQuery(HTTP.Document)
-	MANGAINFO.Title     = x.XPathString('//h1[contains(@class, "title")]/substring-before(., "[All Chapters]")')
+	MANGAINFO.Title     = x.XPathString('//h1[contains(@class, "title")]')
 	MANGAINFO.CoverLink = x.XPathString('//figure[@class="cover"]/img/@data-src')
 	MANGAINFO.Authors   = x.XPathString('//span[@itemprop="author"]')
 	MANGAINFO.Genres    = x.XPathStringAll('//div[@class="categories"]//a')
