@@ -1,5 +1,4 @@
 local API_URL = 'https://api.comick.fun'
-local CDN_URL = 'https://meo3.comick.pictures'
 
 function Init()
 	local m = NewWebsiteModule()
@@ -56,16 +55,17 @@ function GetInfo()
 	if HTTP.GET(s) then
 		local x = CreateTXQuery(HTTP.Document)
 		MANGAINFO.Title      = x.XPathString('json(*).comic.title')
-		MANGAINFO.CoverLink  = CDN_URL .. '/' .. x.XPathString('json(*).comic.md_covers().b2key')
+		MANGAINFO.CoverLink  = 'https://meo3.comick.pictures/' .. x.XPathString('json(*).comic.md_covers().b2key')
 		MANGAINFO.Authors    = x.XPathStringAll('json(*).authors().name')
 		MANGAINFO.Artists    = x.XPathStringAll('json(*).artists().name')
 		MANGAINFO.Status     = MangaInfoStatusIfPos(x.XPathString('json(*).comic.status'), '1', '2')
 		MANGAINFO.Summary    = x.XPathString('json(*).comic.desc')
 
+		MANGAINFO.Genres     = x.XPathStringAll('json(*).comic.md_comic_md_genres().md_genres.name')
 		local demographic    = x.XPathString('json(*).demographic')
 		if demographic == 'null' then demographic = '' end
-		if demographic ~= '' then demographic = demographic .. ', ' end
-		MANGAINFO.Genres     = demographic .. x.XPathStringAll('json(*).genres().name')
+		if demographic ~= '' then MANGAINFO.Genres = MANGAINFO.Genres .. ', ' .. demographic end
+		
 
 		local mangaId   = x.XPathString('json(*).comic.hid')
 		local optgroup  = MODULE.GetOption('showscangroup')
@@ -125,10 +125,10 @@ function GetInfo()
 end
 
 function GetPageNumber()
-	if HTTP.GET(API_URL .. '/chapter' .. URL) then
+	if HTTP.GET(API_URL .. '/chapter' .. URL .. '?tachiyomi=true') then
 		local x = CreateTXQuery(HTTP.Document)
-		local v for v in x.XPath('json(*).chapter.md_images().b2key').Get() do
-			TASK.PageLinks.Add(CDN_URL .. '/' .. v.ToString())
+		local v for v in x.XPath('json(*).chapter.images().url').Get() do
+			TASK.PageLinks.Add(v.ToString())
 		end
 		return true
 	else
