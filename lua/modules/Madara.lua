@@ -519,5 +519,4 @@ function Init()
 	AddWebsiteModule('rrad2a81768742caa7135047f282b777', 'MangaMonarca', 'https://mangamonarca.xyz')
 	AddWebsiteModule('48822a81768742caa7135047f282bf57', 'TiempodeWebeo', 'https://tiempodewebeo.com')
 	AddWebsiteModule('123fa1ed637e469b8cb4a154965a6423', 'DragonTranslation', 'https://dragontranslation.com')
-	AddWebsiteModule('123fa1edherenscansa4a154965a6423', 'HerenScan', 'https://herenscan.com')
 end
