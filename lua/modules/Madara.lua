@@ -501,7 +501,6 @@ function Init()
 	AddWebsiteModule('187417a02af74223a390dce786bb2a9f', 'ManhwasMen', 'https://manhwas.men')
 
 	cat = 'Arabic-Scanlation'
-	AddWebsiteModule('7bda2905b61c49d1976777e9f2356361', '3asqOrg', 'https://3asq.org')
 	AddWebsiteModule('27c2c6db9ce24942a89a28aa6c6ed35d', 'AzoraManga', 'https://azoraworld.com')
 
 	cat = 'Turkish'
