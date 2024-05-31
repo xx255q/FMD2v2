@@ -178,8 +178,6 @@ function Modules.Madara()
 				end
 			elseif MODULE.ID == '7f1b637a525940db9459f1cbf2f7cfc3' then -- Manga18FX
 				x.XPathStringAll('//div[@class="read-content"]/img/@src', TASK.PageLinks)
-			elseif MODULE.ID == '123fa1ed637aswet8cb4a154965a6423' then -- LeerManga
-				x.XPathStringAll('//*[@id="images_chapter"]//img/@data-src', TASK.PageLinks)
 			else
 				x.XPathStringAll('//div[contains(@class, "page-break")]/img/@data-src', TASK.PageLinks)
 			end
@@ -537,6 +535,5 @@ function Init()
 	AddWebsiteModule('rrad2a81768742caa7135047f282b777', 'MangaMonarca', 'https://mangamonarca.xyz')
 	AddWebsiteModule('48822a81768742caa7135047f282bf57', 'TiempodeWebeo', 'https://tiempodewebeo.com')
 	AddWebsiteModule('123fa1ed637e469b8cb4a154965a6423', 'DragonTranslation', 'https://dragontranslation.com')
-	AddWebsiteModule('123fa1ed637aswet8cb4a154965a6423', 'LeerManga', 'https://leermanga.net')
 	AddWebsiteModule('123fa1edherenscansa4a154965a6423', 'HerenScan', 'https://herenscan.com')
 end
