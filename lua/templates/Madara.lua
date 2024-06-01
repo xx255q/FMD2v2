@@ -58,11 +58,22 @@ function _M.GetInfo()
 	if MANGAINFO.Genres == '' then MANGAINFO.Genres = x.XPathStringAll('//div[@class="summary-heading" and contains(., "' .. XPathTokenGenres .. '")]/following-sibling::div/a') end
 
 	if x.XPathString('normalize-space(.)'):find('ajax_url') then
+		HTTP.Reset()
 		HTTP.Headers.Values['Cache-Control'] = 'no-cache'
 		HTTP.Headers.Values['X-Requested-With'] = 'XMLHttpRequest'
-		HTTP.Headers.Values['Content-Length'] = '0'
 		if HTTP.POST(MANGAINFO.URL .. 'ajax/chapters') then
 			CreateTXQuery(HTTP.Document).XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/a[not(@href="#")]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+		end
+		if MANGAINFO.ChapterLinks.Count == 0 then
+			HTTP.Reset()
+			HTTP.Headers.Values['Cache-Control'] = 'no-cache'
+			HTTP.Headers.Values['X-Requested-With'] = 'XMLHttpRequest'
+			HTTP.MimeType = 'application/x-www-form-urlencoded'
+			id = x.XPathString('//div[contains(@id, "manga-chapters-holder")]/@data-id')
+			q = 'action=manga_get_chapters&manga=' .. id
+			if HTTP.POST(MODULE.RootURL .. '/wp-admin/admin-ajax.php', q) then
+				CreateTXQuery(HTTP.Document).XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/a[not(@href="#")]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
+			end
 		end
 	else
 		x.XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/a[not(@href="#")]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
