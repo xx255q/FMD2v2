@@ -8,6 +8,7 @@ function Init()
 	m.Name                     = 'LeerManga'
 	m.RootURL                  = 'https://leermanga.net'
 	m.Category                 = 'Spanish'
+	m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
 	m.OnGetInfo                = 'GetInfo'
 	m.OnGetPageNumber          = 'GetPageNumber'
@@ -18,6 +19,7 @@ end
 ----------------------------------------------------------------------------------------------------
 
 local Template = require 'templates.Madara'
+DirectoryPagination = '/biblioteca?page='
 -- XPathTokenAuthors = 'Author(s)'
 -- XPathTokenArtists = 'Artist(s)'
 XPathTokenGenres  = 'Géneros'
@@ -27,15 +29,22 @@ XPathTokenGenres  = 'Géneros'
 -- Event Functions
 ----------------------------------------------------------------------------------------------------
 
+-- Get the page count of the manga list of the current website.
+function GetDirectoryPageNumber()
+	if not HTTP.GET(MODULE.RootURL .. DirectoryPagination .. "1") then return net_problem end
+
+	PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('//ul[@class="pagination"]//li[last()-1]/a')) or 1
+
+	return no_error
+end
+
 -- Get links and names from the manga list of the current website.
 function GetNameAndLink()
-	local u = MODULE.RootURL .. '/biblioteca?page=' .. (URL + 1)
+	local u = MODULE.RootURL .. DirectoryPagination .. (URL + 1)
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = CreateTXQuery(HTTP.Document)
-	x.XPathHREFTitleAll('//div[@class="manga_biblioteca c-image-hover"]/a', LINKS, NAMES)
-	UPDATELIST.CurrentDirectoryPageNumber = tonumber(x.XPathString('//ul[@class="pagination"]//li[last()-1]/a')) or 1
+	CreateTXQuery(HTTP.Document).XPathHREFTitleAll('//div[@class="manga_biblioteca c-image-hover"]/a', LINKS, NAMES)
 
 	return no_error
 end
