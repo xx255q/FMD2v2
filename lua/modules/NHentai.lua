@@ -69,7 +69,6 @@ end
 
 -- Get the page count for the current chapter.
 function GetPageNumber()
-	local x = nil
 	local u = MaybeFillHost(MODULE.RootURL, URL)
 
 	if not HTTP.GET(u) then return net_problem end
