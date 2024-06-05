@@ -50,7 +50,7 @@ function _M.GetInfo()
 	status = x.XPathString('//div[@class="summary-heading" and contains(., "' .. XPathTokenStatus .. '")]/following-sibling::div')
 	status = status:gsub('Berjalan', 'Ongoing'):gsub('مستمرة', 'Ongoing'):gsub('Tamat', 'Completed'):gsub('مكتملة', 'Completed')
 	MANGAINFO.Status    = MangaInfoStatusIfPos(status)
-	MANGAINFO.Summary   = x.XPathString('//div[@class="description-summary" or @class="manga-excerpt"]//p')
+	MANGAINFO.Summary   = x.XPathString('//div[@class="description-summary" or @class="manga-excerpt" or @class="manga-summary"]//p')
 
 	if MANGAINFO.CoverLink == '' then MANGAINFO.CoverLink = x.XPathString('//div[@class="summary_image"]//img/@src') end
 	if MANGAINFO.Authors == '' then MANGAINFO.Authors = x.XPathString('//div[@class="summary-heading" and contains(., "' .. XPathTokenAuthors .. '")]/following-sibling::div') end
