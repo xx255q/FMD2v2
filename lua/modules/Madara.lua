@@ -410,7 +410,6 @@ function Init()
 	AddWebsiteModule('73cfa250c661470c81428d99cdb8a140', 'Mangastk18', 'https://mangastk18.com')
 
 	cat = 'Webcomics'
-	AddWebsiteModule('2e6196018ffc4c92bc7ff332e41d52d4', 'ManyToon', 'https://manytoon.me')
 	AddWebsiteModule('d903d55663f0423ca4dd928c8203f7ce', 'PocketAngelScan', 'https://pocketangelscans.com')
 	AddWebsiteModule('1bc39e1bc5e64c12989c051fe3932d4d', 'Toonily', 'https://toonily.com')
 	AddWebsiteModule('4f0a570000854509b71350983fa55eec', 'ManhuaBox', 'https://manhuabox.net')
