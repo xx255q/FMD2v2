@@ -61,7 +61,7 @@ function GetInfo()
 	x = CreateTXQuery(HTTP.Document)
 	MANGAINFO.Title     = x.XPathString('//div[@class="post-title"]/p')
 	MANGAINFO.Artists   = x.XPathStringAll('//span[contains(., "Artists")]/following-sibling::span/a/span[1]')
-	MANGAINFO.Genres    = x.XPathStringAll('//span[contains(., "Tags")]/following-sibling::span/a/span[1]')
+	MANGAINFO.Genres    = x.XPathStringAll('//span[contains(., "Category") or contains(., "Tags")]/following-sibling::span/a/span[1]'):gsub('#', '')
 	MANGAINFO.Summary   = x.XPathString('//div[contains(span, "Description")]//div')
 
 	return no_error
