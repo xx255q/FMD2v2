@@ -484,7 +484,6 @@ function Init()
 
 	cat = 'Spanish'
 	AddWebsiteModule('22c481c279c740b897ffc906ab808502', 'TuMangaNet', 'https://tumanga.net')
-	AddWebsiteModule('36b0f19e144a4642a2839ec9cb728c3a', 'RagnarokScan', 'https://ragnarokscan.com')
 	AddWebsiteModule('e4a3a8ed254e4e9a9113693c098bb743', 'MangaFenix', 'https://manga-fenix.com')
 	AddWebsiteModule('a8ad2a81768742caa7135047f28c2b00', 'SwordManga', 'https://swordmanga.com')
 	AddWebsiteModule('rrad2a81768742caa7135047f282b777', 'MangaMonarca', 'https://mangamonarca.xyz')
