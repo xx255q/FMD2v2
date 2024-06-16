@@ -1,85 +1,100 @@
-function getinfo()
-	MANGAINFO.URL=MaybeFillHost(MODULE.RootURL, URL)
-	if HTTP.GET(MANGAINFO.URL) then
-		local x=CreateTXQuery(HTTP.Document)
-		MANGAINFO.Title=x.XPathString('//meta[@itemprop="alternativeHeadline"]/@content')
-		MANGAINFO.CoverLink=MaybeFillHost(MODULE.RootURL, x.XPathString('//img[@class="manga__cover"]/@src'))
-		MANGAINFO.Authors=x.XPathString('//div[@class="info-list__row"][starts-with(.,"Автор")]')
-		MANGAINFO.Authors=string.gsub(MANGAINFO.Authors, 'Автор', '')
-		MANGAINFO.Authors=string.gsub(MANGAINFO.Authors, '  ', '')
-		MANGAINFO.Artists=x.XPathString('//div[@class="info-list__row"][starts-with(.,"Художник")]')
-		MANGAINFO.Artists=string.gsub(MANGAINFO.Artists, 'Художник', '')
-		MANGAINFO.Artists=string.gsub(MANGAINFO.Artists, '  ', '')
-		MANGAINFO.Genres=x.XPathString('//div[@class="info-list__row"][starts-with(.,"Жанры")]')
-		MANGAINFO.Genres=string.gsub(MANGAINFO.Genres, 'Жанры', '')
-		MANGAINFO.Status = MangaInfoStatusIfPos(x.XPathString('//div[@class="info-list__row"][starts-with(.,"Перевод")]'), 'продолжается', 'завершен')
-		MANGAINFO.Summary=x.XPathStringAll('//div[contains(@class, "info-desc__content")]/text()', '')
-		x.XPathHREFAll('//div[@class="chapters-list"]/div/div[@class="chapter-item__name"]/a', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
-		MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
-		return no_error
-	else
-		return net_problem
-	end
-end
-
-function getpagenumber()
-	TASK.PageNumber=0
-	TASK.PageLinks.Clear()
-	if HTTP.GET(MaybeFillHost(MODULE.RootURL,URL)) then
-		local crypto = require 'fmd.crypto'
-		local x=CreateTXQuery(HTTP.Document)
-		local imgbaseurl=buildimageurl(CreateTXQuery(string.match(x.XPathString('//script[contains(., "window.__info")]/text()'), 'window.__info =(.*);')))
-		local p=CreateTXQuery(crypto.DecodeBase64(HTTP.Document.ToString():match('<span class="pp"><!%-%-(.-)%-%-></span>'):gsub('^%s*(.-)%s*$', '%1')))
-		local v=p.XPath('json(*)()')
-		for i=1,v.Count do
-			local v1=v.Get(i)
-			TASK.PageLinks.Add(imgbaseurl..x.XPathString('u', v1))
-		end
-		return true
-	else
-		return false
-	end
-end
-
-function buildimageurl(json)
-	local result = string.gsub(MODULE.RootURL, 'https://', '')
-	if json.XPathString('json(*).imgServer') == 'primary' then
-		result = 'img1.'..result
-	else
-		result = 'img2.'..result
-	end
-	result = 'https://' .. result .. json.XPathString('json(*).imgUrl')
-
-	return result
-end
-
-function getnameandlink()
-	if tonumber(URL) <= 0 then URL = 200 end
-	if HTTP.GET(MODULE.RootURL .. '/filterlist?page='..(URL + 1)..'&cat=&alpha=&sortBy=name&asc=true&author=&artist=') then
-		local x = CreateTXQuery(HTTP.Document)
-		local page = x.XPathString('//div[@class="paginator paginator_full paginator_border-top"]//ul[@class="pagination"]/li[last()]/a/substring-after(@href, "?page=")')
-		if x.XPathString('//div/p[contains(., "Ничего не найдено")]') == '' then
-			local v = x.XPath('//*[@class="manga-list-item"]/a[@class="manga-list-item__content"]')
-			for i=1,v.Count do
-				local v1=v.Get(i)
-				LINKS.Add(v1.GetAttribute('href'))
-				NAMES.Add(v1.GetAttribute('title'))
-			end
-			UPDATELIST.CurrentDirectoryPageNumber = page
-		end
-		return no_error
-	else
-		return net_problem
-	end
-end
+----------------------------------------------------------------------------------------------------
+-- Module Initialization
+----------------------------------------------------------------------------------------------------
 
 function Init()
-	local m = NewWebsiteModule()
-	m.ID = 'df365d3d22f141ad8b9224cc1413ca02'
-	m.Name = 'MangaLib'
-	m.RootURL = 'https://mangalib.me'
-	m.Category = 'Russian'
-	m.OnGetInfo='getinfo'
-	m.OnGetPageNumber='getpagenumber'
-	m.OnGetNameAndLink='getnameandlink'
+	local function AddWebsiteModule(id, name, url)
+		local m = NewWebsiteModule()
+		m.ID                       = id
+		m.Name                     = name
+		m.RootURL                  = url
+		m.Category                 = 'Russian'
+		m.OnGetNameAndLink         = 'GetNameAndLink'
+		m.OnGetInfo                = 'GetInfo'
+		m.OnGetPageNumber          = 'GetPageNumber'
+	end
+	AddWebsiteModule('df365d3d22f141ad8b9224cc1413ca02', 'MangaLib', 'https://mangalib.me')
+	AddWebsiteModule('892b72276f06476cb1f866998bb9e894', 'MangaLib', 'https://mangalib.org')
+end
+
+----------------------------------------------------------------------------------------------------
+-- Local Constants
+----------------------------------------------------------------------------------------------------
+
+DirectoryPagination = '/manga-list?sort=created_at&dir=desc&page='
+DirectoryParameters = '&site_id=1&type=manga&caution_list%5B%5D=%D0%9E%D1%82%D1%81%D1%83%D1%82%D1%81%D1%82%D0%B2%D1%83%D0%B5%D1%82&caution_list%5B%5D=16+&caution_list%5B%5D=18+'
+
+----------------------------------------------------------------------------------------------------
+-- Event Functions
+----------------------------------------------------------------------------------------------------
+
+-- Get links and names from the manga list of the current website.
+function GetNameAndLink()
+	local v, x = nil
+	local u = MODULE.RootURL .. DirectoryPagination .. (URL + 1) .. DirectoryParameters
+
+	if not HTTP.GET(u) then return net_problem end
+
+	x = CreateTXQuery(HTTP.Document)
+	x.ParseHTML(x.XPathString('//script[contains(., "window.__DATA")]/substring-before(substring-after(., "DATA = "), "};")') .. '}')
+	if x.XPath('json(*).filters.series()').Count == 0 then return no_error end
+	for v in x.XPath('json(*).filters.series()').Get() do
+		LINKS.Add(x.XPathString('slug', v))
+		NAMES.Add(x.XPathString('name', v))
+	end
+	UPDATELIST.CurrentDirectoryPageNumber = UPDATELIST.CurrentDirectoryPageNumber + 1
+
+	return no_error
+end
+
+-- Get info and chapter list for current manga.
+function GetInfo()
+	local chapter, name, slug, v, volume, x = nil
+	local u = MaybeFillHost(MODULE.RootURL, URL)
+
+	if not HTTP.GET(u) then return net_problem end
+
+	x = CreateTXQuery(HTTP.Document)
+	MANGAINFO.Title     = x.XPathString('//meta[@itemprop="alternativeHeadline"]/@content')
+	MANGAINFO.CoverLink = x.XPathString('//div[@class="media-sidebar__cover paper"]/img/@src')
+	MANGAINFO.Authors   = x.XPathStringAll('//div[contains(., "Автор")]/following-sibling::div/a')
+	MANGAINFO.Artists   = x.XPathStringAll('//div[contains(., "Художник")]/following-sibling::div/a')
+	MANGAINFO.Genres    = x.XPathStringAll('//div[@class="media-tags"]/a')
+	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//div[contains(., "Статус перевода")]/following-sibling::div'), 'Продолжается', 'Завершен')
+	MANGAINFO.Summary   = x.XPathString('//div[@class="media-description__text"]')
+
+	x.ParseHTML(x.XPathString('//script[contains(., "window.__DATA")]/substring-before(substring-after(., "__ = "), "};")') .. '}')
+	slug = x.XPathString('json(*).manga.slug')
+	for v in x.XPath('json(*).chapters.list()').Get() do
+		name    = x.XPathString('chapter_name', v)
+		volume  = x.XPathString('chapter_volume', v)
+		chapter = x.XPathString('chapter_number', v)
+
+		name = name ~= 'null' and name ~= '' and string.format(' - %s', name) or ''
+
+		MANGAINFO.ChapterLinks.Add(slug .. '/v' .. x.XPathString('chapter_volume', v) .. '/c' .. x.XPathString('chapter_number', v))
+		MANGAINFO.ChapterNames.Add('Том ' .. volume .. ' Глава ' .. chapter .. name)
+	end
+	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
+
+	HTTP.Reset()
+	HTTP.Headers.Values['Referer'] = MANGAINFO.URL
+	return no_error
+end
+
+-- Get the page count for the current chapter.
+function GetPageNumber()
+	local server, url, v, x = nil
+	local u = MaybeFillHost(MODULE.RootURL, URL)
+
+	if not HTTP.GET(u) then return net_problem end
+
+	x = CreateTXQuery(HTTP.Document)
+	url = x.XPathString('json(//script[contains(., "window.__info")]/substring-before(substring-after(., "info = "), ";")).img.url')
+	server = x.XPathString('json(//script[contains(., "window.__info")]/substring-before(substring-after(., "info = "), ";")).servers.main')
+	for v in x.XPath('json(//script[contains(., "window.__pg")]/substring-before(substring-after(., " = "), ";"))()').Get() do
+		TASK.PageLinks.Add(server .. url .. x.XPathString('u', v))
+	end
+
+	return no_error
 end
