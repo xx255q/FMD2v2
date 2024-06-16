@@ -54,7 +54,7 @@ function GetInfo()
 			MANGAINFO.Genres     = x.XPathStringAll('//div[@class="info"]/ul[not(@class="artists")]/li/a/text()[not(parent::span)]')
 		else
 			MANGAINFO.Title      = x.XPathString('//div[contains(@class,"right_details")]/h1')
-			MANGAINFO.CoverLink  = x.XPathString('//div[contains(@class,"left_cover")]//img/@src')
+			MANGAINFO.CoverLink  = x.XPathString('//div[contains(@class,"left_cover")]//img/@data-src')
 			MANGAINFO.Artists    = x.XPathStringAll('//ul[@class="galleries_info"]/li[contains(.,"Artists")]/a/text()[not(parent::span)]')
 			MANGAINFO.Genres     = x.XPathStringAll('//ul[@class="galleries_info"]/li[not(contains(.,"Artists"))]/a/text()[not(parent::span)]')
 		end
@@ -76,8 +76,8 @@ local ext = {
 function GetPageNumber()
 	if HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then
 		local x = CreateTXQuery(HTTP.Document)
-		local dir       = x.XPathString('//*[@id="load_dir"]/@value')
-		local id        = x.XPathString('//*[@id="load_id"]/@value')
+		local dir       = x.XPathString('(//*[@id="load_dir"]/@value)[1]')
+		local id        = x.XPathString('(//*[@id="load_id"]/@value)[1]')
 		local server    = x.XPathString('//*[@id="load_server"]/@value')
 		local json      = GetBetween("parseJSON('{", "');", x.XPathString('//script[contains(., "var g_th")]'))
 		json = json:gsub('","', ';'):gsub('"}', ';'):gsub(':', ','):gsub('"', '')
