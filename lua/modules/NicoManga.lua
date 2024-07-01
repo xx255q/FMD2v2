@@ -45,8 +45,8 @@ function GetNameAndLink()
 	x = CreateTXQuery(HTTP.Document)
 	x.ParseHTML(x.XPathString('//script[contains(., "var mangaData")]/substring-before(substring-after(., "mangaData = "), "];")') .. ']')
 	for v in x.XPath('json(*)()').Get() do
-		LINKS.Add('manga-' .. x.XPathString('slug', data) .. '.html')
-		NAMES.Add(x.XPathString('name', data))
+		LINKS.Add('manga-' .. x.XPathString('slug', v) .. '.html')
+		NAMES.Add(x.XPathString('name', v))
 	end
 
 	return no_error
