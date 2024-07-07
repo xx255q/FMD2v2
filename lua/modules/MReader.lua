@@ -5,7 +5,7 @@
 function Init()
 	local m = NewWebsiteModule()
 	m.ID                       = 'd297f1eb6b784ded9b50d3b85cee5276'
-	m.Name                     = 'Mgeko'
+	m.Name                     = 'MangaGeko'
 	m.RootURL                  = 'https://www.mgeko.cc'
 	m.Category                 = 'English'
 	m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
@@ -27,11 +27,12 @@ DirectoryPagination = '/browse-comics/?results=%s&filter=New'
 
 -- Get the page count of the manga list of the current website.
 function GetDirectoryPageNumber()
-	local u = MODULE.RootURL .. DirectoryPagination:format('1')
+	local u = MODULE.RootURL .. DirectoryPagination:format(1)
 
 	if not HTTP.GET(u) then return net_problem end
 
-	PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('(//ul[@class="pagination"])[1]/li[last()-1]')) or 1
+	PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('(//span[@class="mg-pagination-last"])[1]'):match('(%d+)$')) or 1
+	print(PAGENUMBER)
 
 	return no_error
 end
@@ -63,9 +64,12 @@ function GetInfo()
 	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//span[contains(., "Status")]/parent::*'))
 	MANGAINFO.Summary   = x.XPathString('//p[@class="description"]')
 
-	for v in x.XPath('//ul[@class="chapter-list"]//a').Get() do
-		MANGAINFO.ChapterNames.Add(x.XPathString('strong/replace(., "-eng-li", " [EN]")', v))
-		MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
+	if HTTP.GET(u .. '/all-chapters/') then
+		x = CreateTXQuery(HTTP.Document)
+		for v in x.XPath('//ul[@class="chapter-list"]//a').Get() do
+			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
+			MANGAINFO.ChapterNames.Add('Chapter ' .. x.XPathString('strong/replace(., "-eng-li", "")', v))
+		end
 	end
 	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
