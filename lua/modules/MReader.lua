@@ -32,14 +32,13 @@ function GetDirectoryPageNumber()
 	if not HTTP.GET(u) then return net_problem end
 
 	PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('(//span[@class="mg-pagination-last"])[1]'):match('(%d+)$')) or 1
-	print(PAGENUMBER)
 
 	return no_error
 end
 
 -- Get links and names from the manga list of the current website.
 function GetNameAndLink()
-	local v, x = nil
+	local x = nil
 	local u = MODULE.RootURL .. DirectoryPagination:format((URL + 1))
 
 	if not HTTP.GET(u) then return net_problem end
