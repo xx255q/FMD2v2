@@ -63,7 +63,7 @@ function GetInfo()
 	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//span[contains(., "Status")]/parent::*'))
 	MANGAINFO.Summary   = x.XPathString('//p[@class="description"]')
 
-	if HTTP.GET(u .. '/all-chapters/') then
+	if HTTP.GET(u .. 'all-chapters/') then
 		x = CreateTXQuery(HTTP.Document)
 		for v in x.XPath('//ul[@class="chapter-list"]//a').Get() do
 			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
