@@ -8,66 +8,49 @@ function Init()
 	m.Name                     = 'ReaperScans'
 	m.RootURL                  = 'https://reaperscans.com'
 	m.Category                 = 'English-Scanlation'
+	m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
 	m.OnGetInfo                = 'GetInfo'
 	m.OnGetPageNumber          = 'GetPageNumber'
+	m.SortedList               = true
 end
 
 ----------------------------------------------------------------------------------------------------
 -- Local Constants
 ----------------------------------------------------------------------------------------------------
 
-DirectoryPagination = '/comics'
+local Template = require 'templates.HeanCms'
+API_URL = 'https://api.reaperscans.com'
+CDN_URL = 'https://media.reaperscans.com/file/4SRBHm'
 
 ----------------------------------------------------------------------------------------------------
 -- Event Functions
 ----------------------------------------------------------------------------------------------------
 
+-- Get the page count of the manga list of the current website.
+function GetDirectoryPageNumber()
+	Template.GetDirectoryPageNumber()
+
+	return no_error
+end
+
 -- Get links and names from the manga list of the current website.
 function GetNameAndLink()
-	if not HTTP.GET(MODULE.RootURL .. DirectoryPagination .. '?page=' .. (URL + 1)) then return net_problem end
-
-	local x = CreateTXQuery(HTTP.Document)
-	if x.XPathString('//li//a[1]') == '' then return no_error end
-	x.XPathHREFAll('//li//a[1]', LINKS, NAMES)
-	UPDATELIST.CurrentDirectoryPageNumber = UPDATELIST.CurrentDirectoryPageNumber + 1
+	Template.GetNameAndLink()
 
 	return no_error
 end
 
 -- Get info and chapter list for current manga.
 function GetInfo()
-	if not HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then return net_problem end
-
-	local x = CreateTXQuery(HTTP.Document)
-	MANGAINFO.Title     = x.XPathString('//*[contains(@class, "container")]//h1')
-	MANGAINFO.CoverLink = x.XPathString('//div[@aria-label="card"]//img/@src')
-	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//section/div[@aria-label="card"]//div[./dt="Release Status"]/dd'))
-	MANGAINFO.Summary   = x.XPathString('//section/div[@aria-label="card"]//p[1]')
-
-	local pages = tonumber(x.XPathString('//nav//span[last()-1]/button')) or 1
-	for page = 1, pages, 1 do
-		local v for v in x.XPath('//li[contains(@*, "comic-chapter-list")]/a').Get() do
-			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
-			MANGAINFO.ChapterNames.Add(x.XPathString('(.//p)[1]', v))
-		end
-
-		if page > 1 then
-			HTTP.GET(MaybeFillHost(MODULE.RootURL, URL .. '?page=' .. tostring(page)))
-			x.ParseHTML(HTTP.Document)
-			HTTP.Headers.Values['Referer'] = MANGAINFO.URL
-		end
-	end
-	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
+	Template.GetInfo()
 
 	return no_error
 end
 
 -- Get the page count for the current chapter.
 function GetPageNumber()
-	if not HTTP.GET(MaybeFillHost(MODULE.RootURL, URL)) then return net_problem end
-
-	CreateTXQuery(HTTP.Document).XPathStringAll('//img[contains(@class, "max-w-full")]/@src', TASK.PageLinks)
+	Template.GetPageNumber()
 
 	return no_error
 end
