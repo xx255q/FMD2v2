@@ -43,7 +43,7 @@ end
 
 -- Get info and chapter list for current manga.
 function _M.GetInfo()
-	local id, pages, thumbnail, title, slug, v, x = nil
+	local id, pages, status, thumbnail, title, slug, v, x = nil
 	local page = 1
 	local u = API_URL .. '/series/' .. URL:match('/series/(.-)$')
 
@@ -97,7 +97,7 @@ end
 
 -- Get the page count for the current chapter.
 function _M.GetPageNumber()
-	local v, x = nil
+	local image, v, x = nil
 	if not HTTP.GET(API_URL .. URL) then return net_problem end
 
 	for v in CreateTXQuery(HTTP.Document).XPath('json(*).chapter.chapter_data.images()').Get() do
