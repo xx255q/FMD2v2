@@ -97,7 +97,7 @@ end
 
 -- Get the page count for the current chapter.
 function _M.GetPageNumber()
-	local image, v, x = nil
+	local image, v = nil
 	if not HTTP.GET(API_URL .. URL) then return net_problem end
 
 	for v in CreateTXQuery(HTTP.Document).XPath('json(*).chapter.chapter_data.images()').Get() do
