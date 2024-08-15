@@ -12,7 +12,7 @@ XPathTokenAuthors = 'Author(s)'
 XPathTokenArtists = 'Artist(s)'
 XPathTokenGenres  = 'Genre(s)'
 XPathTokenStatus  = 'Status'
-MangaIDForChapter = 'action=manga_get_chapters&manga='
+ChapterParameters = 'action=manga_get_chapters&manga='
 
 ----------------------------------------------------------------------------------------------------
 -- Event Functions
@@ -75,7 +75,7 @@ function _M.GetInfo()
 			HTTP.Headers.Values['Cache-Control'] = 'no-cache'
 			HTTP.Headers.Values['X-Requested-With'] = 'XMLHttpRequest'
 			HTTP.MimeType = 'application/x-www-form-urlencoded'
-			q = MangaIDForChapter .. id
+			q = ChapterParameters .. id
 			if HTTP.POST(MODULE.RootURL .. '/wp-admin/admin-ajax.php', q) then
 				CreateTXQuery(HTTP.Document).XPathHREFAll('//li[contains(@class, "wp-manga-chapter")]/a[not(@href="#")]', MANGAINFO.ChapterLinks, MANGAINFO.ChapterNames)
 			end

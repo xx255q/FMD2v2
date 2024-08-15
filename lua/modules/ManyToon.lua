@@ -22,7 +22,7 @@ local Template = require 'templates.Madara'
 -- XPathTokenArtists = 'Artist(s)'
 -- XPathTokenGenres  = 'Genre(s)'
 -- XPathTokenStatus  = 'Status'
-MangaIDForChapter = 'action=ajax_chap&post_id='
+ChapterParameters = 'action=ajax_chap&post_id='
 
 ----------------------------------------------------------------------------------------------------
 -- Event Functions
