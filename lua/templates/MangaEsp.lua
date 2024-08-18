@@ -46,7 +46,6 @@ function _M.GetInfo()
 	MANGAINFO.Authors   = x.XPathString('json(*).autors().autor.name')
 	MANGAINFO.Artists   = x.XPathString('json(*).artists().artist.name')
 	MANGAINFO.Genres    = x.XPathStringAll('json(*).genders().gender.name')
-	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('seriesStatus', json))
 	MANGAINFO.Summary   = x.XPathString('sinopsis', json)
 
 	for v in x.XPath('json(*).lastChapters()').Get() do
