@@ -43,8 +43,8 @@ function _M.GetInfo()
 	json = x.XPath('json(*)')
 	MANGAINFO.Title     = x.XPathString('name', json)
 	MANGAINFO.CoverLink = x.XPathString('urlImg', json)
-	MANGAINFO.Authors   = x.XPathString('json(*).autors().autor.name')
-	MANGAINFO.Artists   = x.XPathString('json(*).artists().artist.name')
+	MANGAINFO.Authors   = x.XPathStringAll('json(*).autors().autor.name')
+	MANGAINFO.Artists   = x.XPathStringAll('json(*).artists().artist.name')
 	MANGAINFO.Genres    = x.XPathStringAll('json(*).genders().gender.name')
 	MANGAINFO.Summary   = x.XPathString('sinopsis', json)
 
@@ -53,7 +53,7 @@ function _M.GetInfo()
 		title = title ~= 'null' and title ~= '' and string.format(' - %s', title) or ''
 
 		MANGAINFO.ChapterLinks.Add('ver/' .. x.XPathString('slug', json) .. '/' .. v.GetProperty('slug').ToString())
-		MANGAINFO.ChapterNames.Add('Chapter ' .. v.GetProperty('num').ToString() .. title)
+		MANGAINFO.ChapterNames.Add('Capítulo ' .. v.GetProperty('num').ToString() .. title)
 	end
 	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
