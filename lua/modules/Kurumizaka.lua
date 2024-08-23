@@ -29,7 +29,7 @@ function GetInfo()
 	MANGAINFO.Authors   = x.XPathString('json(*)()[label="Author :"].value')
 	MANGAINFO.Artists   = x.XPathString('json(*)()[label="Artist :"].value')
 	MANGAINFO.Genres    = x.XPathString('json(*)()[label="Genre/s :"].value')
-	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('[label="Status :"].value'))
+	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('json(*)()[label="Status :"].value'))
 
 	if HTTP.GET(MODULE.RootURL .. '/chapter.json') then
 		for v in CreateTXQuery(HTTP.Document).XPath('json(*)/*').Get() do
