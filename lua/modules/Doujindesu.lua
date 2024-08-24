@@ -7,7 +7,7 @@ function Init()
 	m.ID                       = 'ec1a1ad5301f414592f0ba0402024813'
 	m.Name                     = 'Doujindesu'
 	m.RootURL                  = 'https://doujindesu.tv'
-	m.Category                 = 'Indonesian'
+	m.Category                 = 'H-Sites'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
 	m.OnGetInfo                = 'GetInfo'
 	m.OnGetPageNumber          = 'GetPageNumber'

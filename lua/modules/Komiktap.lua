@@ -7,7 +7,7 @@ function Init()
 	m.ID                       = 'f9adee01635a4ff48fdff5164a65d6dd'
 	m.Name                     = 'Komiktap'
 	m.RootURL                  = 'https://komiktap.info'
-	m.Category                 = 'Indonesian'
+	m.Category                 = 'H-Sites'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
 	m.OnGetInfo                = 'GetInfo'
 	m.OnGetPageNumber          = 'GetPageNumber'
