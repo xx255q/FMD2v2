@@ -65,7 +65,6 @@ function GetInfo()
 	for g in x.XPath('json(*).genre-map()').Get() do
 		if genrelist[g.GetProperty('genre_id').ToString()] == g.GetProperty('genre_id').ToString() then MANGAINFO.Genres = MANGAINFO.Genres .. g.GetProperty('genre_name').ToString() .. ', ' end
 	end
-	MANGAINFO.Genres = MANGAINFO.Genres:sub(1, -2)
 
 	status = x.XPathString('statusScanlation', json)
 	if (status == '0') or (status == '1') then
