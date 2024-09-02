@@ -54,8 +54,9 @@ function GetNameAndLink()
 
 	if not HTTP.GET(u) then return net_problem end
 
-	for v in CreateTXQuery(HTTP.Document).XPath('json(*).response()').Get() do
-		LINKS.Add(v.GetProperty('url').ToString():gsub(MODULE.RootURL, ''))
+	x = CreateTXQuery(HTTP.Document)
+	for v in x.XPath('json(*).response()').Get() do
+		LINKS.Add(v.GetProperty('url').ToString())
 		NAMES.Add(v.GetProperty('russian').ToString())
 	end
 
