@@ -8,7 +8,6 @@ function Init()
 	m.Name                     = 'NetTruyenX'
 	m.RootURL                  = 'https://nettruyenx.com'
 	m.Category                 = 'Vietnamese'
-	m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
 	m.OnGetInfo                = 'GetInfo'
 	m.OnGetPageNumber          = 'GetPageNumber'
@@ -25,13 +24,6 @@ local Template = require 'templates.WPComics'
 ----------------------------------------------------------------------------------------------------
 -- Event Functions
 ----------------------------------------------------------------------------------------------------
-
--- Get the page count of the manga list of the current website.
-function GetDirectoryPageNumber()
-	Template.GetDirectoryPageNumber()
-
-	return no_error
-end
 
 -- Get links and names from the manga list of the current website.
 function GetNameAndLink()
