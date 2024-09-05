@@ -66,17 +66,16 @@ end
 
 -- Get links and names from the manga list of the current website.
 function GetNameAndLink()
-	local v, x = nil
+	local v = nil
 	local u = API_URL .. DirectoryPagination .. (URL + 1)
 	HTTP.Headers.Values['Origin'] = MODULE.RootURL
 	HTTP.Headers.Values['Referer'] = MODULE.RootURL .. '/'
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = CreateTXQuery(HTTP.Document)
-	for v in x.XPath('json(*).entries()').Get() do
-		LINKS.Add('g/' .. x.XPathString('id', v) .. '/' .. x.XPathString('public_key', v))
-		NAMES.Add(x.XPathString('title', v))
+	for v in CreateTXQuery(HTTP.Document).XPath('json(*).entries()').Get() do
+		LINKS.Add('g/' .. v.GetProperty('id').ToString() .. '/' .. v.GetProperty('public_key').ToString())
+		NAMES.Add(v.GetProperty('title').ToString())
 	end
 
 	return no_error
@@ -102,7 +101,7 @@ function GetInfo()
 	sel_imagesize = (MODULE.GetOption('imagesize') or 0) + 1
 	link = x.XPathString('json(*).id') .. '/' .. x.XPathString('json(*).public_key') .. '/' .. x.XPathString('json(*).data.' .. imagesize[sel_imagesize] .. '.id') .. '/' .. x.XPathString('json(*).data.' .. imagesize[sel_imagesize] .. '.public_key') .. '?v=' .. x.XPathString('json(*).updated_at') .. '&w=' .. imagesize[sel_imagesize]
 	if string.find(link, '//') then
-		title = 'No image(s) in this selected image size!'
+		title = 'No image(s) available in this selected image size!'
 	else
 		title = MANGAINFO.Title
 	end
