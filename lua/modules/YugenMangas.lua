@@ -55,7 +55,7 @@ end
 
 -- Get info and chapter list for current manga.
 function GetInfo()
-	local id, pages, title, slug, v, x = nil
+	local pages, v, x = nil
 	local page = 1
 	local u = API_URL .. '/series/detail/series/'
 	local s = '{"code":"' .. URL:match('/series/(%d+)$') .. '"}'
