@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  Buttons, Menus, ExtCtrls, Laz.VirtualTrees, synautil, httpsendthread, BaseThread,
+  Buttons, Menus, ExtCtrls, VirtualTrees, synautil, httpsendthread, BaseThread,
   XQueryEngineHTML, GitHubRepoV3, MultiLog, fpjson, jsonparser, jsonscanner, dateutils;
 
 type
@@ -65,12 +65,15 @@ type
     imStates: TImageList;
     btCheckUpdateTerminate: TSpeedButton;
     tmRepaintList: TTimer;
-    vtLuaModulesRepos: TLazVirtualStringTree;
+    vtLuaModulesRepos: TVirtualStringTree;
     procedure btCheckUpdateClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure btCheckUpdateTerminateClick(Sender: TObject);
     procedure tmRepaintListTimer(Sender: TObject);
+    procedure vtLuaModulesReposBeforeCellPaint(Sender: TBaseVirtualTree;
+      TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
+      CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
     procedure vtLuaModulesReposCompareNodes(Sender: TBaseVirtualTree;
       Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
     procedure vtLuaModulesReposGetHint(Sender: TBaseVirtualTree;
@@ -608,7 +611,7 @@ procedure TCheckUpdateThread.Download;
 var
   i, imax: Integer;
   m: TLuaModuleRepo;
-  f: String;
+  f, message: String;
 begin
   Synchronize(@SyncStartDownload);
 
@@ -643,6 +646,9 @@ begin
       if Terminated then
         Break;
       TDownloadThread.Create(Self, FRepos[i]);
+      message := FGitHubRepo.GetLastCommitMessage(m.name);
+      if message <> '' then
+         m.last_message := message;
       Inc(i);
     end;
   end;
@@ -855,6 +861,20 @@ begin
       FListDirty := False;
     finally
       LeaveCriticalsection(FListCS);
+    end;
+  end;
+end;
+
+procedure TLuaModulesUpdaterForm.vtLuaModulesReposBeforeCellPaint(Sender: TBaseVirtualTree;
+  TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
+  CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
+begin
+  with PLuaModuleRepo(Sender.GetNodeData(Node))^ do
+  begin
+    if last_modified > IncDay(Now, -7) then
+    begin
+      TargetCanvas.Brush.Color := CL_MDNewUpdate;
+      TargetCanvas.FillRect(CellRect);
     end;
   end;
 end;

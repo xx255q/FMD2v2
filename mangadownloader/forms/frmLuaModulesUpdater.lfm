@@ -12,7 +12,7 @@ object LuaModulesUpdaterForm: TLuaModulesUpdaterForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   LCLVersion = '2.1.0.0'
-  object vtLuaModulesRepos: TLazVirtualStringTree
+  object vtLuaModulesRepos: TVirtualStringTree
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = btCheckUpdate
     AnchorSideTop.Side = asrBottom
@@ -52,6 +52,7 @@ object LuaModulesUpdaterForm: TLuaModulesUpdaterForm
     TabOrder = 3
     TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toShowVertGridLines, toThemeAware, toUseBlendedImages, toFullVertGridLines]
     TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect]
+    OnBeforeCellPaint = vtLuaModulesReposBeforeCellPaint
     OnCompareNodes = vtLuaModulesReposCompareNodes
     OnGetText = vtLuaModulesReposGetText
     OnGetImageIndex = vtLuaModulesReposGetImageIndex

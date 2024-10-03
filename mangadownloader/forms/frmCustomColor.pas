@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Types, Forms, Graphics, Dialogs, ColorBox, ComCtrls,
-  Laz.VirtualTrees, FMDOptions, jsonini;
+  VirtualTrees, FMDOptions, jsonini;
 
 type
   TColorItem = record
@@ -32,9 +32,9 @@ type
     property C[Index: Integer]: TColor read GetC write SetC; default;
   end;
 
-  { TLazVirtualStringTree }
+  { TVirtualStringTree }
 
-  TLazVirtualStringTree = class(Laz.VirtualTrees.TLazVirtualStringTree)
+  TVirtualStringTree = class(VirtualTrees.TVirtualStringTree)
   private
     FCI: TColorItems;
     procedure SetCI(AValue: TColorItems);
@@ -49,13 +49,15 @@ type
     btColors: TColorButton;
     pcCustomColorList: TPageControl;
     tsChapterList: TTabSheet;
+    tsModuleList: TTabSheet;
     tsMangaList: TTabSheet;
     tsFavoriteList: TTabSheet;
     tsBasicList: TTabSheet;
-    VTBasicList: TLazVirtualStringTree;
-    VTChapterList: TLazVirtualStringTree;
-    VTMangaList: TLazVirtualStringTree;
-    VTFavoriteList: TLazVirtualStringTree;
+    VTBasicList: TVirtualStringTree;
+    VTChapterList: TVirtualStringTree;
+    VTModuleList: TVirtualStringTree;
+    VTMangaList: TVirtualStringTree;
+    VTFavoriteList: TVirtualStringTree;
     procedure btColorsColorChanged(Sender: TObject);
     procedure CBColorsChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -81,7 +83,7 @@ type
   end;
 
   TVTList = record
-    VT: Laz.VirtualTrees.TLazVirtualStringTree;
+    VT: VirtualTrees.TVirtualStringTree;
     PaintText: TVTPaintText;
     BeforeCellPaint: TVTBeforeCellPaintEvent;
     PaintBackground: TVTBackgroundPaintEvent;
@@ -103,20 +105,20 @@ type
       var Handled: Boolean);
   private
     procedure InstallCustomColors(Index: Integer);
-    function GetItems(Index: Integer): Laz.VirtualTrees.TLazVirtualStringTree;
-    procedure SetItems(Index: Integer; AValue: Laz.VirtualTrees.TLazVirtualStringTree);
+    function GetItems(Index: Integer): VirtualTrees.TVirtualStringTree;
+    procedure SetItems(Index: Integer; AValue: VirtualTrees.TVirtualStringTree);
   public
     constructor Create;
     destructor Destroy; override;
-    function IndexOf(const AVT: Laz.VirtualTrees.TLazVirtualStringTree): Integer;
-    procedure Add(const AVT: Laz.VirtualTrees.TLazVirtualStringTree);
-    procedure Remove(const AVT: Laz.VirtualTrees.TLazVirtualStringTree);
-    property Items[Index: Integer]: Laz.VirtualTrees.TLazVirtualStringTree read GetItems write SetItems; default;
+    function IndexOf(const AVT: VirtualTrees.TVirtualStringTree): Integer;
+    procedure Add(const AVT: VirtualTrees.TVirtualStringTree);
+    procedure Remove(const AVT: VirtualTrees.TVirtualStringTree);
+    property Items[Index: Integer]: VirtualTrees.TVirtualStringTree read GetItems write SetItems; default;
     property Count: Integer read FCount;
   end;
 
-procedure AddVT(const AVT: Laz.VirtualTrees.TLazVirtualStringTree); inline;
-procedure RemoveVT(const AVT: Laz.VirtualTrees.TLazVirtualStringTree); inline;
+procedure AddVT(const AVT: VirtualTrees.TVirtualStringTree); inline;
+procedure RemoveVT(const AVT: VirtualTrees.TVirtualStringTree); inline;
 procedure Apply;
 procedure LoadFromIniFile(const AIniFile: TJSONIniFile);
 procedure SaveToIniFile(const AIniFile: TJSONIniFile);
@@ -145,10 +147,11 @@ var
   BasicListColors,
   MangaListColors,
   FavoriteListColors,
-  ChapterListColor: TColorItems;
+  ChapterListColor,
+  ModuleListColor: TColorItems;
 
   // current selected color list
-  SelectedColorList: TLazVirtualStringTree;
+  SelectedColorList: TVirtualStringTree;
 
   // vt list to apply
   VTApplyList: TVTApplyList;
@@ -206,6 +209,12 @@ begin
     Add('DownloadedColor', CL_CHDownloaded);
   end;
 
+  ModuleListColor := TColorItems.Create;
+  with ModuleListColor do
+  begin
+    Add('NewUpdateColor', CL_MDNewUpdate);
+  end;
+
   SelectedColorList := nil;
   VTApplyList := TVTApplyList.Create;
 end;
@@ -216,10 +225,11 @@ begin
   MangaListColors.Free;
   FavoriteListColors.Free;
   ChapterListColor.Free;
+  ModuleListColor.Free;
   VTApplyList.Free;
 end;
 
-procedure ApplyBasicColorToVT(const AVT: Laz.VirtualTrees.TLazVirtualStringTree);
+procedure ApplyBasicColorToVT(const AVT: VirtualTrees.TVirtualStringTree);
 begin
   with AVT.Colors do
   begin
@@ -243,12 +253,12 @@ begin
   end;
 end;
 
-procedure AddVT(const AVT: Laz.VirtualTrees.TLazVirtualStringTree);
+procedure AddVT(const AVT: VirtualTrees.TVirtualStringTree);
 begin
   VTApplyList.Add(AVT);
 end;
 
-procedure RemoveVT(const AVT: Laz.VirtualTrees.TLazVirtualStringTree);
+procedure RemoveVT(const AVT: VirtualTrees.TVirtualStringTree);
 begin
   VTApplyList.Remove(AVT);
 end;
@@ -277,6 +287,9 @@ begin
 
   //chapterlist
   CL_CHDownloaded := ChapterListColor[0];
+
+  //modulelist
+  CL_MDNewUpdate := ModuleListColor[0];
 end;
 
 procedure Apply;
@@ -315,6 +328,11 @@ begin
       ChapterListColor[i] := StringToColor(ReadString('ChapterListColor', ChapterListColor.N[i],
         ColorToString(ChapterListColor[i])));
 
+    //modulelist
+    for i := 0 to ModuleListColor.Count - 1 do
+      ModuleListColor[i] := StringToColor(ReadString('ModuleListColor', ModuleListColor.N[i],
+        ColorToString(ModuleListColor[i])));
+
     ApplyToFMDOptions;
   end;
 end;
@@ -339,7 +357,11 @@ begin
 
     //chapterlist
     for i := 0 to ChapterListColor.Count - 1 do
-      WriteString('ChapterListColor', ChapterListColor.N[i], ColorToString(ChapterListColor[i]));
+      WriteString('ChapterListColor', ChapterListColor.N[i], ColorToString(ChapterListColor[i])); 
+
+    //modulelist
+    for i := 0 to ModuleListColor.Count - 1 do
+      WriteString('ModuleListColor', ModuleListColor.N[i], ColorToString(ModuleListColor[i]));
   end;
 end;
 
@@ -386,7 +408,7 @@ var
   isSortedColumn: Boolean = False;
   CRect: TRect;
 begin
-  with Laz.VirtualTrees.TLazVirtualStringTree(Sender) do begin
+  with VirtualTrees.TVirtualStringTree(Sender) do begin
     if (CellPaintMode = cpmPaint) and (Column<>NoColumn) then
     begin
       if odd(Node^.Index) then
@@ -456,7 +478,7 @@ var
 
   procedure paintVertGridline(const orect:TRect);
   begin
-    with Laz.VirtualTrees.TLazVirtualStringTree(Sender) do begin
+    with VirtualTrees.TVirtualStringTree(Sender) do begin
       TargetCanvas.Pen.Color:=BlendColor(TargetCanvas.Brush.Color,Colors.GridLineColor,SelectionBlendFactor);
       if LineStyle=lsDotted then
         TargetCanvas.Pen.Style:=psDot
@@ -468,7 +490,7 @@ var
 
   procedure paintSortedColumn(const orect:TRect);
   begin
-    with Laz.VirtualTrees.TLazVirtualStringTree(Sender) do begin
+    with VirtualTrees.TVirtualStringTree(Sender) do begin
       if CL_BSSortedColumn=clNone then Exit;
       TargetCanvas.Brush.Color:=BlendColor(CL_BSSortedColumn,TargetCanvas.Brush.Color,SelectionBlendFactor);
       TargetCanvas.FillRect(orect);
@@ -476,7 +498,7 @@ var
   end;
 
 begin
-  with Laz.VirtualTrees.TLazVirtualStringTree(Sender) do begin
+  with VirtualTrees.TVirtualStringTree(Sender) do begin
     if Header.Columns.Count=0 then Exit;
 
     // draw background
@@ -569,12 +591,12 @@ begin
   end;
 end;
 
-function TVTApplyList.GetItems(Index: Integer): Laz.VirtualTrees.TLazVirtualStringTree;
+function TVTApplyList.GetItems(Index: Integer): VirtualTrees.TVirtualStringTree;
 begin
   Result := FVTList[Index].VT;
 end;
 
-procedure TVTApplyList.SetItems(Index: Integer; AValue: Laz.VirtualTrees.TLazVirtualStringTree);
+procedure TVTApplyList.SetItems(Index: Integer; AValue: VirtualTrees.TVirtualStringTree);
 begin
   if FVTList[Index].VT <> AValue then
     FVTList[Index].VT := AValue;
@@ -591,7 +613,7 @@ begin
   inherited Destroy;
 end;
 
-function TVTApplyList.IndexOf(const AVT: Laz.VirtualTrees.TLazVirtualStringTree): Integer;
+function TVTApplyList.IndexOf(const AVT: VirtualTrees.TVirtualStringTree): Integer;
 begin
   Result := 0;
   while (Result < FCount) and (FVTList[Result].VT <> AVT) do
@@ -600,7 +622,7 @@ begin
     Result := -1;
 end;
 
-procedure TVTApplyList.Add(const AVT: Laz.VirtualTrees.TLazVirtualStringTree);
+procedure TVTApplyList.Add(const AVT: VirtualTrees.TVirtualStringTree);
 begin
   if IndexOf(AVT) = -1 then
   begin
@@ -612,7 +634,7 @@ begin
   end;
 end;
 
-procedure TVTApplyList.Remove(const AVT: Laz.VirtualTrees.TLazVirtualStringTree);
+procedure TVTApplyList.Remove(const AVT: VirtualTrees.TVirtualStringTree);
 var
   i: Integer;
 begin
@@ -624,9 +646,9 @@ begin
   SetLength(FVTList, FCount);
 end;
 
-{ TLazVirtualStringTree }
+{ TVirtualStringTree }
 
-procedure TLazVirtualStringTree.SetCI(AValue: TColorItems);
+procedure TVirtualStringTree.SetCI(AValue: TColorItems);
 begin
   if FCI = AValue then Exit;
   FCI := AValue;
@@ -686,17 +708,19 @@ begin
   AddVT(VTMangaList);
   AddVT(VTFavoriteList);
   AddVT(VTChapterList);
+  AddVT(VTModuleList);
   VTBasicList.CI := BasicListColors;
   VTMangaList.CI := MangaListColors;
   VTFavoriteList.CI := FavoriteListColors;
   VTChapterList.CI := ChapterListColor;
+  VTModuleList.CI := ModuleListColor;
 end;
 
 procedure TCustomColorForm.VTBasicListBeforeCellPaint(Sender: TBaseVirtualTree;
   TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
   CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
 begin
-  with Laz.VirtualTrees.TLazVirtualStringTree(Sender), TargetCanvas do
+  with VirtualTrees.TVirtualStringTree(Sender), TargetCanvas do
   begin
     if odd(Node^.Index) then
       Brush.Color := BasicListColors[19]
@@ -723,23 +747,23 @@ procedure TCustomColorForm.VTBasicListDrawText(Sender: TBaseVirtualTree; TargetC
   const CellRect: TRect; var DefaultDraw: Boolean);
 begin
   DefaultDraw := False;
-  DrawBoxColorText(TargetCanvas, TLazVirtualStringTree(Sender).CI[Node^.Index],
+  DrawBoxColorText(TargetCanvas, TVirtualStringTree(Sender).CI[Node^.Index],
     CellText, CellRect);
 end;
 
 procedure TCustomColorForm.VTBasicListFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode;
   Column: TColumnIndex);
 begin
-  if SelectedColorList <> TLazVirtualStringTree(Sender) then
-    SelectedColorList := TLazVirtualStringTree(Sender);
-  CBColors.Selected := TLazVirtualStringTree(Sender).CI[Node^.Index];
+  if SelectedColorList <> TVirtualStringTree(Sender) then
+    SelectedColorList := TVirtualStringTree(Sender);
+  CBColors.Selected := TVirtualStringTree(Sender).CI[Node^.Index];
   btColors.ButtonColor := CBColors.Selected;
 end;
 
 procedure TCustomColorForm.VTBasicListGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
   Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
 begin
-  CellText := TLazVirtualStringTree(Sender).CI.N[Node^.Index];
+  CellText := TVirtualStringTree(Sender).CI.N[Node^.Index];
 end;
 
 procedure TCustomColorForm.VTBasicListPaintText(Sender: TBaseVirtualTree;
@@ -802,6 +826,7 @@ begin
     ApplyBasicColorToVT(VTMangaList);
     ApplyBasicColorToVT(VTFavoriteList);
     ApplyBasicColorToVT(VTChapterList);
+    ApplyBasicColorToVT(VTModuleList);
   end
   else
     SelectedColorList.Repaint;
