@@ -1,8 +1,13 @@
 Free Manga Downloader
-https://github.com/dazedcat19/FMD
+https://github.com/dazedcat19/FMD2
 
 Changelog:
 ([!] Important, [+] Addition, [-] Removal, [*] Fix/Change, [?] Feedback needed)
+
+2.0.33.1 (10.10.2024)
+[+] Added "rookiepy" workaround to bypass cloudflare protection. To use this workaround, check Issue #1715 -> Thank you @NhKPaNdA
+[*] "FlareSolverr" workaround has issues with looping requests and timing out. Follow Method 1a in Issue #1715 for a working fix.
+[*] Hotfix: Fixed filter search
 
 2.0.33.0 (05.10.2024)
 [+] Added custom color options for module list. The color will stays for 7 days after modules update -> Thank you @NhKPaNdA
