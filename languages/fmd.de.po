@@ -932,6 +932,10 @@ msgstr "Band"
 msgid "Enable load manga cover"
 msgstr "Aktiviere Manga-Cover laden"
 
+#: tmainform.cboptionenablelongnamepaths.caption
+msgid "Enable long name paths (Can break most/all interaction with the file in Windows and other apps)"
+msgstr ""
+
 #: tmainform.cboptiongeneratechapterfolder.caption
 msgid "Auto generate chapter folder"
 msgstr "Automatischen Kapitel-Ordner erzeugen"

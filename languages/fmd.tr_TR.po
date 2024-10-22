@@ -933,6 +933,10 @@ msgstr "Cilt"
 msgid "Enable load manga cover"
 msgstr "Manga afişini yüklemeyi aç"
 
+#: tmainform.cboptionenablelongnamepaths.caption
+msgid "Enable long name paths (Can break most/all interaction with the file in Windows and other apps)"
+msgstr ""
+
 #: tmainform.cboptiongeneratechapterfolder.caption
 msgid "Auto generate chapter folder"
 msgstr "Bölüm klasörünü otomatik oluştur"
@@ -2374,9 +2378,10 @@ msgid "Save to"
 msgstr "Şuraya kaydet"
 
 #: tmainform.vtfavorites.header.columns[5].text
+#, fuzzy
 msgctxt "tmainform.vtfavorites.header.columns[5].text"
 msgid "Date added"
-msgstr ""
+msgstr "Eklenme Tarihi"
 
 #: tmainform.vtfavorites.header.columns[6].text
 msgid "Last checked date"

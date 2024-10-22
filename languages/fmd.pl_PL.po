@@ -914,6 +914,10 @@ msgstr "Tom"
 msgid "Enable load manga cover"
 msgstr "Włącz ładowanie okładek mang"
 
+#: tmainform.cboptionenablelongnamepaths.caption
+msgid "Enable long name paths (Can break most/all interaction with the file in Windows and other apps)"
+msgstr ""
+
 #: tmainform.cboptiongeneratechapterfolder.caption
 msgid "Auto generate chapter folder"
 msgstr "Automatyczne generowanie folderu rozdziału"
@@ -2358,9 +2362,10 @@ msgid "Save to"
 msgstr "Zapisz do"
 
 #: tmainform.vtfavorites.header.columns[5].text
+#, fuzzy
 msgctxt "tmainform.vtfavorites.header.columns[5].text"
 msgid "Date added"
-msgstr ""
+msgstr "Dodano"
 
 #: tmainform.vtfavorites.header.columns[6].text
 msgid "Last checked date"
@@ -2503,9 +2508,10 @@ msgid "Compressing..."
 msgstr ""
 
 #: udownloadsmanager.rs_disabled
+#, fuzzy
 msgctxt "udownloadsmanager.rs_disabled"
 msgid "Disabled"
-msgstr ""
+msgstr "Wyłączone"
 
 #: udownloadsmanager.rs_downloading
 msgid "Downloading"

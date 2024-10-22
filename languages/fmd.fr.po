@@ -934,6 +934,10 @@ msgstr "Volumes"
 msgid "Enable load manga cover"
 msgstr "Charger la couverture du manga"
 
+#: tmainform.cboptionenablelongnamepaths.caption
+msgid "Enable long name paths (Can break most/all interaction with the file in Windows and other apps)"
+msgstr ""
+
 #: tmainform.cboptiongeneratechapterfolder.caption
 msgid "Auto generate chapter folder"
 msgstr "Générer automatiquement un dossier par chapitre"
@@ -2451,9 +2455,10 @@ msgid "Save to"
 msgstr "Répertoire d'enregistrement"
 
 #: tmainform.vtfavorites.header.columns[5].text
+#, fuzzy
 msgctxt "tmainform.vtfavorites.header.columns[5].text"
 msgid "Date added"
-msgstr ""
+msgstr "Date d'ajout"
 
 #: tmainform.vtfavorites.header.columns[6].text
 msgid "Last checked date"
