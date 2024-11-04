@@ -97,21 +97,34 @@ function _M.GetPageNumber()
 	x.XPathStringAll('//div[contains(@class, "page-break")]/img/@data-src', TASK.PageLinks)
 	if TASK.PageLinks.Count == 0 then x.XPathStringAll('//div[contains(@class, "page-break")]/img/@src', TASK.PageLinks) end
 	if TASK.PageLinks.Count == 0 then
-		script = x.XPathString('//script[@id="chapter-protector-data"]')
-		img = require("fmd.duktape").ExecJS(script .. [[
-
-		var CryptoJS = require("utils/crypto-js.min.js");
-		var CryptoJSAesJson = require("utils/cryptojs-aes-format.js");
-		JSON.parse(CryptoJS.AES.decrypt(chapter_data, wpmangaprotectornonce, {format: CryptoJSAesJson}).toString(CryptoJS.enc.Utf8));
-
-		]]):gsub('\\/', '/'):gsub('%[', ''):gsub('%]', '')
-		for i in img:gmatch('"([^",]+)') do
-			TASK.PageLinks.Add(i)
-		end
-	end
-	if TASK.PageLinks.Count == 0 then
 		x.ParseHTML('[' .. GetBetween('[', ']', x.XPathString('//script[@id="chapter_preloaded_images"]')) .. ']')
 		x.XPathStringAll('json(*)().src', TASK.PageLinks)
+	end
+	if TASK.PageLinks.Count == 0 then
+		x = CreateTXQuery(HTTP.Document)
+		script = x.XPathString('//script[@id="chapter-protector-data"]')
+
+		if script == "" then
+			nodejs = require("utils.nodejs")
+			result = nodejs.run_html_load(string.gsub(u, "?style=list", ""))
+
+			x.ParseHTML(result)
+			script = x.XPathString('//script[@id="chapter-protector-data"]')
+		end
+
+		if script ~= "" then
+			img = require "fmd.duktape".ExecJS(script .. [[
+
+			var CryptoJS = require("utils/crypto-js.min.js");
+			var CryptoJSAesJson = require("utils/cryptojs-aes-format.js");
+			JSON.parse(CryptoJS.AES.decrypt(chapter_data, wpmangaprotectornonce, {format: CryptoJSAesJson}).toString(CryptoJS.enc.Utf8));
+
+			]]):gsub('\\/', '/'):gsub('%[', ''):gsub('%]', '')
+
+			for i in img:gmatch('"([^",]+)') do
+				TASK.PageLinks.Add(i)
+			end
+		end
 	end
 	for i = 0, TASK.PageLinks.Count - 1 do
 		TASK.PageLinks[i] = TASK.PageLinks[i]:gsub("i%d.wp.com/", "")
