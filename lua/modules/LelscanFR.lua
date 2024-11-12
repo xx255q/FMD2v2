@@ -7,7 +7,7 @@ function Init()
 	m.ID                       = '358a61da48924114b62167af95772e03'
 	m.Name                     = 'LelscanFR'
 	m.RootURL                  = 'https://lelscanfr.com'
-	m.Category                 = 'France'
+	m.Category                 = 'French'
 	m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
 	m.OnGetInfo                = 'GetInfo'
