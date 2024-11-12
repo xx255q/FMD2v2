@@ -15,7 +15,7 @@ function Init()
 	AddWebsiteModule('8b64d8a6fcd049999e36c63b6706df53', 'MangaToonSP', 'https://mangatoon.mobi/es', 'Spanish')
 	AddWebsiteModule('4e2496188f384acbae47cfb295cd9ca1', 'MangaToonPT', 'https://mangatoon.mobi/pt', 'Portuguese')
 	AddWebsiteModule('3cc350524dcb42dbb547e3198be028e6', 'MangaToonTH', 'https://mangatoon.mobi/th', 'Thailand')
-	AddWebsiteModule('4df0307b95ec458485798908bf2b9f31', 'MangaToonFR', 'https://mangatoon.mobi/fr', 'France')
+	AddWebsiteModule('4df0307b95ec458485798908bf2b9f31', 'MangaToonFR', 'https://mangatoon.mobi/fr', 'French')
 	AddWebsiteModule('cce6e62454b84b5e91ccd9f4b60c7be6', 'MangaToonAR', 'https://mangatoon.mobi/ar', 'Arabic')
 	AddWebsiteModule('9fd7c7954eea4addaf2d283135c20222', 'MangaToonCN', 'https://mangatoon.mobi/cn', 'Webcomics')
 end
