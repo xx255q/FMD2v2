@@ -38,7 +38,7 @@ function _M.GetInfo()
 	MANGAINFO.Authors   = x.XPathString('//div[@alt="Author"]/span|//div[@class="grid gap-2 h-fit" and contains(., "Author")]/div[2]')
 	MANGAINFO.Artists   = x.XPathString('//div[@alt="Artist"]/span|//div[@class="grid gap-2 h-fit" and contains(., "Artist")]/div[2]')
 	MANGAINFO.Genres    = x.XPathStringAll('//a[contains(@href, "genre")]/span')
-	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//div[@alt="Status"]/span|//div[@class="grid gap-2 h-fit" and contains(., "Status")]/div[2]'))
+	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//div[@alt="Status"]/span|//div[@class="grid gap-2 h-fit" and contains(., "Status")]/div[2]'), 'ongoing|paused', 'completed|dropped')
 	MANGAINFO.Summary   = x.XPathString('string-join(//div[@id="expand_content"]/p/text()|//div[@class="overflow-hidden"]/p/text(), "\r\n")')
 
 	if MODULE.GetOption('showpaidchapters') then
