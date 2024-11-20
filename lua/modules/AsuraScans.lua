@@ -68,14 +68,12 @@ end
 
 -- Get the page count for the current chapter.
 function GetPageNumber()
-	local i, img, x = nil
+	local i, img = nil
 	local u = MaybeFillHost(MODULE.RootURL, URL)
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = CreateTXQuery(HTTP.Document)
-	HTTP.Document.SaveToFile("asura.html")
-	img = GetBetween("push(", "])", x.XPathString('//script[contains(., "published_at")]'):gsub('\\"', '"')) .. ']'
+	img = GetBetween("push(", "])", CreateTXQuery(HTTP.Document).XPathString('//script[contains(., "published_at")]'):gsub('\\"', '"')) .. ']'
 	for i in img:gmatch('"url":"(.-)"') do
 		TASK.PageLinks.Add(i)
 	end
