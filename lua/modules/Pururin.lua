@@ -43,6 +43,7 @@ function Login()
 		'&remember=on'
 	end
 	MODULE.Account.Status = asChecking
+	sleep(5000)
 	HTTP.Reset()
 	if HTTP.POST(login_url, s) then
 		if (HTTP.ResultCode == 200) and (CreateTXQuery(HTTP.Document).XPathString('//form[@id="logout-form"]/@action') ~= '') then
