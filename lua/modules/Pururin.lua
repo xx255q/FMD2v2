@@ -29,6 +29,7 @@ DirectoryPagination = '/browse?page='
 
 -- Login account to the current website.
 function Login()
+	MODULE.ClearCookies()
 	local s, x = nil
 	local login_url = MODULE.RootURL .. '/login'
 	if MODULE.Account.Enabled == false then return false end
