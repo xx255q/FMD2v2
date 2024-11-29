@@ -53,8 +53,8 @@ function _M.GetInfo()
 	MANGAINFO.Summary   = x.XPathString('string-join(//div[contains(@class, "summary__content") or @class="manga-summary"]|//div[@class="manga-excerpt"]|//div[@class="post-content_item" and contains(h5, "Summary") or contains(h5, "Sinopsis")]//p, "\r\n")')
 
 	if MANGAINFO.CoverLink == '' then MANGAINFO.CoverLink = x.XPathString('//div[@class="summary_image"]//img/@src') end
-	if MANGAINFO.Authors == '' then MANGAINFO.Authors = x.XPathString('//div[@class="summary-heading" and contains(., "' .. XPathTokenAuthors .. '")]/following-sibling::div') end
-	if MANGAINFO.Artists == '' then MANGAINFO.Artists = x.XPathString('//div[@class="summary-heading" and contains(., "' .. XPathTokenArtists .. '")]/following-sibling::div') end
+	if MANGAINFO.Authors == '' then MANGAINFO.Authors = x.XPathString('//div[@class="summary-heading" and contains(., "' .. XPathTokenAuthors .. '")]/following-sibling::div|//div[@class="manga-authors"]/a') end
+	if MANGAINFO.Artists == '' then MANGAINFO.Artists = x.XPathString('//div[@class="summary-heading" and contains(., "' .. XPathTokenArtists .. '")]/following-sibling::div|//div[@class="manga-artists"]/a') end
 	if MANGAINFO.Genres == '' then MANGAINFO.Genres = x.XPathStringAll('//div[@class="summary-heading" and contains(., "' .. XPathTokenGenres .. '")]/following-sibling::div/a') end
 
 	id = x.XPathString('//div[contains(@id, "manga-chapters-holder")]/@data-id')
