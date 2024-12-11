@@ -1,4 +1,4 @@
-| Website | ID | URL | Status | Last checked date |
+| Website | ID | URL | Module status | Last checked date |
 |:---|:---:|:---|:---:|:---:|
 | 11Toon | c7b742a4dc8a451fa95baec1aa183b39 | ![https://www.11toon.com](https://img.shields.io/website?url=https://www.11toon.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://www.11toon.com) | - | - |
 | 1MangaCo | 56473ae447f04cee93683d7404b32e60 | ![https://1manga.co](https://img.shields.io/website?url=https://1manga.co%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://1manga.co) | - | - |
@@ -476,7 +476,7 @@
 | MundoWuxia | 2458c40d646f4c0796aa550558e5e6b4 | ![https://mundowuxia.com](https://img.shields.io/website?url=https://mundowuxia.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mundowuxia.com) | - | - |
 | MyReadingManga | 84451c35b7764bb5a5e3dd8692e84682 | ![https://myreadingmanga.info](https://img.shields.io/website?url=https://myreadingmanga.info%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://myreadingmanga.info) | - | - |
 | MyToon | 3b0d5c38081a4b21a39a388a3ec59197 | ![https://mytoon.net](https://img.shields.io/website?url=https://mytoon.net%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mytoon.net) | - | - |
-| NHentai | f8d26ca921af4876b7ba84bd7e06fe82 | ![https://nhentai.net](https://img.shields.io/website?url=https://nhentai.net%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://nhentai.net) | - | - |
+| NHentai | f8d26ca921af4876b7ba84bd7e06fe82 | ![https://nhentai.net](https://img.shields.io/website?url=https://nhentai.net%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://nhentai.net) | OK | 12.11.2024 |
 | NHentaiCom | 093e8ef9ad3542f68bbfd7aec0652773 | ![https://nhentai.com](https://img.shields.io/website?url=https://nhentai.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://nhentai.com) | - | - |
 | Nartag | adaa36e7f591470685788d0e8ae31230 | ![https://visortraduccionesamistosas.com](https://img.shields.io/website?url=https://visortraduccionesamistosas.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://visortraduccionesamistosas.com) | - | - |
 | Necro Scans | 6cdcae30ce834d868280d831202b5d3d | ![https://necroscans.com](https://img.shields.io/website?url=https://necroscans.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://necroscans.com) | - | - |
@@ -672,7 +672,7 @@
 | TruyenTranhTuan | a4b6980afef4474f9cae83c975359cd0 | ![http://truyentranhtuan.com](https://img.shields.io/website?url=http://truyentranhtuan.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=http://truyentranhtuan.com) | - | - |
 | Tsumino | 2f5e1b629ce148988e56fca46798afd1 | ![https://www.tsumino.com](https://img.shields.io/website?url=https://www.tsumino.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://www.tsumino.com) | - | - |
 | TuMangaNet | 22c481c279c740b897ffc906ab808502 | ![https://tumanga.net](https://img.shields.io/website?url=https://tumanga.net%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://tumanga.net) | - | - |
-| TuMangaOnline | 9185eb6c49324a849c7d7925a41ef3a3 | ![https://zonatmo.com](https://img.shields.io/website?url=https://zonatmo.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://zonatmo.com) | - | - |
+| TuMangaOnline | 9185eb6c49324a849c7d7925a41ef3a3 | ![https://zonatmo.com](https://img.shields.io/website?url=https://zonatmo.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://zonatmo.com) | Broken | 12.11.2024 |
 | Turkcraft | bdbd8eff725747d3a756b998c9f6dc9b | ![http://turkcraft.com](https://img.shields.io/website?url=http://turkcraft.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=http://turkcraft.com) | - | - |
 | TvYManga | 2020026642ec4cd48a895d81e57f8ef8 | ![https://tvymanga.com](https://img.shields.io/website?url=https://tvymanga.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://tvymanga.com) | - | - |
 | TwilightScans | 0a296830cf814700ac18c74139982679 | ![https://twilightscans.com](https://img.shields.io/website?url=https://twilightscans.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://twilightscans.com) | - | - |
