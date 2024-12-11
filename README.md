@@ -5,6 +5,8 @@
 Use the converter if you want to migrate your FMD1 settings and databases.
 [Converter](https://github.com/dazedcat19/FMD2/releases/tag/2.0.31.0)
 
+[Supported Websites](https://github.com/dazedcat19/FMD2/blob/master/docs/SUPPORTED_WEBSITES.md)
+
 ## Download
 
 [![Latest release](https://img.shields.io/github/release/dazedcat19/FMD2.svg)](https://github.com/dazedcat19/FMD2/releases/latest)
