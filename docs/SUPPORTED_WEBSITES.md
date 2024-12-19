@@ -574,7 +574,7 @@
 | SamuraiScan | [![https://latan.visorsmr.com](https://img.shields.io/website?url=https://latan.visorsmr.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://latan.visorsmr.com)](https://latan.visorsmr.com) | - | - | - |
 | ScanFR | [![https://www.scan-fr.cc](https://img.shields.io/website?url=https://www.scan-fr.cc%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://www.scan-fr.cc)](https://www.scan-fr.cc) | - | - | - |
 | ScanOP | [![https://scan-op.cc](https://img.shields.io/website?url=https://scan-op.cc%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://scan-op.cc)](https://scan-op.cc) | - | - | - |
-| SchaleNetwork | [![https://schale.network](https://img.shields.io/website?url=https://schale.network%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://schale.network)](https://schale.network) | - | - | - |
+| SchaleNetwork | [![https://niyaniya.moe](https://img.shields.io/website?url=https://niyaniya.moe%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://niyaniya.moe)](https://niyaniya.moe) | OK | 17.12.2024 | - |
 | Scylla Comics | [![https://scyllacomics.xyz](https://img.shields.io/website?url=https://scyllacomics.xyz%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://scyllacomics.xyz)](https://scyllacomics.xyz) | - | - | - |
 | SDLGFansub | [![https://www.sdlg-fansub.tk](https://img.shields.io/website?url=https://www.sdlg-fansub.tk%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://www.sdlg-fansub.tk)](https://www.sdlg-fansub.tk) | - | - | - |
 | SDLScans | [![https://sdlscans.com](https://img.shields.io/website?url=https://sdlscans.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://sdlscans.com)](https://sdlscans.com) | - | - | - |
