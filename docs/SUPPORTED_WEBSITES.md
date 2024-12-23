@@ -196,7 +196,7 @@
 | KomikGO | [![https://komikgo.xyz](https://img.shields.io/website?url=https://komikgo.xyz%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://komikgo.xyz)](https://komikgo.xyz) | - | - | - |
 | KomikGue | [![http://www.komikgue.com](https://img.shields.io/website?url=http://www.komikgue.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=http://www.komikgue.com)](http://www.komikgue.com) | - | - | - |
 | Komikid | [![https://www.komikid.com](https://img.shields.io/website?url=https://www.komikid.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://www.komikid.com)](https://www.komikid.com) | - | - | - |
-| KomikIndo | [![https://komikindo.dev](https://img.shields.io/website?url=https://komikindo.dev%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://komikindo.dev)](https://komikindo.dev) | - | - | - |
+| KomikIndo | [![https://komikindo.pw](https://img.shields.io/website?url=https://komikindo.pw%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://komikindo.pw)](https://komikindo.pw) | OK | 23.12.2024 | - |
 | KomikIndoCo | [![https://komikindo.co](https://img.shields.io/website?url=https://komikindo.co%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://komikindo.co)](https://komikindo.co) | - | - | - |
 | KomikMama | [![https://komikmama.org](https://img.shields.io/website?url=https://komikmama.org%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://komikmama.org)](https://komikmama.org) | - | - | - |
 | KomikManga | [![https://komikmanga.com](https://img.shields.io/website?url=https://komikmanga.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://komikmanga.com)](https://komikmanga.com) | - | - | - |
@@ -370,7 +370,7 @@
 | MangaStreamCC | [![https://www.mangastream.cc](https://img.shields.io/website?url=https://www.mangastream.cc%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://www.mangastream.cc)](https://www.mangastream.cc) | - | - | - |
 | Mangasubes | [![http://mangasubes.patyscans.com](https://img.shields.io/website?url=http://mangasubes.patyscans.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=http://mangasubes.patyscans.com)](http://mangasubes.patyscans.com) | - | - | - |
 | MangaSushi | [![https://mangasushi.org](https://img.shields.io/website?url=https://mangasushi.org%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangasushi.org)](https://mangasushi.org) | - | - | - |
-| MangaSusu | [![https://mangasusuku.xyz](https://img.shields.io/website?url=https://mangasusuku.xyz%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangasusuku.xyz)](https://mangasusuku.xyz) | - | - | - |
+| MangaSusu | [![https://mangasusuku.com](https://img.shields.io/website?url=https://mangasusuku.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangasusuku.com)](https://mangasusuku.com) | OK | 23.12.2024 | - |
 | MangaTail | [![https://www.mangatail.me](https://img.shields.io/website?url=https://www.mangatail.me%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://www.mangatail.me)](https://www.mangatail.me) | - | - | - |
 | MangaTodayFun | [![https://mangatoday.fun](https://img.shields.io/website?url=https://mangatoday.fun%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangatoday.fun)](https://mangatoday.fun) | - | - | - |
 | MangaToon | [![https://mangatoon.mobi](https://img.shields.io/website?url=https://mangatoon.mobi%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangatoon.mobi)](https://mangatoon.mobi) | - | - | - |
