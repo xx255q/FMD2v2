@@ -108,6 +108,7 @@
 | FallenAngelsScans | [![https://manga.fascans.com](https://img.shields.io/website?url=https://manga.fascans.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manga.fascans.com)](https://manga.fascans.com) | - | - | - |
 | FanFox | [![https://fanfox.net](https://img.shields.io/website?url=https://fanfox.net%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://fanfox.net)](https://fanfox.net) | OK | 12.12.2024 | - |
 | FenixManga | [![https://fenixscan.com](https://img.shields.io/website?url=https://fenixscan.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://fenixscan.com)](https://fenixscan.com) | - | - | - |
+| FireScans | [![https://firescans.xyz](https://img.shields.io/website?url=https://firescans.xyz%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://firescans.xyz)](https://firescans.xyz) | OK | 23.12.2024 | - |
 | Flame Comics | [![https://flamecomics.xyz](https://img.shields.io/website?url=https://flamecomics.xyz%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://flamecomics.xyz)](https://flamecomics.xyz) | - | - | - |
 | ForgottenScans | [![http://reader.fos-scans.com](https://img.shields.io/website?url=http://reader.fos-scans.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=http://reader.fos-scans.com)](http://reader.fos-scans.com) | - | - | - |
 | FoyScan | [![https://foyscan.xyz](https://img.shields.io/website?url=https://foyscan.xyz%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://foyscan.xyz)](https://foyscan.xyz) | - | - | - |
@@ -408,6 +409,7 @@
 | ManHuaGui | [![https://www.manhuagui.com](https://img.shields.io/website?url=https://www.manhuagui.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://www.manhuagui.com)](https://www.manhuagui.com) | - | - | - |
 | ManhuaID | [![https://manhuaid.com](https://img.shields.io/website?url=https://manhuaid.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manhuaid.com)](https://manhuaid.com) | - | - | - |
 | ManhuaManhwa | [![https://manhuamanhwa.com](https://img.shields.io/website?url=https://manhuamanhwa.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manhuamanhwa.com)](https://manhuamanhwa.com) | - | - | - |
+| ManhuaNext | [![https://manhuanext.com](https://img.shields.io/website?url=https://manhuanext.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manhuanext.com)](https://manhuanext.com) | OK | 23.12.2024 | - |
 | ManhuaPlanet | [![https://manhuaplanet.com](https://img.shields.io/website?url=https://manhuaplanet.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manhuaplanet.com)](https://manhuaplanet.com) | - | - | - |
 | ManhuaPlus | [![https://manhuaplus.com](https://img.shields.io/website?url=https://manhuaplus.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manhuaplus.com)](https://manhuaplus.com) | - | - | - |
 | ManhuaPlusOnline | [![https://manhuaplus.online](https://img.shields.io/website?url=https://manhuaplus.online%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manhuaplus.online)](https://manhuaplus.online) | - | - | - |
