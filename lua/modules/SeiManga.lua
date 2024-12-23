@@ -4,10 +4,11 @@
 
 function Init()
 	local m = NewWebsiteModule()
-	m.ID                       = 'f4938b49be4c47ecb03289e1f0b90538'
-	m.Name                     = 'FireScans'
-	m.RootURL                  = 'https://firescans.xyz'
-	m.Category                 = 'English-Scanlation'
+	m.ID                       = 'dfb4dff2709d49d6bd9cbb6e4515bd4a'
+	m.Name                     = 'SeiManga'
+	m.RootURL                  = 'https://1.seimanga.me'
+	m.Category                 = 'Russian'
+	m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
 	m.OnGetInfo                = 'GetInfo'
 	m.OnGetPageNumber          = 'GetPageNumber'
@@ -17,11 +18,18 @@ end
 -- Local Constants
 ----------------------------------------------------------------------------------------------------
 
-local Template = require 'templates.Madara'
+local Template = require 'templates.ReadMangaRU'
 
 ----------------------------------------------------------------------------------------------------
 -- Event Functions
 ----------------------------------------------------------------------------------------------------
+
+-- Get the page count of the manga list of the current website.
+function GetDirectoryPageNumber()
+	Template.GetDirectoryPageNumber()
+
+	return no_error
+end
 
 -- Get links and names from the manga list of the current website.
 function GetNameAndLink()
@@ -30,7 +38,7 @@ function GetNameAndLink()
 	return no_error
 end
 
--- Get info and chapter list for current manga.
+-- Get info and chapter list for the current manga.
 function GetInfo()
 	Template.GetInfo()
 
