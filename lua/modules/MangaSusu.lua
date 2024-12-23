@@ -6,7 +6,7 @@ function Init()
 	local m = NewWebsiteModule()
 	m.ID                       = 'c69cbc947a6a42e194b2e097bba15047'
 	m.Name                     = 'MangaSusu'
-	m.RootURL                  = 'https://mangasusuku.xyz'
+	m.RootURL                  = 'https://mangasusuku.com'
 	m.Category                 = 'H-Sites'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
 	m.OnGetInfo                = 'GetInfo'
@@ -21,8 +21,6 @@ end
 local Template = require 'templates.MangaThemesia'
 AlphaList = '##ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 DirectoryPagination = '/az-list/page/'
--- XPathTokenAuthors   = 'Author'
--- XPathTokenArtists   = 'Artist'
 
 ----------------------------------------------------------------------------------------------------
 -- Event Functions
@@ -50,7 +48,7 @@ function GetNameAndLink()
 	return no_error
 end
 
--- Get info and chapter list for current manga.
+-- Get info and chapter list for the current manga.
 function GetInfo()
 	Template.GetInfo()
 
