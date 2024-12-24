@@ -42,7 +42,7 @@
 | AzureManga | [![https://azuremanga.com](https://img.shields.io/website?url=https://azuremanga.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://azuremanga.com)](https://azuremanga.com) | - | - | - |
 | BacaKomik | [![https://bacakomik.net](https://img.shields.io/website?url=https://bacakomik.net%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://bacakomik.net)](https://bacakomik.net) | - | - | - |
 | BakaguyaScan | [![https://bakaguya-scan.tk](https://img.shields.io/website?url=https://bakaguya-scan.tk%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://bakaguya-scan.tk)](https://bakaguya-scan.tk) | - | - | - |
-| Batoto | [![https://bato.to](https://img.shields.io/website?url=https://bato.to%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://bato.to)](https://bato.to) | - | - | - |
+| Batoto | [![https://readtoto.org](https://img.shields.io/website?url=https://readtoto.org%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://readtoto.org)](https://readtoto.org) | OK | 25.12.2024 | Sometimes cloudflare workaround is required |
 | Batotoo | [![https://batotoo.com](https://img.shields.io/website?url=https://batotoo.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://batotoo.com)](https://batotoo.com) | - | - | - |
 | Batotwo | [![https://batotwo.com](https://img.shields.io/website?url=https://batotwo.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://batotwo.com)](https://batotwo.com) | - | - | - |
 | Battwo | [![https://battwo.com](https://img.shields.io/website?url=https://battwo.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://battwo.com)](https://battwo.com) | - | - | - |
