@@ -242,7 +242,7 @@ msgid "Updater is running!"
 msgstr ""
 
 #: frmmain.rs_dlgupdaterwanttoupdatedb
-msgid "Do you want to download manga list from the server?"
+msgid "Do you want to download manga list from FMD server?"
 msgstr ""
 
 #: frmmain.rs_dlgurlnotsupport
@@ -1986,7 +1986,7 @@ msgid "Stop all"
 msgstr ""
 
 #: tmainform.mndownload1click.caption
-msgid "Download all lists from server at once"
+msgid "Download all lists from FMD server at once"
 msgstr ""
 
 #: tmainform.mnfiltergenreallcheck.caption
@@ -2008,7 +2008,7 @@ msgid "Update all lists at once"
 msgstr ""
 
 #: tmainform.mnupdatedownfromserver.caption
-msgid "Download manga list from server"
+msgid "Download manga list from FMD server"
 msgstr ""
 
 #: tmainform.mnupdatelist.caption
