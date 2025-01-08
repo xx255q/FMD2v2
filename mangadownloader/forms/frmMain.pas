@@ -4326,19 +4326,19 @@ begin
            if l>0 then
            begin
              HintText:='';
-             if l<5 then
+             if l<30 then
                for i:=0 to l-1 do begin
                  if HintText<>'' then HintText+=LineEnding;
                  HintText+=ChapterNames.Strings[i]
                end
              else
              begin
-               for i:=0 to 1 do begin
+               for i:=0 to 14 do begin
                  if HintText<>'' then HintText+=LineEnding;
                  HintText+=ChapterNames.Strings[i]
                end;
                HintText+=LineEnding+'...';
-               for i:=l-2 to l-1 do begin
+               for i:=l-15 to l-1 do begin
                  if HintText<>'' then HintText+=LineEnding;
                  HintText+=ChapterNames.Strings[i]
                end;
@@ -4350,6 +4350,7 @@ begin
       4: HintText:=Website;
       5: HintText:=SaveTo;
       6: HintText:=DateTimeToStr(DateAdded);
+      7: HintText:=DateTimeToStr(DateLastDownloaded);
     end;
 end;
 
