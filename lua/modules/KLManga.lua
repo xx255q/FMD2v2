@@ -25,7 +25,7 @@ local Template = require 'templates.FMReader'
 -- Auxiliary Functions
 ----------------------------------------------------------------------------------------------------
 
-function RandomVariable(length)
+function RandomString(length)
 	local charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 	local result = ''
 	for i = 1, length do
@@ -66,7 +66,7 @@ end
 function GetInfo()
 	Template.GetInfo()
 
-	local u = MODULE.RootURL .. '/' .. RandomVariable(25) .. '.lstc?slug=' .. URL:match('-(.-).html')
+	local u = MODULE.RootURL .. '/' .. RandomString(25) .. '.lstc?slug=' .. URL:match('-(.-).html')
 
 	if not HTTP.GET(u) then return net_problem end
 
@@ -90,7 +90,7 @@ function GetPageNumber()
 
 	HTTP.Reset()
 	HTTP.Headers.Values['Referer'] = MODULE.RootURL
-	u = MODULE.RootURL .. '/' .. RandomVariable(30) .. '.iog?cid=' .. id
+	u = MODULE.RootURL .. '/' .. RandomString(30) .. '.iog?cid=' .. id
 
 	if not HTTP.GET(u) then return net_problem end
 
