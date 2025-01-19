@@ -678,6 +678,10 @@ msgstr "Λίστα αγαπημένων"
 msgid "Manga list"
 msgstr "Λίστα Manga"
 
+#: tcustomcolorform.tsmodulelist.caption
+msgid "Module list"
+msgstr "Λίστα ενοτήτων"
+
 #: tformdroptarget.miaddtofavorites.caption
 msgctxt "tformdroptarget.miaddtofavorites.caption"
 msgid "Add to favorites"
@@ -695,6 +699,11 @@ msgstr "Λήψη όλων"
 #: tformlogger.btnclearlog.caption
 msgid "Clear"
 msgstr "Απαλοιφή"
+
+#: tformlogger.caption
+msgctxt "tformlogger.caption"
+msgid "Log"
+msgstr "Αρχείο καταγραφής"
 
 #: tformlogger.ckstayontop.caption
 msgid "Stay on top"
@@ -2321,6 +2330,7 @@ msgid "Manga Info"
 msgstr "Πληροφορίες manga"
 
 #: tmainform.tslog.caption
+msgctxt "tmainform.tslog.caption"
 msgid "Log"
 msgstr "Αρχείο καταγραφής"
 
@@ -2487,6 +2497,11 @@ msgstr "&Ματαίωση"
 #: tshutdowncounterform.btnow.caption
 msgid "&Now"
 msgstr "&Τώρα"
+
+#: tshutdowncounterform.caption
+msgctxt "tshutdowncounterform.caption"
+msgid "Free Manga Downloader"
+msgstr "Free Manga Downloader"
 
 #: ttransferfavoritesform.btcancel.caption
 msgctxt "ttransferfavoritesform.btcancel.caption"

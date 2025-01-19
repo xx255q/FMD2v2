@@ -684,6 +684,10 @@ msgstr "Lista de favoritos"
 msgid "Manga list"
 msgstr "Lista de mangás"
 
+#: tcustomcolorform.tsmodulelist.caption
+msgid "Module list"
+msgstr "Lista de módulos"
+
 #: tformdroptarget.miaddtofavorites.caption
 msgctxt "TFORMDROPTARGET.MIADDTOFAVORITES.CAPTION"
 msgid "Add to favorites"
@@ -701,6 +705,11 @@ msgstr "Baixar tudo"
 #: tformlogger.btnclearlog.caption
 msgid "Clear"
 msgstr "Limpar"
+
+#: tformlogger.caption
+msgctxt "tformlogger.caption"
+msgid "Log"
+msgstr "Registro"
 
 #: tformlogger.ckstayontop.caption
 msgid "Stay on top"
@@ -2268,6 +2277,7 @@ msgid "Manga Info"
 msgstr "Info do Mangá"
 
 #: tmainform.tslog.caption
+msgctxt "tmainform.tslog.caption"
 msgid "Log"
 msgstr "Registro"
 
@@ -2433,6 +2443,11 @@ msgstr "&Abortar"
 #: tshutdowncounterform.btnow.caption
 msgid "&Now"
 msgstr "&Agora"
+
+#: tshutdowncounterform.caption
+msgctxt "tshutdowncounterform.caption"
+msgid "Free Manga Downloader"
+msgstr "Free Manga Downloader"
 
 #: ttransferfavoritesform.btcancel.caption
 msgctxt "ttransferfavoritesform.btcancel.caption"

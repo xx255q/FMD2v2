@@ -684,6 +684,10 @@ msgstr "收藏列表"
 msgid "Manga list"
 msgstr "漫画列表"
 
+#: tcustomcolorform.tsmodulelist.caption
+msgid "Module list"
+msgstr "模块列表"
+
 #: tformdroptarget.miaddtofavorites.caption
 msgctxt "TFORMDROPTARGET.MIADDTOFAVORITES.CAPTION"
 msgid "Add to favorites"
@@ -701,6 +705,11 @@ msgstr "全部下载"
 #: tformlogger.btnclearlog.caption
 msgid "Clear"
 msgstr "清除"
+
+#: tformlogger.caption
+msgctxt "tformlogger.caption"
+msgid "Log"
+msgstr "日志"
 
 #: tformlogger.ckstayontop.caption
 msgid "Stay on top"
@@ -742,7 +751,7 @@ msgid "&OK"
 msgstr "&确定"
 
 #: timportfavorites.caption
-msgid "Import list..."
+msgid "Import list ..."
 msgstr "导入列表..."
 
 #: timportfavorites.cbsoftware.text
@@ -751,8 +760,8 @@ msgstr "多多漫画下载器"
 
 #: timportfavorites.edpath.texthint
 msgctxt "TIMPORTFAVORITES.EDPATH.TEXTHINT"
-msgid "Path to the software (e.g. C:\MangaDownloader)"
-msgstr "软件路径（例如 C:\ 漫画下载器）"
+msgid "Path to the software (e.g. C:\\MangaDownloader)"
+msgstr "软件路径（例如 C:\\漫画下载器）"
 
 #: timportfavorites.lbselectsoftware.caption
 msgid "Software:"
@@ -990,7 +999,7 @@ msgstr "显示下载工具栏"
 
 #: tmainform.cboptionshowdownloadtoolbardeleteall.caption
 msgid "Show \"Delete all completed tasks\" in downloads toolbar"
-msgstr "在下载工具栏中显示 "删除所有已完成的任务""
+msgstr "在下载工具栏中显示 \"删除所有已完成的任务\""
 
 #: tmainform.cboptionshowdownloadtoolbarleft.caption
 msgid "Show left downloads toolbar"
@@ -1172,7 +1181,7 @@ msgid "Josei"
 msgstr "女性"
 
 #: tmainform.ckfilterjosei.hint
-msgid "Literally"Woman". Targets women 18-30. Female equivalent to seinen. Unlike shoujo the romance is more realistic and less idealized. The storytelling is more explicit and mature."
+msgid "Literally \"Woman\". Targets women 18-30. Female equivalent to seinen. Unlike shoujo the romance is more realistic and less idealized. The storytelling is more explicit and mature."
 msgstr "字面意思为 “女性”。面向 18 至 30 岁的女性，相当于男性向（seinen）的女性对应版。与少女漫画（shoujo）不同，其爱情故事更写实、理想化程度更低，叙事也更直白、成熟。"
 
 #: tmainform.ckfilterlolicon.caption
@@ -1610,7 +1619,7 @@ msgstr "模式：全部显示（0）"
 #, object-pascal-format
 msgctxt "TMAINFORM.LBOPTIONAUTOCHECKFAVINTERVALMINUTES.CAPTION"
 msgid "Auto check for new chapter every %d minutes"
-msgstr "每隔 % d 分钟自动检查新章节"
+msgstr "每隔 %d 分钟自动检查新章节"
 
 #: tmainform.lboptionchaptercustomrename.caption
 msgctxt "TMAINFORM.LBOPTIONCHAPTERCUSTOMRENAME.CAPTION"
@@ -2268,6 +2277,7 @@ msgid "Manga Info"
 msgstr "漫画信息"
 
 #: tmainform.tslog.caption
+msgctxt "tmainform.tslog.caption"
 msgid "Log"
 msgstr "日志"
 
@@ -2436,6 +2446,11 @@ msgstr "中止"
 #: tshutdowncounterform.btnow.caption
 msgid "&Now"
 msgstr "&立即"
+
+#: tshutdowncounterform.caption
+msgctxt "tshutdowncounterform.caption"
+msgid "Free Manga Downloader"
+msgstr "免费漫画下载器"
 
 #: ttransferfavoritesform.btcancel.caption
 msgctxt "ttransferfavoritesform.btcancel.caption"

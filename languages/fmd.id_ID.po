@@ -688,6 +688,10 @@ msgstr "Daftar Kesukaan"
 msgid "Manga list"
 msgstr "Daftar Komik"
 
+#: tcustomcolorform.tsmodulelist.caption
+msgid "Module list"
+msgstr "Daftar Modul"
+
 #: tformdroptarget.miaddtofavorites.caption
 msgctxt "tformdroptarget.miaddtofavorites.caption"
 msgid "Add to favorites"
@@ -705,6 +709,11 @@ msgstr "Unduh semua"
 #: tformlogger.btnclearlog.caption
 msgid "Clear"
 msgstr "Bersihkan"
+
+#: tformlogger.caption
+msgctxt "tformlogger.caption"
+msgid "Log"
+msgstr "Pencatatan"
 
 #: tformlogger.ckstayontop.caption
 msgid "Stay on top"
@@ -2441,6 +2450,11 @@ msgstr "&Batalkan"
 #: tshutdowncounterform.btnow.caption
 msgid "&Now"
 msgstr "&Sekarang"
+
+#: tshutdowncounterform.caption
+msgctxt "tshutdowncounterform.caption"
+msgid "Free Manga Downloader"
+msgstr "Free Manga Downloader"
 
 #: ttransferfavoritesform.btcancel.caption
 msgctxt "ttransferfavoritesform.btcancel.caption"
