@@ -721,5 +721,6 @@
 | ZeroScans | [![https://zscans.com](https://img.shields.io/website?url=https://zscans.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://zscans.com)](https://zscans.com) | - | - | - |
 | ZinManga | [![https://zinmanga.net](https://img.shields.io/website?url=https://zinmanga.net%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://zinmanga.net)](https://zinmanga.net) | - | - | - |
 | ZManga | [![https://zmanga.org](https://img.shields.io/website?url=https://zmanga.org%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://zmanga.org)](https://zmanga.org) | - | - | - |
+| Đọc Truyện 5s | [![https://dongmoe.com](https://img.shields.io/website?url=https://dongmoe.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://dongmoe.com)](https://dongmoe.com) | OK | 20.01.2025 | - |
 | 古风漫画网 | [![https://www.gufengmh.com](https://img.shields.io/website?url=https://www.gufengmh.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://www.gufengmh.com)](https://www.gufengmh.com) | OK | 06.01.2025 | - |
 | ~MangaGalaxy~ | ~https://mangagalaxy.net~ | Removed | 15.12.2024 | Merged to Vortex Scans |
