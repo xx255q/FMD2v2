@@ -6,7 +6,7 @@ function Init()
 	local m = NewWebsiteModule()
 	m.ID                       = '2a7d69a1e1d24f90851b4e2598cffdcd'
 	m.Name                     = 'Toonkor'
-	m.RootURL                  = 'https://toonkor473.com'
+	m.RootURL                  = 'https://toonkor474.com'
 	m.Category                 = 'Raw'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
 	m.OnGetInfo                = 'GetInfo'
@@ -19,8 +19,7 @@ end
 ----------------------------------------------------------------------------------------------------
 
 DirectoryPages = {'%EC%9B%B9%ED%88%B0', '%EC%9B%B9%ED%88%B0/%EC%99%84%EA%B2%B0', '%EB%A7%9D%EA%B0%80',
-	'%EB%8B%A8%ED%96%89%EB%B3%B8', '%EB%8B%A8%ED%96%89%EB%B3%B8/%EC%99%84%EA%B2%B0',
-	'%ED%8F%AC%ED%86%A0%ED%88%B0', '%ED%8F%AC%ED%86%A0%ED%88%B0/%EC%99%84%EA%B2%B0'}
+	'%EB%8B%A8%ED%96%89%EB%B3%B8', '%EB%8B%A8%ED%96%89%EB%B3%B8/%EC%99%84%EA%B2%B0'}
 
 ----------------------------------------------------------------------------------------------------
 -- Event Functions
