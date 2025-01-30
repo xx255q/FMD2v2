@@ -17,6 +17,9 @@ type
     procedure Add(const Aid:String;const AOrder:Integer;const AEnabled:Boolean;
       const AModuleID,ALink,ATitle,AStatus,ACurrentChapter,ADownloadedChapterList,ASaveTo:String;
       const ADateAdded:TDateTime); inline;
+    procedure Replace(const OldId, Aid:String;const AOrder:Integer;const AEnabled:Boolean;
+      const AModuleID,ALink,ATitle,AStatus,ACurrentChapter,ADownloadedChapterList,ASaveTo:String;
+      const ADateAdded:TDateTime); inline;
     procedure UpdateLastUpdated(const Aid,ADownloadedChapterList:String;const ADateLastUpdated:TDateTime); inline;
     procedure UpdateOrder(const Aid:String;const Aorder:Integer); inline;
     procedure UpdateTitle(const Aid,Atitle:String); inline;
@@ -71,8 +74,10 @@ end;
 procedure TFavoritesDB.Add(const Aid: String; const AOrder: Integer; const AEnabled: Boolean;
   const AModuleID, ALink, ATitle, AStatus, ACurrentChapter, ADownloadedChapterList,
   ASaveTo: String; const ADateAdded: TDateTime);
+var
+  SQL: String;
 begin
-  AppendSQL('INSERT OR REPLACE INTO "favorites" ('+FieldsParams+') VALUES ('+
+  SQL := 'INSERT OR REPLACE INTO "favorites" ('+FieldsParams+') VALUES ('+
     PrepSQLValue(Aid) + ',' +
     PrepSQLValue(AOrder) + ',' +
     PrepSQLValue(AEnabled) + ',' +
@@ -85,7 +90,35 @@ begin
     PrepSQLValue(ASaveTo) + ',' +
     PrepSQLValue(ADateAdded) + ',' +
     PrepSQLValue(ADateAdded) + ',' +
-    PrepSQLValue(ADateAdded) + ');');
+    PrepSQLValue(ADateAdded) + ');';
+
+  AppendSQL(SQL);
+end;
+
+procedure TFavoritesDB.Replace(const OldId, Aid: String; const AOrder: Integer; const AEnabled: Boolean;
+  const AModuleID, ALink, ATitle, AStatus, ACurrentChapter, ADownloadedChapterList,
+  ASaveTo: String; const ADateAdded: TDateTime);
+var
+  SQL: String;
+begin
+  if OldId <> Aid then
+  begin
+    Delete(OldId);
+  end;
+
+  Add(
+    Aid,
+    AOrder,
+    AEnabled,
+    AModuleID,
+    ALink,
+    ATitle,
+    AStatus,
+    ACurrentChapter,
+    ADownloadedChapterList,
+    ASaveTo,
+    ADateAdded
+    );
 end;
 
 procedure TFavoritesDB.UpdateLastUpdated(const Aid,ADownloadedChapterList:String;const ADateLastUpdated:TDateTime);

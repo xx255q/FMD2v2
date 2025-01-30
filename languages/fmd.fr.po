@@ -94,6 +94,7 @@ msgid "Invalid"
 msgstr "Invalide"
 
 #: frmaccountmanager.rs_unknown
+msgctxt "frmaccountmanager.rs_unknown"
 msgid "Unknown"
 msgstr "Inconnu"
 
@@ -299,10 +300,14 @@ msgstr "Activés"
 msgid ""
 "Completed\n"
 "Ongoing\n"
+"Hiatus\n"
+"Cancelled\n"
 "<none>"
 msgstr ""
 "Terminé\n"
 "En cours\n"
+"En pause\n"
+"Annulé\n"
 "<non renseigné>"
 
 #: frmmain.rs_fmdalreadyrunning
@@ -325,6 +330,10 @@ msgstr "Historique"
 msgid "Import"
 msgstr "Import"
 
+#: frmmain.rs_infoalttitles
+msgid "Alternative Title(s):"
+msgstr ""
+
 #: frmmain.rs_infoartists
 msgid "Artist(s):"
 msgstr "Artiste·s :"
@@ -340,6 +349,11 @@ msgstr "Genre·s :"
 #: frmmain.rs_infostatus
 msgid "Status:"
 msgstr "Statut :"
+
+#: frmmain.rs_infostatus_unknown
+msgctxt "frmmain.rs_infostatus_unknown"
+msgid "Unknown"
+msgstr "Inconnu"
 
 #: frmmain.rs_infosummary
 msgid "Summary:"
@@ -2461,20 +2475,27 @@ msgstr "Site"
 
 #: tmainform.vtfavorites.header.columns[4].text
 msgctxt "TMAINFORM.VTFAVORITES.HEADER.COLUMNS[4].TEXT"
+msgid "Status"
+msgstr "Statut"
+
+#: tmainform.vtfavorites.header.columns[5].text
+msgctxt "tmainform.vtfavorites.header.columns[5].text"
 msgid "Save to"
 msgstr "Répertoire d'enregistrement"
 
-#: tmainform.vtfavorites.header.columns[5].text
+#: tmainform.vtfavorites.header.columns[6].text
 #, fuzzy
-msgctxt "tmainform.vtfavorites.header.columns[5].text"
+msgctxt "tmainform.vtfavorites.header.columns[6].text"
 msgid "Date added"
 msgstr "Date d'ajout"
 
-#: tmainform.vtfavorites.header.columns[6].text
+#: tmainform.vtfavorites.header.columns[7].text
+msgctxt "tmainform.vtfavorites.header.columns[7].text"
 msgid "Last checked date"
 msgstr ""
 
-#: tmainform.vtfavorites.header.columns[7].text
+#: tmainform.vtfavorites.header.columns[8].text
+msgctxt "tmainform.vtfavorites.header.columns[8].text"
 msgid "Last updated date"
 msgstr ""
 

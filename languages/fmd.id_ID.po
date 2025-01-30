@@ -97,6 +97,7 @@ msgid "Invalid"
 msgstr "Tidak valid"
 
 #: frmaccountmanager.rs_unknown
+msgctxt "frmaccountmanager.rs_unknown"
 msgid "Unknown"
 msgstr "Tidak diketahui"
 
@@ -300,10 +301,14 @@ msgstr "Aktif"
 msgid ""
 "Completed\n"
 "Ongoing\n"
+"Hiatus\n"
+"Cancelled\n"
 "<none>"
 msgstr ""
 "Tamat\n"
 "Bersambung\n"
+"Hiatus\n"
+"Dibatalkan\n"
 "<tidak ada>"
 
 #: frmmain.rs_fmdalreadyrunning
@@ -326,6 +331,10 @@ msgstr "Riwayat"
 msgid "Import"
 msgstr "Impor"
 
+#: frmmain.rs_infoalttitles
+msgid "Alternative Title(s):"
+msgstr "Judul Alternatif:"
+
 #: frmmain.rs_infoartists
 msgid "Artist(s):"
 msgstr "Seniman:"
@@ -341,6 +350,11 @@ msgstr "Genre:"
 #: frmmain.rs_infostatus
 msgid "Status:"
 msgstr "Status:"
+
+#: frmmain.rs_infostatus_unknown
+msgctxt "frmmain.rs_infostatus_unknown"
+msgid "Unknown"
+msgstr "Tidak diketahui"
 
 #: frmmain.rs_infosummary
 msgid "Summary:"
@@ -2387,19 +2401,26 @@ msgstr "Situs"
 
 #: tmainform.vtfavorites.header.columns[4].text
 msgctxt "TMAINFORM.VTFAVORITES.HEADER.COLUMNS[4].TEXT"
-msgid "Save to"
-msgstr "Lokasi penyimpanan"
+msgid "Status"
+msgstr "Status"
 
 #: tmainform.vtfavorites.header.columns[5].text
 msgctxt "tmainform.vtfavorites.header.columns[5].text"
+msgid "Save to"
+msgstr "Lokasi penyimpanan"
+
+#: tmainform.vtfavorites.header.columns[6].text
+msgctxt "tmainform.vtfavorites.header.columns[6].text"
 msgid "Date added"
 msgstr "Waktu ditambahkan"
 
-#: tmainform.vtfavorites.header.columns[6].text
+#: tmainform.vtfavorites.header.columns[7].text
+msgctxt "tmainform.vtfavorites.header.columns[7].text"
 msgid "Last checked date"
 msgstr "Waktu terakhir diperiksa"
 
-#: tmainform.vtfavorites.header.columns[7].text
+#: tmainform.vtfavorites.header.columns[8].text
+msgctxt "tmainform.vtfavorites.header.columns[8].text"
 msgid "Last updated date"
 msgstr "Waktu terakhir diperbarui"
 

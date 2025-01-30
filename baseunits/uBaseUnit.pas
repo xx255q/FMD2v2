@@ -32,13 +32,14 @@ const
 
   DATA_PARAM_LINK       = 0;
   DATA_PARAM_TITLE      = 1;
-  DATA_PARAM_AUTHORS    = 2;
-  DATA_PARAM_ARTISTS    = 3;
-  DATA_PARAM_GENRES     = 4;
-  DATA_PARAM_STATUS     = 5;
-  DATA_PARAM_SUMMARY    = 6;
-  DATA_PARAM_NUMCHAPTER = 7;
-  DATA_PARAM_JDN        = 8;
+  DATA_PARAM_ALTTITLES  = 2;
+  DATA_PARAM_AUTHORS    = 3;
+  DATA_PARAM_ARTISTS    = 4;
+  DATA_PARAM_GENRES     = 5;
+  DATA_PARAM_STATUS     = 6;
+  DATA_PARAM_SUMMARY    = 7;
+  DATA_PARAM_NUMCHAPTER = 8;
+  DATA_PARAM_JDN        = 9;
 
   FILTER_HIDE = 0;
   FILTER_SHOW = 1;
@@ -228,6 +229,8 @@ const
 
   MangaInfo_StatusCompleted = '0';
   MangaInfo_StatusOngoing = '1';
+  MangaInfo_StatusHiatus = '2';
+  MangaInfo_StatusCancelled = '3';
 
   FMDSupportedPackedOutputExt: array[0..3] of ShortString = ('.zip', '.cbz', '.pdf', '.epub');
   {$ifdef windows}
@@ -303,6 +306,7 @@ type
 
   TBaseMangaInfo = packed record
     title,
+    alttitles,
     authors,
     artists,
     genres,
@@ -319,6 +323,7 @@ type
   public
     URL,
     Title,
+    AltTitles,
     Link,
     CoverLink,
     Authors,
@@ -588,7 +593,8 @@ function JDNToDate(const JDN: Integer): TDate;
 function  ConvertStrToInt32(const aStr  : String): Cardinal;}
 procedure TransferMangaInfo(var dest: TMangaInfo; const Source: TMangaInfo);
 function MangaInfoStatusIfPos(const SearchStr: String; const OngoingStr: String = 'ongoing';
-    const CompletedStr: String = 'complete'): String;
+    const CompletedStr: String = 'complete'; const HiatusStr: String = 'hiatus';
+    const CancelledStr: String = 'cancelled|canceled'): String;
 
 procedure GetBaseMangaInfo(const M: TMangaInfo; var B: TBaseMangaInfo);
 // fill empty manga info
@@ -2610,6 +2616,7 @@ procedure TransferMangaInfo(var dest: TMangaInfo; const Source: TMangaInfo);
 begin
   dest.URL := Source.URL;
   dest.Title := Source.Title;
+  dest.AltTitles := Source.AltTitles;
   dest.Link := Source.Link;
   dest.Module := Source.Module;
   dest.CoverLink := Source.CoverLink;
@@ -2624,20 +2631,31 @@ begin
 end;
 
 function MangaInfoStatusIfPos(const SearchStr: String; const OngoingStr: String;
-  const CompletedStr: String): String;
+  const CompletedStr: String; const HiatusStr: String; const CancelledStr: String): String;
 var
-  s, o, c: String;
+  s, o, c, h, ca: String;
   function searchMany(const t: String): Boolean;
   var
     i: String;
   begin
+    if t = '' then
+    begin
+      Exit(False);
+    end;
+
     if Pos('|', t) = 0 then
-       Result := Pos(t, s) <> 0
+    begin
+       Result := Pos(t, s) <> 0;
+    end
     else
     begin
       for i in t.Split(['|']) do
+      begin
         if Pos(i, s) <> 0 then
+        begin
           Exit(True);
+        end;
+      end;
       Result := False
     end;
   end;
@@ -2647,27 +2665,35 @@ begin
   s := LowerCase(SearchStr);
   o := LowerCase(OngoingStr);
   c := LowerCase(CompletedStr);
-  if o <> '' then
+  h := LowerCase(HiatusStr);
+  ca := LowerCase(CancelledStr);
+
+  if searchMany(o) then
   begin
-    if searchMany(o) then
-      Result := MangaInfo_StatusOngoing
-    else if c = '' then
-      Result := MangaInfo_StatusCompleted
-    else if searchMany(c) then
-      Result := MangaInfo_StatusCompleted
+    Result := MangaInfo_StatusOngoing
   end
-  else if c <> '' then
+  else if searchMany(c) then
   begin
-    if searchMany(c) then
-      Result := MangaInfo_StatusCompleted
-    else if searchMany(o) then
-      Result := MangaInfo_StatusOngoing;
+    Result := MangaInfo_StatusCompleted
+  end
+  else if searchMany(h) then
+  begin
+    Result := MangaInfo_StatusHiatus
+  end
+  else if searchMany(ca) then
+  begin
+    Result := MangaInfo_StatusCancelled
+  end
+  else
+  begin
+    Result := RS_InfoStatus_Unknown
   end;
 end;
 
 procedure GetBaseMangaInfo(const M: TMangaInfo; var B: TBaseMangaInfo);
 begin
   B.title := M.Title;
+  B.alttitles := M.AltTitles;
   B.authors := M.Authors;
   B.artists := M.Artists;
   B.genres := M.Genres;
@@ -2679,6 +2705,7 @@ end;
 procedure FillBaseMangaInfo(const M: TMangaInfo; var B: TBaseMangaInfo);
 begin
   if Trim(M.Title) = '' then M.Title := B.title;
+  if Trim(M.AltTitles) = '' then M.AltTitles := B.alttitles;
   if Trim(M.Authors) = '' then M.Authors := B.authors;
   if Trim(M.Artists) = '' then M.Artists := B.artists;
   if Trim(M.Genres) = '' then M.Genres := B.genres;
@@ -2811,6 +2838,7 @@ procedure TMangaInfo.Clear;
 begin
   URL := '';
   Title := '';
+  AltTitles := '';
   Link := '';
   CoverLink := '';
   Authors := '';
@@ -2829,6 +2857,7 @@ begin
   Result := TMangaInfo.Create;
   Result.URL := URL;
   Result.Title := Title;
+  Result.AltTitles := AltTitles;
   Result.Link := Link;
   Result.CoverLink := CoverLink;
   Result.Authors := Authors;

@@ -91,6 +91,7 @@ msgid "Invalid"
 msgstr "Niepoprawnie"
 
 #: frmaccountmanager.rs_unknown
+msgctxt "frmaccountmanager.rs_unknown"
 msgid "Unknown"
 msgstr "Nieznane"
 
@@ -294,10 +295,14 @@ msgstr ""
 msgid ""
 "Completed\n"
 "Ongoing\n"
+"Hiatus\n"
+"Cancelled\n"
 "<none>"
 msgstr ""
 "Zakończone\n"
 "W trakcie\n"
+"Przerwa wydawnicza\n"
+"Anulowane\n"
 "<Nic>"
 
 #: frmmain.rs_fmdalreadyrunning
@@ -320,6 +325,10 @@ msgstr "Historia"
 msgid "Import"
 msgstr "Importuj"
 
+#: frmmain.rs_infoalttitles
+msgid "Alternative Title(s):"
+msgstr ""
+
 #: frmmain.rs_infoartists
 msgid "Artist(s):"
 msgstr "Wykonawca:"
@@ -335,6 +344,11 @@ msgstr "Gatunek:"
 #: frmmain.rs_infostatus
 msgid "Status:"
 msgstr "Status:"
+
+#: frmmain.rs_infostatus_unknown
+msgctxt "frmmain.rs_infostatus_unknown"
+msgid "Unknown"
+msgstr "Nieznane"
 
 #: frmmain.rs_infosummary
 msgid "Summary:"
@@ -855,9 +869,10 @@ msgid "Visit my blog"
 msgstr "Odwiedź mój blog"
 
 #: tmainform.caption
+#, fuzzy
 msgctxt "tmainform.caption"
 msgid "Free Manga Downloader"
-msgstr ""
+msgstr "Free Manga Downloader"
 
 #: tmainform.cbaddasstopped.caption
 msgid "Add to download list as stopped task"
@@ -2368,20 +2383,27 @@ msgstr "Strona WWW"
 
 #: tmainform.vtfavorites.header.columns[4].text
 msgctxt "TMAINFORM.VTFAVORITES.HEADER.COLUMNS[4].TEXT"
+msgid "Status"
+msgstr "Status"
+
+#: tmainform.vtfavorites.header.columns[5].text
+msgctxt "tmainform.vtfavorites.header.columns[5].text"
 msgid "Save to"
 msgstr "Zapisz do"
 
-#: tmainform.vtfavorites.header.columns[5].text
+#: tmainform.vtfavorites.header.columns[6].text
 #, fuzzy
-msgctxt "tmainform.vtfavorites.header.columns[5].text"
+msgctxt "tmainform.vtfavorites.header.columns[6].text"
 msgid "Date added"
 msgstr "Dodano"
 
-#: tmainform.vtfavorites.header.columns[6].text
+#: tmainform.vtfavorites.header.columns[7].text
+msgctxt "tmainform.vtfavorites.header.columns[7].text"
 msgid "Last checked date"
 msgstr ""
 
-#: tmainform.vtfavorites.header.columns[7].text
+#: tmainform.vtfavorites.header.columns[8].text
+msgctxt "tmainform.vtfavorites.header.columns[8].text"
 msgid "Last updated date"
 msgstr ""
 

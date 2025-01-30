@@ -93,6 +93,7 @@ msgid "Invalid"
 msgstr "Invalid"
 
 #: frmaccountmanager.rs_unknown
+msgctxt "frmaccountmanager.rs_unknown"
 msgid "Unknown"
 msgstr "Unknown"
 
@@ -296,10 +297,14 @@ msgstr "Enabled"
 msgid ""
 "Completed\n"
 "Ongoing\n"
+"Hiatus\n"
+"Cancelled\n"
 "<none>"
 msgstr ""
 "Completed\n"
 "Ongoing\n"
+"Hiatus\n"
+"Cancelled\n"
 "<none>"
 
 #: frmmain.rs_fmdalreadyrunning
@@ -322,6 +327,10 @@ msgstr "History"
 msgid "Import"
 msgstr "Import"
 
+#: frmmain.rs_infoalttitles
+msgid "Alternative Title(s):"
+msgstr ""
+
 #: frmmain.rs_infoartists
 msgid "Artist(s):"
 msgstr "Artist(s):"
@@ -337,6 +346,11 @@ msgstr "Genre(s):"
 #: frmmain.rs_infostatus
 msgid "Status:"
 msgstr "Status:"
+
+#: frmmain.rs_infostatus_unknown
+msgctxt "frmmain.rs_infostatus_unknown"
+msgid "Unknown"
+msgstr "Unknown"
 
 #: frmmain.rs_infosummary
 msgid "Summary:"
@@ -2383,19 +2397,26 @@ msgstr "Website"
 
 #: tmainform.vtfavorites.header.columns[4].text
 msgctxt "TMAINFORM.VTFAVORITES.HEADER.COLUMNS[4].TEXT"
-msgid "Save to"
-msgstr "Save to"
+msgid "Status"
+msgstr "Status"
 
 #: tmainform.vtfavorites.header.columns[5].text
 msgctxt "tmainform.vtfavorites.header.columns[5].text"
+msgid "Save to"
+msgstr "Save to"
+
+#: tmainform.vtfavorites.header.columns[6].text
+msgctxt "tmainform.vtfavorites.header.columns[6].text"
 msgid "Date added"
 msgstr "Date added"
 
-#: tmainform.vtfavorites.header.columns[6].text
+#: tmainform.vtfavorites.header.columns[7].text
+msgctxt "tmainform.vtfavorites.header.columns[7].text"
 msgid "Last checked date"
 msgstr "Last checked date"
 
-#: tmainform.vtfavorites.header.columns[7].text
+#: tmainform.vtfavorites.header.columns[8].text
+msgctxt "tmainform.vtfavorites.header.columns[8].text"
 msgid "Last updated date"
 msgstr "Last updated date"
 

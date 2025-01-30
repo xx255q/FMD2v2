@@ -866,6 +866,7 @@ type
     Module: Pointer;
     Link,
     Title,
+    AltTitles,
     TitleFormat,
     Authors,
     Artists,
@@ -914,7 +915,7 @@ const
   CL_BlueLight          = $f8f8f3;
 
 resourcestring
-  RS_FilterStatusItems = 'Completed'#13#10'Ongoing'#13#10'<none>';
+  RS_FilterStatusItems = 'Completed'#13#10'Ongoing'#13#10'Hiatus'#13#10'Cancelled'#13#10'<none>';
   RS_OptionFMDDoItems = 'Nothing'#13#10'Exit'#13#10'Shutdown'#13#10'Hibernate';
   RS_DropTargetModeItems = 'Download all'#13#10'Add to favorites';
   RS_OptionCompress = 'None'#13#10'ZIP'#13#10'CBZ'#13#10'PDF'#13#10'EPUB';
@@ -969,10 +970,12 @@ resourcestring
   RS_Selected = 'Selected: %d';
   RS_InfoWebsite = 'Website:';
   RS_InfoTitle = 'Title:';
+  RS_InfoAltTitles = 'Alternative Title(s):';
   RS_InfoAuthors = 'Author(s):';
   RS_InfoArtists = 'Artist(s):';
   RS_InfoGenres = 'Genre(s):';
   RS_InfoStatus = 'Status:';
+  RS_InfoStatus_Unknown = 'Unknown';
   RS_InfoSummary = 'Summary:';
   RS_FMDAlreadyRunning = 'Free Manga Downloader already running!';
   RS_ModeSearching = 'Mode: Searching...';
@@ -1235,8 +1238,8 @@ begin
   seOptionMaxParallel.MaxValue := MAX_TASKLIMIT;
   seOptionMaxThread.MaxValue := MAX_CONNECTIONPERHOSTLIMIT;
 
-  if cbFilterStatus.Items.Count > 2 then
-    cbFilterStatus.ItemIndex := 2;
+  if cbFilterStatus.Items.Count > 4 then
+    cbFilterStatus.ItemIndex := 4;
 
   InitCheckboxes;
 
@@ -3228,7 +3231,7 @@ begin
   edFilterAuthors.Caption := '';
   edFilterArtists.Caption := '';
   edFilterSummary.Caption := '';
-  cbFilterStatus.ItemIndex := 2;
+  cbFilterStatus.ItemIndex := 4;
   edCustomGenres.Caption := '';
 end;
 
@@ -4526,11 +4529,18 @@ begin
   if Node^.Index>=FavoriteManager.Count then Exit;
   with FavoriteManager.Items[Node^.Index].FavoriteInfo do
     case Column of
-      1: if Trim(Link)='' then HintText:=RS_HintFavoriteProblem
-         else HintText:=Title;
-      2: HintText:=currentChapter;
-      3: HintText:=Website;
-      4: HintText:=saveTo;
+      1: if Trim(Link) = '' then
+         begin
+           HintText := RS_HintFavoriteProblem;
+         end
+         else
+         begin
+           HintText := Title;
+         end;
+      2: HintText := currentChapter;
+      3: HintText := Website;
+      4: HintText := cbFilterStatus.Items[StrToIntDef(Status, cbFilterStatus.Items.Count - 1)];
+      5: HintText := saveTo;
     end;
 end;
 
@@ -4578,10 +4588,11 @@ begin
       1: CellText:=Title;
       2: CellText:=currentChapter;
       3: CellText:=Website;
-      4: CellText:=saveTo;
-      5: CellText:=DateTimeToStr(DateAdded);
-      6: CellText:=DateTimeToStr(DateLastChecked);
-      7: CellText:=DateTimeToStr(DateLastUpdated);
+      4: CellText:=cbFilterStatus.Items[StrToIntDef(Status, cbFilterStatus.Items.Count - 1)];
+      5: CellText:=saveTo;
+      6: CellText:=DateTimeToStr(DateAdded);
+      7: CellText:=DateTimeToStr(DateLastChecked);
+      8: CellText:=DateTimeToStr(DateLastUpdated);
     end;
 end;
 
@@ -4689,6 +4700,8 @@ begin
     if dataProcess.FilterAllSites then
       HintText += RS_InfoWebsite + LineEnding + TModuleContainer(Module).Name + LineEnding2;
     HintText += RS_InfoTitle + LineEnding + Title;
+    if AltTitles <> '' then
+      HintText += LineEnding2 + RS_InfoAltTitles + LineEnding + AltTitles;
     if Authors <> '' then
       HintText += LineEnding2 + RS_InfoAuthors + LineEnding + Authors;
     if Artists <> '' then
@@ -4699,12 +4712,25 @@ begin
     begin
       HintText += LineEnding2 + RS_InfoStatus + LineEnding;
       if Status = '0' then
+      begin
         HintText += cbFilterStatus.Items[0]
-      else
-      if Status = '1' then
+      end
+      else if Status = '1' then
+      begin
         HintText += cbFilterStatus.Items[1]
+      end
+      else if Status = '2' then
+      begin
+        HintText += cbFilterStatus.Items[2]
+      end
+      else if Status = '3' then
+      begin
+        HintText += cbFilterStatus.Items[3]
+      end
       else
+      begin
         HintText += Status;
+      end;
     end;
     if Summary <> '' then
       HintText += LineEnding2 + RS_InfoSummary + LineEnding + Summary;
@@ -5079,12 +5105,19 @@ begin
       Lines.Clear;
       edURL.Text := mangaInfo.URL;
       AddTextToInfo(RS_InfoTitle, mangaInfo.Title);
+      AddTextToInfo(RS_InfoAltTitles, mangaInfo.AltTitles);
       AddTextToInfo(RS_InfoAuthors, mangaInfo.Authors);
       AddTextToInfo(RS_InfoArtists, mangaInfo.Artists);
       AddTextToInfo(RS_InfoGenres, mangaInfo.Genres);
       i := StrToIntDef(mangaInfo.Status, -1);
       if (i > -1) and (i < cbFilterStatus.Items.Count) then
+      begin
         AddTextToInfo(RS_InfoStatus, cbFilterStatus.Items[i]);
+      end
+      else
+      begin
+        AddTextToInfo(RS_InfoStatus, mangaInfo.Status);
+      end;
       AddTextToInfo(RS_InfoSummary, mangaInfo.Summary);
       CaretPos := Point(0, 0);
     finally
@@ -6260,6 +6293,7 @@ begin
   begin
     Link := dataProcess.Value[Node^.Index, DATA_PARAM_LINK];
     Title := dataProcess.Value[Node^.Index, DATA_PARAM_TITLE];
+    AltTitles := dataProcess.Value[Node^.Index, DATA_PARAM_ALTTITLES];
     Authors := dataProcess.Value[Node^.Index, DATA_PARAM_AUTHORS];
     Artists := dataProcess.Value[Node^.Index, DATA_PARAM_ARTISTS];
     Genres := dataProcess.Value[Node^.Index, DATA_PARAM_GENRES];
