@@ -4641,6 +4641,9 @@ begin
       3: HintText := Website;
       4: HintText := cbFilterStatus.Items[StrToIntDef(Status, cbFilterStatus.Items.Count - 1)];
       5: HintText := saveTo;
+      6: HintText := DateTimeToStr(DateAdded);
+      7: HintText := DateTimeToStr(DateLastChecked);
+      8: HintText := DateTimeToStr(DateLastUpdated);
     end;
 end;
 
