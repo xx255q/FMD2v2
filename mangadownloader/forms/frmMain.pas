@@ -2141,15 +2141,26 @@ end;
 procedure TMainForm.miDownloadDeleteTaskClick(Sender: TObject);
 var
   xNode: PVirtualNode;
-  i: Integer;
+  deletedxNodes: array of PVirtualNode;
+  i, x: Integer;
   f, d, s: String;
 begin
-  if vtDownload.SelectedCount = 0 then Exit;
-  if DLManager.Count = 0 then Exit;
-  if (cbOptionShowDeleteTaskDialog.Checked) then
-    if MessageDlg('', RS_DlgRemoveTask,
-      mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
+  if vtDownload.SelectedCount = 0 then
+  begin
+    Exit;
+  end;
+  if DLManager.Count = 0 then
+  begin
+    Exit;
+  end;
+  if cbOptionShowDeleteTaskDialog.Checked then
+  begin
+    if MessageDlg('', RS_DlgRemoveTask, mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
+    begin
       Exit;
+    end;
+  end;
+
   vtDownload.BeginUpdate;
   DLManager.Lock;
   try
@@ -2165,7 +2176,10 @@ begin
         end;
       xNode := vtDownload.GetPreviousSelected(xNode);
     end;
+
     // cleaning the data
+    Setlength(deletedxNodes, vtDownload.SelectedCount);
+    x := 0;
     xNode := vtDownload.GetPreviousSelected(nil);
     while Assigned(xNode) do
     begin
@@ -2173,25 +2187,37 @@ begin
       with DLManager.Items[xNode^.Index] do
       begin
         if Running then
+        begin
           TaskThread.WaitFor;
-        if (Sender = miDownloadDeleteTaskData) or (Sender = miDownloadDeleteTaskDataFavorite)
+        end;
+
+        if ((Sender = miDownloadDeleteTaskData) or (Sender = miDownloadDeleteTaskDataFavorite))
           and (ChapterNames.Count > 0) then
         begin
           d := CorrectPathSys(DownloadInfo.SaveTo);
-          for i := 0 to ChapterNames.Count - 1 do begin
+          for i := 0 to ChapterNames.Count - 1 do
+          begin
             f := CorrectPathSys(d + ChapterNames[i]);
             if DirectoryExistsUTF8(f) then
+            begin
               DeleteDirectory(f, False);
+            end;
             f := RemovePathDelim(f);
             for s in FMDSupportedPackedOutputExt do
+            begin
               if FileExistsUTF8(f + s) then
+              begin
                 DeleteFileUTF8(f + s);
+              end;
+            end;
           end;
           RemoveDirUTF8(d);
         end;
+
         if (Sender = miDownloadDeleteTaskDataFavorite) and
           (FavoriteManager.Items.Count <> 0) and
           (FavoriteManager.isRunning = False) then
+        begin
           try
             FavoriteManager.Lock;
             for i := 0 to FavoriteManager.Count - 1 do
@@ -2206,6 +2232,10 @@ begin
           finally
             FavoriteManager.UnLock;
           end;
+        end;
+
+        deletedxNodes[x] := xNode;
+        Inc(x);
         DLManager.Delete(xNode^.Index);
       end;
       xNode := vtDownload.GetPreviousSelected(xNode);
@@ -2213,6 +2243,25 @@ begin
   finally
     DLManager.UnLock;
   end;
+
+  try
+    for x := 0 to High(deletedxNodes) do
+    begin
+      vtDownload.DeleteNode(deletedxNodes[x])
+    end;
+
+    if edDownloadsSearch.Text <> '' then
+    begin
+      xNode := vtDownload.GetFirst();
+      while Assigned(xNode) do
+      begin
+        vtDownload.IsFiltered[xNode] := Pos(UpperCase(edDownloadsSearch.Text), UpperCase(DLManager.Items[xNode^.Index].DownloadInfo.Title)) = 0;
+        xNode := vtDownload.GetNext(xNode);
+      end;
+    end;
+  finally
+  end;
+
   vtDownload.RootNodeCount := DLManager.Items.Count;
   vtDownload.EndUpdate;
   UpdateVtFavorites;
@@ -2499,15 +2548,18 @@ end;
 
 procedure TMainForm.btDownloadClick(Sender: TObject);
 var
-  links,names:TStrings;
-  node:PVirtualNode;
+  links, names: TStrings;
+  node: PVirtualNode;
   s:String;
-  c,p,r,i,j,k,l:Integer;
+  c, p, r, i, j, k, l: Integer;
 begin
   if clbChapterList.CheckedCount = 0 then
+  begin
     Exit;
-  links:=TStringList.Create;
-  names:=TStringList.Create;
+  end;
+
+  links := TStringList.Create;
+  names := TStringList.Create;
   try
     node:=clbChapterList.GetFirstChecked();
     while Assigned(node) do
@@ -2515,7 +2567,7 @@ begin
       if (vsVisible in node^.States) then
       begin
         links.Add(ChapterList[node^.Index].Link);
-        s:=CustomRename(OptionChapterCustomRename,
+        s := CustomRename(OptionChapterCustomRename,
           mangaInfo.Website,
           mangaInfo.Title,
           mangaInfo.Authors,
@@ -2525,20 +2577,19 @@ begin
           OptionChangeUnicodeCharacter,
           OptionChangeUnicodeCharacterStr);
         names.Add(s);
-        ChapterList[node^.Index].Downloaded:=True;
-        clbChapterList.ReinitNode(node,False);
+        ChapterList[node^.Index].Downloaded := True;
+        clbChapterList.ReinitNode(node, False);
       end;
-      node:=clbChapterList.GetNextChecked(node);
+      node := clbChapterList.GetNextChecked(node);
     end;
     clbChapterList.Repaint;
-    if links.Count<>0 then
+    if links.Count <> 0 then
     begin
-      s:=edSaveTo.Text;
-      if OptionGenerateMangaFolder and
-        not((LastViewMangaInfoSender = miDownloadViewMangaInfo) or
-            (LastViewMangaInfoSender = miFavoritesViewInfos)) // ignore custom saveto options
-        then
-        s:=AppendPathDelim(s)+CustomRename(
+      FillSaveTo;
+      s := edSaveTo.Text;
+      if OptionGenerateMangaFolder then
+      begin
+        s := AppendPathDelim(s)+CustomRename(
           OptionMangaCustomRename,
           mangaInfo.Website,
           mangaInfo.Title,
@@ -2548,38 +2599,45 @@ begin
           '',
           OptionChangeUnicodeCharacter,
           OptionChangeUnicodeCharacterStr);
-      s:=ReplaceRegExpr('\.*$', s, '', False);
-      c:=1;
-      p:=links.Count;
-      r:=0;
-      if btDownload.Tag>=links.Count then
+      end;
+      s := ReplaceRegExpr('\.*$', s, '', False);
+      c := 1;
+      p := links.Count;
+      r := 0;
+      if btDownload.Tag >= links.Count then
       begin
-        c:=links.Count;
-        p:=1;
+        c := links.Count;
+        p := 1;
       end
       else
-      if btDownload.Tag>1 then
+      if btDownload.Tag > 1 then
       begin
-        c:=btDownload.Tag;
-        p:=links.Count div c;
-        r:=links.Count mod c;
+        c := btDownload.Tag;
+        p := links.Count div c;
+        r := links.Count mod c;
       end;
       btDownload.Tag:=0;
-      k:=0;
-      for i:=1 to c do
+      k := 0;
+      for i := 1 to c do
       begin
-        if i<=r then
-          l:=p+1
+        if i <= r then
+        begin
+          l := p + 1
+        end
         else
-        if i=c then
-          l:=links.Count-k
+        if i = c then
+        begin
+          l := links.Count - k
+        end
         else
-          l:=p;
+        begin
+          l := p;
+        end;
         DLManager.Lock;
         try
           with DLManager.AddTask do
           begin
-            for j:=1 to l do
+            for j := 1 to l do
             begin
               ChapterLinks.Add(links[k]);
               ChapterNames.Add(names[k]);
@@ -2587,34 +2645,39 @@ begin
             end;
             if cbAddAsStopped.Checked then
             begin
-              DownloadInfo.Status:=Format('[%d/%d] %s',[0,ChapterLinks.Count,RS_Stopped]);
-              Status:=STATUS_STOP;
+              DownloadInfo.Status := Format('[%d/%d] %s', [0, ChapterLinks.Count, RS_Stopped]);
+              Status := STATUS_STOP;
             end
             else
             begin
-              DownloadInfo.Status:=Format('[%d/%d] %s',[0,ChapterLinks.Count,RS_Waiting]);
-              Status:=STATUS_WAIT;
+              DownloadInfo.Status := Format('[%d/%d] %s', [0, ChapterLinks.Count, RS_Waiting]);
+              Status := STATUS_WAIT;
             end;
-            DownloadInfo.ModuleID:=mangaInfo.ModuleID;
-            DownloadInfo.Link:=mangaInfo.Link;
-            DownloadInfo.Title:=mangaInfo.Title;
-            DownloadInfo.DateAdded:=Now;
-            DownloadInfo.DateLastDownloaded:=Now;
-            DownloadInfo.SaveTo:=s;
-            CurrentDownloadChapterPtr:=0;
+            DownloadInfo.ModuleID := mangaInfo.ModuleID;
+            DownloadInfo.Link := mangaInfo.Link;
+            DownloadInfo.Title := mangaInfo.Title;
+            DownloadInfo.DateAdded := Now;
+            DownloadInfo.DateLastDownloaded := Now;
+            DownloadInfo.SaveTo := s;
+            CurrentDownloadChapterPtr := 0;
             DBInsert;
           end;
         finally
           DLManager.UnLock;
         end;
         if OptionSortDownloadsOnNewTasks then
+        begin
           DLManager.Sort(DLManager.SortColumn);
+        end;
       end;
-      DLManager.DownloadedChapters.Chapters[mangaInfo.ModuleID, mangaInfo.Link]:=links.Text;
-      FavoriteManager.AddToDownloadedChaptersList(mangaInfo.ModuleID,mangaInfo.Link,links);
+
+      DLManager.DownloadedChapters.Chapters[mangaInfo.ModuleID, mangaInfo.Link] := links.Text;
+      FavoriteManager.AddToDownloadedChaptersList(mangaInfo.ModuleID, mangaInfo.Link, links);
       DLManager.CheckAndActiveTask;
       if OptionShowDownloadsTabOnNewTasks then
-        pcMain.ActivePage:=tsDownload;
+      begin
+        pcMain.ActivePage := tsDownload;
+      end;
       UpdateVtDownload;
     end;
   finally
@@ -2630,6 +2693,7 @@ begin
   if mangaInfo.Title <> '' then
   begin
     // save to
+    FillSaveTo;
     OverrideSaveTo(Modules.LocateModule(mangaInfo.ModuleID));
     s := edSaveTo.Text;
     if OptionGenerateMangaFolder then
@@ -2896,7 +2960,8 @@ end;
 
 procedure TMainForm.btFavoritesImportClick(Sender: TObject);
 begin
-  with TImportFavorites.Create(Self) do try
+  with TImportFavorites.Create(Self) do
+  try
     ShowModal;
   finally
     Free;
@@ -3264,28 +3329,61 @@ end;
 procedure TMainForm.miFavoritesDeleteClick(Sender: TObject);
 var
   xNode: PVirtualNode;
+  deletedxNodes: array of PVirtualNode;
+  x: Integer;
 begin
   if vtFavorites.SelectedCount = 0 then Exit;
-  if FavoriteManager.isRunning then begin
-    MessageDlg('', RS_DlgFavoritesCheckIsRunning,
-      mtInformation, [mbOK], 0);
+  if FavoriteManager.isRunning then
+  begin
+    MessageDlg('', RS_DlgFavoritesCheckIsRunning, mtInformation, [mbOK], 0);
     Exit;
   end;
   if cbOptionShowDeleteTaskDialog.Checked then
-    if MessageDlg('', RS_DlgRemoveFavorite, mtConfirmation, [mbYes, mbNo], 0) = mrNo then
+  begin
+    if MessageDlg('', RS_DlgRemoveFavorite, mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
+    begin
       Exit;
+    end;
+  end;
 
+  vtFavorites.BeginUpdate;
+  Setlength(deletedxNodes, vtFavorites.SelectedCount);
+  x := 0;
   FavoriteManager.Lock;
   try
     xNode := vtFavorites.GetLast();
     while Assigned(xNode) do begin
       if vtFavorites.Selected[xNode] then
+      begin
+        deletedxNodes[x] := xNode;
+        Inc(x);
         FavoriteManager.Delete(xNode^.Index);
+      end;
       xNode := vtFavorites.GetPreviousSelected(xNode);
     end;
   finally
     FavoriteManager.UnLock;
   end;
+
+  try
+    for x := 0 to High(deletedxNodes) do
+    begin
+      vtFavorites.DeleteNode(deletedxNodes[x])
+    end;
+
+    if edFavoritesSearch.Text <> '' then
+    begin
+      xNode := vtFavorites.GetFirst();
+      while Assigned(xNode) do
+      begin
+        vtFavorites.IsFiltered[xNode] := Pos(UpperCase(edFavoritesSearch.Text), UpperCase(FavoriteManager.Items[xNode^.Index].FavoriteInfo.Title)) = 0;
+        xNode := vtFavorites.GetNext(xNode);
+      end;
+    end;
+  finally
+  end;
+
+  vtFavorites.EndUpdate;
   UpdateVtFavorites;
   vtFavoritesFilterCountChange;
 end;
@@ -3570,9 +3668,9 @@ end;
 procedure TMainForm.miDownloadDeleteCompletedClick(Sender: TObject);
 begin
   if cbOptionShowDeleteTaskDialog.Checked then
-    if not (MessageDlg('', RS_DlgRemoveFinishTasks,
-      mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
+    if MessageDlg('', RS_DlgRemoveFinishTasks, mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
       Exit;
+
   DLManager.RemoveAllFinishedTasks;
   if Sender <> nil then
   UpdateVtDownload;
@@ -3646,7 +3744,9 @@ var
 begin
   if vtMangaList.SelectedCount = 0 then Exit;
   if dataProcess.Table.Active = False then Exit;
-  if MessageDlg('', RS_DlgRemoveItem, mtConfirmation, [mbYes, mbNo], 0) = mrNo then Exit;
+  if cbOptionShowDeleteTaskDialog.Checked then
+    if MessageDlg('', RS_DlgRemoveItem, mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
+      Exit;
   try
     vtMangaList.BeginUpdate;
     deleteCount := 0;

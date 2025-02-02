@@ -110,6 +110,14 @@ msgstr "Имя пользователя и пароль не могут быть
 msgid "Import completed."
 msgstr "Импорт завершен."
 
+#: frmimportfavorites.rs_importfailed
+msgid "Import could not find a suitable file."
+msgstr ""
+
+#: frmimportfavorites.rs_importthreadstatus
+msgid "Importing..."
+msgstr ""
+
 #: frmimportfavorites.rs_listunimportedcaption
 msgid "List of unimported manga"
 msgstr "Список неимпортированной манги"
@@ -996,7 +1004,9 @@ msgid "Show balloon hint"
 msgstr "Показывать подсказки"
 
 #: tmainform.cboptionshowdeletetaskdialog.caption
-msgid "Delete task/favorite"
+#, fuzzy
+#| msgid "Delete task/favorite"
+msgid "Delete download/manga/favourite"
 msgstr "Удаление задачи/избранного"
 
 #: tmainform.cboptionshowdownloadmangalistdialog.caption

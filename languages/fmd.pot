@@ -97,6 +97,14 @@ msgstr ""
 msgid "Import completed."
 msgstr ""
 
+#: frmimportfavorites.rs_importfailed
+msgid "Import could not find a suitable file."
+msgstr ""
+
+#: frmimportfavorites.rs_importthreadstatus
+msgid "Importing..."
+msgstr ""
+
 #: frmimportfavorites.rs_listunimportedcaption
 msgid "List of unimported manga"
 msgstr ""
@@ -934,7 +942,7 @@ msgid "Show balloon hint"
 msgstr ""
 
 #: tmainform.cboptionshowdeletetaskdialog.caption
-msgid "Delete task/favorite"
+msgid "Delete download/manga/favourite"
 msgstr ""
 
 #: tmainform.cboptionshowdownloadmangalistdialog.caption
