@@ -116,11 +116,11 @@ msgstr "Selesai mengimpor."
 
 #: frmimportfavorites.rs_importfailed
 msgid "Import could not find a suitable file."
-msgstr ""
+msgstr "Pengimpor tidak dapat menemukan berkas yang cocok."
 
 #: frmimportfavorites.rs_importthreadstatus
 msgid "Importing..."
-msgstr ""
+msgstr "Mengimpor..."
 
 #: frmimportfavorites.rs_listunimportedcaption
 msgid "List of unimported manga"
@@ -453,7 +453,7 @@ msgid ""
 "Hibernate"
 msgstr ""
 "Tidak ada\n"
-"Keluar\n"
+"Keluar dari FMD\n"
 "Matikan komputer\n"
 "Hibernasikan komputer"
 
@@ -781,8 +781,9 @@ msgid "Import list ..."
 msgstr "Impor daftar ..."
 
 #: timportfavorites.cbsoftware.text
-msgid "Domdomsoft Manga Downloader"
-msgstr "Domdomsoft Manga Downloader"
+msgctxt "timportfavorites.cbsoftware.text"
+msgid "Free Manga Downloader"
+msgstr "Free Manga Downloader"
 
 #: timportfavorites.edpath.texthint
 msgctxt "timportfavorites.edpath.texthint"
@@ -1008,10 +1009,8 @@ msgid "Show balloon hint"
 msgstr "Tampilkan balon pemberitahuan"
 
 #: tmainform.cboptionshowdeletetaskdialog.caption
-#, fuzzy
-#| msgid "Delete task/favorite"
-msgid "Delete download/manga/favourite"
-msgstr "Hapus unduhan/kesukaan"
+msgid "Delete download/manga/favorite"
+msgstr "Hapus unduhan/komik/kesukaan"
 
 #: tmainform.cboptionshowdownloadmangalistdialog.caption
 msgid "Download manga list if empty"

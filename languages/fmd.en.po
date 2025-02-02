@@ -112,11 +112,11 @@ msgstr "Import completed."
 
 #: frmimportfavorites.rs_importfailed
 msgid "Import could not find a suitable file."
-msgstr ""
+msgstr "Import could not find a suitable file."
 
 #: frmimportfavorites.rs_importthreadstatus
 msgid "Importing..."
-msgstr ""
+msgstr "Importing..."
 
 #: frmimportfavorites.rs_listunimportedcaption
 msgid "List of unimported manga"
@@ -777,8 +777,9 @@ msgid "Import list ..."
 msgstr "Import list ..."
 
 #: timportfavorites.cbsoftware.text
-msgid "Domdomsoft Manga Downloader"
-msgstr "Domdomsoft Manga Downloader"
+msgctxt "timportfavorites.cbsoftware.text"
+msgid "Free Manga Downloader"
+msgstr "Free Manga Downloader"
 
 #: timportfavorites.edpath.texthint
 msgctxt "TIMPORTFAVORITES.EDPATH.TEXTHINT"
@@ -1004,10 +1005,8 @@ msgid "Show balloon hint"
 msgstr "Show balloon hint"
 
 #: tmainform.cboptionshowdeletetaskdialog.caption
-#, fuzzy
-#| msgid "Delete task/favorite"
-msgid "Delete download/manga/favourite"
-msgstr "Delete task/favorite"
+msgid "Delete download/manga/favorite"
+msgstr "Delete download/manga/favorite"
 
 #: tmainform.cboptionshowdownloadmangalistdialog.caption
 msgid "Download manga list if empty"

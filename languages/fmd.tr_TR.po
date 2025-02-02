@@ -779,8 +779,9 @@ msgid "Import list ..."
 msgstr "Listeyi içe aktar ..."
 
 #: timportfavorites.cbsoftware.text
-msgid "Domdomsoft Manga Downloader"
-msgstr "Domdomsoft Manga İndirici"
+msgctxt "timportfavorites.cbsoftware.text"
+msgid "Free Manga Downloader"
+msgstr "Free Manga Downloader"
 
 #: timportfavorites.edpath.texthint
 msgctxt "timportfavorites.edpath.texthint"
@@ -1006,10 +1007,8 @@ msgid "Show balloon hint"
 msgstr "Yardım balonlarını göster"
 
 #: tmainform.cboptionshowdeletetaskdialog.caption
-#, fuzzy
-#| msgid "Delete task/favorite"
-msgid "Delete download/manga/favourite"
-msgstr "Görevi/favoriyi sil"
+msgid "Delete download/manga/favorite"
+msgstr "Görevi/manga/favoriyi sil"
 
 #: tmainform.cboptionshowdownloadmangalistdialog.caption
 msgid "Download manga list if empty"

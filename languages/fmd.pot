@@ -721,7 +721,8 @@ msgid "Import list ..."
 msgstr ""
 
 #: timportfavorites.cbsoftware.text
-msgid "Domdomsoft Manga Downloader"
+msgctxt "timportfavorites.cbsoftware.text"
+msgid "Free Manga Downloader"
 msgstr ""
 
 #: timportfavorites.edpath.texthint
@@ -942,7 +943,7 @@ msgid "Show balloon hint"
 msgstr ""
 
 #: tmainform.cboptionshowdeletetaskdialog.caption
-msgid "Delete download/manga/favourite"
+msgid "Delete download/manga/favorite"
 msgstr ""
 
 #: tmainform.cboptionshowdownloadmangalistdialog.caption
