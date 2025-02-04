@@ -594,7 +594,7 @@ function  ConvertStrToInt32(const aStr  : String): Cardinal;}
 procedure TransferMangaInfo(var dest: TMangaInfo; const Source: TMangaInfo);
 function MangaInfoStatusIfPos(const SearchStr: String; const OngoingStr: String = 'ongoing';
     const CompletedStr: String = 'complete'; const HiatusStr: String = 'hiatus';
-    const CancelledStr: String = 'cancelled|canceled'): String;
+    const CancelledStr: String = 'cancel'): String;
 
 procedure GetBaseMangaInfo(const M: TMangaInfo; var B: TBaseMangaInfo);
 // fill empty manga info
