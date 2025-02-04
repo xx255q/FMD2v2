@@ -4,6 +4,20 @@ https://github.com/dazedcat19/FMD2
 Changelog:
 ([!] Important, [+] Addition, [-] Removal, [*] Fix/Change, [?] Feedback needed)
 
+2.0.34.0 (05.02.2025)
+[+] Added long name paths support -> Thank you @NhKPaNdA
+[+] Added Alternative Titles to manga info -> Thank you @NhKPaNdA
+[+] Added Cancelled and Hiatus statuses to manga info -> Thank you @NhKPaNdA
+[+] Added transfer website functionality on the same website -> Thank you @NhKPaNdA
+[+] Added Status column in favorites tab -> Thank you @NhKPaNdA
+[*] Changed website name captions to bold in website options -> Thank you @NhKPaNdA
+[*] Fixed compression failing when there are too many files -> Thank you @NhKPaNdA
+[*] Fixed dialog prompts -> Thank you @NhKPaNdA
+[*] Fixed favorites import support -> Thank you @NhKPaNdA
+[*] Fixed filtered titles not retaining filter after deletion -> Thank you @NhKPaNdA
+[*] Fixed FMD window getting lost on a disconnected non-primary monitor -> Thank you @NhKPaNdA
+[*] Included Alternative Titles in manga list filter search and Transfer Website function -> Thank you @NhKPaNdA
+
 2.0.33.1 (10.10.2024)
 [+] Added "rookiepy" workaround to bypass cloudflare protection. To use this workaround, check Issue #1715 -> Thank you @NhKPaNdA
 [*] "FlareSolverr" workaround has issues with looping requests and timing out. Follow Method 1a in Issue #1715 for a working fix.
