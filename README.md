@@ -9,8 +9,8 @@
 ## Download
 
 [![Latest release](https://img.shields.io/github/release/dazedcat19/FMD2?style=for-the-badge)](https://github.com/dazedcat19/FMD2/releases/latest)  
-[![Download latest release (Win32)](https://img.shields.io/github/downloads/dazedcat19/FMD2/latest/fmd_2.0.33.1_i386-win32.7z?style=for-the-badge&label=Win32)](https://github.com/dazedcat19/FMD2/releases/download/2.0.33.1/fmd_2.0.33.1_i386-win32.7z)
-[![Download latest release (Win64)](https://img.shields.io/github/downloads/dazedcat19/FMD2/latest/fmd_2.0.33.1_x86_64-win64.7z?style=for-the-badge&label=Win64)](https://github.com/dazedcat19/FMD2/releases/download/2.0.33.1/fmd_2.0.33.1_x86_64-win64.7z)
+[![Download latest release (Win32)](https://img.shields.io/github/downloads/dazedcat19/FMD2/latest/fmd_2.0.34.0_i386-win32.7z?style=for-the-badge&label=Win32)](https://github.com/dazedcat19/FMD2/releases/download/2.0.33.1/fmd_2.0.34.0_i386-win32.7z)
+[![Download latest release (Win64)](https://img.shields.io/github/downloads/dazedcat19/FMD2/latest/fmd_2.0.34.0_x86_64-win64.7z?style=for-the-badge&label=Win64)](https://github.com/dazedcat19/FMD2/releases/download/2.0.33.1/fmd_2.0.34.0_x86_64-win64.7z)
 </div>
 
 <div align="center">
