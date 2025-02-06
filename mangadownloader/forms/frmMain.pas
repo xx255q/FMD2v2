@@ -2550,7 +2550,7 @@ procedure TMainForm.btDownloadClick(Sender: TObject);
 var
   links, names: TStrings;
   node: PVirtualNode;
-  s:String;
+  s, sRename: String;
   c, p, r, i, j, k, l: Integer;
 begin
   if clbChapterList.CheckedCount = 0 then
@@ -2585,21 +2585,32 @@ begin
     clbChapterList.Repaint;
     if links.Count <> 0 then
     begin
-      FillSaveTo;
+      // save to
+      if edSaveTo.Text = '' then
+      begin
+        FillSaveTo;
+        OverrideSaveTo(Modules.LocateModule(mangaInfo.ModuleID));
+      end;
       s := edSaveTo.Text;
       if OptionGenerateMangaFolder then
       begin
-        s := AppendPathDelim(s)+CustomRename(
-          OptionMangaCustomRename,
-          mangaInfo.Website,
-          mangaInfo.Title,
-          mangaInfo.Authors,
-          mangaInfo.Artists,
-          '',
-          '',
-          OptionChangeUnicodeCharacter,
-          OptionChangeUnicodeCharacterStr);
+        sRename := CustomRename(
+            OptionMangaCustomRename,
+            mangaInfo.Website,
+            mangaInfo.Title,
+            mangaInfo.Authors,
+            mangaInfo.Artists,
+            '',
+            '',
+            OptionChangeUnicodeCharacter,
+            OptionChangeUnicodeCharacterStr);
+
+        if Pos(sRename, s) = 0 then
+        begin
+          s := AppendPathDelim(s) + sRename;
+        end;
       end;
+
       s := ReplaceRegExpr('\.*$', s, '', False);
       c := 1;
       p := links.Count;
@@ -2688,16 +2699,20 @@ end;
 
 procedure TMainForm.btAddToFavoritesClick(Sender: TObject);
 var
-  s: String;
+  s, sRename: String;
 begin
   if mangaInfo.Title <> '' then
   begin
     // save to
-    FillSaveTo;
-    OverrideSaveTo(Modules.LocateModule(mangaInfo.ModuleID));
+    if edSaveTo.Text = '' then
+    begin
+      FillSaveTo;
+      OverrideSaveTo(Modules.LocateModule(mangaInfo.ModuleID));
+    end;
     s := edSaveTo.Text;
     if OptionGenerateMangaFolder then
-      s := AppendPathDelim(s) + CustomRename(
+    begin
+      sRename := CustomRename(
           OptionMangaCustomRename,
           mangaInfo.Website,
           mangaInfo.Title,
@@ -2707,6 +2722,12 @@ begin
           '',
           OptionChangeUnicodeCharacter,
           OptionChangeUnicodeCharacterStr);
+
+      if Pos(sRename, s) = 0 then
+      begin
+        s := AppendPathDelim(s) + sRename;
+      end;
+    end;
 
     FavoriteManager.Add(
       mangaInfo.Module,
@@ -5166,11 +5187,11 @@ begin
   edSaveTo.Text := ASaveTo;
   LastViewMangaInfoSender := ASender;
   if edSaveTo.Text = '' then
+  begin
     FillSaveTo;
-  
-  if (LastViewMangaInfoSender <> miDownloadViewMangaInfo) and (LastViewMangaInfoSender <> miFavoritesViewInfos) then
     OverrideSaveTo(AModule);
-  
+  end;
+
 
   DisableAddToFavorites(AModule);
   //check if manga already in FavoriteManager list
@@ -6008,6 +6029,24 @@ procedure TMainForm.LoadFormInformation;
     end;
   end;
 
+  function IsWithinAnyMonitor(ALeft, ATop, AWidth, AHeight: Integer): Boolean;
+  var
+    i: Integer;
+    MonitorRect: TRect;
+  begin
+    Result := False;
+    for i := 0 to Screen.MonitorCount - 1 do
+    begin
+      MonitorRect := Screen.Monitors[i].BoundsRect;
+      if (ALeft + AWidth > MonitorRect.Left) and (ALeft < MonitorRect.Right) and
+         (ATop + AHeight > MonitorRect.Top) and (ATop < MonitorRect.Bottom) then
+      begin
+        Result := True;
+        Exit;
+      end;
+    end;
+  end;
+
 var
   index: LongInt;
 begin
@@ -6022,21 +6061,20 @@ begin
       pcMain.PageIndex := ReadInteger('form', 'pcMainPageIndex', 0);
 
     Left := ReadInteger('form', 'MainFormLeft', Left);
-    if (Left < 0) or (Left > Screen.DesktopWidth) then
-      Left := 0;
     Top := ReadInteger('form', 'MainFormTop', Top);
-    if (Top < 0) or (Top > Screen.DesktopHeight) then
-      Top := 0;
     Width := ReadInteger('form', 'MainFormWidth', Width);
-    if Width > Screen.DesktopWidth then
-      Width := Screen.DesktopWidth;
     Height := ReadInteger('form', 'MainFormHeight', Height);
-    if Height > Screen.DesktopHeight then
-      Height := Screen.DesktopHeight;
+
+    if not IsWithinAnyMonitor(Left, Top, Width, Height) then
+    begin
+      Left := 0;
+      Top := 0;
+    end;
+
     CurrentFormLeft := Left;
     CurrentFormTop := Top;
-    CurrentFormWidth := Width;
-    CurrentFormHeight := Height;
+    CurrentFormWidth := Min(Width, Screen.DesktopWidth);
+    CurrentFormHeight := Min(Height, Screen.DesktopHeight);
 
     if Screen.PixelsPerInch > 96 then begin
       Width := ScaleScreenTo96(Width);
