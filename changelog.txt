@@ -4,6 +4,15 @@ https://github.com/dazedcat19/FMD2
 Changelog:
 ([!] Important, [+] Addition, [-] Removal, [*] Fix/Change, [?] Feedback needed)
 
+2.0.34.1 (06.02.2025)
+[*] Changed compression file list to fallback to save location path if FMD folder path fails -> Thank you @NhKPaNdA
+[*] Changed database structure check to also check after downloading manga list from FMD server -> Thank you @NhKPaNdA
+[*] Changed FMD error exception info to include website name along with module ID -> Thank you @NhKPaNdA
+[*] Fixed favorites import not reporting failed imports with empty module IDs -> Thank you @NhKPaNdA
+[*] Fixed favorites sorting not accounting for new status column addition -> Thank you @NhKPaNdA
+[*] Fixed FMD window size and placement correction for when monitor setup has valid negative values -> Thank you @NhKPaNdA
+[*] Fixed "save to" location duplicating name. Previous fix not accounting for user change while on view manga info -> Thank you @NhKPaNdA
+
 2.0.34.0 (05.02.2025)
 [+] Added long name paths support -> Thank you @NhKPaNdA
 [+] Added Alternative Titles to manga info -> Thank you @NhKPaNdA
