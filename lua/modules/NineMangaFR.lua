@@ -7,7 +7,7 @@ function Init()
 	m.ID                       = 'e172f944cfdf4af287b2ddb39c5b5b85'
 	m.Name                     = 'NineMangaFR'
 	m.RootURL                  = 'https://fr.ninemanga.com'
-	m.Category                 = 'Portuguese'
+	m.Category                 = 'French'
 	m.OnGetNameAndLink         = 'GetNameAndLink'
 	m.OnGetInfo                = 'GetInfo'
 	m.OnGetPageNumber          = 'GetPageNumber'
