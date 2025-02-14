@@ -82,12 +82,12 @@ function GetInfo()
 	MANGAINFO.Summary   = x.XPathString('//li[contains(., "Description")]/p')
 
 	official = x.XPathString('//li[./strong[contains(., "Official Translation")]]/a')
-	if string.find(official, 'Yes', 1, true) ~= nil then 
-		MANGAINFO.Summary = 'Official Translation\n' .. MANGAINFO.Summary
-	end
+	if official:find('Yes') then MANGAINFO.Summary = 'Official Translation\r\n \r\n' .. MANGAINFO.Summary end
 
-	u = MANGAINFO.URL:gsub('(.*/series/.*)/.*', '%1') .. '/full-chapter-list'
+	u = MANGAINFO.URL:gsub('/[^/]+$', '/full-chapter-list')
+
 	if not HTTP.GET(u) then return net_problem end
+
 	x = CreateTXQuery(HTTP.Document)
 	for v in x.XPath('//a[not(@aria-label)]').Get() do
 		MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
