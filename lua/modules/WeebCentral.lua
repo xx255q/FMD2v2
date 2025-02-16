@@ -84,7 +84,7 @@ function GetInfo()
 	official = x.XPathString('//li[./strong[contains(., "Official Translation")]]/a')
 	if official:find('Yes') then MANGAINFO.Summary = 'Official Translation\r\n \r\n' .. MANGAINFO.Summary end
 
-	u = MANGAINFO.URL:gsub('/[^/]+$', '/full-chapter-list')
+	u = MANGAINFO.URL:gsub("(/series/[^/]+)/[^/]+$", "%1") .. '/full-chapter-list'
 
 	if not HTTP.GET(u) then return net_problem end
 
