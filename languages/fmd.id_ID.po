@@ -217,6 +217,13 @@ msgstr "Memeriksa..."
 msgid "Custom"
 msgstr "Ubah suai"
 
+#: frmmain.rs_darkmode
+msgid ""
+"System\n"
+"Dark\n"
+"Light"
+msgstr ""
+
 #: frmmain.rs_dlgcannotconnecttoserver
 msgid "Cannot connect to the server."
 msgstr "Tidak dapat terhubung ke peladen."
@@ -689,6 +696,10 @@ msgstr "Nama pengguna"
 msgctxt "taccountsetform.label3.caption"
 msgid "Password"
 msgstr "Kata sandi"
+
+#: tcustomcolorform.btresetcolors.caption
+msgid "Reset list colors"
+msgstr ""
 
 #: tcustomcolorform.caption
 msgid "CustomColorForm"
@@ -1461,6 +1472,10 @@ msgctxt "tmainform.edmangalistsearch.texthint"
 msgid "Search title..."
 msgstr "Cari judul..."
 
+#: tmainform.edoptionchangeunicodecharacterstr.texthint
+msgid "Unicode Char"
+msgstr ""
+
 #: tmainform.edoptionchaptercustomrename.texthint
 msgctxt "tmainform.edoptionchaptercustomrename.texthint"
 msgid "Custom rename"
@@ -1469,6 +1484,12 @@ msgstr "Ubah nama pilihan"
 #: tmainform.edoptiondefaultpath.texthint
 msgid "Default download path"
 msgstr "Lokasi unduhan asali"
+
+#: tmainform.edoptiondefaultuseragent.texthint
+#, fuzzy
+msgctxt "tmainform.edoptiondefaultuseragent.texthint"
+msgid "Default user-agent"
+msgstr "User-agent asali"
 
 #: tmainform.edoptionexternalparams.texthint
 msgctxt "tmainform.edoptionexternalparams.texthint"
@@ -1558,6 +1579,22 @@ msgstr "Umum"
 #: tmainform.gboptionsconnectiosmiscellaneous.caption
 msgid "Miscellaneous"
 msgstr "Lain-lain"
+
+#: tmainform.lbdarkmode.caption
+msgid "Theme (Requires restart to take effect):"
+msgstr ""
+
+#: tmainform.lbdarkmodehint.caption
+#, fuzzy
+msgctxt "tmainform.lbdarkmodehint.caption"
+msgid "[?]"
+msgstr "[?]"
+
+#: tmainform.lbdarkmodehint.hint
+msgid ""
+"Only supports Windows 10 1809 and above.\n"
+"Theme's auto disable on any unsupported versions."
+msgstr ""
 
 #: tmainform.lbdefaultdownloadpath.caption
 msgid "Choose the default download path:"
@@ -1686,6 +1723,7 @@ msgid "Connection timeout (seconds)"
 msgstr "Batas waktu koneksi (detik)"
 
 #: tmainform.lboptiondefaultuseragent.caption
+msgctxt "tmainform.lboptiondefaultuseragent.caption"
 msgid "Default user-agent"
 msgstr "User-agent asali"
 

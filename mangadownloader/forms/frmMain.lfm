@@ -338,7 +338,7 @@ object MainForm: TMainForm
                 end
               end
             end
-            object edDownloadsSearch: TEditButton
+            object edDownloadsSearch: TCustomEditButton
               Left = 0
               Height = 23
               Top = 1
@@ -675,7 +675,7 @@ object MainForm: TMainForm
             OnClick = btUpdateListClick
             ShowCaption = False
           end
-          object edMangaListSearch: TEdit
+          object edMangaListSearch: TCustomEdit
             AnchorSideLeft.Control = cbSelectManga
             AnchorSideTop.Control = cbSelectManga
             AnchorSideTop.Side = asrBottom
@@ -857,7 +857,7 @@ object MainForm: TMainForm
                   ParentBackground = False
                   ParentFont = False
                   TabOrder = 0
-                  object edURL: TEditButton
+                  object edURL: TCustomEditButton
                     Left = 0
                     Height = 23
                     Top = 0
@@ -941,7 +941,7 @@ object MainForm: TMainForm
                       BevelOuter = bvNone
                       ClientHeight = 221
                       ClientWidth = 150
-                      Color = clWhite
+                      Color = clWindow
                       ParentBackground = False
                       ParentColor = False
                       TabOrder = 0
@@ -955,6 +955,7 @@ object MainForm: TMainForm
                         BorderStyle = bsSingle
                         ClientHeight = 217
                         ClientWidth = 146
+                        Color = clWindow
                         ParentBackground = False
                         TabOrder = 0
                         object imCover: TImage
@@ -983,6 +984,7 @@ object MainForm: TMainForm
                       Top = 0
                       Width = 477
                       Align = alClient
+                      Color = clWindow
                       HideSelection = False
                       ReadOnly = True
                       ScrollBars = ssAutoVertical
@@ -1285,7 +1287,7 @@ object MainForm: TMainForm
                     ParentColor = False
                     ParentFont = False
                   end
-                  object edFilterMangaInfoChapters: TEditButton
+                  object edFilterMangaInfoChapters: TCustomEditButton
                     Left = 0
                     Height = 23
                     Top = 0
@@ -1336,7 +1338,7 @@ object MainForm: TMainForm
                     TextHint = 'Filter'
                     Visible = False
                   end
-                  object edSaveTo: TEditButton
+                  object edSaveTo: TCustomEditButton
                     AnchorSideLeft.Control = lbSaveTo
                     AnchorSideTop.Control = btReadOnline
                     AnchorSideRight.Control = btReadOnline
@@ -1492,7 +1494,7 @@ object MainForm: TMainForm
                     ParentColor = False
                     ParentFont = False
                   end
-                  object edCustomGenres: TEdit
+                  object edCustomGenres: TCustomEdit
                     Left = 97
                     Height = 23
                     Top = 0
@@ -1514,7 +1516,7 @@ object MainForm: TMainForm
                     Align = alRight
                     BorderSpacing.Left = 4
                     Caption = '[?]'
-                    Font.Color = clBlue
+                    Font.Color = clHighlight
                     ParentColor = False
                     ParentFont = False
                     ParentShowHint = False
@@ -1563,7 +1565,7 @@ object MainForm: TMainForm
                       ParentColor = False
                       ParentFont = False
                     end
-                    object edFilterTitle: TEdit
+                    object edFilterTitle: TCustomEdit
                       Left = 114
                       Height = 23
                       Top = 0
@@ -1583,7 +1585,7 @@ object MainForm: TMainForm
                       ParentColor = False
                       ParentFont = False
                     end
-                    object edFilterAuthors: TEdit
+                    object edFilterAuthors: TCustomEdit
                       Left = 114
                       Height = 23
                       Top = 27
@@ -1603,7 +1605,7 @@ object MainForm: TMainForm
                       ParentColor = False
                       ParentFont = False
                     end
-                    object edFilterArtists: TEdit
+                    object edFilterArtists: TCustomEdit
                       Left = 114
                       Height = 23
                       Top = 54
@@ -1653,7 +1655,7 @@ object MainForm: TMainForm
                       ParentColor = False
                       ParentFont = False
                     end
-                    object edFilterSummary: TEdit
+                    object edFilterSummary: TCustomEdit
                       Left = 114
                       Height = 23
                       Top = 108
@@ -2698,7 +2700,7 @@ object MainForm: TMainForm
         OnClick = btFavoritesCheckNewChapterClick
         TabOrder = 1
       end
-      object edFavoritesSearch: TEditButton
+      object edFavoritesSearch: TCustomEditButton
         Left = 0
         Height = 23
         Top = 4
@@ -2833,14 +2835,233 @@ object MainForm: TMainForm
             ClientHeight = 455
             ClientWidth = 812
             ParentBackground = False
-            TabOrder = 0
+            TabOrder = 0 
+            object lbOptionLanguage: TLabel
+              Left = 4
+              Height = 15
+              Top = 8
+              Width = 804
+              Align = alTop
+              Caption = 'Language:'
+              ParentColor = False
+            end
+            object cbLanguages: TComboBox
+              AnchorSideLeft.Control = lbOptionLanguage
+              AnchorSideTop.Control = lbOptionLanguage
+              AnchorSideTop.Side = asrBottom
+              Left = 4
+              Height = 23
+              Top = 27
+              Width = 224
+              ItemHeight = 15
+              Items.Strings = (
+                'English'
+              )
+              ParentFont = False
+              Style = csDropDownList
+              TabOrder = 1
+            end
+            object lbOptionLetFMDDo: TLabel
+              AnchorSideLeft.Control = cbLanguages
+              AnchorSideTop.Control = cbLanguages
+              AnchorSideTop.Side = asrBottom
+              Left = 4
+              Height = 15
+              Top = 54
+              Width = 117
+              Caption = 'After download finish:'
+              ParentColor = False
+            end
+            object cbOptionLetFMDDo: TComboBox
+              AnchorSideLeft.Control = lbOptionLetFMDDo
+              AnchorSideTop.Control = lbOptionLetFMDDo
+              AnchorSideTop.Side = asrBottom
+              Left = 4
+              Height = 23
+              Top = 73
+              Width = 224
+              ItemHeight = 15
+              Items.Strings = (
+                'Do nothing'
+                'Exit FMD'
+                'Shutdown'
+                'Hibernate'
+              )
+              ParentFont = False
+              Style = csDropDownList
+              TabOrder = 2
+            end
+            object lbDarkmode: TLabel
+              AnchorSideLeft.Control = cbOptionLetFMDDo
+              AnchorSideTop.Control = cbOptionLetFMDDo
+              AnchorSideTop.Side = asrBottom
+              Left = 4
+              Height = 15
+              Top = 100
+              Width = 117
+              Caption = 'Theme (Requires restart to take effect):'
+              ParentColor = False
+            end
+            object cbDarkmode: TComboBox
+              AnchorSideLeft.Control = lbDarkmode
+              AnchorSideTop.Control = lbDarkmode
+              AnchorSideTop.Side = asrBottom
+              Left = 4
+              Height = 23
+              Top = 119
+              Width = 224
+              ItemHeight = 15
+              Items.Strings = (
+                'System'
+                'Dark'
+                'Light'
+              )
+              ParentFont = False
+              Style = csDropDownList
+              TabOrder = 3
+            end  
+            object lbDarkmodeHint: TLabel
+              AnchorSideLeft.Control = cbDarkmode
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = cbDarkmode
+              AnchorSideTop.Side = asrCenter
+              Left = 232
+              Height = 15
+              Hint = 'Only supports Windows 10 1809 and above.'#13#10'Theme''s auto disable on any unsupported versions.'
+              Top = 123
+              Width = 13
+              Caption = '[?]'
+              Font.Color = clHighlight
+              ParentColor = False
+              ParentFont = False
+              ParentShowHint = False
+              ShowHint = True
+            end
+            object seOptionNewMangaTime: TSpinEdit
+              AnchorSideLeft.Control = cbDarkmode
+              AnchorSideTop.Control = cbDarkmode
+              AnchorSideTop.Side = asrBottom
+              Left = 4
+              Height = 23
+              Top = 216
+              Width = 50
+              BorderSpacing.Top = 20
+              MaxValue = 365
+              MinValue = 1
+              ParentFont = False
+              TabOrder = 4
+              Value = 1
+            end
+            object lbOptionNewMangaTime: TLabel
+              AnchorSideLeft.Control = seOptionNewMangaTime
+              AnchorSideLeft.Side = asrBottom
+              AnchorSideTop.Control = seOptionNewMangaTime
+              AnchorSideTop.Side = asrCenter
+              Left = 58
+              Height = 15
+              Top = 220
+              Width = 238
+              Caption = 'New manga based on  it''s update time (days)'
+              ParentColor = False
+              ParentFont = False
+            end 
+            object cbOptionMinimizeOnStart: TCheckBox
+              AnchorSideLeft.Control = seOptionNewMangaTime
+              AnchorSideTop.Control = seOptionNewMangaTime
+              AnchorSideTop.Side = asrBottom
+              Left = 4
+              Height = 19
+              Top = 259
+              Width = 110
+              BorderSpacing.Top = 20
+              Caption = 'Minimize on start'
+              ParentFont = False
+              TabOrder = 5
+            end
+            object cbOptionMinimizeToTray: TCheckBox
+              AnchorSideLeft.Control = cbOptionMinimizeOnStart
+              AnchorSideTop.Control = cbOptionMinimizeOnStart
+              AnchorSideTop.Side = asrBottom
+              Left = 4
+              Height = 19
+              Top = 282
+              Width = 104
+              Caption = 'Minimize to tray'
+              ParentFont = False
+              TabOrder = 6
+            end
+            object cbOptionOneInstanceOnly: TCheckBox
+              AnchorSideLeft.Control = cbOptionMinimizeToTray
+              AnchorSideTop.Control = cbOptionMinimizeToTray
+              AnchorSideTop.Side = asrBottom
+              Left = 4
+              Height = 19
+              Top = 305
+              Width = 175
+              Caption = 'Permit only one FMD running'
+              ParentFont = False
+              TabOrder = 7
+            end
+            object cbOptionLiveSearch: TCheckBox
+              AnchorSideLeft.Control = cbOptionOneInstanceOnly
+              AnchorSideTop.Control = cbOptionOneInstanceOnly
+              AnchorSideTop.Side = asrBottom
+              Left = 4
+              Height = 19
+              Top = 328
+              Width = 208
+              Caption = 'Enable live search (slow on long list)'
+              ParentFont = False
+              TabOrder = 8
+            end
+            object cbOptionDeleteCompletedTasksOnClose: TCheckBox
+              AnchorSideTop.Control = cbOptionLiveSearch
+              AnchorSideTop.Side = asrBottom
+              Left = 4
+              Height = 19
+              Top = 351
+              Width = 187
+              Caption = 'Delete completed tasks on close'
+              TabOrder = 9
+            end
+            object cbOptionSortDownloadsOnNewTasks: TCheckBox
+              AnchorSideTop.Control = cbOptionDeleteCompletedTasksOnClose
+              AnchorSideTop.Side = asrBottom
+              Left = 4
+              Height = 19
+              Top = 374
+              Width = 283
+              Caption = 'Sort Downloads when adding new download tasks'
+              TabOrder = 10
+            end
+            object cbOptionVacuumDatabasesOnExit: TCheckBox
+              AnchorSideTop.Control = cbOptionSortDownloadsOnNewTasks
+              AnchorSideTop.Side = asrBottom
+              Left = 4
+              Height = 19
+              Top = 397
+              Width = 155
+              Caption = 'Vacuum databases on exit'
+              TabOrder = 11
+            end
+            object cbOptionEnableLongNamePaths: TCheckBox
+              AnchorSideLeft.Control = sbGeneralSettings
+              AnchorSideTop.Control = cbOptionVacuumDatabasesOnExit
+              AnchorSideTop.Side = asrBottom
+              Left = 4
+              Height = 19
+              Top = 420
+              Width = 528
+              Caption = 'Enable long name paths (Can break most/all interaction with the file in Windows and other apps)'
+              TabOrder = 12
+            end
             object gbOptionExternal: TGroupBox
               AnchorSideLeft.Control = sbGeneralSettings
               AnchorSideTop.Control = cbOptionEnableLongNamePaths
               AnchorSideTop.Side = asrBottom
               Left = 4
               Height = 118
-              Top = 359
+              Top = 459
               Width = 650
               Anchors = [akTop, akLeft, akRight]
               BorderSpacing.Top = 20
@@ -2872,7 +3093,7 @@ object MainForm: TMainForm
                 Caption = 'Parameters:'
                 ParentColor = False
               end
-              object edOptionExternalParams: TEdit
+              object edOptionExternalParams: TCustomEdit
                 AnchorSideLeft.Control = lbOptionExternalParams
                 AnchorSideTop.Control = lbOptionExternalParams
                 AnchorSideTop.Side = asrBottom
@@ -2894,13 +3115,13 @@ object MainForm: TMainForm
                 Top = 73
                 Width = 13
                 Caption = '[?]'
-                Font.Color = clBlue
+                Font.Color = clHighlight
                 ParentColor = False
                 ParentFont = False
                 ParentShowHint = False
                 ShowHint = True
               end
-              object edOptionExternalPath: TEditButton
+              object edOptionExternalPath: TCustomEditButton
                 Left = 4
                 Height = 23
                 Top = 23
@@ -2950,177 +3171,6 @@ object MainForm: TMainForm
                 TabOrder = 0
                 TextHint = 'External program path'
               end
-            end
-            object cbOptionMinimizeToTray: TCheckBox
-              AnchorSideTop.Side = asrBottom
-              Left = 4
-              Height = 19
-              Top = 182
-              Width = 104
-              Caption = 'Minimize to tray'
-              ParentFont = False
-              TabOrder = 1
-            end
-            object cbOptionOneInstanceOnly: TCheckBox
-              AnchorSideLeft.Control = cbOptionMinimizeToTray
-              AnchorSideTop.Control = cbOptionMinimizeToTray
-              AnchorSideTop.Side = asrBottom
-              Left = 4
-              Height = 19
-              Top = 205
-              Width = 175
-              Caption = 'Permit only one FMD running'
-              ParentFont = False
-              TabOrder = 2
-            end
-            object cbOptionLiveSearch: TCheckBox
-              AnchorSideLeft.Control = cbOptionOneInstanceOnly
-              AnchorSideTop.Control = cbOptionOneInstanceOnly
-              AnchorSideTop.Side = asrBottom
-              Left = 4
-              Height = 19
-              Top = 228
-              Width = 208
-              Caption = 'Enable live search (slow on long list)'
-              ParentFont = False
-              TabOrder = 3
-            end
-            object lbOptionLanguage: TLabel
-              Left = 4
-              Height = 15
-              Top = 8
-              Width = 804
-              Align = alTop
-              Caption = 'Language:'
-              ParentColor = False
-            end
-            object cbLanguages: TComboBox
-              AnchorSideLeft.Control = lbOptionLanguage
-              AnchorSideTop.Control = lbOptionLanguage
-              AnchorSideTop.Side = asrBottom
-              Left = 4
-              Height = 23
-              Top = 27
-              Width = 224
-              ItemHeight = 15
-              Items.Strings = (
-                'English'
-              )
-              ParentFont = False
-              Style = csDropDownList
-              TabOrder = 4
-            end
-            object lbOptionLetFMDDo: TLabel
-              AnchorSideLeft.Control = cbLanguages
-              AnchorSideTop.Control = cbLanguages
-              AnchorSideTop.Side = asrBottom
-              Left = 4
-              Height = 15
-              Top = 54
-              Width = 117
-              Caption = 'After download finish:'
-              ParentColor = False
-            end
-            object cbOptionLetFMDDo: TComboBox
-              AnchorSideLeft.Control = lbOptionLetFMDDo
-              AnchorSideTop.Control = lbOptionLetFMDDo
-              AnchorSideTop.Side = asrBottom
-              Left = 4
-              Height = 23
-              Top = 73
-              Width = 224
-              ItemHeight = 15
-              Items.Strings = (
-                'Do nothing'
-                'Exit FMD'
-                'Shutdown'
-                'Hibernate'
-              )
-              ParentFont = False
-              Style = csDropDownList
-              TabOrder = 5
-            end
-            object seOptionNewMangaTime: TSpinEdit
-              AnchorSideLeft.Control = cbOptionLetFMDDo
-              AnchorSideTop.Control = cbOptionLetFMDDo
-              AnchorSideTop.Side = asrBottom
-              Left = 4
-              Height = 23
-              Top = 116
-              Width = 50
-              BorderSpacing.Top = 20
-              MaxValue = 365
-              MinValue = 1
-              ParentFont = False
-              TabOrder = 6
-              Value = 1
-            end
-            object lbOptionNewMangaTime: TLabel
-              AnchorSideLeft.Control = seOptionNewMangaTime
-              AnchorSideLeft.Side = asrBottom
-              AnchorSideTop.Control = seOptionNewMangaTime
-              AnchorSideTop.Side = asrCenter
-              Left = 58
-              Height = 15
-              Top = 120
-              Width = 238
-              Caption = 'New manga based on  it''s update time (days)'
-              ParentColor = False
-              ParentFont = False
-            end
-            object cbOptionMinimizeOnStart: TCheckBox
-              AnchorSideLeft.Control = seOptionNewMangaTime
-              AnchorSideTop.Control = seOptionNewMangaTime
-              AnchorSideTop.Side = asrBottom
-              Left = 4
-              Height = 19
-              Top = 159
-              Width = 110
-              BorderSpacing.Top = 20
-              Caption = 'Minimize on start'
-              ParentFont = False
-              TabOrder = 7
-            end
-            object cbOptionDeleteCompletedTasksOnClose: TCheckBox
-              AnchorSideTop.Control = cbOptionLiveSearch
-              AnchorSideTop.Side = asrBottom
-              Left = 4
-              Height = 19
-              Top = 251
-              Width = 187
-              Caption = 'Delete completed tasks on close'
-              TabOrder = 8
-            end
-            object cbOptionSortDownloadsOnNewTasks: TCheckBox
-              AnchorSideTop.Control = cbOptionDeleteCompletedTasksOnClose
-              AnchorSideTop.Side = asrBottom
-              Left = 4
-              Height = 19
-              Top = 274
-              Width = 283
-              Caption = 'Sort Downloads when adding new download tasks'
-              TabOrder = 9
-            end
-            object cbOptionVacuumDatabasesOnExit: TCheckBox
-              AnchorSideTop.Control = cbOptionSortDownloadsOnNewTasks
-              AnchorSideTop.Side = asrBottom
-              Left = 4
-              Height = 19
-              Top = 297
-              Width = 155
-              Caption = 'Vacuum databases on exit'
-              TabOrder = 10
-            end
-            object cbOptionEnableLongNamePaths: TCheckBox
-              AnchorSideLeft.Control = sbGeneralSettings
-              AnchorSideTop.Control = cbOptionVacuumDatabasesOnExit
-              AnchorSideTop.Side = asrBottom
-              Left = 4
-              Height = 19
-              Top = 320
-              Width = 528
-              Caption = 'Enable long name paths (Can break most/all interaction with the file in Windows and other apps)'
-              TabOrder = 11
             end
           end
         end
@@ -3387,7 +3437,7 @@ object MainForm: TMainForm
                   ParentColor = False
                   ParentFont = False
                 end
-                object edOptionHost: TEdit
+                object edOptionHost: TCustomEdit
                   AnchorSideLeft.Control = cbOptionProxyType
                   AnchorSideTop.Control = lbOptionHost
                   AnchorSideTop.Side = asrCenter
@@ -3418,7 +3468,7 @@ object MainForm: TMainForm
                   Caption = 'Username'
                   ParentColor = False
                 end
-                object edOptionUser: TEdit
+                object edOptionUser: TCustomEdit
                   AnchorSideLeft.Control = lbOptionUser
                   AnchorSideLeft.Side = asrBottom
                   AnchorSideTop.Control = lbOptionUser
@@ -3460,7 +3510,7 @@ object MainForm: TMainForm
                   Caption = 'Password'
                   ParentColor = False
                 end
-                object edOptionPass: TEdit
+                object edOptionPass: TCustomEdit
                   AnchorSideLeft.Control = edOptionUser
                   AnchorSideTop.Control = lbOptionPass
                   AnchorSideTop.Side = asrCenter
@@ -3531,7 +3581,7 @@ object MainForm: TMainForm
                   Value = 8080
                 end
               end
-              object edOptionDefaultUserAgent: TEdit
+              object edOptionDefaultUserAgent: TCustomEdit
                 AnchorSideLeft.Control = gbOptionsConnectionsGeneral
                 AnchorSideTop.Control = lbOptionDefaultUserAgent
                 AnchorSideTop.Side = asrBottom
@@ -3543,6 +3593,7 @@ object MainForm: TMainForm
                 Width = 800
                 Anchors = [akTop, akLeft, akRight]
                 TabOrder = 1
+                TextHint = 'Default user-agent'
               end
               object lbOptionDefaultUserAgent: TLabel
                 AnchorSideLeft.Control = gbOptionsConnectionsGeneral
@@ -3926,7 +3977,7 @@ object MainForm: TMainForm
                 Enabled = False
                 ParentColor = False
               end
-              object edOptionMangaCustomRename: TEdit
+              object edOptionMangaCustomRename: TCustomEdit
                 AnchorSideLeft.Control = lbOptionMangaCustomRename
                 AnchorSideTop.Control = lbOptionMangaCustomRename
                 AnchorSideTop.Side = asrBottom
@@ -3952,7 +4003,7 @@ object MainForm: TMainForm
                 Width = 13
                 Caption = '[?]'
                 Enabled = False
-                Font.Color = clBlue
+                Font.Color = clHighlight
                 ParentColor = False
                 ParentFont = False
                 ParentShowHint = False
@@ -3995,7 +4046,7 @@ object MainForm: TMainForm
                 Caption = 'Chapter name:'
                 ParentColor = False
               end
-              object edOptionChapterCustomRename: TEdit
+              object edOptionChapterCustomRename: TCustomEdit
                 AnchorSideLeft.Control = lbOptionChapterCustomRename
                 AnchorSideTop.Control = lbOptionChapterCustomRename
                 AnchorSideTop.Side = asrBottom
@@ -4017,7 +4068,7 @@ object MainForm: TMainForm
                 Top = 165
                 Width = 13
                 Caption = '[?]'
-                Font.Color = clBlue
+                Font.Color = clHighlight
                 ParentColor = False
                 ParentFont = False
                 ParentShowHint = False
@@ -4098,13 +4149,13 @@ object MainForm: TMainForm
                 Top = 259
                 Width = 13
                 Caption = '[?]'
-                Font.Color = clBlue
+                Font.Color = clHighlight
                 ParentColor = False
                 ParentFont = False
                 ParentShowHint = False
                 ShowHint = True
               end
-              object edOptionFilenameCustomRename: TEdit
+              object edOptionFilenameCustomRename: TCustomEdit
                 AnchorSideLeft.Control = lbOptionFilenameCustomRename
                 AnchorSideTop.Control = lbOptionFilenameCustomRename
                 AnchorSideTop.Side = asrBottom
@@ -4127,7 +4178,7 @@ object MainForm: TMainForm
                 Caption = 'Filename:'
                 ParentColor = False
               end
-              object edOptionChangeUnicodeCharacterStr: TEdit
+              object edOptionChangeUnicodeCharacterStr: TCustomEdit
                 AnchorSideLeft.Control = cbOptionChangeUnicodeCharacter
                 AnchorSideLeft.Side = asrBottom
                 AnchorSideTop.Control = cbOptionChangeUnicodeCharacter
@@ -4137,6 +4188,7 @@ object MainForm: TMainForm
                 Width = 80
                 Enabled = False
                 TabOrder = 1
+                TextHint = 'Unicode Char'
               end
             end
             object lbDefaultDownloadPath: TLabel
@@ -4171,7 +4223,7 @@ object MainForm: TMainForm
               BorderSpacing.Left = 4
               Caption = '[?]'
               Enabled = False
-              Font.Color = clBlue
+              Font.Color = clHighlight
               ParentColor = False
               ParentFont = False
               ParentShowHint = False
@@ -4213,7 +4265,7 @@ object MainForm: TMainForm
               ParentShowHint = False
               ShowHint = True
             end
-            object edOptionDefaultPath: TEditButton
+            object edOptionDefaultPath: TCustomEditButton
               Left = 4
               Height = 23
               Top = 27
@@ -4704,7 +4756,7 @@ object MainForm: TMainForm
                     end
                   end
                 end
-                object edWebsitesSearch: TEditButton
+                object edWebsitesSearch: TCustomEditButton
                   Left = 0
                   Height = 23
                   Top = 0
@@ -4941,7 +4993,7 @@ object MainForm: TMainForm
                 OnClick = btOpenLogClick
                 TabOrder = 3
               end
-              object edLogFileName: TEditButton
+              object edLogFileName: TCustomEditButton
                 AnchorSideLeft.Control = ckEnableLogging
                 AnchorSideTop.Control = lbLogFileName
                 AnchorSideTop.Side = asrBottom
@@ -5223,7 +5275,7 @@ object MainForm: TMainForm
             Align = alClient
             BorderSpacing.Top = 4
             BorderSpacing.Bottom = 4
-            Color = clWhite
+            Color = clWindow
             Font.Style = [fsBold]
             HideSelection = False
             ParentFont = False

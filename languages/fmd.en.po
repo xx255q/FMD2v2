@@ -213,6 +213,13 @@ msgstr "Checking..."
 msgid "Custom"
 msgstr "Custom"
 
+#: frmmain.rs_darkmode
+msgid ""
+"System\n"
+"Dark\n"
+"Light"
+msgstr ""
+
 #: frmmain.rs_dlgcannotconnecttoserver
 msgid "Cannot connect to the server."
 msgstr "Cannot connect to the server."
@@ -685,6 +692,10 @@ msgstr "Username"
 msgctxt "TACCOUNTSETFORM.LABEL3.CAPTION"
 msgid "Password"
 msgstr "Password"
+
+#: tcustomcolorform.btresetcolors.caption
+msgid "Reset list colors"
+msgstr ""
 
 #: tcustomcolorform.caption
 msgid "CustomColorForm"
@@ -1457,6 +1468,10 @@ msgctxt "tmainform.edmangalistsearch.texthint"
 msgid "Search title..."
 msgstr "Search title..."
 
+#: tmainform.edoptionchangeunicodecharacterstr.texthint
+msgid "Unicode Char"
+msgstr ""
+
 #: tmainform.edoptionchaptercustomrename.texthint
 msgctxt "TMAINFORM.EDOPTIONCHAPTERCUSTOMRENAME.TEXTHINT"
 msgid "Custom rename"
@@ -1465,6 +1480,12 @@ msgstr "Custom rename"
 #: tmainform.edoptiondefaultpath.texthint
 msgid "Default download path"
 msgstr "Default download path"
+
+#: tmainform.edoptiondefaultuseragent.texthint
+#, fuzzy
+msgctxt "tmainform.edoptiondefaultuseragent.texthint"
+msgid "Default user-agent"
+msgstr "Default user-agent"
 
 #: tmainform.edoptionexternalparams.texthint
 msgctxt "TMAINFORM.EDOPTIONEXTERNALPARAMS.TEXTHINT"
@@ -1554,6 +1575,22 @@ msgstr "General"
 #: tmainform.gboptionsconnectiosmiscellaneous.caption
 msgid "Miscellaneous"
 msgstr "Miscellaneous"
+
+#: tmainform.lbdarkmode.caption
+msgid "Theme (Requires restart to take effect):"
+msgstr ""
+
+#: tmainform.lbdarkmodehint.caption
+#, fuzzy
+msgctxt "tmainform.lbdarkmodehint.caption"
+msgid "[?]"
+msgstr "[?]"
+
+#: tmainform.lbdarkmodehint.hint
+msgid ""
+"Only supports Windows 10 1809 and above.\n"
+"Theme's auto disable on any unsupported versions."
+msgstr ""
 
 #: tmainform.lbdefaultdownloadpath.caption
 msgid "Choose the default download path:"
@@ -1682,6 +1719,7 @@ msgid "Connection timeout (seconds)"
 msgstr "Connection timeout (seconds)"
 
 #: tmainform.lboptiondefaultuseragent.caption
+msgctxt "tmainform.lboptiondefaultuseragent.caption"
 msgid "Default user-agent"
 msgstr "Default user-agent"
 

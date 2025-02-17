@@ -215,6 +215,13 @@ msgstr "Kontrol ediliyor..."
 msgid "Custom"
 msgstr ""
 
+#: frmmain.rs_darkmode
+msgid ""
+"System\n"
+"Dark\n"
+"Light"
+msgstr ""
+
 #: frmmain.rs_dlgcannotconnecttoserver
 msgid "Cannot connect to the server."
 msgstr "Sunucuya bağlanılamıyor."
@@ -687,6 +694,10 @@ msgstr "Kullanıcı Adı"
 msgctxt "taccountsetform.label3.caption"
 msgid "Password"
 msgstr "Şifre"
+
+#: tcustomcolorform.btresetcolors.caption
+msgid "Reset list colors"
+msgstr ""
 
 #: tcustomcolorform.caption
 msgid "CustomColorForm"
@@ -1458,6 +1469,10 @@ msgctxt "tmainform.edmangalistsearch.texthint"
 msgid "Search title..."
 msgstr "Başlık ara..."
 
+#: tmainform.edoptionchangeunicodecharacterstr.texthint
+msgid "Unicode Char"
+msgstr ""
+
 #: tmainform.edoptionchaptercustomrename.texthint
 msgctxt "tmainform.edoptionchaptercustomrename.texthint"
 msgid "Custom rename"
@@ -1466,6 +1481,11 @@ msgstr "Kişisel yeniden adlandırma"
 #: tmainform.edoptiondefaultpath.texthint
 msgid "Default download path"
 msgstr "Varsayılan indirme yolu"
+
+#: tmainform.edoptiondefaultuseragent.texthint
+msgctxt "tmainform.edoptiondefaultuseragent.texthint"
+msgid "Default user-agent"
+msgstr ""
 
 #: tmainform.edoptionexternalparams.texthint
 msgctxt "tmainform.edoptionexternalparams.texthint"
@@ -1554,6 +1574,22 @@ msgstr "Genel"
 
 #: tmainform.gboptionsconnectiosmiscellaneous.caption
 msgid "Miscellaneous"
+msgstr ""
+
+#: tmainform.lbdarkmode.caption
+msgid "Theme (Requires restart to take effect):"
+msgstr ""
+
+#: tmainform.lbdarkmodehint.caption
+#, fuzzy
+msgctxt "tmainform.lbdarkmodehint.caption"
+msgid "[?]"
+msgstr "[?]"
+
+#: tmainform.lbdarkmodehint.hint
+msgid ""
+"Only supports Windows 10 1809 and above.\n"
+"Theme's auto disable on any unsupported versions."
 msgstr ""
 
 #: tmainform.lbdefaultdownloadpath.caption
@@ -1683,6 +1719,7 @@ msgid "Connection timeout (seconds)"
 msgstr "Bağlantı zaman aşımı (saniye)"
 
 #: tmainform.lboptiondefaultuseragent.caption
+msgctxt "tmainform.lboptiondefaultuseragent.caption"
 msgid "Default user-agent"
 msgstr ""
 

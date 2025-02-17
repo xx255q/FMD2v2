@@ -19,13 +19,14 @@ uses
   {$endif}
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, LCLType,
   ExtCtrls, ComCtrls, Buttons, Spin, Menus, VirtualTrees, RichMemo, simpleipc, process,
-  lclproc, types, LCLIntf, EditBtn, PairSplitter, MultiLog,
+  lclproc, types, LCLIntf, EditBtn, GroupedEdit, PairSplitter, MultiLog,
   FileChannel, FileUtil, LazStringUtils, TAGraph, TASources, TASeries, TATools,
   AnimatedGif, uBaseUnit, uDownloadsManager, uFavoritesManager,
   uSilentThread, uMisc, uGetMangaInfosThread, frmDropTarget, frmAccountManager,
-  frmWebsiteOptionCustom, frmCustomColor, frmLogger, frmTransferFavorites,
-  frmLuaModulesUpdater, CheckUpdate, DBDataProcess,
-  SimpleTranslator, httpsendthread, DateUtils, SimpleException;
+  frmAccountSet, frmWebsiteOptionCustom, frmCustomColor, frmLogger, frmTransferFavorites,
+  frmLuaModulesUpdater, CheckUpdate, DBDataProcess, uDarkStyleParams, uWin32WidgetSetDark,
+  SimpleTranslator, httpsendthread, DateUtils, SimpleException, uCustomControls;
+
 
 type
 
@@ -84,24 +85,36 @@ type
     cbPNGCompressionLevel: TComboBox;
     deDownloadFilterCustomDateFrom: TDateEdit;
     deDownloadFilterCustomDateTo: TDateEdit;
-    edDownloadsSearch: TEditButton;
-    edFavoritesSearch: TEditButton;
-    edFilterMangaInfoChapters: TEditButton;
-    edOptionDefaultUserAgent: TEdit;
-    edLogFileName: TEditButton;
-    edOptionChangeUnicodeCharacterStr: TEdit;
-    edOptionDefaultPath: TEditButton;
-    edOptionExternalPath: TEditButton;
-    edOptionFilenameCustomRename: TEdit;
-    edOptionMangaCustomRename: TEdit;
-    edSaveTo: TEditButton;
-    edURL: TEditButton;
-    edWebsitesSearch: TEditButton;
+    edCustomGenres: TCustomEdit;
+    edDownloadsSearch: TCustomEditButton;
+    edFavoritesSearch: TCustomEditButton;
+    edFilterArtists: TCustomEdit;
+    edFilterAuthors: TCustomEdit;
+    edFilterMangaInfoChapters: TCustomEditButton;
+    edFilterSummary: TCustomEdit;
+    edFilterTitle: TCustomEdit;
+    edLogFileName: TCustomEditButton;
+    edMangaListSearch: TCustomEdit;
+    edOptionChangeUnicodeCharacterStr: TCustomEdit;
+    edOptionChapterCustomRename: TCustomEdit;
+    edOptionDefaultPath: TCustomEditButton;
+    edOptionDefaultUserAgent: TCustomEdit;
+    edOptionExternalParams: TCustomEdit;
+    edOptionExternalPath: TCustomEditButton;
+    edOptionFilenameCustomRename: TCustomEdit;
+    edOptionHost: TCustomEdit;
+    edOptionMangaCustomRename: TCustomEdit;
+    edOptionPass: TCustomEdit;
+    edOptionUser: TCustomEdit;
+    edSaveTo: TCustomEditButton;
+    edURL: TCustomEditButton;
+    edWebsitesSearch: TCustomEditButton;
     gbImageConversion: TGroupBox;
     gbOptionsConnectionsDownloads: TGroupBox;
     gbOptionsConnectiosMiscellaneous: TGroupBox;
     gbOptionsConnectionsGeneral: TGroupBox;
     IconDLLeft: TImageList;
+    lbDarkmodeHint: TLabel;
     lbDownloadFilterCustomDateFrom: TLabel;
     lbDownloadFilterCustomDateTo: TLabel;
     lbOptionMaxFavoriteThreads: TLabel;
@@ -219,7 +232,6 @@ type
     TransferRateGraphArea: TAreaSeries;
     TransferRateGraph: TChart;
     ckDropTarget: TCheckBox;
-    edOptionExternalParams: TEdit;
     gbDropTarget: TGroupBox;
     gbOptionExternal: TGroupBox;
     IconDL: TImageList;
@@ -317,17 +329,8 @@ type
     cbFilterStatus: TComboBox;
     cbLanguages: TComboBox;
     cbOptionLetFMDDo: TComboBox;
-    edFilterSummary: TEdit;
-    edFilterTitle: TEdit;
-    edFilterAuthors: TEdit;
-    edFilterArtists: TEdit;
-    edCustomGenres: TEdit;
-    edOptionChapterCustomRename: TEdit;
-    edOptionHost: TEdit;
-    edOptionPass: TEdit;
+    cbDarkmode: TComboBox;
     edOptionPort: TEdit;
-    edOptionUser: TEdit;
-    edMangaListSearch: TEdit;
     gbDialogs: TGroupBox;
     gbOptionProxy: TGroupBox;
     gbOptionRenaming: TGroupBox;
@@ -338,6 +341,7 @@ type
     lbOptionPDFQuality: TLabel;
     lbOptionAutoCheckFavIntervalMinutes: TLabel;
     lbOptionLetFMDDo: TLabel;
+    lbDarkmode: TLabel;
     lbOptionNewMangaTime: TLabel;
     lbOptionLanguage: TLabel;
     lbFilterCustomGenres: TLabel;
@@ -726,6 +730,8 @@ type
     Timer1Hour: TTimer;
     TimerBackup: TTimer;
 
+    winBuildNumber: DWORD;
+
     procedure OnTimer1Hour(Sender:TObject);
     procedure OnTimerBackup(Sender:TObject);
 
@@ -887,13 +893,13 @@ const
   CL_HLRedMarks         = $8080FF;
   CL_HLYellowMarks      = $80EBFE;
 
-  CL_BarGrayLine        = $bcbcbc;
-  CL_BarGray            = $e6e6e6;
+  CL_BarLine            = clBtnFace;
+  CL_Bar                = clWindow;
 
   CL_BarGreenLine       = $25b006;
   CL_BarGreen           = $42d932;
 
-  CL_BarOrangeLine       = $00b399;
+  CL_BarOrangeLine      = $00b399;
   CL_BarOrange          = $1870e9;
 
   CL_BarRedLine         = $1a1ab1;
@@ -917,6 +923,7 @@ const
 resourcestring
   RS_FilterStatusItems = 'Completed'#13#10'Ongoing'#13#10'Hiatus'#13#10'Cancelled'#13#10'<none>';
   RS_OptionFMDDoItems = 'Nothing'#13#10'Exit'#13#10'Shutdown'#13#10'Hibernate';
+  RS_Darkmode = 'System'#13#10'Dark'#13#10'Light';
   RS_DropTargetModeItems = 'Download all'#13#10'Add to favorites';
   RS_OptionCompress = 'None'#13#10'ZIP'#13#10'CBZ'#13#10'PDF'#13#10'EPUB';
   RS_WebPConvertTo = 'WebP'#13#10'PNG'#13#10'JPEG';
@@ -1179,6 +1186,7 @@ procedure TMainForm.FormCreate(Sender: TObject);
 begin
   Randomize;
   FormMain := Self;
+  winBuildNumber := 0;
   {$ifdef windows}
   PrevWndProc := windows.WNDPROC(windows.GetWindowLongPtr(Self.Handle, GWL_WNDPROC));
   windows.SetWindowLongPtr(Self.Handle, GWL_WNDPROC, PtrInt(@WndCallback));
@@ -1196,6 +1204,12 @@ begin
 
   ForceDirectoriesUTF8(USERDATA_FOLDER);
   ForceDirectoriesUTF8(DATA_FOLDER);
+
+  if IsDarkModeEnabled then
+  begin
+    TryEnforceDarkStyleForCtrl(rmAbout);
+    TryEnforceDarkStyleForCtrl(rmInformation);
+  end;
 
   // load about
   LoadAbout;
@@ -1341,13 +1355,13 @@ begin
     Enabled:=True;
   end;
 
-  Self.Caption := Self.Caption + ' v' + FMD_VERSION_STRING;
   AddToAboutStatus(RS_Version, FMD_VERSION_STRING, pnAboutVersion);
   if REVISION_NUMBER <> '' then
     AddToAboutStatus(RS_Revision, REVISION_NUMBER+' ('+REVISION_SHA+')', pnAboutVersion);
 
   if AlwaysLoadLuaFromFile then
     Caption := Caption + ' --lua-dofile';
+
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -1429,7 +1443,7 @@ begin
     FMDInstance.StopServer;
     FreeAndNil(FMDInstance);
   end;
-  isNormalExit:=True;
+  isNormalExit := True;
 
   Logger.Send('NormalExit', isNormalExit);
 end;
@@ -2381,6 +2395,7 @@ end;
 procedure TMainForm.LoadAbout;
 var
   fs: TFileStream;
+  fp: TFontParams;
   s: String;
   _OpenSSSL_version: function(t: integer): PAnsiChar; cdecl;
 begin
@@ -2393,6 +2408,10 @@ begin
       fs.free;
     end;
   end;
+
+  rmAbout.GetTextAttributes(0, fp);
+  fp.Color := ColorToRGB(clWindowText);
+  rmAbout.SetTextAttributes(0, -1, fp);
 
   // load changelog.txt
   if FileExistsUTF8(CHANGELOG_FILE) then mmChangelog.Lines.LoadFromFile(CHANGELOG_FILE);
@@ -2762,6 +2781,8 @@ end;
 procedure TMainForm.appPropertiesMainShowHint(var HintStr: String;
   var CanShow: Boolean; var HintInfo: THintInfo);
 begin
+  HintInfo.HintWindowClass := TCustomHintWindow;
+
   if HintInfo.HintControl = vtMangaList then
   begin
     HintInfo.HintMaxWidth := 500;
@@ -4271,11 +4292,11 @@ begin
     // base bar
     BarRect := CellRect;
     BarRect.Inflate(-2,-2);
-    BarRect.Right-=1;
+    BarRect.Right -= 1;
     Pen.Style := psSolid;
     Brush.Style := bsSolid;
-    Pen.Color := CL_BarGrayLine;
-    Brush.Color := CL_BarGray;
+    Pen.Color := CL_BarLine;
+    Brush.Color := CL_Bar;
     Rectangle(BarRect);
 
     // progress bar
@@ -4289,8 +4310,8 @@ begin
                            Brush.Color := CL_BarRed;
                          end;
         STATUS_WAIT    : begin
-                           Pen.Color   := CL_BarGrayLine;
-                           Brush.Color := CL_BarGray;
+                           Pen.Color   := CL_BarLine;
+                           Brush.Color := CL_Bar;
                          end;
         STATUS_DOWNLOAD: begin
                            Pen.Color   := CL_BarBlueLine;
@@ -4312,12 +4333,12 @@ begin
       end;
       Frame(BarRect);
       BarRect.Inflate(-2,-2);
-      GradientFill(BarRect, BlendColor(Brush.Color,CL_BarGray,128), Brush.Color, gdHorizontal);
+      GradientFill(BarRect, BlendColor(Brush.Color, CL_Bar, 128), Brush.Color, gdHorizontal);
     end;
     // text
     if DownloadInfo.Progress <> '' then
     begin
-      Font.Color := clBlack;
+      Font.Color := clWindowText;
       Brush.Style := bsClear;
       GetTextSize(DownloadInfo.Progress, ww, hh);
       TextOut(CellRect.Left + ((CellRect.Right - CellRect.Left - ww) div 2),
@@ -5119,6 +5140,7 @@ begin
       Lines.Add('');
     p := SelStart;
     GetTextAttributes(p, fp);
+    fp.Color := ColorToRGB(clWindowText);
     fp.Style += [fsBold, fsUnderline];
     Inc(fp.Size);
     SetTextAttributes(p, 0, fp);
@@ -5156,6 +5178,7 @@ procedure TMainForm.ViewMangaInfo(const AModule: Pointer; const ALink, ATitle,
   ASaveTo: String; const ASender: TObject; const AMangaListNode: PVirtualNode);
 var
   fav: TFavoriteContainer;
+  fp: TFontParams;
 begin
   if (ALink = '') or (AModule = nil) then Exit;
 
@@ -5171,8 +5194,13 @@ begin
   edURL.Text := FillHost(TModuleContainer(AModule).RootURL, ALink);
   pcMain.ActivePage := tsInformation;
   imCover.Picture.Assign(nil);
+
   rmInformation.Clear;
+  rmInformation.GetTextAttributes(0, fp);
+  fp.Color := ColorToRGB(clWindowText);
+  rmInformation.SetTextAttributes(0, -1, fp);
   rmInformation.Lines.Add(RS_Loading);
+
   clbChapterList.Clear;
   if Assigned(gifWaiting) then
   begin
@@ -5284,6 +5312,7 @@ procedure TMainForm.LoadOptions;
 begin
   with settingsfile do begin
     // general
+    cbDarkmode.ItemIndex := ReadInteger('darkmode', 'mode', 0);
     cbOptionOneInstanceOnly.Checked := ReadBool('general', 'OneInstanceOnly', True);
     cbOptionLiveSearch.Checked := ReadBool('general', 'LiveSearch', True);
     cbOptionMinimizeOnStart.Checked := ReadBool('general', 'MinimizeOnStart', False);
@@ -5441,6 +5470,8 @@ begin
         s := s.TrimRight([',']);
         WriteString('general', 'MangaListSelect', s);
       end;
+      if cbDarkmode.ItemIndex > -1 then
+        WriteInteger('darkmode', 'mode', cbDarkmode.ItemIndex);
       WriteBool('general', 'LiveSearch', cbOptionLiveSearch.Checked);
       WriteBool('general', 'OneInstanceOnly', cbOptionOneInstanceOnly.Checked);
       if cbLanguages.ItemIndex > -1 then
@@ -6236,6 +6267,7 @@ procedure TMainForm.ApplyLanguage;
 var
   idxSelectManga,
   idxLanguages,
+  idxDarkmode,
   idxFilterStatus,
   idxOptionLetFMDDo,
   idxOptionProxyType,
@@ -6247,13 +6279,15 @@ begin
   if AvailableLanguages.Count = 0 then Exit;
   if cbLanguages.ItemIndex < 0 then Exit;
   if cbLanguages.ItemIndex >= AvailableLanguages.Count then Exit;
+  if winBuildNumber < 17763 then cbDarkmode.Enabled := False else cbDarkmode.Enabled := True;
   if SimpleTranslator.LastSelected <> AvailableLanguages.Names[cbLanguages.ItemIndex] then
   begin
     // TCombobox.Items will be cleared upon changing language,
     // and ItemIndex will fall to -1
     // save TComboBox.ItemIndex
-    idxSelectManga:=cbSelectManga.ItemIndex;
+    idxSelectManga := cbSelectManga.ItemIndex;
     idxLanguages := cbLanguages.ItemIndex;
+    idxDarkmode := cbDarkmode.ItemIndex;
     idxFilterStatus := cbFilterStatus.ItemIndex;
     idxOptionLetFMDDo := cbOptionLetFMDDo.ItemIndex;
     idxOptionProxyType := cbOptionProxyType.ItemIndex;
@@ -6264,12 +6298,14 @@ begin
     if SimpleTranslator.SetLangByIndex(cbLanguages.ItemIndex) then
     begin
       // assign new value
+      lbDarkmodeHint.Hint := lbDarkmodeHint.Hint;
       lbOptionExternalParamsHint.Hint := Format(RS_LblOptionExternalParamsHint,
         [EXPARAM_PATH, EXPARAM_CHAPTER, EXPARAM_PATH, EXPARAM_CHAPTER]);
-      lbOptionPDFQualityHint.Hint:=lbOptionPDFQuality.Hint;
+      lbOptionPDFQualityHint.Hint := lbOptionPDFQuality.Hint;
 
       cbFilterStatus.Items.Text := RS_FilterStatusItems;
       cbOptionLetFMDDo.Items.Text := RS_OptionFMDDoItems;
+      cbDarkmode.Items.Text := RS_Darkmode;
       rgDropTargetMode.Items.Text := RS_DropTargetModeItems;
       rgOptionCompress.Items.Text := RS_OptionCompress;
       cbWebPSaveAs.Items.Text := RS_WebPConvertTo;
@@ -6278,6 +6314,7 @@ begin
       // restore ItemIndex
       cbSelectManga.ItemIndex:=idxSelectManga;
       cbLanguages.ItemIndex := idxLanguages;
+      cbDarkmode.ItemIndex := idxDarkmode;
       cbFilterStatus.ItemIndex := idxFilterStatus;
       cbOptionLetFMDDo.ItemIndex := idxOptionLetFMDDo;
       cbOptionProxyType.ItemIndex := idxOptionProxyType;
@@ -6286,6 +6323,7 @@ begin
       cbWebPSaveAs.ItemIndex := idxOptionWebPConvertTo;
       cbPNGCompressionLevel.ItemIndex := idxOptionWebPPNGLevel;
       Self.Repaint;
+      Self.Caption := Self.Caption + ' v' + FMD_VERSION_STRING;
       vtMangaList.Repaint;
       tvDownloadFilterRefresh(True);
 

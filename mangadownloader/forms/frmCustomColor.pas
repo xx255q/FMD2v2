@@ -6,9 +6,27 @@ interface
 
 uses
   Classes, SysUtils, Types, Forms, Graphics, Dialogs, ColorBox, ComCtrls,
-  VirtualTrees, FMDOptions, jsonini;
+  Buttons, VirtualTrees, FMDOptions, jsonini, uDarkStyleParams;
 
 type
+  TColorMapping = record
+    Name: String;
+    Light: TColor;
+    Dark: TColor;
+  end;
+
+  { TThemeCustomColorManager }
+
+  TThemeCustomColorManager = class
+  private
+    FThemeColorMappings: array[0..14] of TColorMapping;
+    procedure SetColorMapping(Index: Integer; const AName: String; ALight, ADark: TColor);
+  public
+    constructor Create;
+    function CheckDefaultCustomColors(const AName: String; const AColor: TColor): TColor;
+    procedure CheckListColors;
+  end;
+
   TColorItem = record
     N: String;
     C: TColor;
@@ -45,6 +63,7 @@ type
   { TCustomColorForm }
 
   TCustomColorForm = class(TForm)
+    btResetColors: TBitBtn;
     CBColors: TColorBox;
     btColors: TColorButton;
     pcCustomColorList: TPageControl;
@@ -59,6 +78,7 @@ type
     VTMangaList: TVirtualStringTree;
     VTFavoriteList: TVirtualStringTree;
     procedure btColorsColorChanged(Sender: TObject);
+    procedure btResetColorsClick(Sender: TObject);
     procedure CBColorsChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure tsBasicListShow(Sender: TObject);
@@ -162,6 +182,9 @@ var
   // vt list to apply
   VTApplyList: TVTApplyList;
 
+  // theme dependant custom color manager
+  ThemeColorsManager: TThemeCustomColorManager;
+
 procedure DoInit;
 begin
   BasicListColors := TColorItems.Create;
@@ -181,7 +204,7 @@ begin
     Add('SelectionRectangleBlendColor', clHighlight);
     Add('SelectionRectangleBorderColor', clHotLight);
     Add('TreeLineColor', clBtnShadow);
-    Add('UnfocusedSelectionColor', clSilver);
+    Add('UnfocusedSelectionColor', clMedGray);
     Add('UnfocusedSelectionBorderColor', clGray);
     Add('NormalTextColor', clWindowText);
     Add('FocusedSelectionTextColor', clHighlightText);
@@ -223,6 +246,7 @@ begin
 
   SelectedColorList := nil;
   VTApplyList := TVTApplyList.Create;
+  ThemeColorsManager := TThemeCustomColorManager.Create;
 end;
 
 procedure DoFinal;
@@ -233,6 +257,7 @@ begin
   ChapterListColor.Free;
   ModuleListColor.Free;
   VTApplyList.Free;
+  FreeAndNil(ThemeColorsManager);
 end;
 
 procedure ApplyBasicColorToVT(const AVT: VirtualTrees.TVirtualStringTree);
@@ -270,7 +295,9 @@ begin
 end;
 
 procedure ApplyToFMDOptions;
-begin
+begin           
+  ThemeColorsManager.CheckListColors;
+
   //basiclist
   CL_BSNormalText := BasicListColors[16];
   CL_BSFocusedSelectionText := BasicListColors[17];
@@ -316,28 +343,38 @@ begin
   begin
     //basiclist
     for i := 0 to BasicListColors.Count - 1 do
+    begin
       BasicListColors[i] := StringToColor(ReadString('BasicListColors', BasicListColors.N[i],
         ColorToString(BasicListColors[i])));
+    end;
 
     //mangalist
     for i := 0 to MangaListColors.Count - 1 do
+    begin
       MangaListColors[i] := StringToColor(ReadString('MangaListColors', MangaListColors.N[i],
         ColorToString(MangaListColors[i])));
+    end;
 
     //favoritelist
     for i := 0 to FavoriteListColors.Count - 1 do
+    begin
       FavoriteListColors[i] := StringToColor(ReadString('FavoriteListColors', FavoriteListColors.N[i],
         ColorToString(FavoriteListColors[i])));
+    end;
 
     //chapterlist
     for i := 0 to ChapterListColor.Count - 1 do
+    begin
       ChapterListColor[i] := StringToColor(ReadString('ChapterListColor', ChapterListColor.N[i],
         ColorToString(ChapterListColor[i])));
+    end;
 
     //modulelist
     for i := 0 to ModuleListColor.Count - 1 do
+    begin
       ModuleListColor[i] := StringToColor(ReadString('ModuleListColor', ModuleListColor.N[i],
         ColorToString(ModuleListColor[i])));
+    end;
 
     ApplyToFMDOptions;
   end;
@@ -372,6 +409,88 @@ begin
 end;
 
 {$R *.lfm}
+
+
+{ TThemeManager }
+
+constructor TThemeCustomColorManager.Create;
+begin
+  // Initialize theme color mappings
+  SetColorMapping(0, 'BSDisabled', clBtnShadow, clGrayText);
+  SetColorMapping(1, 'BSTreeLine', clBtnShadow, clGrayText);
+  SetColorMapping(2, 'BSUnfocusedSelection', clMedGray, clGray);
+  SetColorMapping(3, 'BSUnfocusedSelectionBorder', clGray, clMedGray);
+  SetColorMapping(4, 'BSSortedColumn', CL_BSSortedColumn, CL_BSSortedColumnDark);
+  SetColorMapping(5, 'BSEnabledWebsiteSettings', CL_BSEnabledWebsiteSettings, CL_BSEnabledWebsiteSettingsDark);
+  SetColorMapping(6, 'MNNewManga', CL_MNNewManga, CL_MNNewMangaDark);
+  SetColorMapping(7, 'MNCompletedManga', CL_MNCompletedManga, CL_MNCompletedMangaDark);
+  SetColorMapping(8, 'FVBrokenFavorite', CL_FVBrokenFavorite, CL_FVBrokenFavoriteDark);
+  SetColorMapping(9, 'FVChecking', CL_FVChecking, CL_FVCheckingDark);
+  SetColorMapping(10, 'FVNewChapterFound', CL_FVNewChapterFound, CL_FVNewChapterFoundDark);
+  SetColorMapping(11, 'FVCompletedManga', CL_FVCompletedManga, CL_FVCompletedMangaDark);
+  SetColorMapping(12, 'FVEmptyChapters', CL_FVEmptyChapters, CL_FVEmptyChaptersDark);
+  SetColorMapping(13, 'CHDownloaded', CL_CHDownloaded, CL_CHDownloadedDark);
+  SetColorMapping(14, 'MDNewUpdate', CL_MDNewUpdate, CL_MDNewUpdateDark);
+end;
+
+procedure TThemeCustomColorManager.SetColorMapping(Index: Integer; const AName: String; ALight, ADark: TColor);
+begin
+  FThemeColorMappings[Index].Name := AName;
+  FThemeColorMappings[Index].Light := ALight;
+  FThemeColorMappings[Index].Dark := ADark;
+end;
+
+function TThemeCustomColorManager.CheckDefaultCustomColors(const AName: String; const AColor: TColor): TColor;
+var
+  i: Integer;
+begin
+  Result := AColor; // Default to custom color
+
+  for i := Low(FThemeColorMappings) to High(FThemeColorMappings) do
+  begin
+    if (AName = FThemeColorMappings[i].Name) then
+    begin
+      if IsDarkModeEnabled then
+      begin
+        if AColor = FThemeColorMappings[i].Light then
+        begin
+          Result := FThemeColorMappings[i].Dark;
+        end;
+      end
+      else
+      begin
+        if AColor = FThemeColorMappings[i].Dark then
+        begin
+          Result := FThemeColorMappings[i].Light;
+        end;
+      end;
+      Exit; // Exit early once found
+    end;
+  end;
+end;
+
+procedure TThemeCustomColorManager.CheckListColors;
+begin
+  BasicListColors[2] := CheckDefaultCustomColors('BSDisabled', BasicListColors[2]);
+  BasicListColors[13] := CheckDefaultCustomColors('BSTreeLine', BasicListColors[13]);
+  BasicListColors[14] := CheckDefaultCustomColors('BSUnfocusedSelection', BasicListColors[14]);
+  BasicListColors[15] := CheckDefaultCustomColors('BSUnfocusedSelectionBorder', BasicListColors[15]);
+  BasicListColors[21] := CheckDefaultCustomColors('BSSortedColumn', BasicListColors[21]);
+  BasicListColors[22] := CheckDefaultCustomColors('BSEnabledWebsiteSettings', BasicListColors[22]);
+
+  MangaListColors[0] := CheckDefaultCustomColors('MNNewManga', MangaListColors[0]);
+  MangaListColors[1] := CheckDefaultCustomColors('MNCompletedManga', MangaListColors[1]);
+
+  FavoriteListColors[0] := CheckDefaultCustomColors('FVBrokenFavorite', FavoriteListColors[0]);
+  FavoriteListColors[1] := CheckDefaultCustomColors('FVChecking', FavoriteListColors[1]);
+  FavoriteListColors[2] := CheckDefaultCustomColors('FVNewChapterFound', FavoriteListColors[2]);
+  FavoriteListColors[3] := CheckDefaultCustomColors('FVCompletedManga', FavoriteListColors[3]);
+  FavoriteListColors[4] := CheckDefaultCustomColors('FVEmptyChapters', FavoriteListColors[4]);
+
+  ChapterListColor[0] := CheckDefaultCustomColors('CHDownloaded', ChapterListColor[0]);
+
+  ModuleListColor[0] := CheckDefaultCustomColors('MDNewUpdate', ModuleListColor[0]);
+end;
 
 { TVTApplyList }
 
@@ -710,6 +829,9 @@ end;
 
 procedure TCustomColorForm.FormCreate(Sender: TObject);
 begin
+  // Check default custom colors according to theme
+  ThemeColorsManager.CheckListColors;
+
   AddVT(VTBasicList);
   AddVT(VTMangaList);
   AddVT(VTFavoriteList);
@@ -746,6 +868,65 @@ procedure TCustomColorForm.btColorsColorChanged(Sender: TObject);
 begin
   CBColors.Selected := btColors.ButtonColor;
   SetSelectedColor(btColors.ButtonColor);
+end;
+
+procedure TCustomColorForm.btResetColorsClick(Sender: TObject);
+begin
+  if SelectedColorList = VTBasicList then
+  begin
+    VTBasicList.CI[0] := clWindow;
+    VTBasicList.CI[1] := clBtnFace;
+    VTBasicList.CI[2] := clBtnShadow;
+    VTBasicList.CI[3] := clHighlight;
+    VTBasicList.CI[4] := clHighLight;
+    VTBasicList.CI[5] := clHotLight;
+    VTBasicList.CI[6] := clHighLight;
+    VTBasicList.CI[7] := clHotLight;
+    VTBasicList.CI[8] := clBtnShadow;
+    VTBasicList.CI[9] := clBtnShadow;
+    VTBasicList.CI[10] := clWindowText;
+    VTBasicList.CI[11] := clHighlight;
+    VTBasicList.CI[12] := clHotLight;
+    VTBasicList.CI[13] := clBtnShadow;
+    VTBasicList.CI[14] := clMedGray;
+    VTBasicList.CI[15] := clGray;
+    VTBasicList.CI[16] := clWindowText;
+    VTBasicList.CI[17] := clHighlightText;
+    VTBasicList.CI[18] := clWindowText;
+    VTBasicList.CI[19] := clBtnFace;
+    VTBasicList.CI[20] := clWindow;
+    VTBasicList.CI[21] := $F8E6D6;
+    VTBasicList.CI[22] := clYellow;
+  end
+  else if SelectedColorList = VTMangaList then
+  begin
+    VTMangaList.CI[0] := $FDC594;
+    VTMangaList.CI[1] := $B8FFB8;
+  end
+  else if SelectedColorList = VTFavoriteList then
+  begin
+    VTFavoriteList.CI[0] := $8080FF;
+    VTFavoriteList.CI[1] := $80EBFE;
+    VTFavoriteList.CI[2] := $FDC594;
+    VTFavoriteList.CI[3] := $B8FFB8;
+    VTFavoriteList.CI[4] := $CCDDFF;
+  end
+  else if SelectedColorList = VTChapterList then
+  begin
+    VTChapterList.CI[0] := $B8FFB8;
+  end
+  else if SelectedColorList = VTModuleList then
+  begin
+    VTModuleList.CI[0] := $FDC594;
+  end;
+  
+  ThemeColorsManager.CheckListColors;
+  if SelectedColorList.FocusedNode <> nil then
+  begin
+    btColors.ButtonColor := SelectedColorList.CI[SelectedColorList.FocusedNode^.Index];
+    CBColors.Selected := SelectedColorList.CI[SelectedColorList.FocusedNode^.Index];
+  end;
+  SelectedColorList.Repaint;
 end;
 
 procedure TCustomColorForm.FocusSelectedList(const AVT: TVirtualStringTree);

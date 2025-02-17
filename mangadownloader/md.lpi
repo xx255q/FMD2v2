@@ -306,7 +306,7 @@
         <Mode0 Name="default"/>
       </Modes>
     </RunParams>
-    <RequiredPackages Count="11">
+    <RequiredPackages Count="14">
       <Item1>
         <PackageName Value="RunTimeTypeInfoControls"/>
       </Item1>
@@ -338,8 +338,17 @@
         <PackageName Value="multiloglaz"/>
       </Item10>
       <Item11>
-        <PackageName Value="internettools"/>
+        <PackageName Value="CustomControls"/>
       </Item11>
+      <Item12>
+        <PackageName Value="internettools"/>
+      </Item12>
+      <Item13>
+        <PackageName Value="MetaDarkStyle"/>
+      </Item13>
+      <Item14>
+        <PackageName Value="metadarkstyledsgn"/>
+      </Item14>
     </RequiredPackages>
     <Units Count="27">
       <Unit0>
