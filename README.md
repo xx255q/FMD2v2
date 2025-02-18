@@ -17,9 +17,9 @@
     <h2>Project Samples</h2>
   </summary>
 
-![image](https://github.com/user-attachments/assets/92684b74-d19f-4069-8cd7-38384162663b)
-![image](https://github.com/user-attachments/assets/ec6651dd-19c2-4a22-ab11-63c917035795)
-![image](https://github.com/user-attachments/assets/9ab0a7d4-7d2e-410e-b06a-7d328235fbab)
+![image](https://github.com/user-attachments/assets/21154bac-45af-421e-aa91-d702c694cde1)
+![image](https://github.com/user-attachments/assets/48c2021b-b92a-4150-90b6-6dac7c305020)
+![image](https://github.com/user-attachments/assets/001af028-5d25-48fe-a88c-5b03ab62982f)
 
 </details>
 </div>
@@ -31,21 +31,13 @@ This is an active fork of the Free Manga Downloader 2 which is a free open sourc
 ## Features
 
 - Pure native code - No need to install .NET framework or Java VM.
-- Supported hundreds of manga sites.
+- Supported hundreds of manga websites.
 - Download all mangas at once.
-- Multi-tasking, Multi-connections.
-- Drop Box (Drop links into a floating box).
-- Filter (Provides option to search manga by genre, author, status, etc).
-- Favorites (Keep track of your favorite manga, auto download new chapters).
+- Multi-tasking and multi-connections.
+- Drop Box - Drop links into a floating box.
+- Filter - Provides option to search manga by genre, author, status, etc.
+- Favorites - Keep track of your favorite manga and auto download new chapters.
 - Compress/convert downloaded chapters to ZIP/CBZ/PDF/EPUB.
-
-Some useful arguments that can be used in FMD2:
-- `--lua-dofile` trigger FMD2 to always load lua modules from file. Only use it when developing a module. It might slowing down FMD2.
-- `--no-commit-queue` disable commit queue for databases. The same as `--max-commit-queue=0 --max-flush-queue=0`. It might slowing down FMD2 with large databases due to intense disk write.
-- `--max-commit-queue=16` override max number of commit before writing to disk.
-- `--max-flush-queue=256` override max number of update before commiting to database engine.
-- `--max-big-flush-queue=16384` override max number of update before commiting to database. Internally used when making large update to databases in one go. Be careful when reducing the number it might slowing down FMD2 significantly.
-- `--backup-interval=10` override backup databases interval (minutes).
 
 ## Build instructions
 
@@ -78,7 +70,15 @@ Some other external 3rd party tools and libraries are used as well:
 [![SQLite](https://img.shields.io/badge/SQLite-3.46.0-Blue?style=plastic&color=blue)](https://www.sqlite.org/)  
 [![Brotli](https://img.shields.io/badge/Brotli-1.0.8-Blue?style=plastic&color=blue)](https://www.brotli.org/)  
   
-These tools and libraries are not part of the source. You have to either download pre-compiled binaries, compile them yourself or just copy them from the latest FMD2 releases.  
+These tools and libraries are not part of the source. You have to either download pre-compiled binaries, compile them yourself or just copy them from the latest FMD2 releases.
+
+Some useful arguments that can be used in FMD2:
+- `--lua-dofile` trigger FMD2 to always load lua modules from file. Only use it when developing a module. It might slowing down FMD2.
+- `--no-commit-queue` disable commit queue for databases. The same as `--max-commit-queue=0 --max-flush-queue=0`. It might slowing down FMD2 with large databases due to intense disk write.
+- `--max-commit-queue=16` override max number of commit before writing to disk.
+- `--max-flush-queue=256` override max number of update before commiting to database engine.
+- `--max-big-flush-queue=16384` override max number of update before commiting to database. Internally used when making large update to databases in one go. Be careful when reducing the number it might slowing down FMD2 significantly.
+- `--backup-interval=10` override backup databases interval (minutes).
   
 ## Localization
 
