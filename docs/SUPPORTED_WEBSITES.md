@@ -349,7 +349,7 @@
 | MangaPandaOnl | [![https://mangapanda.onl](https://img.shields.io/website?url=https://mangapanda.onl%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangapanda.onl)](https://mangapanda.onl) | - | - | - |
 | MangaPark | [![https://comicpark.org](https://img.shields.io/website?url=https://comicpark.org%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://comicpark.org)](https://comicpark.org) | OK | 19.02.2025 | - |
 | MangaPark | [![https://comicpark.to](https://img.shields.io/website?url=https://comicpark.to%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://comicpark.to)](https://comicpark.to) | OK | 19.02.2025 | - |
-| MangaPark | [![https://mangapark.com](https://img.shields.io/website?url=https://mangapark.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangapark.com)](https://mangapark.com) | - | - | - |
+| MangaPark | [![https://mangapark.com](https://img.shields.io/website?url=https://mangapark.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangapark.com)](https://mangapark.com) | OK | 19.02.2025 | - |
 | MangaPark | [![https://mangapark.io](https://img.shields.io/website?url=https://mangapark.io%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangapark.io)](https://mangapark.io) | OK | 19.02.2025 | - |
 | MangaPark | [![https://mangapark.me](https://img.shields.io/website?url=https://mangapark.me%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangapark.me)](https://mangapark.me) | OK | 19.02.2025 | - |
 | MangaPark | [![https://mangapark.net](https://img.shields.io/website?url=https://mangapark.net%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangapark.net)](https://mangapark.net) | OK | 19.02.2025 | - |
