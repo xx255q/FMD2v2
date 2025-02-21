@@ -220,6 +220,9 @@ msgid ""
 "Dark\n"
 "Light"
 msgstr ""
+"Σύστημα\n"
+"Σκοτεινό\n"
+"Φωτεινό"
 
 #: frmmain.rs_dlgcannotconnecttoserver
 msgid "Cannot connect to the server."
@@ -972,7 +975,7 @@ msgid "Enable load manga cover"
 msgstr "Ενεργοποίηση φόρτωσης εξώφυλλου manga"
 
 #: tmainform.cboptionenablelongnamepaths.caption
-msgid "Enable long name paths (Can break most/all interaction with the file in Windows and other apps)"
+msgid "Enable long name paths (can break most/all interaction with the file in Windows and other apps)"
 msgstr ""
 
 #: tmainform.cboptiongeneratechapterfolder.caption
@@ -1626,11 +1629,10 @@ msgid "Miscellaneous"
 msgstr ""
 
 #: tmainform.lbdarkmode.caption
-msgid "Theme (Requires restart to take effect):"
+msgid "Theme (requires restart to take effect):"
 msgstr ""
 
 #: tmainform.lbdarkmodehint.caption
-#, fuzzy
 msgctxt "tmainform.lbdarkmodehint.caption"
 msgid "[?]"
 msgstr "[?]"

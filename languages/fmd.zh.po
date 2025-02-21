@@ -219,6 +219,9 @@ msgid ""
 "Dark\n"
 "Light"
 msgstr ""
+"系统\n"
+"深色\n"
+"浅色"
 
 #: frmmain.rs_dlgcannotconnecttoserver
 msgid "Cannot connect to the server."
@@ -975,7 +978,9 @@ msgid "Enable load manga cover"
 msgstr "启用漫画封面加载"
 
 #: tmainform.cboptionenablelongnamepaths.caption
-msgid "Enable long name paths (Can break most/all interaction with the file in Windows and other apps)"
+#, fuzzy
+#| msgid "Enable long name paths (Can break most/all interaction with the file in Windows and other apps)"
+msgid "Enable long name paths (can break most/all interaction with the file in Windows and other apps)"
 msgstr "启用长名称路径（可以中断与 Windows 和其他应用程序中文件的大部分 / 所有交互）"
 
 #: tmainform.cboptiongeneratechapterfolder.caption
@@ -1482,7 +1487,6 @@ msgid "Default download path"
 msgstr "默认下载路径"
 
 #: tmainform.edoptiondefaultuseragent.texthint
-#, fuzzy
 msgctxt "tmainform.edoptiondefaultuseragent.texthint"
 msgid "Default user-agent"
 msgstr "默认用户代理"
@@ -1577,11 +1581,10 @@ msgid "Miscellaneous"
 msgstr "杂项"
 
 #: tmainform.lbdarkmode.caption
-msgid "Theme (Requires restart to take effect):"
+msgid "Theme (requires restart to take effect):"
 msgstr ""
 
 #: tmainform.lbdarkmodehint.caption
-#, fuzzy
 msgctxt "tmainform.lbdarkmodehint.caption"
 msgid "[?]"
 msgstr "[?]"

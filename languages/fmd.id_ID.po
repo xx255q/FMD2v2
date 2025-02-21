@@ -223,6 +223,9 @@ msgid ""
 "Dark\n"
 "Light"
 msgstr ""
+"Sistem\n"
+"Gelap\n"
+"Terang"
 
 #: frmmain.rs_dlgcannotconnecttoserver
 msgid "Cannot connect to the server."
@@ -699,7 +702,7 @@ msgstr "Kata sandi"
 
 #: tcustomcolorform.btresetcolors.caption
 msgid "Reset list colors"
-msgstr ""
+msgstr "Atur ulang daftar warna"
 
 #: tcustomcolorform.caption
 msgid "CustomColorForm"
@@ -979,8 +982,8 @@ msgid "Enable load manga cover"
 msgstr "Aktifkan sampul komik"
 
 #: tmainform.cboptionenablelongnamepaths.caption
-msgid "Enable long name paths (Can break most/all interaction with the file in Windows and other apps)"
-msgstr "Aktifkan lokasi dengan nama panjang (Dapat merusak sebagian besar/semua interaksi dengan berkas di Windows dan aplikasi lainnya)"
+msgid "Enable long name paths (can break most/all interaction with the file in Windows and other apps)"
+msgstr "Aktifkan lokasi dengan nama panjang (dapat merusak sebagian besar/semua interaksi dengan berkas di Windows dan aplikasi lainnya)"
 
 #: tmainform.cboptiongeneratechapterfolder.caption
 msgid "Auto generate chapter folder"
@@ -1474,7 +1477,7 @@ msgstr "Cari judul..."
 
 #: tmainform.edoptionchangeunicodecharacterstr.texthint
 msgid "Unicode Char"
-msgstr ""
+msgstr "Karakter Unicode"
 
 #: tmainform.edoptionchaptercustomrename.texthint
 msgctxt "tmainform.edoptionchaptercustomrename.texthint"
@@ -1486,7 +1489,6 @@ msgid "Default download path"
 msgstr "Lokasi unduhan asali"
 
 #: tmainform.edoptiondefaultuseragent.texthint
-#, fuzzy
 msgctxt "tmainform.edoptiondefaultuseragent.texthint"
 msgid "Default user-agent"
 msgstr "User-agent asali"
@@ -1581,11 +1583,10 @@ msgid "Miscellaneous"
 msgstr "Lain-lain"
 
 #: tmainform.lbdarkmode.caption
-msgid "Theme (Requires restart to take effect):"
-msgstr ""
+msgid "Theme (requires restart to take effect):"
+msgstr "Tema (perlu mulai ulang agar berlaku):"
 
 #: tmainform.lbdarkmodehint.caption
-#, fuzzy
 msgctxt "tmainform.lbdarkmodehint.caption"
 msgid "[?]"
 msgstr "[?]"
@@ -1595,6 +1596,8 @@ msgid ""
 "Only supports Windows 10 1809 and above.\n"
 "Theme's auto disable on any unsupported versions."
 msgstr ""
+"Hanya mendukung Windows 10 1809 dan di atasnya.\n"
+"Tema dinonaktifkan otomatis pada versi yang tidak didukung."
 
 #: tmainform.lbdefaultdownloadpath.caption
 msgid "Choose the default download path:"

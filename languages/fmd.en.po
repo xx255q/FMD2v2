@@ -219,6 +219,9 @@ msgid ""
 "Dark\n"
 "Light"
 msgstr ""
+"System\n"
+"Dark\n"
+"Light"
 
 #: frmmain.rs_dlgcannotconnecttoserver
 msgid "Cannot connect to the server."
@@ -695,7 +698,7 @@ msgstr "Password"
 
 #: tcustomcolorform.btresetcolors.caption
 msgid "Reset list colors"
-msgstr ""
+msgstr "Reset list colors"
 
 #: tcustomcolorform.caption
 msgid "CustomColorForm"
@@ -975,8 +978,8 @@ msgid "Enable load manga cover"
 msgstr "Enable load manga cover"
 
 #: tmainform.cboptionenablelongnamepaths.caption
-msgid "Enable long name paths (Can break most/all interaction with the file in Windows and other apps)"
-msgstr ""
+msgid "Enable long name paths (can break most/all interaction with the file in Windows and other apps)"
+msgstr "Enable long name paths (can break most/all interaction with the file in Windows and other apps)"
 
 #: tmainform.cboptiongeneratechapterfolder.caption
 msgid "Auto generate chapter folder"
@@ -1470,7 +1473,7 @@ msgstr "Search title..."
 
 #: tmainform.edoptionchangeunicodecharacterstr.texthint
 msgid "Unicode Char"
-msgstr ""
+msgstr "Unicode Char"
 
 #: tmainform.edoptionchaptercustomrename.texthint
 msgctxt "TMAINFORM.EDOPTIONCHAPTERCUSTOMRENAME.TEXTHINT"
@@ -1482,7 +1485,6 @@ msgid "Default download path"
 msgstr "Default download path"
 
 #: tmainform.edoptiondefaultuseragent.texthint
-#, fuzzy
 msgctxt "tmainform.edoptiondefaultuseragent.texthint"
 msgid "Default user-agent"
 msgstr "Default user-agent"
@@ -1577,11 +1579,10 @@ msgid "Miscellaneous"
 msgstr "Miscellaneous"
 
 #: tmainform.lbdarkmode.caption
-msgid "Theme (Requires restart to take effect):"
-msgstr ""
+msgid "Theme (requires restart to take effect):"
+msgstr "Theme (requires restart to take effect):"
 
 #: tmainform.lbdarkmodehint.caption
-#, fuzzy
 msgctxt "tmainform.lbdarkmodehint.caption"
 msgid "[?]"
 msgstr "[?]"
@@ -1591,6 +1592,8 @@ msgid ""
 "Only supports Windows 10 1809 and above.\n"
 "Theme's auto disable on any unsupported versions."
 msgstr ""
+"Only supports Windows 10 1809 and above.\n"
+"Theme's auto disable on any unsupported versions."
 
 #: tmainform.lbdefaultdownloadpath.caption
 msgid "Choose the default download path:"
