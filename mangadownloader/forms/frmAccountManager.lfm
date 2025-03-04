@@ -5,7 +5,6 @@ object AccountManagerForm: TAccountManagerForm
   Width = 392
   ActiveControl = vtAccountList
   BorderStyle = bsNone
-  Caption = 'AccountManagerForm'
   ClientHeight = 316
   ClientWidth = 392
   OnCreate = FormCreate

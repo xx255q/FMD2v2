@@ -5,7 +5,6 @@ object CustomMessageDlg: TCustomMessageDlg
   Width = 300
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
-  Caption = 'Custom Message Dialog Form'
   ClientHeight = 118
   ClientWidth = 300
   OnCreate = FormCreate

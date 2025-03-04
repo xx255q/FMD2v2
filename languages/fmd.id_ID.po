@@ -705,10 +705,6 @@ msgstr "Sunting"
 msgid "Refresh"
 msgstr "Segarkan"
 
-#: taccountmanagerform.caption
-msgid "AccountManagerForm"
-msgstr "Form Manajer Akun"
-
 #: taccountmanagerform.vtaccountlist.header.columns[1].text
 msgctxt "taccountmanagerform.vtaccountlist.header.columns[1].text"
 msgid "Website"
@@ -788,11 +784,6 @@ msgstr "Daftar Komik"
 #: tcustomcolorform.tsmodulelist.caption
 msgid "Module list"
 msgstr "Daftar Modul"
-
-#: tcustommessagedlg.caption
-msgctxt "tcustommessagedlg.caption"
-msgid "Custom Message Dialog Form"
-msgstr "Bentuk Dialog Pesan Ubah Suai"
 
 #: tformdroptarget.miaddtofavorites.caption
 msgctxt "tformdroptarget.miaddtofavorites.caption"

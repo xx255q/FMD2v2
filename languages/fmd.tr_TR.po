@@ -701,10 +701,6 @@ msgstr "Düzenle"
 msgid "Refresh"
 msgstr "Yenile"
 
-#: taccountmanagerform.caption
-msgid "AccountManagerForm"
-msgstr "HesapYöneticisiFormu"
-
 #: taccountmanagerform.vtaccountlist.header.columns[1].text
 msgctxt "taccountmanagerform.vtaccountlist.header.columns[1].text"
 msgid "Website"
@@ -784,11 +780,6 @@ msgstr "Manga Listesi"
 #: tcustomcolorform.tsmodulelist.caption
 msgid "Module list"
 msgstr "Modül listesi"
-
-#: tcustommessagedlg.caption
-msgctxt "tcustommessagedlg.caption"
-msgid "Custom Message Dialog Form"
-msgstr ""
 
 #: tformdroptarget.miaddtofavorites.caption
 msgctxt "tformdroptarget.miaddtofavorites.caption"

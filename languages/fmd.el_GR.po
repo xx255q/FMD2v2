@@ -693,10 +693,6 @@ msgstr "Επεξεργασία"
 msgid "Refresh"
 msgstr "Ανανέωση"
 
-#: taccountmanagerform.caption
-msgid "AccountManagerForm"
-msgstr ""
-
 #: taccountmanagerform.vtaccountlist.header.columns[1].text
 msgctxt "taccountmanagerform.vtaccountlist.header.columns[1].text"
 msgid "Website"
@@ -776,11 +772,6 @@ msgstr "Λίστα Manga"
 #: tcustomcolorform.tsmodulelist.caption
 msgid "Module list"
 msgstr "Λίστα ενοτήτων"
-
-#: tcustommessagedlg.caption
-msgctxt "tcustommessagedlg.caption"
-msgid "Custom Message Dialog Form"
-msgstr ""
 
 #: tformdroptarget.miaddtofavorites.caption
 msgctxt "tformdroptarget.miaddtofavorites.caption"

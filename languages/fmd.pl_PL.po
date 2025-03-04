@@ -682,10 +682,6 @@ msgstr "Edytuj"
 msgid "Refresh"
 msgstr "Odśwież"
 
-#: taccountmanagerform.caption
-msgid "AccountManagerForm"
-msgstr ""
-
 #: taccountmanagerform.vtaccountlist.header.columns[1].text
 msgctxt "taccountmanagerform.vtaccountlist.header.columns[1].text"
 msgid "Website"
@@ -765,11 +761,6 @@ msgstr "Lista mang"
 #: tcustomcolorform.tsmodulelist.caption
 msgid "Module list"
 msgstr "Lista modułów"
-
-#: tcustommessagedlg.caption
-msgctxt "tcustommessagedlg.caption"
-msgid "Custom Message Dialog Form"
-msgstr ""
 
 #: tformdroptarget.miaddtofavorites.caption
 msgctxt "tformdroptarget.miaddtofavorites.caption"

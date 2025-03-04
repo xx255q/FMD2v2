@@ -699,10 +699,6 @@ msgstr "编辑"
 msgid "Refresh"
 msgstr "刷新"
 
-#: taccountmanagerform.caption
-msgid "AccountManagerForm"
-msgstr "账户管理表单"
-
 #: taccountmanagerform.vtaccountlist.header.columns[1].text
 msgctxt "TACCOUNTMANAGERFORM.VTACCOUNTLIST.HEADER.COLUMNS[1].TEXT"
 msgid "Website"
@@ -782,11 +778,6 @@ msgstr "漫画列表"
 #: tcustomcolorform.tsmodulelist.caption
 msgid "Module list"
 msgstr "模块列表"
-
-#: tcustommessagedlg.caption
-msgctxt "tcustommessagedlg.caption"
-msgid "Custom Message Dialog Form"
-msgstr ""
 
 #: tformdroptarget.miaddtofavorites.caption
 msgctxt "TFORMDROPTARGET.MIADDTOFAVORITES.CAPTION"
