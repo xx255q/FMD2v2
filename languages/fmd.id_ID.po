@@ -114,27 +114,27 @@ msgstr "Nama pengguna atau kata sandi tidak boleh kosong!"
 #: frmcustommessagedlg.rs_dialogconfirmation
 msgctxt "frmcustommessagedlg.rs_dialogconfirmation"
 msgid "Confirmation"
-msgstr ""
+msgstr "Konfirmasi"
 
 #: frmcustommessagedlg.rs_dialogcustom
 msgctxt "frmcustommessagedlg.rs_dialogcustom"
 msgid "Message"
-msgstr ""
+msgstr "Pesan"
 
 #: frmcustommessagedlg.rs_dialogerror
 msgctxt "frmcustommessagedlg.rs_dialogerror"
 msgid "Error"
-msgstr ""
+msgstr "Galat"
 
 #: frmcustommessagedlg.rs_dialoginformation
 msgctxt "frmcustommessagedlg.rs_dialoginformation"
 msgid "Information"
-msgstr ""
+msgstr "Informasi"
 
 #: frmcustommessagedlg.rs_dialogwarning
 msgctxt "frmcustommessagedlg.rs_dialogwarning"
 msgid "Warning"
-msgstr ""
+msgstr "Peringatan"
 
 #: frmimportfavorites.rs_importcompleted
 msgid "Import completed."
@@ -154,7 +154,7 @@ msgstr "Daftar komik yang tidak bisa diimpor"
 
 #: frmluamodulesupdater.rs_awaitingproceed
 msgid "Awaiting permission to proceed..."
-msgstr ""
+msgstr "Menunggu izin untuk melanjutkan..."
 
 #: frmluamodulesupdater.rs_checking
 msgctxt "frmluamodulesupdater.rs_checking"
@@ -163,7 +163,7 @@ msgstr "Memeriksa..."
 
 #: frmluamodulesupdater.rs_checklocalmodules
 msgid "Checking local modules..."
-msgstr ""
+msgstr "Memeriksa modul lokal..."
 
 #: frmluamodulesupdater.rs_checkupdate
 msgctxt "frmluamodulesupdater.rs_checkupdate"
@@ -172,10 +172,10 @@ msgstr "Periksa pemutakhiran"
 
 #: frmluamodulesupdater.rs_deletingflaggedmodules
 msgid "Deleting flagged modules..."
-msgstr ""
+msgstr "Menghapus modul yang ditandai..."
 
 #: frmluamodulesupdater.rs_downloadingmodule
-#, object-pascal-format, fuzzy
+#, object-pascal-format
 msgctxt "frmluamodulesupdater.rs_downloadingmodule"
 msgid "Downloading %s"
 msgstr "Mengunduh %s"
@@ -193,15 +193,17 @@ msgid ""
 "Failed to connect to GitHub API for latest module updates.\n"
 "Please try again later."
 msgstr ""
+"Gagal menyambung ke GitHub API untuk pemutakhiran modul terbaru.\n"
+"Silakan coba lagi nanti."
 
 #: frmluamodulesupdater.rs_githubconnecting
 msgid "Connecting to GitHub..."
-msgstr ""
+msgstr "Menyambungkan GitHub..."
 
 #: frmluamodulesupdater.rs_githubratestats
 #, object-pascal-format
 msgid "GitHub API core rate - call limit: %d, remaining calls: %d, used calls: %d, limit refresh: %s"
-msgstr ""
+msgstr "GitHub API core rate - call limit: %d, remaining calls: %d, used calls: %d, limit refresh: %s"
 
 #: frmluamodulesupdater.rs_modulesupdatedrestart
 msgid "Modules updated, restart now?"
@@ -790,7 +792,7 @@ msgstr "Daftar Modul"
 #: tcustommessagedlg.caption
 msgctxt "tcustommessagedlg.caption"
 msgid "Custom Message Dialog Form"
-msgstr ""
+msgstr "Bentuk Dialog Pesan Ubah Suai"
 
 #: tformdroptarget.miaddtofavorites.caption
 msgctxt "tformdroptarget.miaddtofavorites.caption"
@@ -1540,10 +1542,8 @@ msgid "Search title..."
 msgstr "Cari judul..."
 
 #: tmainform.edoptionchangeunicodecharacterstr.texthint
-#, fuzzy
-#| msgid "Unicode Char"
 msgid "Character"
-msgstr "Karakter Unicode"
+msgstr "Karakter"
 
 #: tmainform.edoptionchaptercustomrename.texthint
 msgctxt "tmainform.edoptionchaptercustomrename.texthint"
@@ -2784,7 +2784,7 @@ msgstr "%s memiliki %d komik baru"
 
 #: uupdatethread.rs_dlgupdatelistcheckisrunning
 msgid "Update list(s) is running!"
-msgstr ""
+msgstr "Pemutakhiran daftar sedang berjalan!"
 
 #: uupdatethread.rs_gettingdirectory
 msgid "Getting directory"

@@ -172,7 +172,7 @@ msgid "Deleting flagged modules..."
 msgstr ""
 
 #: frmluamodulesupdater.rs_downloadingmodule
-#, object-pascal-format, fuzzy
+#, object-pascal-format
 msgctxt "frmluamodulesupdater.rs_downloadingmodule"
 msgid "Downloading %s"
 msgstr "Lade %s herunter"
