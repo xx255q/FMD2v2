@@ -9,6 +9,7 @@ object CustomMessageDlg: TCustomMessageDlg
   ClientHeight = 118
   ClientWidth = 300
   OnCreate = FormCreate
+  LCLVersion = '3.8.0.0'
   object imgIcon: TImage
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
