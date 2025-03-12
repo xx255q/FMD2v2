@@ -11,7 +11,7 @@ body:
           required: true
         - label: All website modules are up to date.
           required: true
-        - label: This is not temporary server issue.
+        - label: I'm able to see the manga within my standard browser.
           required: true
 
   - type: input
