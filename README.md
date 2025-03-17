@@ -7,8 +7,8 @@
 ## Download
 
 [![Latest release](https://img.shields.io/github/release/dazedcat19/FMD2?style=for-the-badge)](https://github.com/dazedcat19/FMD2/releases/latest)  
-[![Download latest release (Win32)](https://img.shields.io/github/downloads/dazedcat19/FMD2/latest/fmd_2.0.34.1_i386-win32.7z?style=for-the-badge&label=Win32)](https://github.com/dazedcat19/FMD2/releases/download/2.0.34.1/fmd_2.0.34.1_i386-win32.7z)
-[![Download latest release (Win64)](https://img.shields.io/github/downloads/dazedcat19/FMD2/latest/fmd_2.0.34.1_x86_64-win64.7z?style=for-the-badge&label=Win64)](https://github.com/dazedcat19/FMD2/releases/download/2.0.34.1/fmd_2.0.34.1_x86_64-win64.7z)
+[![Download latest release (Win32)](https://img.shields.io/github/downloads/dazedcat19/FMD2/latest/fmd_2.0.34.5_i386-win32.7z?style=for-the-badge&label=Win32)](https://github.com/dazedcat19/FMD2/releases/download/2.0.34.5/fmd_2.0.34.5_i386-win32.7z)
+[![Download latest release (Win64)](https://img.shields.io/github/downloads/dazedcat19/FMD2/latest/fmd_2.0.34.5_x86_64-win64.7z?style=for-the-badge&label=Win64)](https://github.com/dazedcat19/FMD2/releases/download/2.0.34.5/fmd_2.0.34.5_x86_64-win64.7z)
 </div>
 
 <div align="center">
@@ -52,7 +52,9 @@ The following packages and components are used for building FMD2:
 - ![LCL Extensions](https://img.shields.io/badge/LCL%20Extensions-OPM%20(0.6.1.0)-Blue?style=plastic&color=blue) <sup>(Compile before "VirtualTreeViewV5")</sup>  
 - ![VirtualTreeViewV5](https://img.shields.io/badge/VirtualTreeViewV5-OPM%20(5.5.3.1)-Blue?style=plastic&color=blue)  
 - ![MultiLog](https://img.shields.io/badge/MultiLog-OPM%20(0.7.0.0)-Blue?style=plastic&color=blue)  
-- [![InternetTools](https://img.shields.io/badge/InternetTools-GitHub-Blue?style=plastic&color=blue)](https://github.com/benibela/internettools)
+- [![InternetTools](https://img.shields.io/badge/InternetTools-GitHub-Blue?style=plastic&color=blue)](https://github.com/benibela/internettools)  
+- [![MetaDarkStyle](https://img.shields.io/badge/MetaDarkStyle-GitHub-Blue?style=plastic&color=blue)](https://github.com/zamtmn/metadarkstyle)  
+- [![Lazarus_CustomControls](https://img.shields.io/badge/Lazarus_CustomControls-GitHub-Blue?style=plastic&color=blue)](https://github.com/NhKPaNdA/Lazarus_CustomControls)
 
 > [!NOTE]
 > By default `InternetTools` uses [FLRE](https://github.com/BeRo1985/flre) and [PUCU](https://github.com/BeRo1985/PUCU) for its regex engine. Just copy the `FLRE.pas` and `PUCU.pas` to `InternetTools\data` folder. You can use Sorokin's RegExpr engine that comes with lazarus by adjusting the defines. But it's not recommended since the author of `InternetTools` prefer FLRE and doesn't always check the Sorokin's RegExpr compatibility when making an update.
