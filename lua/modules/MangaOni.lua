@@ -78,13 +78,12 @@ end
 
 -- Get the page count for the current chapter.
 function GetPageNumber()
-	local i, images, path, x = nil
+	local i, images, path = nil
 	local u = MaybeFillHost(MODULE.RootURL, URL)
 
 	if not HTTP.GET(u) then return false end
 
-	x = CreateTXQuery(HTTP.Document)
-	s = require 'fmd.crypto'.DecodeBase64(x.XPathString('//script[contains(., "unicap")]/substring-before(substring-after(., "\'"), "\'")'))
+	s = require 'fmd.crypto'.DecodeBase64(HTTP.Document.ToString():match("unicap = '(.-)'"))
 	path, images = s:match('(.*)||%[(.*)%]')
 	for i in images:gmatch('"(.-)"') do
 		TASK.PageLinks.Add(path .. i)
