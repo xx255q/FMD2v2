@@ -3,7 +3,7 @@
 <h1>Free Manga Downloader 2 (FMD2)</h1>
 
 [![Supported Websites](https://img.shields.io/badge/Supported%20Websites-Blue?style=for-the-badge&color=purple)](https://github.com/dazedcat19/FMD2/blob/master/docs/SUPPORTED_WEBSITES.md)  
-[![Discord](https://img.shields.io/badge/Discord-FMD-Blue?style=for-the-badge&color=blue)](https://discord.gg/cXKKgw3)
+[![Discord](https://img.shields.io/badge/Discord-FMD-Blue?style=for-the-badge&color=blue&logo=discord&logoColor=white)](https://discord.gg/cXKKgw3)
 
 ## Download
 
