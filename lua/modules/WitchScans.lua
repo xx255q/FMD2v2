@@ -45,7 +45,7 @@ function GetPageNumber()
 	if not HTTP.GET(u) then return false end
 
 	x = CreateTXQuery(HTTP.Document)
-	s = require 'fmd.crypto'.DecodeBase64(x.XPathString('(//script[contains(@src, "base64") and not(@type)])[last()-5]/@src/substring-after(., ",")'))
+	s = require 'fmd.crypto'.DecodeBase64(x.XPathString('(//script[contains(@src, "dHNfcmVhZGVyLnJ1bih7")])[last()]/@src/substring-after(., ",")'))
 	x.ParseHTML(GetBetween('run(', ');', s))
 	x.XPathStringAll('json(*).sources()[1].images()', TASK.PageLinks)
 
