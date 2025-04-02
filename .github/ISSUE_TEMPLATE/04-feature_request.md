@@ -1,5 +1,5 @@
 ---
-name: Feature request
+name: 🌟 Feature request
 about: Suggest an idea for this project
 title: "[feature request]"
 labels: ''
@@ -7,7 +7,6 @@ assignees: ''
 
 ---
 
-<!-- If developer asking for additional informations and you're unable to provide it within 3 days this issue will be closed -->
 **Is your feature request related to a problem? Please describe.**
 A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
 
