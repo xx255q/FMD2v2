@@ -458,7 +458,6 @@
 | ManyToon | [![https://manytoon.me](https://img.shields.io/website?url=https://manytoon.me%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manytoon.me)](https://manytoon.me) | - | - | - |
 | ManyToonCom | [![https://manytoon.com](https://img.shields.io/website?url=https://manytoon.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manytoon.com)](https://manytoon.com) | - | - | - |
 | ManyToonOrg | [![https://manytoon.org](https://img.shields.io/website?url=https://manytoon.org%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manytoon.org)](https://manytoon.org) | - | - | - |
-| MartialManga | [![https://martialmanga.com](https://img.shields.io/website?url=https://martialmanga.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://martialmanga.com)](https://martialmanga.com) | - | - | - |
 | MartialScans | [![https://martialscans.com](https://img.shields.io/website?url=https://martialscans.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://martialscans.com)](https://martialscans.com) | - | - | - |
 | Masterkomik | [![https://masterkomik.com](https://img.shields.io/website?url=https://masterkomik.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://masterkomik.com)](https://masterkomik.com) | - | - | - |
 | MenudoFansub | [![http://www.menudo-fansub.com](https://img.shields.io/website?url=http://www.menudo-fansub.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=http://www.menudo-fansub.com)](http://www.menudo-fansub.com) | - | - | - |
@@ -761,6 +760,7 @@
 | ~MangaWeek~ | ~https://mangaweek.com~ | Removed | 07.02.2025 | - |
 | ~Manhwaid~ | ~https://manhwaid.club~ | Removed | 23.02.2025 | - |
 | ~ManhwaSmut~ | ~https://manhwasmut.com~ | Removed | 07.02.2025 | - |
+| ~MartialManga~ | ~https://martialmanga.com~ | Removed | 03.04.2025 | - |
 | ~MerakiScans~ | ~https://merakiscans.com~ | Removed | 03.04.2025 | - |
 | ~MMScans~ | ~https://mm-scans.org~ | Removed | 02.04.2025 | - |
 | ~Ney5~ | ~https://ney5.xyz~ | Removed | 07.02.2025 | - |
