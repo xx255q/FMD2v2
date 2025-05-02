@@ -35,10 +35,11 @@ This is an active fork of the Free Manga Downloader which is a free open source 
 - Supported hundreds of manga websites.
 - Download all mangas at once.
 - Multi-tasking and multi-connections.
-- Drop Box - Drop links into a floating box.
+- Drag'n'drop to add download task or favorites (via drop box or directly to download/favorite list) with multiple links and html selection supported.
 - Filter - Provides option to search manga by genre, author, status, etc.
 - Favorites - Keep track of your favorite manga and auto download new chapters.
 - Compress/convert downloaded chapters to ZIP/CBZ/PDF/EPUB.
+- Proxy support (HTTP/SOCK4/SOCK5).
 
 ## Build instructions
 
