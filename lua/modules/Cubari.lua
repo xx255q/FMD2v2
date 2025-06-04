@@ -61,7 +61,7 @@ function GetInfo()
 			id    = x.XPathString('chapter_id', v)
 			title = x.XPathString('title', v)
 
-			vol = vol ~= 'null' and string.format('Vol. %s ', vol) or ''
+			vol = type(vol) == 'number' and string.format('Vol. %s ', vol) or ''
 			id = id ~= 'null' and string.format('Ch. %s ', id) or ''
 			title = title ~= 'null' and title ~= '' and string.format('- %s', title) or ''
 
@@ -103,7 +103,7 @@ function GetPageNumber()
 		u = MODULE.RootURL .. group_content
 		if not HTTP.GET(u) then return false end
 		CreateTXQuery(HTTP.Document).XPathStringAll('json(*)()', TASK.PageLinks)
-    else
+	else
 		for v in x.XPath('jn:members((groups)(' .. group_id .. '))', json).Get() do
 			TASK.PageLinks.Add(v.GetProperty('src').ToString())
 		end
