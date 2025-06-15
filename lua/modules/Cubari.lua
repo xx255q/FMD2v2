@@ -57,7 +57,7 @@ function GetInfo()
 
 	for v in x.XPath(chapters, json).Get() do
 		for w in x.XPath('jn:keys(groups)', v).Get() do
-			vol   = x.XPathString('volume', v)
+			vol   = tonumber(x.XPathString('volume', v))
 			id    = x.XPathString('chapter_id', v)
 			title = x.XPathString('title', v)
 
