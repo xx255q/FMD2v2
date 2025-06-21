@@ -139,7 +139,7 @@ end
 
 -- Get info and chapter list for the current manga.
 function GetInfo()
-	local v, x = nil
+	local s, v, x = nil
 	local u = MaybeFillHost(MODULE.RootURL, URL)
 
 	if not HTTP.GET(u) then return net_problem end
@@ -152,7 +152,8 @@ function GetInfo()
 	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('//p[@class="day_info"]'), 'UP')
 	MANGAINFO.Summary   = x.XPathString('//p[@class="summary"]')
 
-	u = 'https://m.webtoons.com/api/v1/webtoon/' .. URL:match('title_no=(%d+)') .. '/episodes?pageSize=99999'
+	if URL:find('/canvas/') then s = 'canvas' else s = 'webtoon' end
+	u = 'https://m.webtoons.com/api/v1/' .. s .. '/' .. URL:match('title_no=(%d+)') .. '/episodes?pageSize=99999'
 
 	if not HTTP.GET(u) then return net_problem end
 
