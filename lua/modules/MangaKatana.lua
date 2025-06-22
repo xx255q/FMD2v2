@@ -23,7 +23,7 @@ function Init()
 		},
 		['id_ID'] = {
 			['svrpref'] = 'Peladen pilihan:',
-			['server'] = 'Peladen 1\Peladen 2\Peladen 3'
+			['server'] = 'Peladen 1\nPeladen 2\nPeladen 3'
 		},
 		get =
 			function(self, key)
