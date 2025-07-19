@@ -61,11 +61,11 @@ end
 function _M.GetPageNumber()
 	local u = MaybeFillHost(MODULE.RootURL, URL)
 
-	if not HTTP.GET(u) then return net_problem end
+	if not HTTP.GET(u) then return false end
 
 	CreateTXQuery(HTTP.Document).XPathStringAll('//div[@class="col-lg-10 read-img"]/img/@src', TASK.PageLinks)
 
-	return no_error
+	return true
 end
 
 ----------------------------------------------------------------------------------------------------
