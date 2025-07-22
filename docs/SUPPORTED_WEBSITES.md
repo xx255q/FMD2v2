@@ -464,7 +464,7 @@
 | ManhwaLatino | [![https://manhwa-latino.com](https://img.shields.io/website?url=https://manhwa-latino.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manhwa-latino.com)](https://manhwa-latino.com) | - | - | - |
 | ManhwaList | [![https://manhwalist02.site](https://img.shields.io/website?url=https://manhwalist02.site%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manhwalist02.site)](https://manhwalist02.site) | OK | 19.07.2025 | - |
 | ManhwaPool | [![https://manhwapool.com](https://img.shields.io/website?url=https://manhwapool.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manhwapool.com)](https://manhwapool.com) | - | - | - |
-| ManhwaRaw | [![https://manhwaraw.com](https://img.shields.io/website?url=https://manhwaraw.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manhwaraw.com)](https://manhwaraw.com) | - | - | - |
+| ManhwaRaw | [![https://manhwaraw.com](https://img.shields.io/website?url=https://manhwaraw.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manhwaraw.com)](https://manhwaraw.com) | OK | 23.07.2025 | - |
 | ManhwasMen | [![https://manhwas.men](https://img.shields.io/website?url=https://manhwas.men%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manhwas.men)](https://manhwas.men) | OK | 20.07.2025 | - |
 | ManhwasNet | [![https://manhwas.net](https://img.shields.io/website?url=https://manhwas.net%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manhwas.net)](https://manhwas.net) | OK | 20.07.2025 | - |
 | ManhwaWeb | [![https://manhwaweb.com](https://img.shields.io/website?url=https://manhwaweb.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manhwaweb.com)](https://manhwaweb.com) | - | - | - |
@@ -575,7 +575,7 @@
 | RavensScans | [![http://ravens-scans.com](https://img.shields.io/website?url=http://ravens-scans.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=http://ravens-scans.com)](http://ravens-scans.com) | - | - | - |
 | Raw1001 | [![https://raw1001.net](https://img.shields.io/website?url=https://raw1001.net%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://raw1001.net)](https://raw1001.net) | OK | 20.01.2025 | - |
 | RawDevart | [![https://rawdevart.com](https://img.shields.io/website?url=https://rawdevart.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://rawdevart.com)](https://rawdevart.com) | - | - | - |
-| RawDex | [![https://rawdex.net](https://img.shields.io/website?url=https://rawdex.net%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://rawdex.net)](https://rawdex.net) | - | - | - |
+| RawDEX | [![https://rawdex.net](https://img.shields.io/website?url=https://rawdex.net%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://rawdex.net)](https://rawdex.net) | OK | 23.07.2025 | - |
 | RawINU | [![https://rawinu.com](https://img.shields.io/website?url=https://rawinu.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://rawinu.com)](https://rawinu.com) | OK | 19.01.2025 | - |
 | Rawkuma | [![https://rawkuma.net](https://img.shields.io/website?url=https://rawkuma.net%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://rawkuma.net)](https://rawkuma.net) | OK | 04.06.2025 | - |
 | RawMangaUpdate | [![https://www.rawmangaupdate.com](https://img.shields.io/website?url=https://www.rawmangaupdate.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://www.rawmangaupdate.com)](https://www.rawmangaupdate.com) | - | - | - |
