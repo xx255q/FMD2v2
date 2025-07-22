@@ -276,7 +276,7 @@
 | MangaArabTeam | [![https://mangaarabteam.com](https://img.shields.io/website?url=https://mangaarabteam.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangaarabteam.com)](https://mangaarabteam.com) | - | - | - |
 | MangaAy | [![https://manga-ay.com](https://img.shields.io/website?url=https://manga-ay.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manga-ay.com)](https://manga-ay.com) | - | - | - |
 | MangaBat | [![https://h.mangabat.com](https://img.shields.io/website?url=https://h.mangabat.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://h.mangabat.com)](https://h.mangabat.com) | - | - | - |
-| MangaBin | [![https://mangabin.com](https://img.shields.io/website?url=https://mangabin.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangabin.com)](https://mangabin.com) | - | - | - |
+| MangaBin | [![https://mangabin.com](https://img.shields.io/website?url=https://mangabin.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangabin.com)](https://mangabin.com) | OK | 23.07.2025 | - |
 | MangaBob | [![https://mangabob.com](https://img.shields.io/website?url=https://mangabob.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangabob.com)](https://mangabob.com) | - | - | - |
 | MangaBuddy | [![https://mangabuddy.com](https://img.shields.io/website?url=https://mangabuddy.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangabuddy.com)](https://mangabuddy.com) | OK | 06.07.2025 | - |
 | Mangacan | [![https://mangacanblog.com](https://img.shields.io/website?url=https://mangacanblog.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangacanblog.com)](https://mangacanblog.com) | - | - | - |
