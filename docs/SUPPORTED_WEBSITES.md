@@ -105,7 +105,7 @@
 | Doujinku | [![https://doujinku.xyz](https://img.shields.io/website?url=https://doujinku.xyz%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://doujinku.xyz)](https://doujinku.xyz) | - | - | - |
 | DoujinsCom | [![https://doujins.com](https://img.shields.io/website?url=https://doujins.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://doujins.com)](https://doujins.com) | - | - | - |
 | DoujinYosh | [![https://doujinyosh.fun](https://img.shields.io/website?url=https://doujinyosh.fun%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://doujinyosh.fun)](https://doujinyosh.fun) | - | - | - |
-| DragonTea | [![https://dragontea.ink](https://img.shields.io/website?url=https://dragontea.ink%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://dragontea.ink)](https://dragontea.ink) | - | - | - |
+| Dragon Tea | [![https://dragontea.ink](https://img.shields.io/website?url=https://dragontea.ink%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://dragontea.ink)](https://dragontea.ink) | OK | 23.07.2025 | - |
 | DragonTranslation | [![https://dragontranslation.com](https://img.shields.io/website?url=https://dragontranslation.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://dragontranslation.com)](https://dragontranslation.com) | - | - | - |
 | Drake Scans | [![https://drakecomic.org](https://img.shields.io/website?url=https://drakecomic.org%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://drakecomic.org)](https://drakecomic.org) | OK | 26.03.2025 | - |
 | DynastyScans | [![https://dynasty-scans.com](https://img.shields.io/website?url=https://dynasty-scans.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://dynasty-scans.com)](https://dynasty-scans.com) | - | - | - |
