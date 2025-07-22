@@ -301,7 +301,6 @@ function Init()
 		m.OnBeforeDownloadImage = 'BeforeDownloadImage'
 	end
 	AddWebsiteModule('29e070b824344c8697ceb9554a6d1d4b', 'MangazukiClub', 'https://mangazuki.club')
-	AddWebsiteModule('1d7090e3140f4957973a0e063c43f106', 'ManhwaRaw', 'https://manhwaraw.com')
 	AddWebsiteModule('f164e6052faf4c8a896a8be3cef7cb61', 'RawDex', 'https://rawdex.net')
 	AddWebsiteModule('b70544bbe16d42a0a70a2a483aee718c', 'Manga-1001', 'https://doki1001.com')
 
