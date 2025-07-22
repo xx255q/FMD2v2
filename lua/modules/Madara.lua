@@ -319,7 +319,6 @@ function Init()
 	AddWebsiteModule('e3f643dfdca24576adf5b87c99878bfb', 'Mangax18', 'https://mangax18.com')
 	AddWebsiteModule('29003d3eb6c348ab8f8d4ed0cb8f7c6f', 'AllTopManga', 'https://alltopmanga.com')
 	AddWebsiteModule('89497fea6b55470c89fac1eb8f75f61a', 'MangaHyphenTx', 'https://manga-tx.com')
-	AddWebsiteModule('27433894c7594c97ad00ea083947c28c', 'Manga1stOnline', 'https://manga1st.online')
 	AddWebsiteModule('e4e226f0270440b7b906171082c8a02f', 'ColoredManga', 'https://coloredmanga.com')
 	AddWebsiteModule('58f2ead66dd441ed83166a1676317d19', 'ComicOnline', 'https://comiconline.org')
 

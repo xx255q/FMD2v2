@@ -266,7 +266,7 @@
 | Manga18Club | [![https://manga18.club](https://img.shields.io/website?url=https://manga18.club%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manga18.club)](https://manga18.club) | - | - | - |
 | Manga18FX | [![https://manga18fx.com](https://img.shields.io/website?url=https://manga18fx.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manga18fx.com)](https://manga18fx.com) | - | - | - |
 | Manga18Us | [![https://manga18.us](https://img.shields.io/website?url=https://manga18.us%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manga18.us)](https://manga18.us) | - | - | - |
-| Manga1stOnline | [![https://manga1st.online](https://img.shields.io/website?url=https://manga1st.online%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manga1st.online)](https://manga1st.online) | - | - | - |
+| Manga1st | [![https://manga1st.online](https://img.shields.io/website?url=https://manga1st.online%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manga1st.online)](https://manga1st.online) | OK | 23.07.2025 | - |
 | Manga347 | [![https://manga347.com](https://img.shields.io/website?url=https://manga347.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manga347.com)](https://manga347.com) | - | - | - |
 | Manga3S | [![https://manga3s.com](https://img.shields.io/website?url=https://manga3s.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manga3s.com)](https://manga3s.com) | - | - | - |
 | Manga68 | [![https://manga68.com](https://img.shields.io/website?url=https://manga68.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manga68.com)](https://manga68.com) | - | - | - |
