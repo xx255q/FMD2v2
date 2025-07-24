@@ -420,9 +420,6 @@ function Init()
 	AddWebsiteModule('99bb0476a95e4590848c8fdc0c03817c', 'MangaCultivator', 'https://mangacultivator.com')
 	AddWebsiteModule('441c6a5b5cwt6590848c8fdd9d9b67a7', 'EroMangacrab', 'https://ero.mangacrab.com')
 
-	cat = 'Turkish'
-	AddWebsiteModule('baeb4d0c63d9456dbc8da6f1d29faf60', 'AdonisFansub', 'https://manga.adonisfansub.com')
-
 	cat = 'Arabic'
 	AddWebsiteModule('dec0b341fb92445ab6c435053941f2bd', 'MangaAction', 'https://manga-action.com')
 	AddWebsiteModule('7afaf3a070bc4bd499255c3fd8dec1f3', 'NijiTranslations', 'https://niji-translations.com')
