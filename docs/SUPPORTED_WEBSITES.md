@@ -310,7 +310,7 @@
 | MangaGreat | [![https://mangagreat.com](https://img.shields.io/website?url=https://mangagreat.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangagreat.com)](https://mangagreat.com) | - | - | - |
 | MangaGun | [![https://mangagun.net](https://img.shields.io/website?url=https://mangagun.net%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangagun.net)](https://mangagun.net) | OK | 16.03.2025 | - |
 | MangaHasu | [![https://mangahasu.se](https://img.shields.io/website?url=https://mangahasu.se%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangahasu.se)](https://mangahasu.se) | - | - | - |
-| MangaHentai | [![https://mangahentai.me](https://img.shields.io/website?url=https://mangahentai.me%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangahentai.me)](https://mangahentai.me) | - | - | - |
+| MangaHentai | [![https://mangahentai.me](https://img.shields.io/website?url=https://mangahentai.me%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangahentai.me)](https://mangahentai.me) | OK | 25.07.2025 | - |
 | MangaHere | [![https://www.mangahere.cc](https://img.shields.io/website?url=https://www.mangahere.cc%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://www.mangahere.cc)](https://www.mangahere.cc) | OK | 12.12.2024 | - |
 | MangaHereOnl | [![https://mangahere.onl](https://img.shields.io/website?url=https://mangahere.onl%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangahere.onl)](https://mangahere.onl) | - | - | - |
 | MangaHereToday | [![http://mangahere.today](https://img.shields.io/website?url=http://mangahere.today%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=http://mangahere.today)](http://mangahere.today) | - | - | - |
