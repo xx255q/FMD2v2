@@ -431,9 +431,6 @@ function Init()
 	cat = 'Russian'
 	AddWebsiteModule('b1ffe6dfda364ebcaad07eb2fd4aeae9', 'BestManga', 'https://bestmanga.club')
 
-	cat = 'Adult'
-	AddWebsiteModule('53ea37e05bb6487e8bfe0dde6248fdc6', 'Milftoon', 'https://milftoon.xxx')
-
 	cat = 'Portuguese-Scanlation'
 	AddWebsiteModule('b2395d7d5e5244fea800216c12cac7dd', 'NeoxScanlator', 'https://neoxscans.net')
 
