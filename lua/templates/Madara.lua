@@ -69,7 +69,7 @@ function _M.GetInfo()
 
 	x = CreateTXQuery(HTTP.Document)
 	MANGAINFO.Title     = x.XPathString('//div[@class="post-title" or @id="manga-title"]/*[self::h1 or self::h3]/text()')
-	MANGAINFO.AltTitles = x.XPathString('//div[@class="summary-heading" and contains(./h5, "Alternative") or contains(./h5, "Judul Lain")]/following-sibling::div')
+	MANGAINFO.AltTitles = x.XPathString('//div[@class="summary-heading" and contains(./h5, "Alternative") or contains(./h5, "Judul Lain") or contains(./h5, "أسم بديل")]/following-sibling::div')
 	MANGAINFO.CoverLink = x.XPathString('//div[@class="summary_image"]//img/@data-src')
 	MANGAINFO.Authors   = x.XPathStringAll('//div[@class="author-content"]/a')
 	MANGAINFO.Artists   = x.XPathStringAll('//div[@class="artist-content"]/a')

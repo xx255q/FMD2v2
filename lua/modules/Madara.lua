@@ -422,7 +422,6 @@ function Init()
 
 	cat = 'Arabic'
 	AddWebsiteModule('dec0b341fb92445ab6c435053941f2bd', 'MangaAction', 'https://manga-action.com')
-	AddWebsiteModule('7afaf3a070bc4bd499255c3fd8dec1f3', 'NijiTranslations', 'https://niji-translations.com')
 	AddWebsiteModule('c9fc048e3f82419996345bbb1626f7f7', 'MangaArabTeam', 'https://mangaarabteam.com')
 
 	cat = 'Portuguese'
