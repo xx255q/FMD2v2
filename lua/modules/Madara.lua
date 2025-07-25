@@ -301,8 +301,6 @@ function Init()
 		m.OnBeforeDownloadImage = 'BeforeDownloadImage'
 	end
 	AddWebsiteModule('29e070b824344c8697ceb9554a6d1d4b', 'MangazukiClub', 'https://mangazuki.club')
-	AddWebsiteModule('1d7090e3140f4957973a0e063c43f106', 'ManhwaRaw', 'https://manhwaraw.com')
-	AddWebsiteModule('f164e6052faf4c8a896a8be3cef7cb61', 'RawDex', 'https://rawdex.net')
 	AddWebsiteModule('b70544bbe16d42a0a70a2a483aee718c', 'Manga-1001', 'https://doki1001.com')
 
 	cat = 'English'
@@ -321,8 +319,6 @@ function Init()
 	AddWebsiteModule('e3f643dfdca24576adf5b87c99878bfb', 'Mangax18', 'https://mangax18.com')
 	AddWebsiteModule('29003d3eb6c348ab8f8d4ed0cb8f7c6f', 'AllTopManga', 'https://alltopmanga.com')
 	AddWebsiteModule('89497fea6b55470c89fac1eb8f75f61a', 'MangaHyphenTx', 'https://manga-tx.com')
-	AddWebsiteModule('e62d472cc686400b91528c5b52ed0452', 'MangaBin', 'https://mangabin.com')
-	AddWebsiteModule('27433894c7594c97ad00ea083947c28c', 'Manga1stOnline', 'https://manga1st.online')
 	AddWebsiteModule('e4e226f0270440b7b906171082c8a02f', 'ColoredManga', 'https://coloredmanga.com')
 	AddWebsiteModule('58f2ead66dd441ed83166a1676317d19', 'ComicOnline', 'https://comiconline.org')
 
@@ -346,7 +342,6 @@ function Init()
 	AddWebsiteModule('825fa36408ca4f7ab2eb7c4ad7777aca', 'LevelerScans', 'https://levelerscans.xyz')
 	AddWebsiteModule('a6e1277d9b8b4f99afb2de63f4718eb9', 'JiroComics', 'https://jirocomics.com')
 	AddWebsiteModule('c34264a0b72a49b58f2a4e9476f2fd15', 'Mangas20', 'https://mangas20.com')
-	AddWebsiteModule('5e8a01ec43e24ed28372bab7f2c2c531', 'DragonTea', 'https://dragontea.ink')
 	AddWebsiteModule('1bc20f34e9c8466bbf5898a89c374a3b', 'MangaVisa', 'https://mangavisa.com')
 	AddWebsiteModule('ca3c550ab0f249d0accf06286e908cbe', 'ManhuaPlanet', 'https://manhuaplanet.com')
 	AddWebsiteModule('47292820ced14adfbdcb3d5412ebed9f', 'ManhuaPlusOnline', 'https://manhuaplus.online')
@@ -365,10 +360,8 @@ function Init()
 
 	cat = 'H-Sites'
 	AddWebsiteModule('c0214763110b4d14b6e359ecef6df2e4', 'DoujinYosh', 'https://doujinyosh.fun')
-	AddWebsiteModule('dfdec22299bc4fc6adbad401eeca2211', 'HentaiRead', 'http://hentairead.com')
 	AddWebsiteModule('349e30b0c30643f4a8d0aaece2a2c41e', 'ManhwaClub', 'https://manhwa.club')
 	AddWebsiteModule('c87aeae76e884adc9de8bc6b9d56f2c6', 'ShosetsuManga', 'https://www.shosetsu-manga.org')
-	AddWebsiteModule('7fd5031b766a4d228fd0940c0cdb1424', 'MangaHentai', 'https://mangahentai.me')
 	AddWebsiteModule('58f8a130748443c285036e4c4bf49fe8', 'Hentaidexy', 'https://hentaidexy.com')
 	AddWebsiteModule('9bdde4abb0a24e1783c8f3681839d064', 'HManhwa', 'https://hmanhwa.com')
 
@@ -388,7 +381,6 @@ function Init()
 	AddWebsiteModule('8bb50a7089ca41439e99813df2c8bf49', 'HZmangas', 'https://hzmangas.com')
 	AddWebsiteModule('48d4e659f6ed4498a8586258371a4015', 'AncientEmpireScan', 'https://www.ancientempirescan.website')
 	AddWebsiteModule('ed8828b5ea52499c9217435d1b6cd437', 'InmortalScan', 'https://manga.mundodrama.site')
-	AddWebsiteModule('29714bf99a7e4dafa8bd6f88ca0b7b5e', 'StickHorse', 'https://www.stickhorse.cl')
 	AddWebsiteModule('df82ea6b9f1442e580320d8449ca5ab6', 'Sksubs', 'https://sksubs.net')
 	AddWebsiteModule('c59285fdab344262bb6ae8a6a2687277', 'TecnoScan', 'https://tecnoscann.com')
 	AddWebsiteModule('a29b6757649f4683b72d2e669d9fbffc', 'MHscans', 'https://mhscans.com')
@@ -407,9 +399,7 @@ function Init()
 	AddWebsiteModule('35a207b2fd0c47b68e78b531b57cde3f', 'MangaLord', 'https://www.mangalord.com')
 	AddWebsiteModule('03cb00729e26448294329face3a8b53b', 'MiracleScans', 'https://miraclescans.com')
 	AddWebsiteModule('c368172d02684553925cc7675490ae6e', 'WebNovelLive', 'https://webnovel.live')
-	AddWebsiteModule('94b5ff5f2dd3421ab9e76113d5a1e600', 'MangaRockTeam', 'https://mangarockteam.com')
 	AddWebsiteModule('2b653482cef845d980a0cba2a7e798e0', 'PhenomenalNoFansub', 'https://phenomenalnofansub.com')
-	AddWebsiteModule('6d15a803c5504e91918a9d5f2b1351f8', 'WebtoonXYZ', 'https://www.webtoon.xyz')
 	AddWebsiteModule('249da73cb3e941f2932b0435710e4a65', 'ManhwaPool', 'https://manhwapool.com')
 	AddWebsiteModule('9bd1dd136cef40608ed691546251f46b', 'AHStudios', 'https://ahstudios.net')
 	AddWebsiteModule('3dc5bebff80f4c1aa19298ddcf8cb504', 'FenixManga', 'https://fenixscan.com')
@@ -423,23 +413,15 @@ function Init()
 	AddWebsiteModule('d3113e5b43b94fd9b3b99d2cb75787d7', 'MangaKik', 'https://mangakik.biz')
 	AddWebsiteModule('fa9659f5511441c6a5b5cc969d91a204', 'MangaNeloLink', 'https://manganelo.link')
 	AddWebsiteModule('c7406bf3452343f8adb4cd257c9222cb', 'ComicKiba', 'https://comickiba.com')
-	AddWebsiteModule('6d95277ed6864a16aeebf025ca667c3b', 'NovelMic', 'https://novelmic.com')
 	AddWebsiteModule('8c8adf7a1eba4b7cb449f1fd127fe696', 'ShieldManga', 'https://shieldmanga.club')
 	AddWebsiteModule('8e96a101438b401daf3a500590c91d62', 'Skymanhwa', 'https://skymanhwa.com')
-	AddWebsiteModule('80eb1cd9d38a4cb3ae4ea57f993847eb', 'S2Manga', 'https://s2manga.com')
-	AddWebsiteModule('33618723b5a74da3a28275258a47ad67', 'FreeComicOnline', 'https://freecomiconline.me')
-	AddWebsiteModule('287f665620664e468d4e05f5d76f5a44', 'HadesNoFansub', 'https://mangareaderpro.com/es')
 	AddWebsiteModule('287f665618784e468d4e05f5d76f5a45', 'EroManhwas', 'https://eromanhwas.com')
 	AddWebsiteModule('d9615a731b1243538663e96f0c1ad595', 'Manga347', 'https://manga347.com')
 	AddWebsiteModule('99bb0476a95e4590848c8fdc0c03817c', 'MangaCultivator', 'https://mangacultivator.com')
 	AddWebsiteModule('441c6a5b5cwt6590848c8fdd9d9b67a7', 'EroMangacrab', 'https://ero.mangacrab.com')
 
-	cat = 'Turkish'
-	AddWebsiteModule('baeb4d0c63d9456dbc8da6f1d29faf60', 'AdonisFansub', 'https://manga.adonisfansub.com')
-
 	cat = 'Arabic'
 	AddWebsiteModule('dec0b341fb92445ab6c435053941f2bd', 'MangaAction', 'https://manga-action.com')
-	AddWebsiteModule('7afaf3a070bc4bd499255c3fd8dec1f3', 'NijiTranslations', 'https://niji-translations.com')
 	AddWebsiteModule('c9fc048e3f82419996345bbb1626f7f7', 'MangaArabTeam', 'https://mangaarabteam.com')
 
 	cat = 'Portuguese'
@@ -448,9 +430,6 @@ function Init()
 
 	cat = 'Russian'
 	AddWebsiteModule('b1ffe6dfda364ebcaad07eb2fd4aeae9', 'BestManga', 'https://bestmanga.club')
-
-	cat = 'Adult'
-	AddWebsiteModule('53ea37e05bb6487e8bfe0dde6248fdc6', 'Milftoon', 'https://milftoon.xxx')
 
 	cat = 'Portuguese-Scanlation'
 	AddWebsiteModule('b2395d7d5e5244fea800216c12cac7dd', 'NeoxScanlator', 'https://neoxscans.net')

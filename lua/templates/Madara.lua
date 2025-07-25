@@ -69,7 +69,7 @@ function _M.GetInfo()
 
 	x = CreateTXQuery(HTTP.Document)
 	MANGAINFO.Title     = x.XPathString('//div[@class="post-title" or @id="manga-title"]/*[self::h1 or self::h3]/text()')
-	MANGAINFO.AltTitles = x.XPathString('//div[@class="summary-heading" and contains(./h5, "Alternative") or contains(./h5, "Judul Lain")]/following-sibling::div')
+	MANGAINFO.AltTitles = x.XPathString('//div[@class="summary-heading" and contains(./h5, "Alternative") or contains(./h5, "Judul Lain") or contains(./h5, "أسم بديل")]/following-sibling::div')
 	MANGAINFO.CoverLink = x.XPathString('//div[@class="summary_image"]//img/@data-src')
 	MANGAINFO.Authors   = x.XPathStringAll('//div[@class="author-content"]/a')
 	MANGAINFO.Artists   = x.XPathStringAll('//div[@class="artist-content"]/a')
@@ -113,7 +113,7 @@ end
 
 -- Get the page count for the current chapter.
 function _M.GetPageNumber()
-	local i, img, script, x = nil
+	local i, img, result, script, x = nil
 	local u = MaybeFillHost(MODULE.RootURL, URL)
 	if not u:find('style=list', 1, true) then u = u:gsub('?style=paged', '') .. '?style=list' end
 
@@ -130,20 +130,19 @@ function _M.GetPageNumber()
 		x = CreateTXQuery(HTTP.Document)
 		script = x.XPathString('//script[@id="chapter-protector-data"]')
 
-		if script == "" and MODULE.Storage["fullpageload"] ~= "" then
-			nodejs = require("utils.nodejs")
-			result = nodejs.run_html_load(string.gsub(u, "?style=list", ""))
+		if script == '' and MODULE.Storage['fullpageload'] ~= '' then
+			result = require 'utils.nodejs'.run_html_load(string.gsub(u, '?style=list', ''))
 
 			x.ParseHTML(result)
 			script = x.XPathString('//script[@id="chapter-protector-data"]')
 		end
 
-		if script ~= "" then
-			img = require "fmd.duktape".ExecJS(script .. [[
+		if script ~= '' then
+			img = require 'fmd.duktape'.ExecJS(script .. [[
 
 			var CryptoJS = require("utils/crypto-js.min.js");
 			var CryptoJSAesJson = require("utils/cryptojs-aes-format.js");
-			JSON.parse(CryptoJS.AES.decrypt(chapter_data, wpmangaprotectornonce, {format: CryptoJSAesJson}).toString(CryptoJS.enc.Utf8));
+			JSON.parse(CryptoJS.AES.decrypt(chapter_data, wpmangaprotectornonce, { format: CryptoJSAesJson }).toString(CryptoJS.enc.Utf8));
 
 			]]):gsub('\\/', '/'):gsub('%[', ''):gsub('%]', '')
 
@@ -156,6 +155,13 @@ function _M.GetPageNumber()
 		TASK.PageLinks[i] = TASK.PageLinks[i]:gsub('i%d.wp.com/', ''):gsub('cdn.statically.io/img/', '')
 		i = i + 1
 	end
+
+	return true
+end
+
+-- Prepare the URL, http header and/or http cookies before downloading an image.
+function _M.BeforeDownloadImage()
+	HTTP.Headers.Values['Referer'] = MODULE.RootURL
 
 	return true
 end
