@@ -82,13 +82,13 @@ function GetInfo()
 		table.insert(scanlator, scan_nodes.Get(i).ToString())
 	end
 
-	local parodies = x.XPath('//div[@class="flex flex-wrap items-center gap-2" and ./div="Parody:"]/a/span[1]')
+	local parody = x.XPathString('//div[@class="flex flex-wrap items-center gap-2" and ./div="Parody:"]/a/span[1]')
 	local convention = x.XPathString('//div[@class="flex flex-wrap items-center gap-2" and ./div="Convention:"]/a/span[1]')
 	local year = x.XPathString('//div[@class="flex flex-wrap items-center gap-2" and ./div="Release Year:"]/a/span[1]')
 	local pages = x.XPathString('//div[@class="flex flex-wrap items-center gap-2" and ./div="Pages:"]/div/span/span')
 	local language = x.XPathString('//div[@class="flex flex-wrap items-center gap-2" and ./div="Language:"]/a/span[1]')
 
-	if parodies ~= '' then table.insert(desc, 'Parodies: ' .. parodies) end
+	if parody ~= '' then table.insert(desc, 'Parody: ' .. parody) end
 	if convention ~= '' then table.insert(desc, 'Convention: ' .. convention) end
 	if #circle > 0 then table.insert(desc, 'Circle: ' .. table.concat(circle, ', ')) end
 	if #characters > 0 then table.insert(desc, 'Characters: ' .. table.concat(characters, ', ')) end
