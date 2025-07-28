@@ -479,7 +479,7 @@
 | Mexat | [![http://manga.mexat.com](https://img.shields.io/website?url=http://manga.mexat.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=http://manga.mexat.com)](http://manga.mexat.com) | - | - | - |
 | MGJinx | [![https://mgjinx.com](https://img.shields.io/website?url=https://mgjinx.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mgjinx.com)](https://mgjinx.com) | OK | 06.07.2025 | - |
 | MGKomik | [![https://mgkomik.org](https://img.shields.io/website?url=https://mgkomik.org%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mgkomik.org)](https://mgkomik.org) | OK | 05.04.2025 | Sometimes cloudflare workaround is required |
-| MHscans | [![https://mhscans.com](https://img.shields.io/website?url=https://mhscans.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mhscans.com)](https://mhscans.com) | - | - | - |
+| MHScans | [![https://twobluescans.com](https://img.shields.io/website?url=https://twobluescans.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://twobluescans.com)](https://twobluescans.com) | OK | 28.07.2025 | - |
 | Milftoon | [![https://milftoon.xxx](https://img.shields.io/website?url=https://milftoon.xxx%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://milftoon.xxx)](https://milftoon.xxx) | OK | 25.07.2025 | - |
 | MiracleScans | [![https://miraclescans.com](https://img.shields.io/website?url=https://miraclescans.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://miraclescans.com)](https://miraclescans.com) | - | - | - |
 | MixedManga | [![https://mixedmanga.com](https://img.shields.io/website?url=https://mixedmanga.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mixedmanga.com)](https://mixedmanga.com) | - | - | - |

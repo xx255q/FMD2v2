@@ -381,7 +381,6 @@ function Init()
 	AddWebsiteModule('ed8828b5ea52499c9217435d1b6cd437', 'InmortalScan', 'https://manga.mundodrama.site')
 	AddWebsiteModule('df82ea6b9f1442e580320d8449ca5ab6', 'Sksubs', 'https://sksubs.net')
 	AddWebsiteModule('c59285fdab344262bb6ae8a6a2687277', 'TecnoScan', 'https://tecnoscann.com')
-	AddWebsiteModule('a29b6757649f4683b72d2e669d9fbffc', 'MHscans', 'https://mhscans.com')
 
 	cat = 'Webcomics'
 	AddWebsiteModule('d903d55663f0423ca4dd928c8203f7ce', 'PocketAngelScan', 'https://pocketangelscans.com')
