@@ -641,7 +641,7 @@
 | SKScans | [![https://skscans.com](https://img.shields.io/website?url=https://skscans.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://skscans.com)](https://skscans.com) | - | - | - |
 | SKSubs | [![http://sksubs.com](https://img.shields.io/website?url=http://sksubs.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=http://sksubs.com)](http://sksubs.com) | - | - | - |
 | Sksubs | [![https://sksubs.net](https://img.shields.io/website?url=https://sksubs.net%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://sksubs.net)](https://sksubs.net) | - | - | - |
-| SkyManga | [![https://skymanga.xyz](https://img.shields.io/website?url=https://skymanga.xyz%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://skymanga.xyz)](https://skymanga.xyz) | - | - | - |
+| Sky Manga | [![https://skymanga.work](https://img.shields.io/website?url=https://skymanga.work%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://skymanga.work)](https://skymanga.work) | OK | 28.07.2025 | - |
 | SkyMangas | [![https://skymangas.com](https://img.shields.io/website?url=https://skymangas.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://skymangas.com)](https://skymangas.com) | OK | 19.07.2025 | - |
 | SkyManhuas | [![https://www.skymanhuas.net](https://img.shields.io/website?url=https://www.skymanhuas.net%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://www.skymanhuas.net)](https://www.skymanhuas.net) | OK | 22.02.2025 | - |
 | Skymanhwa | [![https://skymanhwa.com](https://img.shields.io/website?url=https://skymanhwa.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://skymanhwa.com)](https://skymanhwa.com) | - | - | - |
