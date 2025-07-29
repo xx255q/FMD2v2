@@ -434,5 +434,4 @@ function Init()
 	AddWebsiteModule('22c481c279c740b897ffc906ab808502', 'TuMangaNet', 'https://tumanga.net')
 	AddWebsiteModule('a8ad2a81768742caa7135047f28c2b00', 'SwordManga', 'https://swordmanga.com')
 	AddWebsiteModule('48822a81768742caa7135047f282bf57', 'TiempodeWebeo', 'https://tiempodewebeo.com')
-	AddWebsiteModule('123fa1ed637e469b8cb4a154965a6423', 'DragonTranslation', 'https://dragontranslation.com')
 end
