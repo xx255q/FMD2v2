@@ -27,12 +27,11 @@ DirectoryPages = {'mangas', 'doujin', 'raws'}
 
 -- Get links and names from the manga list of the current website.
 function GetNameAndLink()
-	local v, x = nil
 	local u = MODULE.RootURL .. '/' .. DirectoryPages[MODULE.CurrentDirectoryIndex + 1] .. '?page=' .. (URL + 1)
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = CreateTXQuery(HTTP.Document)
+	local x = CreateTXQuery(HTTP.Document)
 	for v in x.XPath('//a[@class="link-light lanzador"]').Get() do
 		LINKS.Add(v.GetAttribute('href'))
 		NAMES.Add(x.XPathString('div/h2', v))
@@ -44,12 +43,11 @@ end
 
 -- Get info and chapter list for the current manga.
 function GetInfo()
-	local title, v, x = nil
 	local u = MaybeFillHost(MODULE.RootURL, URL)
 
 	if not HTTP.GET(u) then return net_problem end
 
-	x = CreateTXQuery(HTTP.Document)
+	local x = CreateTXQuery(HTTP.Document)
 	if URL:find('/doujin/', 1, true) then
 		MANGAINFO.Title     = x.XPathString('//h1')
 		MANGAINFO.CoverLink = x.XPathString('(//div[@id="chapter_imgs"]/img)[1]/@src')
@@ -67,7 +65,7 @@ function GetInfo()
 		MANGAINFO.Summary   = x.XPathString('//main//div[@class="row"]/div[2]/text()')
 
 		for v in x.XPath('//ul[@class="list-group"]/a').Get() do
-			title = x.XPathString('li/text()', v):gsub('\u{00A0}', ''):gsub('(%d+)%.(%d*0)$', function(int, dec)
+			local title = x.XPathString('li/text()', v):gsub('\u{00A0}', ''):gsub('(%d+)%.(%d*0)$', function(int, dec)
 				dec = dec:gsub('0+$', '') return dec == '' and int or (int .. '.' .. dec) end)
 
 			MANGAINFO.ChapterLinks.Add(v.GetAttribute('href'))
