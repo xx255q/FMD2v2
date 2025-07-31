@@ -452,7 +452,7 @@
 | Manhwa18Cc | [![https://manhwa18.cc](https://img.shields.io/website?url=https://manhwa18.cc%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manhwa18.cc)](https://manhwa18.cc) | OK | 03.04.2025 | - |
 | Manhwa18Net | [![https://manhwa18.net](https://img.shields.io/website?url=https://manhwa18.net%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manhwa18.net)](https://manhwa18.net) | - | - | - |
 | Manhwa68 | [![https://manhwa68.com](https://img.shields.io/website?url=https://manhwa68.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manhwa68.com)](https://manhwa68.com) | - | - | - |
-| ManhwaClub | [![https://manhwa.club](https://img.shields.io/website?url=https://manhwa.club%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manhwa.club)](https://manhwa.club) | - | - | - |
+| ManhwaClub | [![https://manhwaclub.net](https://img.shields.io/website?url=https://manhwaclub.net%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manhwaclub.net)](https://manhwaclub.net) | OK | 01.08.2025 | - |
 | Manhwadesu | [![https://manhwadesu.host](https://img.shields.io/website?url=https://manhwadesu.host%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manhwadesu.host)](https://manhwadesu.host) | OK | 04.06.2025 | - |
 | ManhwaFreak | [![https://freakcomic.com](https://img.shields.io/website?url=https://freakcomic.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://freakcomic.com)](https://freakcomic.com) | - | - | - |
 | ManhwaHentai | [![https://manhwahentai.me](https://img.shields.io/website?url=https://manhwahentai.me%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manhwahentai.me)](https://manhwahentai.me) | OK | 15.12.2024 | - |
