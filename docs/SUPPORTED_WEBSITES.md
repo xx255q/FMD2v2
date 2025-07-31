@@ -73,7 +73,7 @@
 | Cerberus Series | [![https://legionscans.com](https://img.shields.io/website?url=https://legionscans.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://legionscans.com)](https://legionscans.com) | OK | 03.04.2025 | - |
 | ChibiManga | [![https://www.cmreader.info](https://img.shields.io/website?url=https://www.cmreader.info%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://www.cmreader.info)](https://www.cmreader.info) | - | - | - |
 | Cocorip | [![https://cocorip.net](https://img.shields.io/website?url=https://cocorip.net%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://cocorip.net)](https://cocorip.net) | OK | 03.04.2025 | - |
-| ColoredManga | [![https://coloredmanga.com](https://img.shields.io/website?url=https://coloredmanga.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://coloredmanga.com)](https://coloredmanga.com) | - | - | - |
+| ColoredManga | [![https://coloredmanga.com](https://img.shields.io/website?url=https://coloredmanga.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://coloredmanga.com)](https://coloredmanga.com) | Broken | 31.07.2025 | - |
 | Com-X | [![https://comx.life](https://img.shields.io/website?url=https://comx.life%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://comx.life)](https://comx.life) | OK | 18.07.2025 | - |
 | Comic-days | [![https://comic-days.com](https://img.shields.io/website?url=https://comic-days.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://comic-days.com)](https://comic-days.com) | - | - | - |
 | ComicDom | [![https://comicdom.org](https://img.shields.io/website?url=https://comicdom.org%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://comicdom.org)](https://comicdom.org) | - | - | - |
