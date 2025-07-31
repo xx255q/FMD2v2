@@ -426,9 +426,6 @@ function Init()
 	cat = 'Portuguese-Scanlation'
 	AddWebsiteModule('b2395d7d5e5244fea800216c12cac7dd', 'NeoxScanlator', 'https://neoxscans.net')
 
-	cat = 'Adult'
-	AddWebsiteModule('8760050d777d432dab8e776e3f1a6474', 'PornComix', 'https://porncomixinfo.net')
-
 	cat = 'Spanish'
 	AddWebsiteModule('22c481c279c740b897ffc906ab808502', 'TuMangaNet', 'https://tumanga.net')
 	AddWebsiteModule('a8ad2a81768742caa7135047f28c2b00', 'SwordManga', 'https://swordmanga.com')

@@ -557,7 +557,7 @@
 | PlusComico | [![http://plus.comico.jp](https://img.shields.io/website?url=http://plus.comico.jp%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=http://plus.comico.jp)](http://plus.comico.jp) | - | - | - |
 | PocketAngelScan | [![https://pocketangelscans.com](https://img.shields.io/website?url=https://pocketangelscans.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://pocketangelscans.com)](https://pocketangelscans.com) | - | - | - |
 | PojokManga | [![https://pojokmanga.info](https://img.shields.io/website?url=https://pojokmanga.info%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://pojokmanga.info)](https://pojokmanga.info) | - | - | - |
-| PornComix | [![https://porncomixinfo.net](https://img.shields.io/website?url=https://porncomixinfo.net%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://porncomixinfo.net)](https://porncomixinfo.net) | - | - | - |
+| Porn Comic | [![https://gedecomix.com](https://img.shields.io/website?url=https://gedecomix.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://gedecomix.com)](https://gedecomix.com) | OK | 01.08.2025 | - |
 | PowerManga | [![http://read.powermanga.org](https://img.shields.io/website?url=http://read.powermanga.org%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=http://read.powermanga.org)](http://read.powermanga.org) | - | - | - |
 | ProjectTime | [![https://ptscans.tw](https://img.shields.io/website?url=https://ptscans.tw%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://ptscans.tw)](https://ptscans.tw) | - | - | - |
 | PsychoPlay | [![https://psychoplay.co](https://img.shields.io/website?url=https://psychoplay.co%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://psychoplay.co)](https://psychoplay.co) | - | - | - |
