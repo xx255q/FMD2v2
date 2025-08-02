@@ -71,7 +71,7 @@ Some other external 3rd party tools and libraries are used as well:
 - [![Duktape](https://img.shields.io/badge/Duktape-2.5.0-Blue?style=plastic&color=blue)](https://github.com/grijjy/DelphiDuktape)  
 - [![WebP (libwebp)](https://img.shields.io/badge/WebP%20(libwebp)-1.1.0-Blue?style=plastic&color=blue)](https://github.com/webmproject/libwebp/)  
 - [![Lua](https://img.shields.io/badge/Lua-5.4.2-Blue?style=plastic&color=blue)](http://www.lua.org/download)  
-- [![OpenSSL](https://img.shields.io/badge/OpenSSL-1.1.1g-Blue?style=plastic&color=blue)](https://www.openssl.org/)  
+- [![OpenSSL](https://img.shields.io/badge/OpenSSL-3.5.1-Blue?style=plastic&color=blue)](https://www.openssl.org/)  
 - [![SQLite](https://img.shields.io/badge/SQLite-3.46.0-Blue?style=plastic&color=blue)](https://www.sqlite.org/)  
 - [![Brotli](https://img.shields.io/badge/Brotli-1.0.8-Blue?style=plastic&color=blue)](https://www.brotli.org/)  
   
