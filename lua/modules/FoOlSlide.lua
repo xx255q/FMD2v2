@@ -258,7 +258,6 @@ function Init()
 	-- es-sc
 	cat = 'Spanish-Scanlation'
 	AddWebsiteModule('1e3d6dac50344396b8267da9a885ac05', 'Mangasubes', 'http://mangasubes.patyscans.com')
-	AddWebsiteModule('ba071f02443e40a3805d32c62169afb4', 'MenudoFansub', 'http://www.menudo-fansub.com')
 	AddWebsiteModule('3c2b3506180a494fb0ee1ac880812577', 'NeoProjectScan', 'http://npscan.mangaea.net')
 	AddWebsiteModule('9d67e57014254506a352018e43a8115d', 'Nightow', 'http://nightow.net')
 	AddWebsiteModule('c3848692b2d9422b9ecc49c7c616fd3a', 'NoraNoFansub', 'https://www.noranofansub.com')

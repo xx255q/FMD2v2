@@ -408,7 +408,7 @@
 | ManyToon | [![https://manytoon.me](https://img.shields.io/website?url=https://manytoon.me%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manytoon.me)](https://manytoon.me) | - | - | - |
 | ManyToonCom | [![https://manytoon.com](https://img.shields.io/website?url=https://manytoon.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manytoon.com)](https://manytoon.com) | OK | 22.07.2025 | - |
 | ManyToonOrg | [![https://manytoon.org](https://img.shields.io/website?url=https://manytoon.org%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manytoon.org)](https://manytoon.org) | - | - | - |
-| MenudoFansub | [![http://www.menudo-fansub.com](https://img.shields.io/website?url=http://www.menudo-fansub.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=http://www.menudo-fansub.com)](http://www.menudo-fansub.com) | - | - | - |
+| Menudo-Slide | [![https://www.menudo-fansub.com](https://img.shields.io/website?url=https://www.menudo-fansub.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://www.menudo-fansub.com)](https://www.menudo-fansub.com) | OK | 06.08.2025 | - |
 | MethodScans | [![https://methodscans.com](https://img.shields.io/website?url=https://methodscans.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://methodscans.com)](https://methodscans.com) | - | - | - |
 | Mexat | [![http://manga.mexat.com](https://img.shields.io/website?url=http://manga.mexat.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=http://manga.mexat.com)](http://manga.mexat.com) | - | - | - |
 | MGJinx | [![https://mgjinx.com](https://img.shields.io/website?url=https://mgjinx.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mgjinx.com)](https://mgjinx.com) | OK | 06.07.2025 | - |
