@@ -48,8 +48,8 @@ function _M.GetInfo()
 	local x = CreateTXQuery(HTTP.Document)
 	MANGAINFO.Title     = x.XPathString('//h1[@class="title"]')
 	MANGAINFO.CoverLink = x.XPathString('//div[@class="thumbnail"]/img/@src')
-	MANGAINFO.Authors   = x.XPathString('//div[@class="info"]/b[text()="Author"]/following-sibling::text()[1]'):gsub('^[%s:]*', '')
-	MANGAINFO.Artists   = x.XPathString('//div[@class="info"]/b[text()="Artist"]/following-sibling::text()[1]'):gsub('^[%s:]*', '')
+	MANGAINFO.Authors   = x.XPathString('//div[@class="info"]//b[text()="Author"]/following-sibling::text()[1]'):gsub('^[%s:]*', '')
+	MANGAINFO.Artists   = x.XPathString('//div[@class="info"]//b[text()="Artist"]/following-sibling::text()[1]'):gsub('^[%s:]*', '')
 	MANGAINFO.Summary   = x.XPathString('//div[@class="info"]//b[text()="Synopsis" or text()="Descripción"]/following-sibling::text()[1]'):gsub('^[%s:]*', '')
 
 	for v in x.XPath('//div[@class="list"]//div[@class="title"]/a').Get() do
