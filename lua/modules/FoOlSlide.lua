@@ -257,7 +257,6 @@ function Init()
 
 	-- es-sc
 	cat = 'Spanish-Scanlation'
-	AddWebsiteModule('218b722b1eb34f2aa3863f84538c5b08', 'LoliVault', 'https://lolivault.net')
 	AddWebsiteModule('1e3d6dac50344396b8267da9a885ac05', 'Mangasubes', 'http://mangasubes.patyscans.com')
 	AddWebsiteModule('ba071f02443e40a3805d32c62169afb4', 'MenudoFansub', 'http://www.menudo-fansub.com')
 	AddWebsiteModule('3c2b3506180a494fb0ee1ac880812577', 'NeoProjectScan', 'http://npscan.mangaea.net')
