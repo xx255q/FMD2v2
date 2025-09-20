@@ -38,10 +38,7 @@
 | AzComix | [![https://azcomix.me](https://img.shields.io/website?url=https://azcomix.me%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://azcomix.me)](https://azcomix.me) | - | - | - |
 | Azora Manga | [![https://azoramoon.com](https://img.shields.io/website?url=https://azoramoon.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://azoramoon.com)](https://azoramoon.com) | - | - | - |
 | BacaKomik | [![https://bacakomik.net](https://img.shields.io/website?url=https://bacakomik.net%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://bacakomik.net)](https://bacakomik.net) | - | - | - |
-| Batoto | [![https://readtoto.org](https://img.shields.io/website?url=https://readtoto.org%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://readtoto.org)](https://readtoto.org) | OK | 25.12.2024 | Sometimes cloudflare workaround is required |
-| Batotoo | [![https://batotoo.com](https://img.shields.io/website?url=https://batotoo.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://batotoo.com)](https://batotoo.com) | - | - | - |
-| Batotwo | [![https://batotwo.com](https://img.shields.io/website?url=https://batotwo.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://batotwo.com)](https://batotwo.com) | - | - | - |
-| Battwo | [![https://battwo.com](https://img.shields.io/website?url=https://battwo.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://battwo.com)](https://battwo.com) | - | - | - |
+| Bato.To | [![https://bato.to](https://img.shields.io/website?url=https://bato.to%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://bato.to)](https://bato.to) | OK | 20.09.2024 | - |
 | BeeHentai | [![https://beehentai.com](https://img.shields.io/website?url=https://beehentai.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://beehentai.com)](https://beehentai.com) | OK | 09.07.2025 | - |
 | BiliBiliComics | [![https://www.bilibilicomics.com](https://img.shields.io/website?url=https://www.bilibilicomics.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://www.bilibilicomics.com)](https://www.bilibilicomics.com) | - | - | - |
 | BiliBiliManhua | [![https://manga.bilibili.com](https://img.shields.io/website?url=https://manga.bilibili.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manga.bilibili.com)](https://manga.bilibili.com) | - | - | - |
@@ -342,7 +339,6 @@
 | MangaToonSP | [![https://mangatoon.mobi/es](https://img.shields.io/website?url=https://mangatoon.mobi/es%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangatoon.mobi/es)](https://mangatoon.mobi/es) | - | - | - |
 | MangaToonTH | [![https://mangatoon.mobi/th](https://img.shields.io/website?url=https://mangatoon.mobi/th%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangatoon.mobi/th)](https://mangatoon.mobi/th) | - | - | - |
 | MangaToonVI | [![https://mangatoon.mobi/vi](https://img.shields.io/website?url=https://mangatoon.mobi/vi%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangatoon.mobi/vi)](https://mangatoon.mobi/vi) | - | - | - |
-| Mangatoto | [![https://mangatoto.com](https://img.shields.io/website?url=https://mangatoto.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangatoto.com)](https://mangatoto.com) | - | - | - |
 | MangaTown | [![http://www.mangatown.com](https://img.shields.io/website?url=http://www.mangatown.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=http://www.mangatown.com)](http://www.mangatown.com) | - | - | - |
 | MangaTube | [![https://manga-tube.me](https://img.shields.io/website?url=https://manga-tube.me%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://manga-tube.me)](https://manga-tube.me) | - | - | - |
 | MangaTV | [![https://mangatv.net](https://img.shields.io/website?url=https://mangatv.net%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mangatv.net)](https://mangatv.net) | OK | 20.05.2025 | - |
@@ -406,7 +402,6 @@
 | MGKomik | [![https://mgkomik.org](https://img.shields.io/website?url=https://mgkomik.org%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mgkomik.org)](https://mgkomik.org) | OK | 05.04.2025 | Sometimes cloudflare workaround is required |
 | MHScans | [![https://twobluescans.com](https://img.shields.io/website?url=https://twobluescans.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://twobluescans.com)](https://twobluescans.com) | OK | 28.07.2025 | - |
 | Milftoon | [![https://milftoon.xxx](https://img.shields.io/website?url=https://milftoon.xxx%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://milftoon.xxx)](https://milftoon.xxx) | OK | 25.07.2025 | - |
-| Mto | [![https://mto.to](https://img.shields.io/website?url=https://mto.to%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mto.to)](https://mto.to) | - | - | - |
 | Mundo Manhwa | [![https://mundomanhwa.com](https://img.shields.io/website?url=https://mundomanhwa.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mundomanhwa.com)](https://mundomanhwa.com) | OK | 28.07.2025 | - |
 | MyReadingManga | [![https://myreadingmanga.info](https://img.shields.io/website?url=https://myreadingmanga.info%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://myreadingmanga.info)](https://myreadingmanga.info) | - | - | - |
 | MyToon | [![https://mytoon.net](https://img.shields.io/website?url=https://mytoon.net%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://mytoon.net)](https://mytoon.net) | - | - | - |
@@ -610,7 +605,6 @@
 | Witch Scans | [![https://witchscans.com](https://img.shields.io/website?url=https://witchscans.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://witchscans.com)](https://witchscans.com) | OK | 14.06.2025 | - |
 | Wnacg | [![https://www.wnacg.org](https://img.shields.io/website?url=https://www.wnacg.org%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://www.wnacg.org)](https://www.wnacg.org) | - | - | - |
 | WoweScans | [![http://wowescans.co](https://img.shields.io/website?url=http://wowescans.co%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=http://wowescans.co)](http://wowescans.co) | - | - | - |
-| Wto | [![https://wto.to](https://img.shields.io/website?url=https://wto.to%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://wto.to)](https://wto.to) | - | - | - |
 | WuxiaWorld | [![https://wuxiaworld.site](https://img.shields.io/website?url=https://wuxiaworld.site%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://wuxiaworld.site)](https://wuxiaworld.site) | - | - | - |
 | xCaliBRScans | [![https://xcalibrscans.com](https://img.shields.io/website?url=https://xcalibrscans.com%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://xcalibrscans.com)](https://xcalibrscans.com) | - | - | - |
 | XlecX | [![https://xlecx.one](https://img.shields.io/website?url=https://xlecx.one%2F&up_message=%E2%9C%93&down_message=%E2%9A%A0&label=https://xlecx.one)](https://xlecx.one) | OK | 28.04.2025 | - |
