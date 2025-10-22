@@ -3,50 +3,51 @@
 ----------------------------------------------------------------------------------------------------
 
 function Init()
-	function AddWebsiteModule(id, name, url)
-		local m = NewWebsiteModule()
-		m.ID                       = id
-		m.Name                     = name
-		m.RootURL                  = url
-		m.Category                 = 'Spanish'
-		m.OnGetNameAndLink         = 'GetNameAndLink'
-		m.OnGetInfo                = 'GetInfo'
-		m.OnGetPageNumber          = 'GetPageNumber'
-	end
-	AddWebsiteModule('ac42a85566244b7e836679491ce679e6', 'YugenMangas', 'https://yugenmangas.com')
-	AddWebsiteModule('ac42a85566244b7e836679491ce679ey', 'Punuprojects', 'https://punuprojects.com')
+	local m = NewWebsiteModule()
+	m.ID                       = 'ac42a85566244b7e836679491ce679e6'
+	m.Name                     = 'YugenMangás'
+	m.RootURL                  = 'https://yugenmangasbr.voblog.xyz'
+	m.Category                 = 'Portuguese'
+	m.OnGetDirectoryPageNumber = 'GetDirectoryPageNumber'
+	m.OnGetNameAndLink         = 'GetNameAndLink'
+	m.OnGetInfo                = 'GetInfo'
+	m.OnGetPageNumber          = 'GetPageNumber'
+	m.SortedList               = true
 end
 
 ----------------------------------------------------------------------------------------------------
 -- Local Constants
 ----------------------------------------------------------------------------------------------------
-local API_URL = 'https://api.yugenmangas.com'
 
-function getapi(website)
-	local apis  = {
-		['YugenMangas']        = API_URL,
-		['Punuprojects']       = 'https://api.punuprojects.com'
-	}
-	if apis[website] ~= nil then
-		return apis[website]
-	else
-		return API_URL
-	end
-end
+API_URL = 'https://api.yugenweb.com/api'
+CDN_URL = 'https://media.yugenweb.com'
+DirectoryPagination = '/widgets/sort_and_filter/?order=desc&sort=date&page='
 
 ----------------------------------------------------------------------------------------------------
 -- Event Functions
 ----------------------------------------------------------------------------------------------------
 
+-- Get the page count of the manga list of the current website.
+function GetDirectoryPageNumber()
+	local u = API_URL .. DirectoryPagination .. 1
+
+	if not HTTP.GET(u) then return net_problem end
+
+	PAGENUMBER = tonumber(CreateTXQuery(HTTP.Document).XPathString('json(*).total_pages')) or 1
+
+	return no_error
+end
+
 -- Get links and names from the manga list of the current website.
 function GetNameAndLink()
-	HTTP.MimeType = 'application/json'
-	if not HTTP.POST(getapi(MODULE.Name) .. '/series/querysearch', '{"order":"asc", "type":"Comic"}') then return net_problem end
+	local v = nil
+	local u = API_URL .. DirectoryPagination .. (URL + 1)
 
-	local x = CreateTXQuery(HTTP.Document)
-	local v for v in x.XPath('json(*)()').Get() do
-		LINKS.Add('series/' .. x.XPathString('series_slug', v))
-		NAMES.Add(x.XPathString('title', v))
+	if not HTTP.GET(u) then return net_problem end
+
+	for v in CreateTXQuery(HTTP.Document).XPath('json(*).results()').Get() do
+		LINKS.Add('series/' .. v.GetProperty('code').ToString())
+		NAMES.Add(v.GetProperty('title').ToString())
 	end
 
 	return no_error
@@ -54,35 +55,57 @@ end
 
 -- Get info and chapter list for current manga.
 function GetInfo()
-	local u = getapi(MODULE.Name) .. '/series/' .. URL:match('/series/(.-)$')
-	if not HTTP.GET(u) then return net_problem end
+	local pages, v, x = nil
+	local page = 1
+	local u = API_URL .. '/series/detail/series/'
+	local s = '{"code":"' .. URL:match('/series/(%d+)$') .. '"}'
+	HTTP.MimeType = 'application/json'
 
-	local x = CreateTXQuery(HTTP.Document)
+	if not HTTP.POST(u, s) then return net_problem end
+
+	x = CreateTXQuery(HTTP.Document)
 	MANGAINFO.Title     = x.XPathString('json(*).title')
-	MANGAINFO.CoverLink = getapi(MODULE.Name) .. '/' .. x.XPathString('json(*).thumbnail')
+	MANGAINFO.CoverLink = x.XPathString('json(*).path_cover')
 	MANGAINFO.Authors   = x.XPathString('json(*).author')
-	MANGAINFO.Genres    = x.XPathStringAll('json(*).tags().name')
-	MANGAINFO.Summary   = x.XPathString('json(*).description')
+	MANGAINFO.Artists   = x.XPathString('json(*).artist')
+	MANGAINFO.Genres    = x.XPathStringAll('json(*).genres()')
+	MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('json(*).status'), 'Em Lançamento', 'Finalizado')
+	MANGAINFO.Summary   = x.XPathString('json(*).synopsis')
 
-	local v for v in x.XPath('json(*).chapters()').Get() do
-		MANGAINFO.ChapterLinks.Add(x.XPathString('id', v))
-		MANGAINFO.ChapterNames.Add(x.XPathString('chapter_name', v))
+	while true do
+		HTTP.Reset()
+		HTTP.MimeType = 'application/json'
+		if HTTP.POST(API_URL .. '/series/chapters/get-series-chapters/?page=' .. tostring(page) .. '', s) then
+			x = CreateTXQuery(HTTP.Document)
+			pages = tonumber(math.ceil(x.XPathString('json(*).count') / 21)) or 1
+			for v in x.XPath('json(*).results.chapters()').Get() do
+				MANGAINFO.ChapterLinks.Add(v.GetProperty('code').ToString())
+				MANGAINFO.ChapterNames.Add(v.GetProperty('name').ToString())
+			end
+		else
+			break
+		end
+		page = page + 1
+		if page > pages then
+			break
+		end
 	end
+	MANGAINFO.ChapterLinks.Reverse(); MANGAINFO.ChapterNames.Reverse()
 
 	return no_error
 end
 
 -- Get the page count for the current chapter.
 function GetPageNumber()
-	if not HTTP.GET(getapi(MODULE.Name) .. '/series/chapter' .. URL) then return net_problem end
+	local v = nil
+	local u = API_URL .. '/chapters/chapter-info/'
+	local s = '{"code":"' .. URL:match('(%d+)') .. '"}'
+	HTTP.MimeType = 'application/json'
 
-	local x = CreateTXQuery(HTTP.Document)
-	local v for v in x.XPath('json(*).content.images()').Get() do
-		if string.find(v.ToString(), "yugenmangas.com") then
-			TASK.PageLinks.Add(v.ToString())
-		else
-			TASK.PageLinks.Add(getapi(MODULE.Name) .. '/' .. v.ToString())
-		end
+	if not HTTP.POST(u, s) then return net_problem end
+
+	for v in CreateTXQuery(HTTP.Document).XPath('json(*).images()').Get() do
+		TASK.PageLinks.Add(CDN_URL .. '/' .. v.ToString())
 	end
 
 	return no_error

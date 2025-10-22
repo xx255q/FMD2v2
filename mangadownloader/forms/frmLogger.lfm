@@ -15,33 +15,34 @@ object FormLogger: TFormLogger
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   Position = poMainFormCenter
-  LCLVersion = '1.7'
-  Visible = False
-  object tvLog: TLogTreeView
+  LCLVersion = '3.8.0.0'
+  object tvLog: TCustomLogTreeView
     Left = 6
     Height = 237
     Top = 40
     Width = 445
     Align = alBottom
     Anchors = [akTop, akLeft, akRight, akBottom]
-    DefaultItemHeight = 18
     HotTrack = True
+    ParentShowHint = False
     PopupMenu = pmLog
     ReadOnly = True
     ScrollBars = ssAutoBoth
+    ShowHint = True
     ShowTime = True
     TabOrder = 3
     TimeFormat = 'hh:nn:ss:zzz'
-    Options = [tvoAllowMultiselect, tvoAutoItemHeight, tvoHideSelection, tvoHotTrack, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
+    ToolTips = False
+    Options = [tvoAllowMultiselect, tvoAutoItemHeight, tvoHideSelection, tvoHotTrack, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoThemedDraw]
   end
   object ckStayOnTop: TCheckBox
     Left = 6
     Height = 19
     Top = 8
-    Width = 80
+    Width = 78
     Caption = 'Stay on top'
-    OnChange = ckStayOnTopChange
     TabOrder = 0
+    OnChange = ckStayOnTopChange
   end
   object seLogLimit: TSpinEdit
     Left = 373
@@ -120,13 +121,13 @@ object FormLogger: TFormLogger
   object tmClearLog: TTimer
     Interval = 2000
     OnTimer = tmClearLogTimer
-    left = 288
-    top = 80
+    Left = 288
+    Top = 80
   end
   object pmLog: TPopupMenu
     OnPopup = pmLogPopup
-    left = 48
-    top = 147
+    Left = 48
+    Top = 147
     object miCopy: TMenuItem
       Caption = 'Copy'
       OnClick = miCopyClick

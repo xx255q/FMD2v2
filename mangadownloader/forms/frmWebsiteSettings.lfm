@@ -8,7 +8,7 @@ object WebsiteSettingsForm: TWebsiteSettingsForm
   ClientWidth = 572
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '2.1.0.0'
+  LCLVersion = '3.8.0.0'
   object spMain: TPairSplitter
     Left = 0
     Height = 461
@@ -25,7 +25,7 @@ object WebsiteSettingsForm: TWebsiteSettingsForm
       ChildSizing.VerticalSpacing = 6
       ClientWidth = 150
       ClientHeight = 461
-      object vtWebsite: TLazVirtualStringTree
+      object vtWebsite: TVirtualStringTree
         Left = 0
         Height = 432
         Top = 29
@@ -45,7 +45,7 @@ object WebsiteSettingsForm: TWebsiteSettingsForm
         OnFocusChanged = vtWebsiteFocusChanged
         OnGetText = vtWebsiteGetText
       end
-      object edSearch: TEditButton
+      object edSearch: TCustomEditButton
         Left = 0
         Height = 23
         Top = 0
@@ -106,7 +106,7 @@ object WebsiteSettingsForm: TWebsiteSettingsForm
       ChildSizing.VerticalSpacing = 6
       ClientWidth = 417
       ClientHeight = 461
-      object edSearchProperty: TEditButton
+      object edSearchProperty: TCustomEditButton
         Left = 0
         Height = 23
         Top = 0

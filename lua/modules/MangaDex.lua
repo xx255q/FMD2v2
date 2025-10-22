@@ -3,18 +3,20 @@ local API_PARAMS = '?includes[]=author&includes[]=artist&includes[]=cover_art'
 local COVER_URL = 'https://uploads.mangadex.org/covers'
 local GUID_PATTERN = '(%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x)'
 local MAPPING_FILE = 'userdata/mangadex_v5_mapping.txt'
+local USER_AGENT = 'FreeMangaDownloader'
 
 function Init()
 	local m = NewWebsiteModule()
-	m.ID                 = 'd07c9c2425764da8ba056505f57cf40c'
-	m.Name               = 'MangaDex'
-	m.RootURL            = 'https://mangadex.org'
-	m.Category           = 'English'
-	m.OnGetNameAndLink   = 'GetNameAndLink'
-	m.OnGetInfo          = 'GetInfo'
-	m.OnGetPageNumber    = 'GetPageNumber'
-	m.MaxTaskLimit       = 2
-	m.MaxConnectionLimit = 4
+	m.ID                    = 'd07c9c2425764da8ba056505f57cf40c'
+	m.Name                  = 'MangaDex'
+	m.RootURL               = 'https://mangadex.org'
+	m.Category              = 'English'
+	m.OnGetNameAndLink      = 'GetNameAndLink'
+	m.OnGetInfo             = 'GetInfo'
+	m.OnGetPageNumber       = 'GetPageNumber'
+	m.OnBeforeDownloadImage = 'BeforeDownloadImage'
+	m.MaxTaskLimit          = 2
+	m.MaxConnectionLimit    = 4
 
 	local fmd = require 'fmd.env'
 	local slang = fmd.SelectedLanguage
@@ -48,10 +50,11 @@ function Init()
 	local items = 'All'
 	local t = GetLangList()
 	for k, v in ipairs(t) do items = items .. '\r\n' .. v; end
-	m.AddOptionComboBox('lualang', lang:get('lang'), items, 11)
+	m.AddOptionComboBox('lualang', lang:get('lang'), items, 14)
 end
 
 function GetNameAndLink()
+	HTTP.UserAgent = USER_AGENT
 	local crypto = require 'fmd.crypto'
 
 	local demographics = {
@@ -73,57 +76,60 @@ function GetNameAndLink()
 		[3] = 'erotica',
 		[4] = 'pornographic'
 	}
-	
-	-- Delay this task if configured:
-	Delay()
+	local haschapter = {
+		[1] = 'true',
+		[2] = 'false'
+	}
 
 	for _, dg in ipairs(demographics) do
 		for _, ms in ipairs(mangastatus) do
 			for _, cr in ipairs(contentrating) do
-				local total = 1
-				local offset = 0
-				local offmaxlimit = 0
-				local order = 'asc'
+				for _, hc in ipairs(haschapter) do
+					local total = 1
+					local offset = 0
+					local offmaxlimit = 0
+					local order = 'asc'
 
-				while total > offset do
-					sleep(5000)
-					if total > 10000 and offset >= 10000 and order == 'asc' then
-						offset = 0
-						order = 'desc'
-					end
-
-					if offset < 10000 and HTTP.GET(API_URL .. '/manga?limit=100&offset=' .. offset ..'&order[createdAt]=' .. order ..'&publicationDemographic[]=' .. dg .. '&status[]=' .. ms .. '&contentRating[]=' .. cr) then
-						UPDATELIST.UpdateStatusText('Loading page of ' .. dg .. '/' .. ms .. '/' .. cr .. ' (' .. order .. ')' or '')
-						local x = CreateTXQuery(crypto.HTMLEncode(HTTP.Document.ToString()))
-
-						local ninfo    = x.XPath('json(*)')
-						local nstatus  = x.XPathString('result', ninfo)
-						local nmessage = x.XPathString('json(*).errors().detail')
-
-						if nstatus == 'error' then
-							print(nstatus .. ': ' .. nmessage)
-						else
-							if order == 'asc' then
-								total = tonumber(x.XPathString('json(*).total'))
-							else
-								total = tonumber(x.XPathString('json(*).total')) - 10000
-							end
-							offset = offset + tonumber(x.XPathString('json(*).limit'))
-							if total > 10000 then
-								offmaxlimit = total - 10000
-								print('Total Over Max Limit: ' .. offmaxlimit .. ' are over the max limit!')
-							end
-
-							local data for data in x.XPath('json(*).data()').Get() do
-								LINKS.Add('title/' .. x.XPathString('id', data))
-								NAMES.Add(x.XPathString('attributes/title/*', data))
-							end
+					while total > offset do
+						sleep(4000)
+						if total > 10000 and offset >= 10000 and order == 'asc' then
+							offset = 0
+							order = 'desc'
 						end
-					elseif offset >= 10000 then
-						print('Offset for fetching manga list is over the max limit: ' .. offset .. ' (Total: ' .. total .. ')')
-					else
-						print('List could not be fetched. Please check if you can access the Manga page and read the chapter in your browser.')
-						return net_problem
+
+						if offset < 10000 and HTTP.GET(API_URL .. '/manga?limit=100&offset=' .. offset ..'&order[createdAt]=' .. order ..'&publicationDemographic[]=' .. dg .. '&status[]=' .. ms .. '&contentRating[]=' .. cr .. '&hasAvailableChapters=' .. hc) then
+							UPDATELIST.UpdateStatusText('Loading page ' .. string.gsub(offset + 100, '00$', '') .. ' of ' .. dg:gsub("^%l", string.upper) .. '/' .. ms:gsub("^%l", string.upper) .. '/' .. cr:gsub("^%l", string.upper) .. '/Chapter: ' .. hc:gsub('true', 'Yes'):gsub('false', 'No') .. ' (' .. order:gsub("^%l", string.upper) .. ')' or '')
+							local x = CreateTXQuery(crypto.HTMLEncode(HTTP.Document.ToString()))
+
+							local ninfo    = x.XPath('json(*)')
+							local nstatus  = x.XPathString('result', ninfo)
+							local nmessage = x.XPathString('json(*).errors().detail')
+
+							if nstatus == 'error' then
+								print(nstatus .. ': ' .. nmessage)
+							else
+								if order == 'asc' then
+									total = tonumber(x.XPathString('json(*).total'))
+								else
+									total = tonumber(x.XPathString('json(*).total')) - 10000
+								end
+								offset = offset + tonumber(x.XPathString('json(*).limit'))
+								if total > 10000 then
+									offmaxlimit = total - 10000
+									print('Total Over Max Limit: ' .. offmaxlimit .. ' are over the max limit!')
+								end
+
+								local data for data in x.XPath('json(*).data()').Get() do
+									LINKS.Add('title/' .. x.XPathString('id', data))
+									NAMES.Add(x.XPathString('attributes/title/*', data))
+								end
+							end
+						elseif offset >= 10000 then
+							print('Offset for fetching manga list is over the max limit: ' .. offset .. ' (Total: ' .. total .. ')')
+						else
+							print('List could not be fetched. Please check if you can access the Manga page and read the chapter in your browser.')
+							return net_problem
+						end
 					end
 				end
 			end
@@ -133,6 +139,7 @@ function GetNameAndLink()
 end
 
 function GetInfo()
+	HTTP.UserAgent = USER_AGENT
 	local crypto = require 'fmd.crypto'
 	local MAPPING = {}
 
@@ -203,26 +210,31 @@ function GetInfo()
 
 		if mstatus == 'ok' then
 			MANGAINFO.Title     = x.XPathString('data/attributes/title/*', minfo)
+			MANGAINFO.AltTitles = x.XPathString('string-join(data/attributes/altTitles?*/*, ", ")', minfo)
+			MANGAINFO.CoverLink = COVER_URL .. '/' .. mid .. '/' .. x.XPathString('json(*).data.relationships()[type="cover_art"].attributes.fileName') .. '.256.jpg'
 			MANGAINFO.Summary   = x.XPathString('data/attributes/description/en', minfo)
 			MANGAINFO.Authors   = x.XPathStringAll('json(*).data.relationships()[type="author"].attributes.name')
 			MANGAINFO.Artists   = x.XPathStringAll('json(*).data.relationships()[type="artist"].attributes.name')
-			MANGAINFO.CoverLink = COVER_URL .. '/' .. mid .. '/' .. x.XPathString('json(*).data.relationships()[type="cover_art"].attributes.fileName') .. '.256.jpg'
+			MANGAINFO.Status    = MangaInfoStatusIfPos(x.XPathString('data/attributes/status', minfo))
 
 			-- Fetch genre, demographic, and rating:
-			MANGAINFO.Genres    = x.XPathStringAll('json(*).data.attributes.tags().attributes.name.en')
-			local demographic = GetDemographic(x.XPathString('json(*).data.attributes.publicationDemographic'))
-			if demographic ~= 'null' then MANGAINFO.Genres = MANGAINFO.Genres .. ', ' .. demographic end
-			local rating = GetRating(x.XPathString('json(*).data.attributes.contentRating'))
-			if rating ~= 'null' then MANGAINFO.Genres = MANGAINFO.Genres .. ', ' .. rating end
-
-			-- Set status to 'completed' if it's not 'ongoing' or 'hiatus'. The status 'cancelled' will also be set to 'completed':
-			local status = x.XPathString('data/attributes/status', minfo)
-			if (status == 'ongoing') or (status == 'hiatus') then
-				status = 'ongoing'
-			else
-				status = 'completed'
+			MANGAINFO.Genres = x.XPathStringAll('json(*).data.attributes.tags().attributes.name.en')
+			local demographic = x.XPathString('data/attributes/publicationDemographic', minfo):gsub("^%l", string.upper)
+			if demographic ~= 'Null' then
+				if MANGAINFO.Genres ~= '' then
+					MANGAINFO.Genres = MANGAINFO.Genres .. ', ' .. demographic
+				else
+					MANGAINFO.Genres = demographic
+				end
 			end
-			MANGAINFO.Status = MangaInfoStatusIfPos(status, 'ongoing', 'completed')
+			local rating = x.XPathString('data/attributes/contentRating', minfo):gsub("^%l", string.upper)
+			if rating ~= 'Null' then
+				if MANGAINFO.Genres ~= '' then
+					MANGAINFO.Genres = MANGAINFO.Genres .. ', ' .. rating
+				else
+					MANGAINFO.Genres = rating
+				end
+			end
 
 			-- Get user defined options for fetching all chapters respecting these options:
 			local optgroup   = MODULE.GetOption('luashowscangroup')
@@ -326,6 +338,7 @@ function GetInfo()
 end
 
 function GetPageNumber()
+	HTTP.UserAgent = USER_AGENT
 	TASK.PageLinks.Clear()
 	local crypto = require 'fmd.crypto'
 
@@ -367,6 +380,12 @@ function GetPageNumber()
 	end
 end
 
+function BeforeDownloadImage()
+	HTTP.UserAgent = USER_AGENT
+
+	return true
+end
+
 function IgnoreChaptersByGroupId(id)
 	local groups = {
 		["4f1de6a2-f0c5-4ac5-bce5-02c7dbb67deb"] = "MangaPlus",
@@ -383,48 +402,27 @@ function IgnoreChaptersByGroupId(id)
 	end
 end
 
-function GetDemographic(demographic)
-	local demographics = {
-		["shounen"] = "Shounen",
-		["shoujo"] = "Shoujo",
-		["seinen"] = "Seinen",
-		["josei"] = "Josei"
-	}
-	if demographics[demographic] ~= nil then
-		return demographics[demographic]
-	else
-		return demographic
-	end
-end
-
-function GetRating(rating)
-	local ratings = {
-		["safe"] = "Safe",
-		["suggestive"] = "Suggestive",
-		["erotica"] = "Erotica",
-		["pornographic"] = "Pornographic"
-	}
-	if ratings[rating] ~= nil then
-		return ratings[rating]
-	else
-		return rating
-	end
-end
-
 local Langs = {
+	["sq"] = "Albanian",
 	["ar"] = "Arabic",
+	["az"] = "Azerbaijani",
 	["bn"] = "Bengali",
 	["bg"] = "Bulgarian",
 	["my"] = "Burmese",
 	["ca"] = "Catalan",
 	["zh"] = "Chinese (Simp)",
 	["zh-hk"] = "Chinese (Trad)",
+	["hr"] = "Croatian",
 	["cs"] = "Czech",
 	["da"] = "Danish",
 	["nl"] = "Dutch",
 	["en"] = "English",
+	["eo"] = "Esperanto",
+	["et"] = "Estonian",
+	["tl"] = "Filipino",
 	["fi"] = "Finnish",
 	["fr"] = "French",
+	["ka"] = "Georgian",
 	["de"] = "German",
 	["el"] = "Greek",
 	["he"] = "Hebrew",
@@ -433,37 +431,32 @@ local Langs = {
 	["id"] = "Indonesian",
 	["it"] = "Italian",
 	["ja"] = "Japanese",
+	["kk"] = "Kazakh",
 	["ko"] = "Korean",
+	["la"] = "Latin",
 	["lt"] = "Lithuanian",
 	["ms"] = "Malay",
 	["mn"] = "Mongolian",
 	["ne"] = "Nepali",
 	["no"] = "Norwegian",
-	["NULL"] = "Other",
 	["fa"] = "Persian",
 	["pl"] = "Polish",
 	["pt-br"] = "Portuguese (Br)",
 	["pt"] = "Portuguese (Pt)",
 	["ro"] = "Romanian",
 	["ru"] = "Russian",
-	["sh"] = "Serbo-Croatian",
-	["es"] = "Spanish (Es)",
+	["sr"] = "Serbian",
+	["sk"] = "Slovak",
 	["es-la"] = "Spanish (LATAM)",
+	["es"] = "Spanish (Es)",
 	["sv"] = "Swedish",
-	["tl"] = "Tagalog",
+	["ta"] = "Tamil",
+	["te"] = "Telugu",
 	["th"] = "Thai",
 	["tr"] = "Turkish",
 	["uk"] = "Ukrainian",
 	["vi"] = "Vietnamese"
 }
-
-function GetLang(lang)
-	if Langs[lang] ~= nil then
-		return Langs[lang]
-	else
-		return 'Unknown'
-	end
-end
 
 function GetLangList()
 	local t = {}

@@ -1,28 +1,56 @@
 ----------------------------------------------------------------------------------------------------
+-- Module Initialization
+----------------------------------------------------------------------------------------------------
+
+function Init()
+	local m = NewWebsiteModule()
+	m.ID                       = 'c69cbc947a6a42e194b2e097bba15047'
+	m.Name                     = 'MangaSusu'
+	m.RootURL                  = 'https://mangasusuku.com'
+	m.Category                 = 'H-Sites'
+	m.OnGetNameAndLink         = 'GetNameAndLink'
+	m.OnGetInfo                = 'GetInfo'
+	m.OnGetPageNumber          = 'GetPageNumber'
+	m.TotalDirectory           = AlphaList:len()
+end
+
+----------------------------------------------------------------------------------------------------
 -- Local Constants
 ----------------------------------------------------------------------------------------------------
 
-local Template = require 'templates.MangaReaderOnline'
--- DirectoryParameters = '/'            --> Override template variable by uncommenting this line.
--- XPathTokenStatus    = 'Status'       --> Override template variable by uncommenting this line.
--- XPathTokenAuthors   = 'Author(s)'    --> Override template variable by uncommenting this line.
--- XPathTokenArtists   = 'Artist(s)'    --> Override template variable by uncommenting this line.
--- XPathTokenGenres    = 'Categories'   --> Override template variable by uncommenting this line.
+local Template = require 'templates.MangaThemesia'
+AlphaList = '##ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+DirectoryPagination = '/az-list/page/'
 
 ----------------------------------------------------------------------------------------------------
 -- Event Functions
 ----------------------------------------------------------------------------------------------------
 
--- Get info and chapter list for current manga.
-function GetInfo()
-	Template.GetInfo()
+-- Get links and names from the manga list of the current website.
+function GetNameAndLink()
+	local i, s, x = nil
+	if MODULE.CurrentDirectoryIndex == 0 then
+		s = '.'
+	elseif MODULE.CurrentDirectoryIndex == 1 then
+		s = '0-9'
+	else
+		i = MODULE.CurrentDirectoryIndex + 1
+		s = AlphaList:sub(i, i)
+	end
+	local u = MODULE.RootURL .. DirectoryPagination .. (URL + 1) .. '/?show=' .. s
+
+	if not HTTP.GET(u) then return net_problem end
+
+	x = CreateTXQuery(HTTP.Document)
+	x.XPathHREFTitleAll('//div[@class="bsx"]/a', LINKS, NAMES)
+	UPDATELIST.CurrentDirectoryPageNumber = tonumber(x.XPathString('//div[@class="pagination"]/a[last()-1]')) or 1
 
 	return no_error
 end
 
--- Get LINKS and NAMES from the manga list of the current website.
-function GetNameAndLink()
-	Template.GetNameAndLink()
+-- Get info and chapter list for the current manga.
+function GetInfo()
+	Template.GetInfo()
 
 	return no_error
 end
@@ -32,19 +60,4 @@ function GetPageNumber()
 	Template.GetPageNumber()
 
 	return no_error
-end
-
-----------------------------------------------------------------------------------------------------
--- Module Initialization
-----------------------------------------------------------------------------------------------------
-
-function Init()
-	local m = NewWebsiteModule()
-	m.ID                       = '05ae08089f0d48c395aae71cf0dc75f4'
-	m.Name                     = 'MangaSusu'
-	m.RootURL                  = 'https://m.mangasusu.co'
-	m.Category                 = 'Indonesian'
-	m.OnGetInfo                = 'GetInfo'
-	m.OnGetNameAndLink         = 'GetNameAndLink'
-	m.OnGetPageNumber          = 'GetPageNumber'
 end

@@ -24,9 +24,10 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="2"/>
-      <RevisionNr Value="32"/>
+      <RevisionNr Value="34"/>
+      <BuildNr Value="5"/>
       <Attributes pvaPrivateBuild="True"/>
-      <StringTable Comments="https://github.com/dazedcat19/FMD" FileDescription="Free Manga Downloader" LegalCopyright="©2015-2023" OriginalFilename="fmd.exe" ProductName="Free Manga Downloader" ProductVersion="$BuildMode()"/>
+      <StringTable Comments="https://github.com/dazedcat19/FMD2" FileDescription="Free Manga Downloader" LegalCopyright="©2015-2025" OriginalFilename="fmd.exe" ProductName="Free Manga Downloader" ProductVersion="$BuildMode()"/>
     </VersionInfo>
     <BuildModes Count="6">
       <Item1 Name="Win32" Default="True"/>
@@ -305,36 +306,54 @@
         <Mode0 Name="default"/>
       </Modes>
     </RunParams>
-    <RequiredPackages Count="9">
+    <RequiredPackages Count="15">
       <Item1>
-        <PackageName Value="laz.virtualtreeview_package"/>
+        <PackageName Value="RunTimeTypeInfoControls"/>
       </Item1>
       <Item2>
-        <PackageName Value="LCL"/>
+        <PackageName Value="LazControls"/>
       </Item2>
       <Item3>
-        <PackageName Value="RunTimeTypeInfoControls"/>
+        <PackageName Value="TAChartLazarusPkg"/>
       </Item3>
       <Item4>
-        <PackageName Value="LazControls"/>
+        <PackageName Value="laz_synapse"/>
       </Item4>
       <Item5>
-        <PackageName Value="TAChartLazarusPkg"/>
+        <PackageName Value="dcpcrypt"/>
       </Item5>
       <Item6>
         <PackageName Value="richmemopackage"/>
       </Item6>
       <Item7>
-        <PackageName Value="multiloglaz"/>
+        <PackageName Value="richmemo_design"/>
       </Item7>
       <Item8>
-        <PackageName Value="dcpcrypt"/>
+        <PackageName Value="LCL"/>
       </Item8>
       <Item9>
-        <PackageName Value="internettools"/>
+        <PackageName Value="virtualtreeview_package"/>
       </Item9>
+      <Item10>
+        <PackageName Value="multiloglaz"/>
+      </Item10>
+      <Item11>
+        <PackageName Value="CustomControls"/>
+      </Item11>
+      <Item12>
+        <PackageName Value="CustomControls_Addon_Multilog"/>
+      </Item12>
+      <Item13>
+        <PackageName Value="internettools"/>
+      </Item13>
+      <Item14>
+        <PackageName Value="MetaDarkStyle"/>
+      </Item14>
+      <Item15>
+        <PackageName Value="metadarkstyledsgn"/>
+      </Item15>
     </RequiredPackages>
-    <Units Count="27">
+    <Units Count="29">
       <Unit0>
         <Filename Value="md.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -491,6 +510,19 @@
         <Filename Value="..\baseunits\SimpleException\SimpleException.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit26>
+      <Unit27>
+        <Filename Value="forms\frmcustommessagedlg.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="CustomMessageDlg"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="frmCustomMessageDlg"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="..\baseunits\imagemagickmanager.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ImageMagickManager"/>
+      </Unit28>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

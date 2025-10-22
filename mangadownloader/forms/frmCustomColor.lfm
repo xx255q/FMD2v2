@@ -9,7 +9,7 @@ object CustomColorForm: TCustomColorForm
   ClientHeight = 352
   ClientWidth = 535
   OnCreate = FormCreate
-  LCLVersion = '2.1.0.0'
+  LCLVersion = '3.8.0.0'
   object CBColors: TColorBox
     AnchorSideRight.Control = btColors
     Left = 363
@@ -53,7 +53,8 @@ object CustomColorForm: TCustomColorForm
       Caption = 'Basic list'
       ClientHeight = 324
       ClientWidth = 351
-      object VTBasicList: TLazVirtualStringTree
+      OnShow = tsBasicListShow
+      object VTBasicList: TVirtualStringTree
         Left = 0
         Height = 324
         Top = 0
@@ -86,7 +87,8 @@ object CustomColorForm: TCustomColorForm
       Caption = 'Manga list'
       ClientHeight = 324
       ClientWidth = 351
-      object VTMangaList: TLazVirtualStringTree
+      OnShow = tsMangaListShow
+      object VTMangaList: TVirtualStringTree
         Left = 0
         Height = 324
         Top = 0
@@ -119,7 +121,8 @@ object CustomColorForm: TCustomColorForm
       Caption = 'Favorite list'
       ClientHeight = 324
       ClientWidth = 351
-      object VTFavoriteList: TLazVirtualStringTree
+      OnShow = tsFavoriteListShow
+      object VTFavoriteList: TVirtualStringTree
         Left = 0
         Height = 324
         Top = 0
@@ -152,7 +155,8 @@ object CustomColorForm: TCustomColorForm
       Caption = 'Chapter list'
       ClientHeight = 324
       ClientWidth = 351
-      object VTChapterList: TLazVirtualStringTree
+      OnShow = tsChapterListShow
+      object VTChapterList: TVirtualStringTree
         Left = 0
         Height = 324
         Top = 0
@@ -181,5 +185,54 @@ object CustomColorForm: TCustomColorForm
         OnPaintText = VTBasicListPaintText
       end
     end
+    object tsModuleList: TTabSheet
+      Caption = 'Module list'
+      ClientHeight = 324
+      ClientWidth = 351
+      OnShow = tsModuleListShow
+      object VTModuleList: TVirtualStringTree
+        Left = 0
+        Height = 324
+        Top = 0
+        Width = 351
+        Align = alClient
+        Color = clWindow
+        Colors.DropTargetBorderColor = clHotLight
+        Colors.FocusedSelectionBorderColor = clHotLight
+        Colors.SelectionRectangleBorderColor = clHotLight
+        Colors.UnfocusedSelectionBorderColor = clBtnShadow
+        DefaultText = 'Node'
+        Header.AutoSizeIndex = 0
+        Header.Columns = <>
+        Header.DefaultHeight = 17
+        Header.Height = 17
+        Header.MainColumn = -1
+        TabOrder = 0
+        TextMargin = 0
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
+        TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toThemeAware, toUseBlendedImages]
+        TreeOptions.SelectionOptions = [toFullRowSelect]
+        OnBeforeCellPaint = VTBasicListBeforeCellPaint
+        OnDrawText = VTBasicListDrawText
+        OnFocusChanged = VTBasicListFocusChanged
+        OnGetText = VTBasicListGetText
+        OnPaintText = VTBasicListPaintText
+      end
+    end
+  end
+  object btResetColors: TBitBtn
+    AnchorSideLeft.Control = CBColors
+    AnchorSideTop.Control = CBColors
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = CBColors
+    AnchorSideRight.Side = asrBottom
+    Left = 363
+    Height = 27
+    Top = 48
+    Width = 136
+    Anchors = [akTop, akLeft, akRight]
+    Caption = 'Reset list colors'
+    OnClick = btResetColorsClick
+    TabOrder = 2
   end
 end

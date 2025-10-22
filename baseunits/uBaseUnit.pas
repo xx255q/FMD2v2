@@ -23,7 +23,7 @@ uses
   fgl, RegExpr, synautil, httpsend,
   synacode, MultiLog, FPimage, GZIPUtils, uMisc, httpsendthread, FMDOptions,
   ImgInfos, NaturalSortUnit,
-  MemBitmap, FPWritePNG, zstream, FPReadPNG, Laz.VirtualTrees;
+  MemBitmap, FPWritePNG, zstream, FPReadPNG, VirtualTrees, ImageMagickManager;
 
 const
   LineEnding2 = LineEnding + LineEnding;
@@ -32,13 +32,14 @@ const
 
   DATA_PARAM_LINK       = 0;
   DATA_PARAM_TITLE      = 1;
-  DATA_PARAM_AUTHORS    = 2;
-  DATA_PARAM_ARTISTS    = 3;
-  DATA_PARAM_GENRES     = 4;
-  DATA_PARAM_STATUS     = 5;
-  DATA_PARAM_SUMMARY    = 6;
-  DATA_PARAM_NUMCHAPTER = 7;
-  DATA_PARAM_JDN        = 8;
+  DATA_PARAM_ALTTITLES  = 2;
+  DATA_PARAM_AUTHORS    = 3;
+  DATA_PARAM_ARTISTS    = 4;
+  DATA_PARAM_GENRES     = 5;
+  DATA_PARAM_STATUS     = 6;
+  DATA_PARAM_SUMMARY    = 7;
+  DATA_PARAM_NUMCHAPTER = 8;
+  DATA_PARAM_JDN        = 9;
 
   FILTER_HIDE = 0;
   FILTER_SHOW = 1;
@@ -228,6 +229,8 @@ const
 
   MangaInfo_StatusCompleted = '0';
   MangaInfo_StatusOngoing = '1';
+  MangaInfo_StatusHiatus = '2';
+  MangaInfo_StatusCancelled = '3';
 
   FMDSupportedPackedOutputExt: array[0..3] of ShortString = ('.zip', '.cbz', '.pdf', '.epub');
   {$ifdef windows}
@@ -303,6 +306,7 @@ type
 
   TBaseMangaInfo = packed record
     title,
+    alttitles,
     authors,
     artists,
     genres,
@@ -319,6 +323,7 @@ type
   public
     URL,
     Title,
+    AltTitles,
     Link,
     CoverLink,
     Authors,
@@ -334,6 +339,7 @@ type
     destructor Destroy; override;
     function ModuleID: String; inline;
     function Website: String; inline;
+    function FullLink: String; inline;
     procedure Clear;
     function Clone: TMangaInfo;
   end;
@@ -352,6 +358,7 @@ type
     DateAdded,
     DateLastDownloaded: TDateTime;
     iProgress: Integer;
+    MangaPtr: TMangaInfo;
     private
       FModule: Pointer;
       FModuleID: String;
@@ -429,6 +436,7 @@ procedure FilterVST(Tree: TVirtualStringTree; Key: String; Column: Integer = 0);
 
 // Remove Unicode
 function ReplaceUnicodeChar(const S, ReplaceStr: String): String;
+
 // Check a directory to see if it's empty (return TRUE) or not
 function IsDirectoryEmpty(const ADir: String): Boolean;
 function CorrectFilePath(const APath: String): String;
@@ -546,6 +554,11 @@ function FindStrQuick(const s: String; var AStrings: TStringList): Boolean;
 function GoogleResultURL(const AURL: String): String;
 procedure GoogleResultURLs(const AURLs: TStrings);
 
+// create FQDN file list       
+function CreateFQDNName(AFileName: String): String;
+function CreateFQDNFolder(Sender: TObject; ACurrentDir, AFileName: String): String;
+function CreateFQDNList(Sender: TObject; AFileName: String; AFileList: TStringList): String;
+
 // convert webp
 function WebPToPNGStream(const AStream: TMemoryStream; const ALevel: Tcompressionlevel = clfastest): Boolean;
 function WebPToJPEGStream(const AStream: TMemoryStream; const AQuality: Integer = 80): Boolean;
@@ -559,7 +572,8 @@ function SaveImageStreamToFile(AHTTP: THTTPSend; Path, FileName: String): String
 
 // check file exist with known extensions. AFilename is a filename without extensions
 function ImageFileExists(const AFileName: String): Boolean;
-function FindImageFile(const AFileName: String): String;
+function ImageFileExtExists(const AFileName, AFileExt: String): Boolean;
+function FindImageFile(const AFileName: String; AFileExt: String = ''): String;
 
 // load iamge from file with UTF8 aware
 function LoadImageFromFileUTF8(const FileName: String; var Image: TFPCustomImage): Boolean;
@@ -588,7 +602,8 @@ function JDNToDate(const JDN: Integer): TDate;
 function  ConvertStrToInt32(const aStr  : String): Cardinal;}
 procedure TransferMangaInfo(var dest: TMangaInfo; const Source: TMangaInfo);
 function MangaInfoStatusIfPos(const SearchStr: String; const OngoingStr: String = 'ongoing';
-    const CompletedStr: String = 'complete'): String;
+    const CompletedStr: String = 'complete'; const HiatusStr: String = 'hiatus';
+    const CancelledStr: String = 'cancel'): String;
 
 procedure GetBaseMangaInfo(const M: TMangaInfo; var B: TBaseMangaInfo);
 // fill empty manga info
@@ -623,7 +638,7 @@ procedure SendLogException(const AText: String; AException: Exception); inline;
 implementation
 
 uses
-  WebsiteModules, webp, DCPrijndael, DCPsha512, FPWriteJPEG;
+  frmMain, WebsiteModules, webp, DCPrijndael, DCPsha512, FPWriteJPEG;
 
 {$IFDEF WINDOWS}
 // thanks Leledumbo for the code
@@ -1448,7 +1463,11 @@ begin
   s := UTF8Decode(Result);
   if Length(s) > MAX_PATHDIR then
   begin
-    SetLength(s, MAX_PATHDIR);
+    s := MainForm.CheckLongNamePaths(s);
+    if not MainForm.cbOptionEnableLongNamePaths.Checked then
+    begin
+      SetLength(s, MAX_PATHDIR);
+    end;
     Result := UTF8Encode(s);
   end;
   {$ELSE}
@@ -2186,6 +2205,87 @@ begin
   end;
 end;
 
+function CreateFQDNName(AFileName: String): String;
+var
+  UniqueTimestampName: String;
+begin
+  UniqueTimestampName := StringReplace(ExtractFileName(AFileName), ExtractFileExt(AFileName), '', [rfReplaceAll])+ '_' + FormatDateTime('yyyy-mm-dd_hh-nn-ss', Now);
+  Result := StringReplace(('FQDNList_' + UniqueTimestampName), ' ', '_', [rfReplaceAll]);
+end;
+ 
+function CreateFQDNFolder(Sender: TObject; ACurrentDir, AFileName: String): String;
+var
+  FQDNFolderName: String;
+begin
+  FQDNFolderName := CreateFQDNName(AFileName);
+  Result := FQDNFolderName;
+
+  try
+    ForceDirectories(FQDNFolderName);
+  except
+    on E: EFCreateError do
+    begin
+      // If first attempt fails, try the second path
+      try
+        FQDNFolderName := AppendPathDelim(ACurrentDir) + FQDNFolderName;
+
+        if ForceDirectories(FQDNFolderName) then
+        begin
+          Result := FQDNFolderName;
+        end;
+      except
+        on E2: Exception do
+        begin
+          MainForm.ExceptionHandler(Sender, E2);
+        end;
+      end;
+    end;
+  end;
+end;
+
+function CreateFQDNList(Sender: TObject; AFileName: String; AFileList: TStringList): String;
+var
+  FQDNListName: String;
+  i: Integer;
+begin
+  FQDNListName := CreateFQDNName(AFileName) + '.txt';
+  Result := FQDNListName;
+
+  with TStringList.Create do
+  try
+    for i := 0 to AFileList.Count - 1 do
+    begin
+      AFileList[i] := MainForm.CheckLongNamePaths(AFileList[i]);
+      Add('"' + AFileList[i] + '"');
+    end;
+
+    try
+      SaveToFile(FQDNListName);
+    except
+      on E: EFCreateError do
+      begin
+        // If first attempt fails, try the second path
+        try
+          FQDNListName := AppendPathDelim(ExtractFilePath(AFileName)) + FQDNListName;
+          SaveToFile(FQDNListName);
+
+          if FileExists(FQDNListName) then
+          begin
+            Result := FQDNListName;
+          end;
+        except
+          on E2: Exception do
+          begin
+            MainForm.ExceptionHandler(Sender, E2);
+          end;
+        end;
+      end;
+    end;
+  finally
+    Free;
+  end;
+end;
+
 function WebPToPNGStream(const AStream: TMemoryStream;
   const ALevel: Tcompressionlevel): Boolean;
 var
@@ -2267,54 +2367,91 @@ end;
 
 function SaveImageStreamToFile(Stream: TMemoryStream; Path, FileName: String; Age: LongInt): String;
 var
-  p, f: String;
-  fs: TFileStream;
+  FilePath, PathDirectory, FileExt: String;
+  FileStream: TFileStream;
 begin
   Result := '';
-  if Stream = nil then Exit;
-  if Stream.Size = 0 then Exit;
-  p := CorrectPathSys(Path);
-  if ForceDirectories(p) then begin
-    f := GetImageStreamExt(Stream);
-    if f = 'png' then
+
+  if Stream = nil then
+  begin
+    Exit;
+  end;
+
+  if Stream.Size = 0 then
+  begin
+    Exit;
+  end;
+
+  PathDirectory := CorrectPathSys(Path);
+  if ForceDirectories(PathDirectory) then
+  begin
+    FileExt := GetImageStreamExt(Stream);
+
+    if not TImageMagickManager.Instance.Enabled then
     begin
-      if OptionPNGSaveAsJPEG then
-        if PNGToJPEGStream(Stream, OptionJPEGQuality) then f := 'jpg'
-    end
-    else
-    if f = 'webp' then
-    begin
-      case OptionWebPSaveAs of
-        1: if WebPToPNGStream(Stream, Tcompressionlevel(OptionPNGCompressionLevel)) then f := 'png';
-        2: if WebPToJPEGStream(Stream, OptionJPEGQuality) then f := 'jpg';
+      if FileExt = 'png' then
+      begin
+        if OptionPNGSaveAsJPEG then
+        begin
+          if PNGToJPEGStream(Stream, OptionJPEGQuality) then
+          begin
+            FileExt := 'jpg';
+          end;
+        end;
+      end
+      else if FileExt = 'webp' then
+      begin
+        case OptionWebPSaveAs of
+          1: if WebPToPNGStream(Stream, Tcompressionlevel(OptionPNGCompressionLevel)) then
+             begin
+               FileExt := 'png';
+             end;
+          2: if WebPToJPEGStream(Stream, OptionJPEGQuality) then
+             begin
+               FileExt := 'jpg';
+             end;
+        end;
       end;
     end;
 
-    if f = '' then Exit;
-    f := p + FileName + '.' + f;
-    if FileExists(f) then DeleteFile(f);
+    if FileExt = '' then
+    begin
+      Exit;
+    end;
+
+    FilePath := PathDirectory + FileName + '.' + FileExt;
+    FilePath := MainForm.CheckLongNamePaths(FilePath);
+
+    if FileExists(FilePath) then
+    begin
+      DeleteFile(FilePath);
+    end;
+
     try
-      fs := TFileStream.Create(f, fmCreate);
+      FileStream := TFileStream.Create(FilePath, fmCreate);
       try
         Stream.Position := 0;
-        fs.CopyFrom(Stream, Stream.Size);
+        FileStream.CopyFrom(Stream, Stream.Size);
       finally
-        fs.Free;
+        FileStream.Free;
       end;
     except
       on E: Exception do
-        SendLogException('SaveImageStreamToFile.WriteToFile Failed! ' + f, E);
+        SendLogException('SaveImageStreamToFile.WriteToFile Failed! ' + FilePath, E);
     end;
-    if FileExists(f) then
+
+    if FileExists(FilePath) then
     begin
-      Result := f;
+      Result := FilePath;
       if Age > 0 then
+      begin
         try
-          FileSetDateUTF8(f, Age);
+          FileSetDateUTF8(FilePath, Age);
         except
           on E: Exception do
-            SendLogException('SaveImageStreamToFile.FileSetDate Error! ' + f, E);
+            SendLogException('SaveImageStreamToFile.FileSetDate Error! ' + FilePath, E);
         end;
+      end;
     end;
   end;
 end;
@@ -2336,19 +2473,36 @@ end;
 function ImageFileExists(const AFileName: String): Boolean;
 begin
   Result := FindImageFile(AFileName) <> '';
+end; 
+
+function ImageFileExtExists(const AFileName, AFileExt: String): Boolean;
+begin
+  Result := FindImageFile(AFileName, AFileExt) <> '';
 end;
 
-function FindImageFile(const AFileName: String): String;
+function FindImageFile(const AFileName: String; AFileExt: String = ''): String;
 var
   i: TImageHandlerRec;
   s: String;
 begin
+  if AFileExt <> '' then
+  begin
+    s := AFileName + '.' + AFileExt;
+    if FileExists(s) then
+    begin
+      Exit(s);
+    end;
+  end;
+
   for i in ImageHandlerMgr.List do
   begin
     s := AFileName + '.' + i.Ext;
     if FileExists(s) then
+    begin
       Exit(s);
+    end;
   end;
+
   Result := '';
 end;
 
@@ -2599,6 +2753,7 @@ procedure TransferMangaInfo(var dest: TMangaInfo; const Source: TMangaInfo);
 begin
   dest.URL := Source.URL;
   dest.Title := Source.Title;
+  dest.AltTitles := Source.AltTitles;
   dest.Link := Source.Link;
   dest.Module := Source.Module;
   dest.CoverLink := Source.CoverLink;
@@ -2613,20 +2768,31 @@ begin
 end;
 
 function MangaInfoStatusIfPos(const SearchStr: String; const OngoingStr: String;
-  const CompletedStr: String): String;
+  const CompletedStr: String; const HiatusStr: String; const CancelledStr: String): String;
 var
-  s, o, c: String;
+  s, o, c, h, ca: String;
   function searchMany(const t: String): Boolean;
   var
     i: String;
   begin
+    if t = '' then
+    begin
+      Exit(False);
+    end;
+
     if Pos('|', t) = 0 then
-       Result := Pos(t, s) <> 0
+    begin
+       Result := Pos(t, s) <> 0;
+    end
     else
     begin
       for i in t.Split(['|']) do
+      begin
         if Pos(i, s) <> 0 then
+        begin
           Exit(True);
+        end;
+      end;
       Result := False
     end;
   end;
@@ -2636,27 +2802,35 @@ begin
   s := LowerCase(SearchStr);
   o := LowerCase(OngoingStr);
   c := LowerCase(CompletedStr);
-  if o <> '' then
+  h := LowerCase(HiatusStr);
+  ca := LowerCase(CancelledStr);
+
+  if searchMany(o) then
   begin
-    if searchMany(o) then
-      Result := MangaInfo_StatusOngoing
-    else if c = '' then
-      Result := MangaInfo_StatusCompleted
-    else if searchMany(c) then
-      Result := MangaInfo_StatusCompleted
+    Result := MangaInfo_StatusOngoing
   end
-  else if c <> '' then
+  else if searchMany(c) then
   begin
-    if searchMany(c) then
-      Result := MangaInfo_StatusCompleted
-    else if searchMany(o) then
-      Result := MangaInfo_StatusOngoing;
+    Result := MangaInfo_StatusCompleted
+  end
+  else if searchMany(h) then
+  begin
+    Result := MangaInfo_StatusHiatus
+  end
+  else if searchMany(ca) then
+  begin
+    Result := MangaInfo_StatusCancelled
+  end
+  else
+  begin
+    Result := RS_InfoStatus_Unknown
   end;
 end;
 
 procedure GetBaseMangaInfo(const M: TMangaInfo; var B: TBaseMangaInfo);
 begin
   B.title := M.Title;
+  B.alttitles := M.AltTitles;
   B.authors := M.Authors;
   B.artists := M.Artists;
   B.genres := M.Genres;
@@ -2668,6 +2842,7 @@ end;
 procedure FillBaseMangaInfo(const M: TMangaInfo; var B: TBaseMangaInfo);
 begin
   if Trim(M.Title) = '' then M.Title := B.title;
+  if Trim(M.AltTitles) = '' then M.AltTitles := B.alttitles;
   if Trim(M.Authors) = '' then M.Authors := B.authors;
   if Trim(M.Artists) = '' then M.Artists := B.artists;
   if Trim(M.Genres) = '' then M.Genres := B.genres;
@@ -2796,10 +2971,16 @@ begin
   Result := TModuleContainer(Module).Name;
 end;
 
+function TMangaInfo.FullLink: String;
+begin
+  Result := FillHost(TModuleContainer(Module).RootURL, Link);
+end;
+
 procedure TMangaInfo.Clear;
 begin
   URL := '';
   Title := '';
+  AltTitles := '';
   Link := '';
   CoverLink := '';
   Authors := '';
@@ -2818,6 +2999,7 @@ begin
   Result := TMangaInfo.Create;
   Result.URL := URL;
   Result.Title := Title;
+  Result.AltTitles := AltTitles;
   Result.Link := Link;
   Result.CoverLink := CoverLink;
   Result.Authors := Authors;

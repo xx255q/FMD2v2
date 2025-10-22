@@ -12,7 +12,7 @@ interface
 
 uses
   Classes, SysUtils, typinfo, fgl, uData, LazFileUtils, uBaseUnit, uMisc,
-  WebsiteModules, DBDataProcess, FMDOptions, httpsendthread,
+  WebsiteModules, DBDataProcess, FMDOptions, httpsendthread, uCustomControls,
   BaseThread, MultiLog, ExtCtrls, Forms, Controls, Buttons, Graphics;
 
 type
@@ -119,6 +119,7 @@ type
   end;
   
 resourcestring
+  RS_DlgUpdateListCheckIsRunning = 'Update list(s) is running!';
   RS_UpdatingList = 'Updating list';
   RS_GettingDirectory = 'Getting directory';
   RS_LookingForNewTitle = 'Looking for new title(s)';
@@ -137,11 +138,11 @@ resourcestring
 implementation
 
 uses
-  frmMain, FMDVars, LuaWebsiteModuleHandler, Dialogs;
+  frmMain, frmCustomMessageDlg, FMDVars, LuaWebsiteModuleHandler, Dialogs;
 
 const
-  CL_ProgressBarBaseLine = $bcbcbc;
-  CL_ProgressBarBase     = $e6e6e6;
+  CL_ProgressBarBaseLine = clBtnFace;
+  CL_ProgressBarBase     = clWindow;
   CL_ProgressBarLine     = $25b006;
   CL_ProgressBar         = $42d932;
 
@@ -245,8 +246,8 @@ begin
             begin
               for i:=0 to links.Count-1 do
               begin
-                if FOwner.mainDataProcess.AddData(names[i],links[i],'','','','','',0,0) then
-                  FOwner.tempDataProcess.AddData(names[i],links[i],'','','','','',0,0)
+                if FOwner.mainDataProcess.AddData(names[i],'',links[i],'','','','','',0,0) then
+                  FOwner.tempDataProcess.AddData(names[i],'',links[i],'','','','','',0,0)
                 else if (FOwner.isFinishSearchingForNewManga=False) and FOwner.module.SortedList and (not FOwner.InvertedList) then
                   FOwner.isFinishSearchingForNewManga:=True;
               end;
@@ -255,7 +256,7 @@ begin
             else
             begin
               for i:=0 to links.Count-1 do
-                FOwner.tempDataProcess.AddData(names[i],links[i],'','','','','',0,0);
+                FOwner.tempDataProcess.AddData(names[i],'',links[i],'','','','','',0,0);
             end;
             FOwner.tempDataProcess.Commit;
           finally
@@ -433,8 +434,8 @@ end;
 
 procedure TUpdateListManagerThread.DlgReport;
 begin
-  MessageDlg('', Format(RS_DlgHasNewManga, [module.Name, tempDataProcess.RecordCount]),
-    mtInformation, [mbYes], 0);
+  CenteredMessageDlg(MainForm, Format(RS_DlgHasNewManga, [module.Name, tempDataProcess.RecordCount]),
+    mtInformation, [mbOK], 0);
 end;
 
 procedure TUpdateListManagerThread.CheckOut(const alimit: Integer; const acs: TCheckStyleType);
@@ -577,6 +578,7 @@ begin
       FProgressBarPercentsRect.Inflate(-2, -2);
       GradientFill(FProgressBarPercentsRect, BlendColor(Brush.Color, CL_ProgressBarBase, 128), Brush.Color, gdHorizontal);
     end;
+    Font.Color := clWindowText;
     Brush.Style := bsClear;
     txtHeight := GetTextHeight(FStatusText);
     TextRect(FStatusTextRect, FStatusTextRect.Left, FStatusTextRect.Top + ((FStatusTextRect.Bottom - FStatusTextRect.Top - txtHeight) div 2), FStatusText);
@@ -591,6 +593,7 @@ end;
 procedure TUpdateListManagerThread.StatusBarShowHint(Sender: TObject;
   HintInfo: PHintInfo);
 begin
+  HintInfo^.HintWindowClass := TCustomHintWindow;
   HintInfo^.HintStr := Trim(websites.Text);
 end;
 
@@ -725,6 +728,7 @@ begin
               begin
                 mainDataProcess.AddData(
                   tempDataProcess.Value[k,DATA_PARAM_TITLE],
+                  '',
                   tempDataProcess.Value[k,DATA_PARAM_LINK],
                   '',
                   '',

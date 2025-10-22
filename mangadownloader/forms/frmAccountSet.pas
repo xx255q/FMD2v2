@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls, Buttons;
+  ExtCtrls, Buttons, uCustomControls;
 
 type
 
@@ -16,8 +16,8 @@ type
     btOk: TBitBtn;
     btCancel: TBitBtn;
     ckShowPassword: TCheckBox;
-    edUsername: TEdit;
-    edPassword: TEdit;
+    edPassword: TCustomEdit;
+    edUsername: TCustomEdit;
     Label2: TLabel;
     Label3: TLabel;
     procedure btOkClick(Sender: TObject);
@@ -36,19 +36,31 @@ resourcestring
 
 implementation
 
+uses
+  frmCustomMessageDlg;
+
 {$R *.lfm}
 
 { TAccountSetForm }
 
 procedure TAccountSetForm.btOkClick(Sender: TObject);
 begin
-  if (edUsername.Text = '') or (edPassword.Text = '') then begin
-    MessageDlg(RS_CantBeEmpty, mtError, [mbOK], 0);
-    if edUsername.Text = '' then edUsername.SetFocus
-    else edPassword.SetFocus;
+  if (edUsername.Text = '') or (edPassword.Text = '') then
+  begin
+    CenteredMessageDlg(Self, RS_CantBeEmpty, mtError, [mbOK], 0);
+    if edUsername.Text = '' then
+    begin
+      edUsername.SetFocus;
+    end
+    else
+    begin
+      edPassword.SetFocus;
+    end;
   end
   else
+  begin
     ModalResult := mrOK;
+  end;
 end;
 
 procedure TAccountSetForm.ckShowPasswordEditingDone(Sender: TObject);

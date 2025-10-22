@@ -11,8 +11,8 @@ object LuaModulesUpdaterForm: TLuaModulesUpdaterForm
   ClientWidth = 580
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '2.1.0.0'
-  object vtLuaModulesRepos: TLazVirtualStringTree
+  LCLVersion = '3.8.0.0'
+  object vtLuaModulesRepos: TVirtualStringTree
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = btCheckUpdate
     AnchorSideTop.Side = asrBottom
@@ -52,6 +52,7 @@ object LuaModulesUpdaterForm: TLuaModulesUpdaterForm
     TabOrder = 3
     TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toShowVertGridLines, toThemeAware, toUseBlendedImages, toFullVertGridLines]
     TreeOptions.SelectionOptions = [toFullRowSelect, toMultiSelect]
+    OnBeforeCellPaint = vtLuaModulesReposBeforeCellPaint
     OnCompareNodes = vtLuaModulesReposCompareNodes
     OnGetText = vtLuaModulesReposGetText
     OnGetImageIndex = vtLuaModulesReposGetImageIndex
@@ -164,7 +165,7 @@ object LuaModulesUpdaterForm: TLuaModulesUpdaterForm
     Left = 155
     Height = 19
     Top = 8
-    Width = 135
+    Width = 133
     BorderSpacing.Left = 10
     Caption = 'Show update warning'
     Checked = True
@@ -175,16 +176,16 @@ object LuaModulesUpdaterForm: TLuaModulesUpdaterForm
     AnchorSideLeft.Control = ckShowUpdateWarning
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = ckShowUpdateWarning
-    Left = 292
+    Left = 290
     Height = 19
     Top = 8
-    Width = 82
+    Width = 80
     Caption = 'Auto restart'
     TabOrder = 2
   end
   object imStates: TImageList
-    left = 200
-    top = 128
+    Left = 200
+    Top = 128
     Bitmap = {
       4C7A070000001000000010000000A70B00000000000078DAED987B5454E516C0
       F71C7C0C84CC0C20E1F07EF8C0170A859A51E6E38A29699A4A4A1A7A9D16892D
@@ -286,7 +287,7 @@ object LuaModulesUpdaterForm: TLuaModulesUpdaterForm
     Enabled = False
     Interval = 500
     OnTimer = tmRepaintListTimer
-    left = 61
-    top = 119
+    Left = 61
+    Top = 119
   end
 end

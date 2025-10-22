@@ -13,7 +13,7 @@ interface
 uses
   Classes, SysUtils, fgl, Dialogs, ExtCtrls,
   LazFileUtils, uBaseUnit, uData, uDownloadsManager, WebsiteModules, FMDOptions,
-  httpsendthread, FavoritesDB, BaseThread, SQLiteData, MultiLog, SimpleException, Laz.VirtualTrees;
+  httpsendthread, FavoritesDB, BaseThread, SQLiteData, MultiLog, SimpleException, VirtualTrees;
 
 type
   TFavoriteManager = class;
@@ -87,12 +87,14 @@ type
     destructor Destroy; override;
   public
     procedure DBInsert; inline;
+    procedure DBReplace(const OldId: String); inline;
     procedure DBUpdateTitle; inline;
     procedure DBUpdateEnabled; inline;
     procedure DBUpdateDateLastChecked; inline;
     procedure DBUpdateSaveTo; inline;
     procedure DBUpdateLastUpdated; inline;
   published
+    property ID: String read Fid;
     property Enabled: Boolean read FEnabled write SetEnabled;
   end;
 
@@ -136,7 +138,9 @@ type
     function LocateMangaByLink(const AModuleID, ALink: String): TFavoriteContainer;
     function IsMangaExistByLink(const AModuleID, ALink: String): Boolean; inline;
     // Add new manga to the list
-    procedure Add(const AModule: Pointer; const ATitle, AStatus, ACurrentChapter, ADownloadedChapterList, ASaveTo, ALink: String);
+    procedure Add(const AModule: Pointer; const ATitle, AStatus, ACurrentChapter, ADownloadedChapterList, ASaveTo, ALink: String; AEnabled: Boolean = True);
+    // Replace manga from same site
+    procedure Replace(const OldId: String; const AModule: Pointer; const ATitle, AStatus, ACurrentChapter, ADownloadedChapterList, ASaveTo, ALink: String);
     // Delete directly, must be inside lock/unlock
     procedure Delete(const Pos: Integer);
     procedure Remove(const T: TFavoriteContainer);
@@ -180,7 +184,7 @@ resourcestring
 implementation
 
 uses
-  frmMain, frmNewChapter, FMDVars, DateUtils;
+  frmMain, frmCustomMessageDlg, frmNewChapter, FMDVars, DateUtils;
 
 { TFavoriteContainer }
 
@@ -226,6 +230,26 @@ begin
   Fid:=LowerCase(FavoriteInfo.ModuleID+FavoriteInfo.Link);
   with FavoriteInfo do
     FManager.FFavoritesDB.Add(
+      Fid,
+      FOrder,
+      FEnabled,
+      ModuleID,
+      Link,
+      Title,
+      Status,
+      CurrentChapter,
+      DownloadedChapterList,
+      SaveTo,
+      DateAdded
+      );
+end;
+
+procedure TFavoriteContainer.DBReplace(const OldId: String);
+begin
+  Fid := LowerCase(FavoriteInfo.ModuleID+FavoriteInfo.Link);
+  with FavoriteInfo do
+    FManager.FFavoritesDB.Replace(
+      OldId,
       Fid,
       FOrder,
       FEnabled,
@@ -684,7 +708,9 @@ begin
     if isRunning then
     begin
       if not isAuto then
-        MessageDlg('', RS_DlgFavoritesCheckIsRunning, mtInformation, [mbOK], 0);
+      begin
+        CenteredMessageDlg(MainForm, RS_DlgFavoritesCheckIsRunning, mtInformation, [mbOK], 0);
+      end;
     end
     else
     begin
@@ -978,7 +1004,7 @@ begin
 end;
 
 procedure TFavoriteManager.Add(const AModule: Pointer; const ATitle, AStatus, ACurrentChapter,
-  ADownloadedChapterList, ASaveTo, ALink: String);
+  ADownloadedChapterList, ASaveTo, ALink: String; AEnabled: Boolean);
 var
   F: TFavoriteContainer;
 begin
@@ -987,6 +1013,7 @@ begin
   try
     if IsMangaExist(ATitle, TModuleContainer(AModule).ID) then Exit;
     F:=TFavoriteContainer.Create(Self);
+    F.Enabled := AEnabled;
     F.FOrder:=Items.Add(F);
     with F.FavoriteInfo do begin
       Module := AModule;
@@ -1009,8 +1036,43 @@ begin
     Sort(SortColumn);
 end;
 
+procedure TFavoriteManager.Replace(const OldId: String; const AModule: Pointer; const ATitle, AStatus, ACurrentChapter,
+  ADownloadedChapterList, ASaveTo, ALink: String);
+var
+  F: TFavoriteContainer;
+begin
+  if AModule = nil then Exit;
+  Lock;
+  try
+    F:=TFavoriteContainer.Create(Self);
+    F.FOrder:=Items.Add(F);
+    with F.FavoriteInfo do begin
+      Module := AModule;
+      Title := ATitle;
+      Status := AStatus;
+      CurrentChapter := ACurrentChapter;
+      SaveTo := ASaveTo;
+      Link := ALink;
+      DownloadedChapterList := ADownloadedChapterList;
+      DateAdded := Now;
+      DateLastChecked := Now;
+      DateLastUpdated := Now;
+    end;
+    F.Status:=STATUS_IDLE;
+    F.DBReplace(OldId);
+  finally
+    UnLock;
+  end;
+  if not isRunning then
+    Sort(SortColumn);
+end;
+
 procedure TFavoriteManager.Delete(const Pos: Integer);
 begin
+  if Items[Pos].FEnabled then
+  begin
+    Dec(FEnabledCount);
+  end;
   FFavoritesDB.Delete(Items[Pos].Fid);
   Items[Pos].Free;
   Items.Delete(Pos);
@@ -1019,6 +1081,10 @@ end;
 
 procedure TFavoriteManager.Remove(const T: TFavoriteContainer);
 begin
+  if T.FEnabled then
+  begin
+    Dec(FEnabledCount);
+  end;
   FFavoritesDB.Delete(T.Fid);
   T.Free;
   Items.Remove(T);
@@ -1109,7 +1175,8 @@ function CompareFavoriteContainer(const Item1, Item2: TFavoriteContainer): Integ
         1: Result := Title;
         2: Result := currentChapter;
         3: Result := Website;
-        4: Result := SaveTo;
+        4: Result := Status;
+        5: Result := SaveTo;
         else
           Result := '';
       end;
@@ -1119,16 +1186,16 @@ function CompareFavoriteContainer(const Item1, Item2: TFavoriteContainer): Integ
   begin
     with ARow.FavoriteInfo do
       case ARow.FManager.SortColumn of
-        5: Result := DateAdded;
-        6: Result := DateLastChecked;
-        7: Result := DateLastUpdated;
+        6: Result := DateAdded;
+        7: Result := DateLastChecked;
+        8: Result := DateLastUpdated;
         else
           Result := Now;
       end;
   end;
 
 begin
-  if (Item1.FManager.SortColumn >= 5) and (Item1.FManager.SortColumn <= 7) then
+  if (Item1.FManager.SortColumn >= 6) and (Item1.FManager.SortColumn <= 8) then
   begin
     if Item1.FManager.SortDirection then
       Result := CompareDateTime(GetDateTime(Item2), GetDateTime(Item1))

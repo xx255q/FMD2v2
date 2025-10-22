@@ -54,9 +54,9 @@ String.prototype.sup = function () { return "<sup>" + this + "</sup>"; };
 
 	local answer, timeout = duktape.ExecJS(challenge)
 	if (answer == nil) or (answer == 'NaN') or (answer == '') then
-		-- LOGGER.SendError('WebsitBypass[cloudflare]: IUAM challenge detected but failed to solve the javascript challenge\r\n' .. url .. '\r\n' .. body)
-		-- LOGGER.SendError('WebsitBypass[cloudflare]: IUAM challenge detected but failed to solve the javascript challenge\r\n' .. url .. '\r\n' .. challenge)
-		LOGGER.SendError('WebsitBypass[cloudflare]: IUAM challenge detected but failed to solve the javascript challenge\r\n' .. url)
+		-- LOGGER.SendError('WebsiteBypass[cloudflare]: IUAM challenge detected but failed to solve the javascript challenge\r\n' .. url .. '\r\n' .. body)
+		-- LOGGER.SendError('WebsiteBypass[cloudflare]: IUAM challenge detected but failed to solve the javascript challenge\r\n' .. url .. '\r\n' .. challenge)
+		LOGGER.SendError('WebsiteBypass[cloudflare]: IUAM challenge detected but failed to solve the javascript challenge\r\n' .. url)
 	else
 		answer = answer:match('"jschl%-answer":.-"value":"(.-)"')
 		timeout = tonumber(answer:match('"timeout":(%d+)')) or 4000
@@ -82,7 +82,7 @@ function _m.solveIUAMChallenge(self, body, url)
 
 	local form, challengeUUID = body:match('<form (.-="challenge%-form" action="(.-__cf_chl_jschl_tk__=%S+)"(.-)</form>)')
 	if (form == nil) or (challengeUUID == nil) then
-		LOGGER.SendError('WebsitBypass[cloudflare]: IUAM challenge detected but failed to parse the form\r\n' .. url)
+		LOGGER.SendError('WebsiteBypass[cloudflare]: IUAM challenge detected but failed to parse the form\r\n' .. url)
 		return 0
 	end
 	challengeUUID = challengeUUID:gsub('&amp;', '&')
@@ -100,7 +100,7 @@ function _m.solveIUAMChallenge(self, body, url)
 
 	local i = 0; for _ in pairs(payload) do i = i + 1 end
 	if i == 0 then
-		LOGGER.SendError('WebsitBypass[cloudflare]: IUAM challenge detected but failed to parse the form payload\r\n' .. url)
+		LOGGER.SendError('WebsiteBypass[cloudflare]: IUAM challenge detected but failed to parse the form payload\r\n' .. url)
 		return 0
 	end
 	payload['jschl_answer'] = answer
@@ -126,7 +126,7 @@ function _m.solveIUAMChallenge(self, body, url)
 	local rbody = HTTP.Document.ToString()
 	if rbody:find('^Access denied%. Your IP') then
 		HTTP.ClearCookiesStorage()
-		LOGGER.SendError('WebsitBypass[cloudflare]: the server has BANNED your IP!\r\n' .. url .. '\r\n' .. rbody)
+		LOGGER.SendError('WebsiteBypass[cloudflare]: the server has BANNED your IP!\r\n' .. url .. '\r\n' .. rbody)
 		return 0
 	end
 	if HTTP.Cookies.Values["cf_clearance"] ~= "" then
@@ -139,60 +139,12 @@ end
 function _m.solveWithWebDriver(self, url)
 	local rooturl = url:match('(https?://[^/]+)') or url
 
-	local s = nil
-	print(string.format('WebsitBypass[cloudflare]: using webdriver "%s" "%s" "%s" "%s"',webdriver_exe, webdriver_script, rooturl, HTTP.UserAgent))
-	_, s = require("fmd.subprocess").RunCommandHide(webdriver_exe, webdriver_script, rooturl, HTTP.UserAgent)
-
-	if not(s) or (s=="") then
-		LOGGER.SendError("WebsitBypass[cloudflare]: webdriver doesn't return anything (timeout)\r\n" .. url)
-		return 0
-	end
-	if not s:lower():find('cf_clearance',1,true) then
-		LOGGER.SendError("WebsitBypass[cloudflare]: webdriver can't find cookie 'cf_clearance'\r\n" .. url)
-		return 0
-	end
-
-	s = require("utils.json").decode(s) or nil
-	if not s then
-		LOGGER.SendError("WebsitBypass[cloudflare]: webdriver failed to parse cookies\r\n" .. url)
-		return 0
-	end
-
-	local cookies = {}
-	local c for _, c in ipairs(s) do
-		cookie = {}
-		table.insert(cookie,c["name"].."=" .. c["value"])
-		c["name"]=nil
-		c["value"]=nil
-		if c["expiry"] then
-			c["expires"]=os.date('!%a, %d %b %Y %H:%M:%H GMT',c["expiry"])
-			c["expiry"]=nil
-		end
-		for k, v in pairs(c) do
-			if type(v) == "boolean" then
-				if v == true then table.insert(cookie,tostring(k)) end
-			else
-				table.insert(cookie,tostring(k).."="..tostring(v))
-			end
-		end
-		table.insert(cookies,table.concat(cookie,"; "))
-	end
-
-	if #cookies > 0 then
-		HTTP.AddServerCookies(table.concat(cookies,"\n"))
-		return 2
-	end
-end
-
-function _m.solveWithWebDriver2(self, url, headless)
-	local rooturl = url:match('(https?://[^/]+)') or url
-
 	local result = nil
-	print(string.format('WebsitBypass[cloudflare]: using webdriver "%s" "%s" "%s"', customwebdriver_exe, py_customcloudflare, rooturl))
-	_status, result, _errors = require("fmd.subprocess").RunCommandHide(customwebdriver_exe, py_customcloudflare, rooturl)
-	
+	print(string.format('WebsiteBypass[cloudflare]: using webdriver "%s" "%s" "%s" ',webdriver_exe, webdriver_script, rooturl))
+	_status, result, _errors = require("fmd.subprocess").RunCommandHide(webdriver_exe, webdriver_script, rooturl)
+
 	if not _status then
-		LOGGER.SendError("WebsitBypass[cloudflare]: Please make sure FlareSolverr is running.")
+		LOGGER.SendError("WebsiteBypass[cloudflare]: Please make sure rookiepy is installed. {use: pip install rookiepy}")
 		return -1
 	end
 	
@@ -202,42 +154,63 @@ function _m.solveWithWebDriver2(self, url, headless)
 	end
 	
 	local parsed_result = {}
-
+	
 	-- for each key-value pair in the JSON object...
-	for key, value in result:gmatch('"([^"]+)":%s*"([^"]*)"') do
+	for key, value in result:gmatch("'([^']+)':%s*'([^']*)'") do
 		-- remove quotes from the key
-		key = key:gsub('"', '')
+		key = key:gsub("'", "")
 		-- handle strings and other types of values
-		value = value:gsub('"', '')
+		value = value:gsub("'", "")
 
 		-- store the key-value pair in the parsed JSON object
 		parsed_result[key] = value
 	end
 	
 	if not parsed_result then
-		LOGGER.SendError("WebsitBypass[cloudflare]: webdriver2 failed to parse response\r\n" .. url)
+		LOGGER.SendError("WebsiteBypass[cloudflare]: webdriver failed to parse response\r\n" .. url)
 		return -1
 	end
 	
-	HTTP.FollowRedirection = false
-	HTTP.Reset()
-	HTTP.Headers.Values['Origin'] = ' ' .. rooturl
-	HTTP.Headers.Values['Referer'] = ' ' .. url
-	HTTP.MimeType = "application/x-www-form-urlencoded"
-	HTTP.FollowRedirection = true
-	HTTP.ClearCookiesStorage()
+	self:applyCookies(parsed_result, url)
+	return 2
+end
 
-	for key, value in pairs(parsed_result) do
-		if key == 'user_agent' then
-			HTTP.Headers.Values['user-agent'] = value
-			HTTP.UserAgent = value
-		elseif key == "cf_clearance" or key == "csrftoken" then
-			HTTP.Headers.Values['cookie'] = HTTP.Headers.Values['cookie'] .. key .. '=' .. value .. ';'
-			HTTP.Headers.Values['Set-Cookie'] = HTTP.Headers.Values['cookie'] .. key .. '=' .. value .. ';'
-			HTTP.Cookies.Values[key] = value
+function _m.solveWithWebDriver2(self, url, headless)
+	local rooturl = url:match('(https?://[^/]+)') or url
 
-		end
+	local result = nil
+	print(string.format('WebsiteBypass[cloudflare]: using webdriver "%s" "%s" "%s"', customwebdriver_exe, py_customcloudflare, rooturl))
+	_status, result, _errors = require("fmd.subprocess").RunCommandHide(customwebdriver_exe, py_customcloudflare, rooturl)
+	
+	if not _status then
+		LOGGER.SendError("WebsiteBypass[cloudflare]: Please make sure FlareSolverr is running.")
+		return -1
 	end
+	
+	if result:find("Error") then
+		print(result)
+		return 0
+	end
+	
+	local parsed_result = {}
+	
+	-- for each key-value pair in the JSON object...
+	for key, value in result:gmatch('"([^"]+)":%s*"([^"]*)"') do
+		-- remove quotes from the key
+		key = key:gsub('"', "")
+		-- handle strings and other types of values
+		value = value:gsub('"', "")
+
+		-- store the key-value pair in the parsed JSON object
+		parsed_result[key] = value
+	end
+	
+	if not parsed_result then
+		LOGGER.SendError("WebsiteBypass[cloudflare]: webdriver2 failed to parse response\r\n" .. url)
+		return -1
+	end
+	
+	self:applyCookies(parsed_result, url)
 	return 2
 end
 
@@ -245,11 +218,6 @@ function _m.solveChallenge(self, url)
 	local body = HTTP.Document.ToString()
 	local rc = HTTP.ResultCode
 	local result = 0
-
-	-- IUAM challenge
-	if ((rc == 429) or (rc == 503)) and body:find('<form .-="challenge%-form" action="/.-__cf_chl_jschl_tk__=%S+"') then
-		result = self:solveIUAMChallenge(body, url)
-	end
 
 	-- custom cloudflare bypass
 	if use_webdriver and customcloudflare and (result <= 0) then
@@ -263,8 +231,13 @@ function _m.solveChallenge(self, url)
 		result = self:solveWithWebDriver(url)
 	end
 
+	-- IUAM challenge
+	if ((rc == 429) or (rc == 503)) and body:find('<form .-="challenge%-form" action="/.-__cf_chl_jschl_tk__=%S+"') then
+		result = self:solveIUAMChallenge(body, url)
+	end
+
 	if (result <= 0) then
-		LOGGER.SendWarning('WebsitBypass[cloudflare]: no Cloudflare solution found!\r\n' .. url)
+		LOGGER.SendWarning('WebsiteBypass[cloudflare]: no Cloudflare solution found!\r\n' .. url)
 	end
 	return result
 end
@@ -279,7 +252,35 @@ end
 function creatReloadStrings()
 	local stringTable = {}
 	table.insert(stringTable, "Attention Required! | Cloudflare")
+	table.insert(stringTable, "Enable JavaScript and cookies to continue")
 	return stringTable
+end
+
+function _m.applyCookies(self, parsedJSON, url)
+	local next = next
+	if next(parsedJSON) == nil then return end
+	local rooturl = url:match('(https?://[^/]+)') or url
+
+	HTTP.FollowRedirection = false
+	HTTP.Reset()
+	HTTP.Headers.Values['Origin'] = ' ' .. rooturl
+	HTTP.Headers.Values['Referer'] = ' ' .. url
+	HTTP.MimeType = "application/x-www-form-urlencoded"
+	HTTP.FollowRedirection = true
+	HTTP.ClearCookiesStorage()
+
+	local key = ""
+	local value = ""
+	for key, value in pairs(parsedJSON) do
+		if key == "user_agent" and value ~= "" then
+			HTTP.Headers.Values["user-agent"] = value
+			HTTP.UserAgent = value
+		elseif (key == "cf_clearance" or key == "csrftoken") and value ~= "" then
+			HTTP.Headers.Values["cookie"] = HTTP.Headers.Values["cookie"] .. key .. "=" .. value .. ";"
+			HTTP.Headers.Values["Set-Cookie"] = HTTP.Headers.Values["Set-Cookie"] .. key .. "=" .. value .. ";"
+			HTTP.Cookies.Values[key] = value
+		end
+	end
 end
 
 function _m.bypass(self, METHOD, URL)
@@ -298,11 +299,8 @@ function _m.bypass(self, METHOD, URL)
 			use_webdriver = true
 			webdriver_exe = 'python'
 			webdriver_script = py_cloudflare
-		elseif fileExist(js_cloudflare) then
-			use_webdriver = true
-			webdriver_exe = 'node'
-			webdriver_script = js_cloudflare
 		end
+		
 		if fileExist(py_customcloudflare) and fileExist(flaresolverr) then
 			use_webdriver = true
 			customcloudflare = true

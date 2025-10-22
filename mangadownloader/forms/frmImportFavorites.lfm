@@ -12,7 +12,7 @@ object ImportFavorites: TImportFavorites
   ClientHeight = 127
   ClientWidth = 426
   Position = poDesktopCenter
-  LCLVersion = '1.8.4.0'
+  LCLVersion = '3.8.0.0'
   object lbSelectSoftware: TLabel
     Left = 8
     Height = 15
@@ -31,14 +31,14 @@ object ImportFavorites: TImportFavorites
     ItemHeight = 15
     ItemIndex = 0
     Items.Strings = (
-      'Domdomsoft Manga Downloader'
       'Free Manga Downloader'
+      'Domdomsoft Manga Downloader'
     )
     Style = csDropDownList
     TabOrder = 0
-    Text = 'Domdomsoft Manga Downloader'
+    Text = 'Free Manga Downloader'
   end
-  object edPath: TDirectoryEdit
+  object edPath: TCustomDirectoryEdit
     Left = 8
     Height = 23
     Top = 58

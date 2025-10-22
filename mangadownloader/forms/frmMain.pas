@@ -18,14 +18,15 @@ uses
   FakeActiveX,
   {$endif}
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, LCLType,
-  ExtCtrls, ComCtrls, Buttons, Spin, Menus, Laz.VirtualTrees, RichMemo, simpleipc, process,
-  lclproc, types, LCLIntf, EditBtn, PairSplitter, MultiLog,
-  FileChannel, FileUtil, LazUTF8Classes, LazStringUtils, TAGraph, TASources, TASeries, TATools,
+  ExtCtrls, ComCtrls, Buttons, Spin, Menus, VirtualTrees, RichMemo, simpleipc, process,
+  lclproc, types, LCLIntf, EditBtn, GroupedEdit, PairSplitter, MultiLog,
+  FileChannel, FileUtil, LazStringUtils, TAGraph, TASources, TASeries, TATools,
   AnimatedGif, uBaseUnit, uDownloadsManager, uFavoritesManager,
   uSilentThread, uMisc, uGetMangaInfosThread, frmDropTarget, frmAccountManager,
-  frmWebsiteOptionCustom, frmCustomColor, frmLogger, frmTransferFavorites,
-  frmLuaModulesUpdater, CheckUpdate, DBDataProcess,
-  SimpleTranslator, httpsendthread, DateUtils, SimpleException;
+  frmAccountSet, frmWebsiteOptionCustom, frmCustomColor, frmLogger, frmTransferFavorites,
+  frmLuaModulesUpdater, CheckUpdate, DBDataProcess, uDarkStyleParams, uWin32WidgetSetDark,
+  SimpleTranslator, httpsendthread, DateUtils, SimpleException, uCustomControls,
+  uCustomControlsMultiLog, ImageMagickManager;
 
 type
 
@@ -68,6 +69,7 @@ type
     cbOptionShowDownloadToolbarLeft: TCheckBox;
     cbOptionShowDownloadToolbarDeleteAll: TCheckBox;
     cbOptionVacuumDatabasesOnExit: TCheckBox;
+    cbOptionEnableLongNamePaths: TCheckBox;
     cbOptionUpdateListNoMangaInfo: TCheckBox;
     cbOptionDigitVolume: TCheckBox;
     cbOptionDigitChapter: TCheckBox;
@@ -76,33 +78,54 @@ type
     cbUseRegExpr: TCheckBox;
     cbOptionProxyType: TComboBox;
     cbOptionOneInstanceOnly: TCheckBox;
+    ckImageMagick: TCheckBox;
     ckPNGSaveAsJPEG: TCheckBox;
     ckOptionsAlwaysStartTaskFromFailedChapters: TCheckBox;
     ckEnableLogging: TCheckBox;
     cbWebPSaveAs: TComboBox;
     cbPNGCompressionLevel: TComboBox;
+    cbImageMagickSaveAs: TComboBox;
+    cbImageMagickCompression: TComboBox;
     deDownloadFilterCustomDateFrom: TDateEdit;
     deDownloadFilterCustomDateTo: TDateEdit;
-    edDownloadsSearch: TEditButton;
-    edFavoritesSearch: TEditButton;
-    edFilterMangaInfoChapters: TEditButton;
-    edOptionDefaultUserAgent: TEdit;
-    edLogFileName: TEditButton;
-    edOptionChangeUnicodeCharacterStr: TEdit;
-    edOptionDefaultPath: TEditButton;
-    edOptionExternalPath: TEditButton;
-    edOptionFilenameCustomRename: TEdit;
-    edOptionMangaCustomRename: TEdit;
-    edSaveTo: TEditButton;
-    edURL: TEditButton;
-    edWebsitesSearch: TEditButton;
+    edCustomGenres: TCustomEdit;
+    edDownloadsSearch: TCustomEditButton;
+    edFavoritesSearch: TCustomEditButton;
+    edFilterArtists: TCustomEdit;
+    edFilterAuthors: TCustomEdit;
+    edFilterMangaInfoChapters: TCustomEditButton;
+    edFilterSummary: TCustomEdit;
+    edFilterTitle: TCustomEdit;
+    edLogFileName: TCustomEditButton;
+    edMangaListSearch: TCustomEdit;
+    edOptionChangeUnicodeCharacterStr: TCustomEdit;
+    edOptionChapterCustomRename: TCustomEdit;
+    edOptionDefaultPath: TCustomEditButton;
+    edOptionDefaultUserAgent: TCustomEdit;
+    edOptionExternalParams: TCustomEdit;
+    edOptionExternalPath: TCustomEditButton;
+    edOptionFilenameCustomRename: TCustomEdit;
+    edOptionHost: TCustomEdit;
+    edOptionMangaCustomRename: TCustomEdit;
+    edOptionPass: TCustomEdit;
+    edOptionUser: TCustomEdit;
+    edSaveTo: TCustomEditButton;
+    edURL: TCustomEditButton;
+    edWebsitesSearch: TCustomEditButton;
     gbImageConversion: TGroupBox;
     gbOptionsConnectionsDownloads: TGroupBox;
     gbOptionsConnectiosMiscellaneous: TGroupBox;
     gbOptionsConnectionsGeneral: TGroupBox;
+    gbImageMagick: TGroupBox;
     IconDLLeft: TImageList;
+    lbImageConversionHint: TLabel;
+    lbImageMagickSaveAs: TLabel;
+    lbDarkmodeHint: TLabel;
     lbDownloadFilterCustomDateFrom: TLabel;
     lbDownloadFilterCustomDateTo: TLabel;
+    lbImageMagickCompression: TLabel;
+    lbImageMagickQuality: TLabel;
+    lbImageMagickHint: TLabel;
     lbOptionMaxFavoriteThreads: TLabel;
     lbOptionDefaultUserAgent: TLabel;
     lbOptionMaxUpdateListThreads: TLabel;
@@ -182,6 +205,7 @@ type
     sbWebsiteOptions: TScrollBox;
     btDownloadSplit: TSpeedButton;
     sbGeneralSettings: TScrollBox;
+    seImageMagickQuality: TSpinEdit;
     seOptionMaxFavoriteThreads: TSpinEdit;
     seOptionMaxUpdateListThreads: TSpinEdit;
     seOptionMaxBackgroundLoadThreads: TSpinEdit;
@@ -218,7 +242,6 @@ type
     TransferRateGraphArea: TAreaSeries;
     TransferRateGraph: TChart;
     ckDropTarget: TCheckBox;
-    edOptionExternalParams: TEdit;
     gbDropTarget: TGroupBox;
     gbOptionExternal: TGroupBox;
     IconDL: TImageList;
@@ -316,17 +339,8 @@ type
     cbFilterStatus: TComboBox;
     cbLanguages: TComboBox;
     cbOptionLetFMDDo: TComboBox;
-    edFilterSummary: TEdit;
-    edFilterTitle: TEdit;
-    edFilterAuthors: TEdit;
-    edFilterArtists: TEdit;
-    edCustomGenres: TEdit;
-    edOptionChapterCustomRename: TEdit;
-    edOptionHost: TEdit;
-    edOptionPass: TEdit;
+    cbDarkmode: TComboBox;
     edOptionPort: TEdit;
-    edOptionUser: TEdit;
-    edMangaListSearch: TEdit;
     gbDialogs: TGroupBox;
     gbOptionProxy: TGroupBox;
     gbOptionRenaming: TGroupBox;
@@ -337,6 +351,7 @@ type
     lbOptionPDFQuality: TLabel;
     lbOptionAutoCheckFavIntervalMinutes: TLabel;
     lbOptionLetFMDDo: TLabel;
+    lbDarkmode: TLabel;
     lbOptionNewMangaTime: TLabel;
     lbOptionLanguage: TLabel;
     lbFilterCustomGenres: TLabel;
@@ -444,11 +459,11 @@ type
     tsOption: TTabSheet;
     tsInformation: TTabSheet;
     tsDownload: TTabSheet;
-    clbChapterList: TLazVirtualStringTree;
-    vtOptionMangaSiteSelection: TLazVirtualStringTree;
-    vtFavorites: TLazVirtualStringTree;
-    vtDownload: TLazVirtualStringTree;
-    vtMangaList: TLazVirtualStringTree;
+    clbChapterList: TVirtualStringTree;
+    vtOptionMangaSiteSelection: TVirtualStringTree;
+    vtFavorites: TVirtualStringTree;
+    vtDownload: TVirtualStringTree;
+    vtMangaList: TVirtualStringTree;
     mangaCover: TPicture;
 
     procedure appPropertiesMainShowHint(var HintStr: String;
@@ -480,6 +495,7 @@ type
       Shift: TShiftState);
     procedure cbSelectMangaMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure ckImageMagickChange(Sender: TObject);
     procedure clbChapterListBeforeCellPaint(Sender: TBaseVirtualTree;
       TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
@@ -725,6 +741,8 @@ type
     Timer1Hour: TTimer;
     TimerBackup: TTimer;
 
+    winBuildNumber: DWORD;
+
     procedure OnTimer1Hour(Sender:TObject);
     procedure OnTimerBackup(Sender:TObject);
 
@@ -755,9 +773,18 @@ type
 
     procedure AddChapterNameToList;
 
+    // Check and set path for long path compatibilty
+    function CheckLongNamePaths(APath: String): String;
+
+    // Trim path of any spaces in folder names
+    function TrimPath(APath: String): String;
+
     // Create silent thread
     procedure AddSilentThread(URL: string; MetaDataType: TMetaDataType); overload;
     procedure AddSilentThread(URL: string); overload;
+
+    // Set TRichMemo About text attributes
+    procedure SetAboutTextAttributes;
 
     // Add text to TRichMemo
     procedure AddTextToInfo(const ATitle, AValue: String);
@@ -865,6 +892,7 @@ type
     Module: Pointer;
     Link,
     Title,
+    AltTitles,
     TitleFormat,
     Authors,
     Artists,
@@ -885,13 +913,13 @@ const
   CL_HLRedMarks         = $8080FF;
   CL_HLYellowMarks      = $80EBFE;
 
-  CL_BarGrayLine        = $bcbcbc;
-  CL_BarGray            = $e6e6e6;
+  CL_BarLine            = clBtnFace;
+  CL_Bar                = clWindow;
 
   CL_BarGreenLine       = $25b006;
   CL_BarGreen           = $42d932;
 
-  CL_BarOrangeLine       = $00b399;
+  CL_BarOrangeLine      = $00b399;
   CL_BarOrange          = $1870e9;
 
   CL_BarRedLine         = $1a1ab1;
@@ -913,8 +941,9 @@ const
   CL_BlueLight          = $f8f8f3;
 
 resourcestring
-  RS_FilterStatusItems = 'Completed'#13#10'Ongoing'#13#10'<none>';
+  RS_FilterStatusItems = 'Completed'#13#10'Ongoing'#13#10'Hiatus'#13#10'Cancelled'#13#10'<none>';
   RS_OptionFMDDoItems = 'Nothing'#13#10'Exit'#13#10'Shutdown'#13#10'Hibernate';
+  RS_Darkmode = 'System'#13#10'Dark'#13#10'Light';
   RS_DropTargetModeItems = 'Download all'#13#10'Add to favorites';
   RS_OptionCompress = 'None'#13#10'ZIP'#13#10'CBZ'#13#10'PDF'#13#10'EPUB';
   RS_WebPConvertTo = 'WebP'#13#10'PNG'#13#10'JPEG';
@@ -932,7 +961,7 @@ resourcestring
   RS_DlgUpdaterIsRunning = 'Updater is running!';
   RS_DlgTypeInNewChapter = 'Type in new chapter:';
   RS_DlgTypeInNewSavePath = 'Type in new save path:';
-  RS_DlgUpdaterWantToUpdateDB = 'Do you want to download manga list from the server?';
+  RS_DlgUpdaterWantToUpdateDB = 'Do you want to download manga list from FMD server?';
   RS_DlgRemoveFinishTasks = 'Are you sure you want to delete all finished tasks?';
   RS_DlgCannotGetMangaInfo = 'Cannot get manga info. Please check your internet connection and try it again.';
   RS_DlgCannotConnectToServer = 'Cannot connect to the server.';
@@ -968,10 +997,12 @@ resourcestring
   RS_Selected = 'Selected: %d';
   RS_InfoWebsite = 'Website:';
   RS_InfoTitle = 'Title:';
+  RS_InfoAltTitles = 'Alternative Title(s):';
   RS_InfoAuthors = 'Author(s):';
   RS_InfoArtists = 'Artist(s):';
   RS_InfoGenres = 'Genre(s):';
   RS_InfoStatus = 'Status:';
+  RS_InfoStatus_Unknown = 'Unknown';
   RS_InfoSummary = 'Summary:';
   RS_FMDAlreadyRunning = 'Free Manga Downloader already running!';
   RS_ModeSearching = 'Mode: Searching...';
@@ -992,8 +1023,8 @@ uses
   {$endif}
   frmImportFavorites, frmShutdownCounter, frmSelectDirectory,
   frmWebsiteSettings, WebsiteModules, uUpdateThread, FMDVars, RegExpr, sqlite3dyn, Clipbrd,
-  ssl_openssl_lib, LazFileUtils, LazUTF8, webp, DBUpdater, pcre2, pcre2lib, dynlibs,
-  LuaWebsiteModules, LuaBase, uBackupSettings;
+  ssl_openssl3_lib, LazFileUtils, LazUTF8, webp, DBUpdater, pcre2, pcre2lib, dynlibs,
+  LuaWebsiteModules, LuaBase, uBackupSettings, frmCustomMessageDlg;
 
 var
   // thread for open db
@@ -1017,10 +1048,16 @@ begin
   begin
     Screen.UpdateMonitors;
     Screen.UpdateScreen;
+
     if Screen.MonitorCount < MainForm.Monitor.MonitorNum then
+    begin
       MainForm.DefaultMonitor := dmMainForm;
+    end;
+
     if (MainForm.Left > Screen.Width) or (MainForm.Top > Screen.Height) then
+    begin
       MainForm.MoveToDefaultPosition;
+    end;
   end;
   Result := CallWindowProc(PrevWndProc, Ahwnd, uMsg, WParam, LParam);
 end;
@@ -1030,11 +1067,19 @@ procedure ChangeAllCursor(const ParentControl: TWinControl; const Cur: TCursor);
 var
   i: Integer;
 begin
-  if ParentControl = nil then Exit;
+  if ParentControl = nil then
+  begin
+    Exit;
+  end;
+
   ParentControl.Cursor := Cur;
   if ParentControl.ControlCount > 0 then
+  begin
     for i := 0 to ParentControl.ControlCount - 1 do
+    begin
       ParentControl.Controls[i].Cursor := Cur;
+    end;
+  end;
 end;
 
 { TSearchDBThread }
@@ -1175,6 +1220,7 @@ procedure TMainForm.FormCreate(Sender: TObject);
 begin
   Randomize;
   FormMain := Self;
+  winBuildNumber := 0;
   {$ifdef windows}
   PrevWndProc := windows.WNDPROC(windows.GetWindowLongPtr(Self.Handle, GWL_WNDPROC));
   windows.SetWindowLongPtr(Self.Handle, GWL_WNDPROC, PtrInt(@WndCallback));
@@ -1185,13 +1231,19 @@ begin
   isStartup := True;
   isRunDownloadFilter := False;
   isUpdating := False;
-  isPendingExitCounter:=False;
-  isNormalExit:=False;
+  isPendingExitCounter := False;
+  isNormalExit := False;
   DoAfterFMD := DO_NOTHING;
   Application.HintHidePause := 10000;
 
   ForceDirectoriesUTF8(USERDATA_FOLDER);
   ForceDirectoriesUTF8(DATA_FOLDER);
+
+  if IsDarkModeEnabled then
+  begin
+    TryEnforceDarkStyleForCtrl(rmAbout);
+    TryEnforceDarkStyleForCtrl(rmInformation);
+  end;
 
   // load about
   LoadAbout;
@@ -1200,9 +1252,13 @@ begin
   if FileExistsUTF8(OLD_CURRENT_UPDATER_EXE) then
   begin
     if FileExistsUTF8(CURRENT_UPDATER_EXE) then
-      DeleteFileUTF8(OLD_CURRENT_UPDATER_EXE)
+    begin
+      DeleteFileUTF8(OLD_CURRENT_UPDATER_EXE);
+    end
     else
+    begin
       RenameFileUTF8(OLD_CURRENT_UPDATER_EXE, CURRENT_UPDATER_EXE);
+    end;
   end;
 
   // TrayIcon
@@ -1234,8 +1290,10 @@ begin
   seOptionMaxParallel.MaxValue := MAX_TASKLIMIT;
   seOptionMaxThread.MaxValue := MAX_CONNECTIONPERHOSTLIMIT;
 
-  if cbFilterStatus.Items.Count > 2 then
-    cbFilterStatus.ItemIndex := 2;
+  if cbFilterStatus.Items.Count > 4 then
+  begin
+    cbFilterStatus.ItemIndex := 4;
+  end;
 
   InitCheckboxes;
 
@@ -1296,10 +1354,16 @@ begin
   // logger
   FormLogger := TFormLogger.Create(Self);
 
+  // initialize ImageMagick check
+  TImageMagickManager.Initialize;
+
+  // Custom Message Dialog
+  CustomMessageDlg := TCustomMessageDlg.Create(Self);
+
   // hint
   ShowHint := True;
   Application.HintPause := 500;
-  Application.HintHidePause := 3000;
+  Application.HintHidePause := 5000;
 
   // transfer rate graph
   TransferRateGraphList.DataPoints.NameValueSeparator := '|';
@@ -1307,13 +1371,15 @@ begin
 
   // minimize on start
   if settingsfile.ReadBool('general', 'MinimizeOnStart', False) then
+  begin
     Application.ShowMainForm := False;
+  end;
 
   LoadFormInformation;
   CollectLanguagesFromFiles;
   ApplyLanguage;
 
-  tmStartup:=TTimer.Create(self);
+  tmStartup := TTimer.Create(self);
   with tmStartup do
   begin
     OnTimer := @tmStartupTimer;
@@ -1321,29 +1387,32 @@ begin
     Enabled := True;
   end;
 
-  Timer1Hour:=TTimer.Create(Self);
+  Timer1Hour := TTimer.Create(Self);
   with Timer1Hour do
   begin
-    OnTimer:=@OnTimer1Hour;
-    Interval:=1000*60*60;
-    Enabled:=True;
+    OnTimer := @OnTimer1Hour;
+    Interval := 1000 * 60 * 60;
+    Enabled := True;
   end;
 
-  TimerBackup:=TTimer.Create(Self);
+  TimerBackup := TTimer.Create(Self);
   with Timer1Hour do
   begin
-    OnTimer:=@OnTimerBackup;
-    Interval:=1000*60*TimerBackupInterval;
-    Enabled:=True;
+    OnTimer := @OnTimerBackup;
+    Interval := 1000 * 60 * TimerBackupInterval;
+    Enabled := True;
   end;
 
-  Self.Caption := Self.Caption + ' v' + FMD_VERSION_STRING;
   AddToAboutStatus(RS_Version, FMD_VERSION_STRING, pnAboutVersion);
   if REVISION_NUMBER <> '' then
+  begin
     AddToAboutStatus(RS_Revision, REVISION_NUMBER+' ('+REVISION_SHA+')', pnAboutVersion);
+  end;
 
   if AlwaysLoadLuaFromFile then
+  begin
     Caption := Caption + ' --lua-dofile';
+  end;
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -1351,7 +1420,7 @@ begin
   if (END_SESSION=False) and
     (cbOptionShowQuitDialog.Checked and (DoAfterFMD = DO_NOTHING) and (not OptionRestartFMD)) then
   begin
-    if MessageDlg('', RS_DlgQuit, mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
+    if CenteredMessageDlg(Self, RS_DlgQuit, mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
     begin
       Logger.Send(Self.ClassName+'.FormClose aborted!');
       CloseAction := caNone;
@@ -1425,7 +1494,7 @@ begin
     FMDInstance.StopServer;
     FreeAndNil(FMDInstance);
   end;
-  isNormalExit:=True;
+  isNormalExit := True;
 
   Logger.Send('NormalExit', isNormalExit);
 end;
@@ -2137,15 +2206,26 @@ end;
 procedure TMainForm.miDownloadDeleteTaskClick(Sender: TObject);
 var
   xNode: PVirtualNode;
-  i: Integer;
+  deletedxNodes: array of PVirtualNode;
+  i, x: Integer;
   f, d, s: String;
 begin
-  if vtDownload.SelectedCount = 0 then Exit;
-  if DLManager.Count = 0 then Exit;
-  if (cbOptionShowDeleteTaskDialog.Checked) then
-    if MessageDlg('', RS_DlgRemoveTask,
-      mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
+  if vtDownload.SelectedCount = 0 then
+  begin
+    Exit;
+  end;
+  if DLManager.Count = 0 then
+  begin
+    Exit;
+  end;
+  if cbOptionShowDeleteTaskDialog.Checked then
+  begin
+    if CenteredMessageDlg(Self, RS_DlgRemoveTask, mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
+    begin
       Exit;
+    end;
+  end;
+
   vtDownload.BeginUpdate;
   DLManager.Lock;
   try
@@ -2161,7 +2241,10 @@ begin
         end;
       xNode := vtDownload.GetPreviousSelected(xNode);
     end;
+
     // cleaning the data
+    Setlength(deletedxNodes, vtDownload.SelectedCount);
+    x := 0;
     xNode := vtDownload.GetPreviousSelected(nil);
     while Assigned(xNode) do
     begin
@@ -2169,25 +2252,37 @@ begin
       with DLManager.Items[xNode^.Index] do
       begin
         if Running then
+        begin
           TaskThread.WaitFor;
-        if (Sender = miDownloadDeleteTaskData) or (Sender = miDownloadDeleteTaskDataFavorite)
+        end;
+
+        if ((Sender = miDownloadDeleteTaskData) or (Sender = miDownloadDeleteTaskDataFavorite))
           and (ChapterNames.Count > 0) then
         begin
           d := CorrectPathSys(DownloadInfo.SaveTo);
-          for i := 0 to ChapterNames.Count - 1 do begin
+          for i := 0 to ChapterNames.Count - 1 do
+          begin
             f := CorrectPathSys(d + ChapterNames[i]);
             if DirectoryExistsUTF8(f) then
+            begin
               DeleteDirectory(f, False);
+            end;
             f := RemovePathDelim(f);
             for s in FMDSupportedPackedOutputExt do
+            begin
               if FileExistsUTF8(f + s) then
+              begin
                 DeleteFileUTF8(f + s);
+              end;
+            end;
           end;
           RemoveDirUTF8(d);
         end;
+
         if (Sender = miDownloadDeleteTaskDataFavorite) and
           (FavoriteManager.Items.Count <> 0) and
           (FavoriteManager.isRunning = False) then
+        begin
           try
             FavoriteManager.Lock;
             for i := 0 to FavoriteManager.Count - 1 do
@@ -2202,6 +2297,10 @@ begin
           finally
             FavoriteManager.UnLock;
           end;
+        end;
+
+        deletedxNodes[x] := xNode;
+        Inc(x);
         DLManager.Delete(xNode^.Index);
       end;
       xNode := vtDownload.GetPreviousSelected(xNode);
@@ -2209,6 +2308,25 @@ begin
   finally
     DLManager.UnLock;
   end;
+
+  try
+    for x := 0 to High(deletedxNodes) do
+    begin
+      vtDownload.DeleteNode(deletedxNodes[x])
+    end;
+
+    if edDownloadsSearch.Text <> '' then
+    begin
+      xNode := vtDownload.GetFirst();
+      while Assigned(xNode) do
+      begin
+        vtDownload.IsFiltered[xNode] := Pos(UpperCase(edDownloadsSearch.Text), UpperCase(DLManager.Items[xNode^.Index].DownloadInfo.Title)) = 0;
+        xNode := vtDownload.GetNext(xNode);
+      end;
+    end;
+  finally
+  end;
+
   vtDownload.RootNodeCount := DLManager.Items.Count;
   vtDownload.EndUpdate;
   UpdateVtFavorites;
@@ -2327,19 +2445,21 @@ end;
 
 procedure TMainForm.LoadAbout;
 var
-  fs: TFileStreamUTF8;
+  fs: TFileStream;
   s: String;
   _OpenSSSL_version: function(t: integer): PAnsiChar; cdecl;
 begin
   // load readme.rtf
   if FileExistsUTF8(README_FILE) then begin
-    fs := TFileStreamUTF8.Create(README_FILE, fmOpenRead or fmShareDenyNone);
+    fs := TFileStream.Create(README_FILE, fmOpenRead or fmShareDenyNone);
     try
       rmAbout.LoadRichText(fs);
     finally
       fs.free;
     end;
   end;
+
+  SetAboutTextAttributes;
 
   // load changelog.txt
   if FileExistsUTF8(CHANGELOG_FILE) then mmChangelog.Lines.LoadFromFile(CHANGELOG_FILE);
@@ -2355,7 +2475,7 @@ begin
 
   if IsSSLloaded then
   begin
-    s := SSLeayversion(0);
+    s := OpenSSLversion(0);
     if s = '' then
     begin
       Pointer(_OpenSSSL_version) := GetProcAddress(SSLUtilHandle, 'OpenSSL_version');
@@ -2495,15 +2615,18 @@ end;
 
 procedure TMainForm.btDownloadClick(Sender: TObject);
 var
-  links,names:TStrings;
-  node:PVirtualNode;
-  s:String;
-  c,p,r,i,j,k,l:Integer;
+  links, names: TStrings;
+  node: PVirtualNode;
+  s, sRename: String;
+  c, p, r, i, j, k, l: Integer;
 begin
   if clbChapterList.CheckedCount = 0 then
+  begin
     Exit;
-  links:=TStringList.Create;
-  names:=TStringList.Create;
+  end;
+
+  links := TStringList.Create;
+  names := TStringList.Create;
   try
     node:=clbChapterList.GetFirstChecked();
     while Assigned(node) do
@@ -2511,7 +2634,7 @@ begin
       if (vsVisible in node^.States) then
       begin
         links.Add(ChapterList[node^.Index].Link);
-        s:=CustomRename(OptionChapterCustomRename,
+        s := CustomRename(OptionChapterCustomRename,
           mangaInfo.Website,
           mangaInfo.Title,
           mangaInfo.Authors,
@@ -2521,61 +2644,78 @@ begin
           OptionChangeUnicodeCharacter,
           OptionChangeUnicodeCharacterStr);
         names.Add(s);
-        ChapterList[node^.Index].Downloaded:=True;
-        clbChapterList.ReinitNode(node,False);
+        ChapterList[node^.Index].Downloaded := True;
+        clbChapterList.ReinitNode(node, False);
       end;
-      node:=clbChapterList.GetNextChecked(node);
+      node := clbChapterList.GetNextChecked(node);
     end;
     clbChapterList.Repaint;
-    if links.Count<>0 then
+    if links.Count <> 0 then
     begin
-      s:=edSaveTo.Text;
-      if OptionGenerateMangaFolder and
-        not((LastViewMangaInfoSender = miDownloadViewMangaInfo) or
-            (LastViewMangaInfoSender = miFavoritesViewInfos)) // ignore custom saveto options
-        then
-        s:=AppendPathDelim(s)+CustomRename(
-          OptionMangaCustomRename,
-          mangaInfo.Website,
-          mangaInfo.Title,
-          mangaInfo.Authors,
-          mangaInfo.Artists,
-          '',
-          '',
-          OptionChangeUnicodeCharacter,
-          OptionChangeUnicodeCharacterStr);
-      s:=ReplaceRegExpr('\.*$', s, '', False);
-      c:=1;
-      p:=links.Count;
-      r:=0;
-      if btDownload.Tag>=links.Count then
+      // save to
+      if edSaveTo.Text = '' then
       begin
-        c:=links.Count;
-        p:=1;
+        FillSaveTo;
+        OverrideSaveTo(Modules.LocateModule(mangaInfo.ModuleID));
+      end;
+      s := TrimPath(edSaveTo.Text);
+      if OptionGenerateMangaFolder then
+      begin
+        sRename := CustomRename(
+            OptionMangaCustomRename,
+            mangaInfo.Website,
+            mangaInfo.Title,
+            mangaInfo.Authors,
+            mangaInfo.Artists,
+            '',
+            '',
+            OptionChangeUnicodeCharacter,
+            OptionChangeUnicodeCharacterStr);
+
+        if Pos(sRename, s) = 0 then
+        begin
+          s := AppendPathDelim(s) + sRename;
+        end;
+      end;
+
+      s := ReplaceRegExpr('\.*$', s, '', False);
+      c := 1;
+      p := links.Count;
+      r := 0;
+      if btDownload.Tag >= links.Count then
+      begin
+        c := links.Count;
+        p := 1;
       end
       else
-      if btDownload.Tag>1 then
+      if btDownload.Tag > 1 then
       begin
-        c:=btDownload.Tag;
-        p:=links.Count div c;
-        r:=links.Count mod c;
+        c := btDownload.Tag;
+        p := links.Count div c;
+        r := links.Count mod c;
       end;
       btDownload.Tag:=0;
-      k:=0;
-      for i:=1 to c do
+      k := 0;
+      for i := 1 to c do
       begin
-        if i<=r then
-          l:=p+1
+        if i <= r then
+        begin
+          l := p + 1
+        end
         else
-        if i=c then
-          l:=links.Count-k
+        if i = c then
+        begin
+          l := links.Count - k
+        end
         else
-          l:=p;
+        begin
+          l := p;
+        end;
         DLManager.Lock;
         try
           with DLManager.AddTask do
           begin
-            for j:=1 to l do
+            for j := 1 to l do
             begin
               ChapterLinks.Add(links[k]);
               ChapterNames.Add(names[k]);
@@ -2583,34 +2723,40 @@ begin
             end;
             if cbAddAsStopped.Checked then
             begin
-              DownloadInfo.Status:=Format('[%d/%d] %s',[0,ChapterLinks.Count,RS_Stopped]);
-              Status:=STATUS_STOP;
+              DownloadInfo.Status := Format('[%d/%d] %s', [0, ChapterLinks.Count, RS_Stopped]);
+              Status := STATUS_STOP;
             end
             else
             begin
-              DownloadInfo.Status:=Format('[%d/%d] %s',[0,ChapterLinks.Count,RS_Waiting]);
-              Status:=STATUS_WAIT;
+              DownloadInfo.Status := Format('[%d/%d] %s', [0, ChapterLinks.Count, RS_Waiting]);
+              Status := STATUS_WAIT;
             end;
-            DownloadInfo.ModuleID:=mangaInfo.ModuleID;
-            DownloadInfo.Link:=mangaInfo.Link;
-            DownloadInfo.Title:=mangaInfo.Title;
-            DownloadInfo.DateAdded:=Now;
-            DownloadInfo.DateLastDownloaded:=Now;
-            DownloadInfo.SaveTo:=s;
-            CurrentDownloadChapterPtr:=0;
+            DownloadInfo.ModuleID := mangaInfo.ModuleID;
+            DownloadInfo.MangaPtr := mangaInfo;
+            DownloadInfo.Link := mangaInfo.Link;
+            DownloadInfo.Title := mangaInfo.Title;
+            DownloadInfo.DateAdded := Now;
+            DownloadInfo.DateLastDownloaded := Now;
+            DownloadInfo.SaveTo := s;
+            CurrentDownloadChapterPtr := 0;
             DBInsert;
           end;
         finally
           DLManager.UnLock;
         end;
         if OptionSortDownloadsOnNewTasks then
+        begin
           DLManager.Sort(DLManager.SortColumn);
+        end;
       end;
-      DLManager.DownloadedChapters.Chapters[mangaInfo.ModuleID, mangaInfo.Link]:=links.Text;
-      FavoriteManager.AddToDownloadedChaptersList(mangaInfo.ModuleID,mangaInfo.Link,links);
+
+      DLManager.DownloadedChapters.Chapters[mangaInfo.ModuleID, mangaInfo.Link] := links.Text;
+      FavoriteManager.AddToDownloadedChaptersList(mangaInfo.ModuleID, mangaInfo.Link, links);
       DLManager.CheckAndActiveTask;
       if OptionShowDownloadsTabOnNewTasks then
-        pcMain.ActivePage:=tsDownload;
+      begin
+        pcMain.ActivePage := tsDownload;
+      end;
       UpdateVtDownload;
     end;
   finally
@@ -2621,15 +2767,20 @@ end;
 
 procedure TMainForm.btAddToFavoritesClick(Sender: TObject);
 var
-  s: String;
+  s, sRename: String;
 begin
   if mangaInfo.Title <> '' then
   begin
     // save to
-    OverrideSaveTo(Modules.LocateModule(mangaInfo.ModuleID));
-    s := edSaveTo.Text;
+    if edSaveTo.Text = '' then
+    begin
+      FillSaveTo;
+      OverrideSaveTo(Modules.LocateModule(mangaInfo.ModuleID));
+    end;
+    s := TrimPath(edSaveTo.Text);
     if OptionGenerateMangaFolder then
-      s := AppendPathDelim(s) + CustomRename(
+    begin
+      sRename := CustomRename(
           OptionMangaCustomRename,
           mangaInfo.Website,
           mangaInfo.Title,
@@ -2639,6 +2790,12 @@ begin
           '',
           OptionChangeUnicodeCharacter,
           OptionChangeUnicodeCharacterStr);
+
+      if Pos(sRename, s) = 0 then
+      begin
+        s := AppendPathDelim(s) + sRename;
+      end;
+    end;
 
     FavoriteManager.Add(
       mangaInfo.Module,
@@ -2673,6 +2830,15 @@ end;
 procedure TMainForm.appPropertiesMainShowHint(var HintStr: String;
   var CanShow: Boolean; var HintInfo: THintInfo);
 begin
+  if HintInfo.HintControl = FormLogger.tvLog then
+  begin
+    HintInfo.HintWindowClass := TCustomHintToolTip;
+  end
+  else
+  begin
+    HintInfo.HintWindowClass := TCustomHintWindow;
+  end;
+
   if HintInfo.HintControl = vtMangaList then
   begin
     HintInfo.HintMaxWidth := 500;
@@ -2716,9 +2882,11 @@ end;
 
 procedure TMainForm.FMDInstanceReceiveMsg(Sender: TObject);
 begin
-  MessageDlg(Application.Title, RS_FMDAlreadyRunning, mtWarning, [mbOK], 0);
+  CenteredMessageDlg(Self, Application.Title, RS_FMDAlreadyRunning, mtWarning, [mbOK], 0);
   if WindowState = wsMinimized then
+  begin
     WindowState := wsNormal;
+  end;
   Show;
   BringToFront;
 end;
@@ -2836,6 +3004,30 @@ begin
     cbSelectMangaEditingDone(Sender);
 end;
 
+procedure TMainForm.ckImageMagickChange(Sender: TObject);
+begin
+  if ckImageMagick.Checked then
+  begin
+    gbImageConversion.Hint := RS_ImageMagickPreferenceHint;
+    lbImageConversionHint.Visible := True;
+    gbImageConversion.Enabled := False;
+    ckPNGSaveAsJPEG.Enabled := False;
+    cbWebPSaveAs.Enabled := False;
+    cbPNGCompressionLevel.Enabled := False;
+    seJPEGQuality.Enabled := False;
+  end
+  else
+  begin 
+    gbImageConversion.Hint := '';
+    lbImageConversionHint.Visible := False;
+    gbImageConversion.Enabled := True;
+    ckPNGSaveAsJPEG.Enabled := True;
+    cbWebPSaveAs.Enabled := True;
+    cbPNGCompressionLevel.Enabled := True;
+    seJPEGQuality.Enabled := True;
+  end;
+end;
+
 procedure TMainForm.btReadOnlineClick(Sender: TObject);
 begin
   OpenURL(mangaInfo.URL);
@@ -2850,9 +3042,13 @@ end;
 procedure TMainForm.btCheckLatestVersionClick(Sender: TObject);
 begin
   if Assigned(CheckUpdateThread) or Assigned(SelfUpdaterThread) then
-    MessageDlg('', RS_DlgUpdaterIsRunning, mtInformation, [mbYes], 0)
+  begin
+    CenteredMessageDlg(Self, RS_DlgUpdaterIsRunning, mtInformation, [mbOk], 0)
+  end
   else
+  begin
     CheckUpdateThread := TCheckUpdateThread.Create;
+  end;
 end;
 
 procedure TMainForm.btClearLogFileClick(Sender: TObject);
@@ -2874,17 +3070,19 @@ end;
 
 procedure TMainForm.btDownloadSplitClick(Sender: TObject);
 var
-  s:String='';
-  c:Integer=-1;
+  s:String = '';
+  c:Integer = -1;
 begin
-  if InputQuery(RS_DlgSplitDownload,RS_DlgDownloadCount,s) and (s<>'') then
+  if InputQuery(RS_DlgSplitDownload, RS_DlgDownloadCount, s) and (s <> '') then
   begin
-    c:=StrToIntDef(s,-1);
-    if c<=0 then
-      MessageDlg(RS_WrongInput,mtError,[mbOK],0)
+    c := StrToIntDef(s,-1);
+    if c <= 0 then
+    begin
+      CenteredMessageDlg(Self, RS_WrongInput, mtError, [mbOK], 0)
+    end
     else
     begin
-      btDownload.Tag:=c;
+      btDownload.Tag := c;
       btDownloadClick(btDownload);
     end;
   end;
@@ -2892,7 +3090,8 @@ end;
 
 procedure TMainForm.btFavoritesImportClick(Sender: TObject);
 begin
-  with TImportFavorites.Create(Self) do try
+  with TImportFavorites.Create(Self) do
+  try
     ShowModal;
   finally
     Free;
@@ -3227,7 +3426,7 @@ begin
   edFilterAuthors.Caption := '';
   edFilterArtists.Caption := '';
   edFilterSummary.Caption := '';
-  cbFilterStatus.ItemIndex := 2;
+  cbFilterStatus.ItemIndex := 4;
   edCustomGenres.Caption := '';
 end;
 
@@ -3260,28 +3459,61 @@ end;
 procedure TMainForm.miFavoritesDeleteClick(Sender: TObject);
 var
   xNode: PVirtualNode;
+  deletedxNodes: array of PVirtualNode;
+  x: Integer;
 begin
   if vtFavorites.SelectedCount = 0 then Exit;
-  if FavoriteManager.isRunning then begin
-    MessageDlg('', RS_DlgFavoritesCheckIsRunning,
-      mtInformation, [mbOK], 0);
+  if FavoriteManager.isRunning then
+  begin
+    CenteredMessageDlg(Self, RS_DlgFavoritesCheckIsRunning, mtInformation, [mbOK], 0);
     Exit;
   end;
   if cbOptionShowDeleteTaskDialog.Checked then
-    if MessageDlg('', RS_DlgRemoveFavorite, mtConfirmation, [mbYes, mbNo], 0) = mrNo then
+  begin
+    if CenteredMessageDlg(Self, RS_DlgRemoveFavorite, mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
+    begin
       Exit;
+    end;
+  end;
 
+  vtFavorites.BeginUpdate;
+  Setlength(deletedxNodes, vtFavorites.SelectedCount);
+  x := 0;
   FavoriteManager.Lock;
   try
     xNode := vtFavorites.GetLast();
     while Assigned(xNode) do begin
       if vtFavorites.Selected[xNode] then
+      begin
+        deletedxNodes[x] := xNode;
+        Inc(x);
         FavoriteManager.Delete(xNode^.Index);
+      end;
       xNode := vtFavorites.GetPreviousSelected(xNode);
     end;
   finally
     FavoriteManager.UnLock;
   end;
+
+  try
+    for x := 0 to High(deletedxNodes) do
+    begin
+      vtFavorites.DeleteNode(deletedxNodes[x])
+    end;
+
+    if edFavoritesSearch.Text <> '' then
+    begin
+      xNode := vtFavorites.GetFirst();
+      while Assigned(xNode) do
+      begin
+        vtFavorites.IsFiltered[xNode] := Pos(UpperCase(edFavoritesSearch.Text), UpperCase(FavoriteManager.Items[xNode^.Index].FavoriteInfo.Title)) = 0;
+        xNode := vtFavorites.GetNext(xNode);
+      end;
+    end;
+  finally
+  end;
+
+  vtFavorites.EndUpdate;
   UpdateVtFavorites;
   vtFavoritesFilterCountChange;
 end;
@@ -3297,7 +3529,7 @@ begin
   if vtFavorites.SelectedCount = 0 then Exit;
   if FavoriteManager.isRunning then
   begin
-    MessageDlg('', RS_DlgFavoritesCheckIsRunning, mtInformation, [mbYes, mbNo], 0);
+    CenteredMessageDlg(Self, RS_DlgFavoritesCheckIsRunning, mtInformation, [mbYes, mbNo], 0);
     Exit;
   end;
   s := '';
@@ -3455,9 +3687,11 @@ procedure TMainForm.mnDownload1ClickClick(Sender: TObject);
 begin
   if cbSelectManga.Items.Count = 0 then Exit;
   if DBUpdaterThread <> nil then
+  begin
     DBUpdaterThread.Add(cbSelectManga.Items)
+  end
   else
-  if MessageDlg('', RS_DlgUpdaterWantToUpdateDB, mtInformation, [mbYes, mbNo], 0) = mrYes then
+  if CenteredMessageDlg(Self, RS_DlgUpdaterWantToUpdateDB, mtInformation, [mbYes, mbNo], 0) = mrYes then
   begin
     DBUpdaterThread := TDBUpdaterThread.Create;
     DBUpdaterThread.Items.Assign(cbSelectManga.Items);
@@ -3515,10 +3749,14 @@ begin
           Break;
         end;
       if in_list = False then
+      begin
         updateList.websites.AddObject(m.Name, m);
+      end;
     end;
     if (in_list_count <> 0) and (in_list_count = cbSelectManga.Items.Count) then
-      MessageDlg('', RS_DlgFavoritesCheckIsRunning, mtInformation, [mbYes], 0);
+    begin
+      CenteredMessageDlg(Self, RS_DlgUpdateListCheckIsRunning, mtInformation, [mbOk], 0);
+    end;
   end;
 end;
 
@@ -3526,9 +3764,10 @@ procedure TMainForm.mnUpdateDownFromServerClick(Sender: TObject);
 begin
   if cbSelectManga.ItemIndex < 0 then Exit;
   if DBUpdaterThread <> nil then
+  begin
     DBUpdaterThread.Add(TModuleContainer(cbSelectManga.Items.Objects[cbSelectManga.ItemIndex]))
-  else
-  if MessageDlg('', RS_DlgUpdaterWantToUpdateDB, mtInformation, [mbYes, mbNo], 0) = mrYes then
+  end
+  else if CenteredMessageDlg(Self, RS_DlgUpdaterWantToUpdateDB, mtInformation, [mbYes, mbNo], 0) = mrYes then
   begin
     DBUpdaterThread := TDBUpdaterThread.Create;
     DBUpdaterThread.Add(TModuleContainer(cbSelectManga.Items.Objects[cbSelectManga.ItemIndex]));
@@ -3541,7 +3780,10 @@ var
   m: TModuleContainer;
   i: Integer;
 begin
-  if cbSelectManga.ItemIndex < 0 then Exit;
+  if cbSelectManga.ItemIndex < 0 then
+  begin
+    Exit;
+  end;
   m := TModuleContainer(cbSelectManga.Items.Objects[cbSelectManga.ItemIndex]);
   if (not isUpdating) then
   begin
@@ -3556,7 +3798,7 @@ begin
     for i := 0 to updateList.websites.Count-1 do
       if m = updateList.websites.Objects[i] then
       begin
-        MessageDlg('', RS_DlgFavoritesCheckIsRunning, mtInformation, [mbYes], 0);
+        CenteredMessageDlg(Self, RS_DlgUpdateListCheckIsRunning, mtInformation, [mbOk], 0);
         Exit;
       end;
     updateList.websites.AddObject(m.Name, m);
@@ -3566,12 +3808,18 @@ end;
 procedure TMainForm.miDownloadDeleteCompletedClick(Sender: TObject);
 begin
   if cbOptionShowDeleteTaskDialog.Checked then
-    if not (MessageDlg('', RS_DlgRemoveFinishTasks,
-      mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
+  begin
+    if CenteredMessageDlg(Self, RS_DlgRemoveFinishTasks, mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
+    begin
       Exit;
+    end;
+  end;
+
   DLManager.RemoveAllFinishedTasks;
   if Sender <> nil then
-  UpdateVtDownload;
+  begin
+    UpdateVtDownload;
+  end;
   // the reason we put it in here instead of in DLManager because of the size of
   // download list will change during this method
 end;
@@ -3620,7 +3868,11 @@ procedure TMainForm.miDownloadStopClick(Sender: TObject);
 var
   xNode: PVirtualNode;
 begin
-  if vtDownload.SelectedCount = 0 then Exit;
+  if vtDownload.SelectedCount = 0 then
+  begin
+    Exit;
+  end;
+
   DLManager.Lock;
   try
     xNode := vtDownload.GetFirstSelected();
@@ -3640,9 +3892,24 @@ var
   xNode, deleteNode: PVirtualNode;
   deleteCount: Integer;
 begin
-  if vtMangaList.SelectedCount = 0 then Exit;
-  if dataProcess.Table.Active = False then Exit;
-  if MessageDlg('', RS_DlgRemoveItem, mtConfirmation, [mbYes, mbNo], 0) = mrNo then Exit;
+  if vtMangaList.SelectedCount = 0 then
+  begin
+    Exit;
+  end;
+
+  if dataProcess.Table.Active = False then
+  begin
+    Exit;
+  end;
+
+  if cbOptionShowDeleteTaskDialog.Checked then
+  begin
+    if CenteredMessageDlg(Self, RS_DlgRemoveItem, mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
+    begin
+      Exit;
+    end;
+  end;
+
   try
     vtMangaList.BeginUpdate;
     deleteCount := 0;
@@ -3681,16 +3948,23 @@ var
   mBtns: TMsgDlgButtons;
   data: PMangaInfoData;
 begin
-  if vtMangaList.SelectedCount = 0 then Exit;
+  if vtMangaList.SelectedCount = 0 then
+  begin
+    Exit;
+  end;
 
   SilentThreadManager.BeginAdd;
   try
     YesAll := False;
     NoAll := False;
     if vtMangaList.SelectedCount = 1 then
-      mBtns := [mbYes, mbNo]
+    begin
+      mBtns := [mbYes, mbNo];
+    end
     else
+    begin
       mBtns := [mbYes, mbNo, mbYesToAll, mbNoToAll];
+    end;
 
     xNode := vtMangaList.GetFirstSelected;
     while Assigned(xNode) do
@@ -3698,20 +3972,27 @@ begin
       data := vtMangaList.GetNodeData(xNode);
       AllowedToCreate := True;
       if DLManager.Count > 0 then
+      begin
         for i := 0 to DLManager.Count - 1 do
+        begin
           if data^.Title = DLManager.Items[i].DownloadInfo.title then
           begin
             if YesAll then
+            begin
               AllowedToCreate := True
+            end
             else if NoAll then
+            begin
               AllowedToCreate := False
+            end
             else
             begin
               if OptionShowDownloadsTabOnNewTasks then
+              begin
                 pcMain.ActivePage := tsDownload;
-              mResult := MessageDlg('', DLManager.Items[i].DownloadInfo.title +
-                LineEnding + LineEnding + RS_DlgTitleExistInDLlist, mtConfirmation,
-                  mBtns, 0);
+              end;
+              mResult := CenteredMessageDlg(Self, DLManager.Items[i].DownloadInfo.title +
+                LineEnding + LineEnding + RS_DlgTitleExistInDLlist, mtConfirmation, mBtns, 0);
               case mResult of
                 mrYes : AllowedToCreate := True;
                 mrNo  : AllowedToCreate := False;
@@ -3731,9 +4012,13 @@ begin
             end;
             Break;
           end;
-		  
+        end;
+      end;
+
       if AllowedToCreate then
+      begin
         SilentThreadManager.Add(MD_DownloadAll, TModuleContainer(data^.Module), data^.Title, data^.Link);
+      end;
       xNode := vtMangaList.GetNextSelected(xNode);
     end;
   except
@@ -4146,11 +4431,11 @@ begin
     // base bar
     BarRect := CellRect;
     BarRect.Inflate(-2,-2);
-    BarRect.Right-=1;
+    BarRect.Right -= 1;
     Pen.Style := psSolid;
     Brush.Style := bsSolid;
-    Pen.Color := CL_BarGrayLine;
-    Brush.Color := CL_BarGray;
+    Pen.Color := CL_BarLine;
+    Brush.Color := CL_Bar;
     Rectangle(BarRect);
 
     // progress bar
@@ -4164,8 +4449,8 @@ begin
                            Brush.Color := CL_BarRed;
                          end;
         STATUS_WAIT    : begin
-                           Pen.Color   := CL_BarGrayLine;
-                           Brush.Color := CL_BarGray;
+                           Pen.Color   := CL_BarLine;
+                           Brush.Color := CL_Bar;
                          end;
         STATUS_DOWNLOAD: begin
                            Pen.Color   := CL_BarBlueLine;
@@ -4187,12 +4472,12 @@ begin
       end;
       Frame(BarRect);
       BarRect.Inflate(-2,-2);
-      GradientFill(BarRect, BlendColor(Brush.Color,CL_BarGray,128), Brush.Color, gdHorizontal);
+      GradientFill(BarRect, BlendColor(Brush.Color, CL_Bar, 128), Brush.Color, gdHorizontal);
     end;
     // text
     if DownloadInfo.Progress <> '' then
     begin
-      Font.Color := clBlack;
+      Font.Color := clWindowText;
       Brush.Style := bsClear;
       GetTextSize(DownloadInfo.Progress, ww, hh);
       TextOut(CellRect.Left + ((CellRect.Right - CellRect.Left - ww) div 2),
@@ -4325,19 +4610,19 @@ begin
            if l>0 then
            begin
              HintText:='';
-             if l<5 then
+             if l<30 then
                for i:=0 to l-1 do begin
                  if HintText<>'' then HintText+=LineEnding;
                  HintText+=ChapterNames.Strings[i]
                end
              else
              begin
-               for i:=0 to 1 do begin
+               for i:=0 to 14 do begin
                  if HintText<>'' then HintText+=LineEnding;
                  HintText+=ChapterNames.Strings[i]
                end;
                HintText+=LineEnding+'...';
-               for i:=l-2 to l-1 do begin
+               for i:=l-15 to l-1 do begin
                  if HintText<>'' then HintText+=LineEnding;
                  HintText+=ChapterNames.Strings[i]
                end;
@@ -4349,6 +4634,7 @@ begin
       4: HintText:=Website;
       5: HintText:=SaveTo;
       6: HintText:=DateTimeToStr(DateAdded);
+      7: HintText:=DateTimeToStr(DateLastDownloaded);
     end;
 end;
 
@@ -4434,7 +4720,7 @@ procedure TMainForm.vtDownloadPaintText(Sender: TBaseVirtualTree;
   TextType: TVSTTextType);
 begin
   if not DLManager[Node^.Index].Enabled then
-    TargetCanvas.Font.Color := TLazVirtualStringTree(Sender).Colors.DisabledColor;
+    TargetCanvas.Font.Color := TVirtualStringTree(Sender).Colors.DisabledColor;
 end;
 
 procedure TMainForm.vtFavoritesBeforeCellPaint(Sender: TBaseVirtualTree;
@@ -4444,34 +4730,57 @@ procedure TMainForm.vtFavoritesBeforeCellPaint(Sender: TBaseVirtualTree;
 var
   C: TColor;
 begin
-  if CellPaintMode <> cpmPaint then Exit;
+  if CellPaintMode <> cpmPaint then
+  begin
+    Exit;
+  end;
+
   with TargetCanvas, FavoriteManager.Items[Node^.Index] do
   begin
-    if not Enabled then Exit;
+    if not Enabled then
+    begin
+      Exit;
+    end;
+
     C := Brush.Color;
     Brush.Color := clNone;
     if Trim(FavoriteInfo.Link) = '' then
-      Brush.Color := CL_FVBrokenFavorite
+    begin
+      Brush.Color := CL_FVBrokenFavorite;
+    end
     else
     begin
       if FavoriteInfo.Status = MangaInfo_StatusCompleted then
+      begin
         Brush.Color := CL_FVCompletedManga;
+      end;
+
       if FavoriteInfo.CurrentChapter = '0' then
+      begin
         Brush.Color := CL_FVEmptyChapters;
+      end;
+
       if Status = STATUS_CHECKING then
-        Brush.Color := CL_FVChecking
-      else
-      if (Status = STATUS_CHECKED) and
-        Assigned(NewMangaInfo) then
+      begin
+        Brush.Color := CL_FVChecking;
+      end
+      else if (Status = STATUS_CHECKED) and Assigned(NewMangaInfo) then
       begin
         if NewMangaInfoChaptersPos.Count > 0 then
+        begin
           Brush.Color := CL_FVNewChapterFound;
+        end;
       end;
     end;
+
     if Brush.Color <> clNone then
-      FillRect(CellRect)
+    begin
+      FillRect(CellRect);
+    end
     else
+    begin
       Brush.Color := C;
+    end;
   end;
 end;
 
@@ -4479,27 +4788,32 @@ procedure TMainForm.vtFavoritesChange(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
   if vtFavorites.SelectedCount > 0 then
-    sbMain.Panels[0].Text := Format(RS_Selected, [vtFavorites.SelectedCount])
+  begin
+    sbMain.Panels[0].Text := Format(RS_Selected, [vtFavorites.SelectedCount]);
+  end
   else
+  begin
     sbMain.Panels[0].Text := '';
+  end;
 end;
 
 procedure TMainForm.vtFavoritesColumnDblClick(Sender: TBaseVirtualTree;
   Column: TColumnIndex; Shift: TShiftState);
 begin
   if Column = 4 then
+  begin
     miFavoritesOpenFolderClick(Sender)
+  end
   else
+  begin
     case OptionDefaultAction of
-      1:
-        miFavoritesViewInfosClick(Sender);
-      2:
-        miFavoritesRenameClick(Sender);
-      3:
-        miFavoritesCheckNewChapterClick(Sender);
+      1: miFavoritesViewInfosClick(Sender);
+      2: miFavoritesRenameClick(Sender);
+      3: miFavoritesCheckNewChapterClick(Sender);
       else
         miFavoritesOpenWithClick(Sender);
     end;
+  end;
 end;
 
 procedure TMainForm.vtFavoritesDragDrop(Sender: TBaseVirtualTree;
@@ -4513,53 +4827,80 @@ procedure TMainForm.vtFavoritesDragOver(Sender: TBaseVirtualTree;
   Source: TObject; Shift: TShiftState; State: TDragState; const Pt: TPoint;
   Mode: TDropMode; var Effect: LongWord; var Accept: Boolean);
 begin
-  Accept:=True;
-  Effect:=DROPEFFECT_LINK;
+  Accept := True;
+  Effect := DROPEFFECT_LINK;
 end;
 
 procedure TMainForm.vtFavoritesGetHint(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex;
   var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: String);
 begin
-  if Node^.Index>=FavoriteManager.Count then Exit;
+  if Node^.Index >= FavoriteManager.Count then
+  begin
+    Exit;
+  end;
+
   with FavoriteManager.Items[Node^.Index].FavoriteInfo do
+  begin
     case Column of
-      1: if Trim(Link)='' then HintText:=RS_HintFavoriteProblem
-         else HintText:=Title;
-      2: HintText:=currentChapter;
-      3: HintText:=Website;
-      4: HintText:=saveTo;
+      1: if Trim(Link) = '' then
+         begin
+           HintText := RS_HintFavoriteProblem;
+         end
+         else
+         begin
+           HintText := Title;
+         end;
+      2: HintText := currentChapter;
+      3: HintText := Website;
+      4: HintText := cbFilterStatus.Items[StrToIntDef(Status, cbFilterStatus.Items.Count - 1)];
+      5: HintText := saveTo;
+      6: HintText := DateTimeToStr(DateAdded);
+      7: HintText := DateTimeToStr(DateLastChecked);
+      8: HintText := DateTimeToStr(DateLastUpdated);
     end;
+  end;
 end;
 
 procedure TMainForm.vtFavoritesGetImageIndex(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
   var Ghosted: Boolean; var ImageIndex: Integer);
 begin
-  if vtFavorites.Header.Columns[Column].Position<>1 then Exit;
+  if vtFavorites.Header.Columns[Column].Position <> 1 then
+  begin
+    Exit;
+  end;
+
   with FavoriteManager.Items[Node^.Index] do
   begin
-    if Trim(FavoriteInfo.Link)='' then
-      ImageIndex:=16
+    if Trim(FavoriteInfo.Link) = '' then
+    begin
+      ImageIndex := 16;
+    end
     else
+    begin
       case FavoriteManager.Items[Node^.Index].Status of
-        STATUS_CHECK    : ImageIndex:=19;
-        STATUS_CHECKING : ImageIndex:=12;
-        STATUS_CHECKED  :
+        STATUS_CHECK : ImageIndex := 19;
+        STATUS_CHECKING : ImageIndex := 12;
+        STATUS_CHECKED :
           begin
-            ImageIndex:=20;
+            ImageIndex := 20;
             if Assigned(NewMangaInfo) then
             begin
-              if NewMangaInfoChaptersPos.Count>0 then
-                ImageIndex:=21
-              else
-              if NewMangaInfo.Status=MangaInfo_StatusCompleted then
-                ImageIndex:=5
+              if NewMangaInfoChaptersPos.Count > 0 then
+              begin
+                ImageIndex := 21;
+              end
+              else if NewMangaInfo.Status = MangaInfo_StatusCompleted then
+              begin
+                ImageIndex := 5;
+              end;
             end;
           end;
         else
-          ImageIndex:=-1;
+          ImageIndex := -1;
       end;
+    end;
   end;
 end;
 
@@ -4569,34 +4910,49 @@ procedure TMainForm.vtFavoritesGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
   var CellText: String);
 begin
-  if Node^.Index>=FavoriteManager.Count then Exit;
+  if Node^.Index >= FavoriteManager.Count then
+  begin
+    Exit;
+  end;
+
   with FavoriteManager.Items[Node^.Index].FavoriteInfo do
     case Column of
-      0: CellText:=IntToStr(Node^.Index+1);
-      1: CellText:=Title;
-      2: CellText:=currentChapter;
-      3: CellText:=Website;
-      4: CellText:=saveTo;
-      5: CellText:=DateTimeToStr(DateAdded);
-      6: CellText:=DateTimeToStr(DateLastChecked);
-      7: CellText:=DateTimeToStr(DateLastUpdated);
+      0: CellText := IntToStr(Node^.Index + 1);
+      1: CellText := Title;
+      2: CellText := currentChapter;
+      3: CellText := Website;
+      4: CellText := cbFilterStatus.Items[StrToIntDef(Status, cbFilterStatus.Items.Count - 1)];
+      5: CellText := saveTo;
+      6: CellText := DateTimeToStr(DateAdded);
+      7: CellText := DateTimeToStr(DateLastChecked);
+      8: CellText := DateTimeToStr(DateLastUpdated);
     end;
 end;
 
 procedure TMainForm.vtFavoritesHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
 begin
-  if HitInfo.Button <> mbLeft then Exit;
-  if FavoriteManager.isRunning then Exit;
-  if HitInfo.Column = 0 then Exit;
+  if (HitInfo.Button <> mbLeft) or (FavoriteManager.isRunning) or (HitInfo.Column = 0) then
+  begin
+    Exit;
+  end;
+
   FavoriteManager.isRunning := True;
   if FavoriteManager.SortColumn = HitInfo.Column then
-    FavoriteManager.sortDirection := not FavoriteManager.sortDirection
+  begin
+    FavoriteManager.sortDirection := not FavoriteManager.sortDirection;
+  end
   else
+  begin
     FavoriteManager.SortColumn := HitInfo.Column;
+  end;
+
   vtFavorites.Header.SortColumn := HitInfo.Column;
   vtFavorites.Header.SortDirection := TSortDirection(FavoriteManager.sortDirection);
   if FavoriteManager.Count > 1 then
+  begin
     FavoriteManager.Sort(HitInfo.Column);
+  end;
+
   UpdateVtFavorites;
   FavoriteManager.isRunning := False;
 end;
@@ -4606,18 +4962,19 @@ procedure TMainForm.vtFavoritesPaintText(Sender: TBaseVirtualTree;
   TextType: TVSTTextType);
 begin
   if not FavoriteManager[Node^.Index].Enabled then
-    TargetCanvas.Font.Color := TLazVirtualStringTree(Sender).Colors.DisabledColor;
+    TargetCanvas.Font.Color := TVirtualStringTree(Sender).Colors.DisabledColor;
 end;
 
 procedure TMainForm.vtMangaListChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
 begin
-  //if (NOT isUpdating) then
-  //begin
   if vtMangaList.SelectedCount > 0 then
-    sbMain.Panels[0].Text := Format(RS_Selected, [vtMangaList.SelectedCount])
+  begin
+    sbMain.Panels[0].Text := Format(RS_Selected, [vtMangaList.SelectedCount]);
+  end
   else
+  begin
     sbMain.Panels[0].Text := '';
-  //end;
+  end;
 end;
 
 procedure TMainForm.vtMangaListColumnDblClick(Sender: TBaseVirtualTree;
@@ -4635,9 +4992,16 @@ begin
   SaveOptions(True);
   oldOptionMaxParallel := OptionMaxParallel;
   ApplyOptions;
+
   if OptionMaxParallel > oldOptionMaxParallel then
+  begin
     DLManager.CheckAndActiveTask();
-  if not Self.Focused then Self.SetFocus;
+  end;
+
+  if not Self.Focused then
+  begin
+    Self.SetFocus;
+  end;
 end;
 
 // vtMangaList
@@ -4646,24 +5010,38 @@ procedure TMainForm.vtMangaListBeforeCellPaint(Sender: TBaseVirtualTree;
   TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
   CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
 var
-  data: PMangaInfoData;
+  data: PMangaInfoData; 
+  C: TColor;
 begin
-  if CellPaintMode <> cpmPaint then Exit;
+  if CellPaintMode <> cpmPaint then
+  begin
+    Exit;
+  end;
+
   with TargetCanvas do
   begin
+    C := Brush.Color;
     Brush.Color := clNone;
     data := Sender.GetNodeData(Node);
-    if data^.Status = MangaInfo_StatusCompleted then
-      Brush.Color := CL_MNCompletedManga;
+
     if miHighlightNewManga.Checked and (data^.JDN > OptionJDNNewMangaTime) then
     begin
-      if Brush.Color <> clNone then
-        Brush.Color := Brush.Color + CL_MNNewManga
-      else
-        Brush.Color := CL_MNNewManga;
+      Brush.Color := CL_MNNewManga;
     end;
+
+    if data^.Status = MangaInfo_StatusCompleted then
+    begin
+      Brush.Color := CL_MNCompletedManga;
+    end;
+
     if Brush.Color <> clNone then
+    begin
       FillRect(CellRect);
+    end
+    else
+    begin
+      Brush.Color := C;
+    end;
   end;
 end;
 
@@ -4685,27 +5063,59 @@ begin
   with data^ do
   begin
     if dataProcess.FilterAllSites then
+    begin
       HintText += RS_InfoWebsite + LineEnding + TModuleContainer(Module).Name + LineEnding2;
+    end;
+
     HintText += RS_InfoTitle + LineEnding + Title;
+
+    if AltTitles <> '' then
+    begin
+      HintText += LineEnding2 + RS_InfoAltTitles + LineEnding + AltTitles;
+    end;
     if Authors <> '' then
+    begin
       HintText += LineEnding2 + RS_InfoAuthors + LineEnding + Authors;
+    end;
     if Artists <> '' then
+    begin
       HintText += LineEnding2 + RS_InfoArtists + LineEnding + Artists;
+    end;
     if Genres <> '' then
+    begin
       HintText += LineEnding2 + RS_InfoGenres + LineEnding + Genres;
+    end;
+
     if Status <> '' then
     begin
       HintText += LineEnding2 + RS_InfoStatus + LineEnding;
+
       if Status = '0' then
-        HintText += cbFilterStatus.Items[0]
+      begin
+        HintText += cbFilterStatus.Items[0];
+      end
+      else if Status = '1' then
+      begin
+        HintText += cbFilterStatus.Items[1];
+      end
+      else if Status = '2' then
+      begin
+        HintText += cbFilterStatus.Items[2];
+      end
+      else if Status = '3' then
+      begin
+        HintText += cbFilterStatus.Items[3];
+      end
       else
-      if Status = '1' then
-        HintText += cbFilterStatus.Items[1]
-      else
+      begin
         HintText += Status;
+      end;
     end;
+
     if Summary <> '' then
+    begin
       HintText += LineEnding2 + RS_InfoSummary + LineEnding + Summary;
+    end;
   end;
 end;
 
@@ -4901,7 +5311,11 @@ var
   URls: TStringList;
   m: TModuleContainer;
 begin
-  if Trim(URL) = '' then Exit;
+  if Trim(URL) = '' then
+  begin
+    Exit;
+  end;
+
   URLs := TStringList.Create;
   try
     URls.Text := URL;
@@ -4925,13 +5339,16 @@ begin
             if Assigned(m) then
             begin
               if not ((MetaDataType = MD_AddToFavorites) and not(m.FavoriteAvailable)) then
+              begin
                 SilentThreadManager.Add(MetaDataType, m, '', link);
+              end;
             end;
           end;
         end;
       finally
         Free;
       end;
+
       SilentThreadManager.EndAdd;
     end;
   finally
@@ -4943,12 +5360,112 @@ procedure TMainForm.AddSilentThread(URL: string);
 var
   mt: TMetaDataType;
 begin
-  if Trim(URL)='' then Exit;
-  if rgDropTargetMode.ItemIndex=0 then
-    mt:=MD_DownloadAll
+  if Trim(URL) = '' then
+  begin
+    Exit;
+  end;
+
+  if rgDropTargetMode.ItemIndex = 0 then
+  begin
+    mt := MD_DownloadAll;
+  end
   else
-    mt:=MD_AddToFavorites;
-  AddSilentThread(URL,mt);
+  begin
+    mt := MD_AddToFavorites;
+  end;
+
+  AddSilentThread(URL, mt);
+end;
+
+function TMainForm.CheckLongNamePaths(APath: String): String;
+begin
+  if cbOptionEnableLongNamePaths.Checked then
+  begin
+    if Pos('\\?\', APath) = 0 then
+    begin
+      APath := '\\?\' + APath;
+    end;
+  end;
+
+  Result := APath;
+end;
+
+function TMainForm.TrimPath(APath: String): String;
+var
+  PathList: TStringList;
+  i: Integer;
+begin
+  PathList := TStringList.Create;
+  try
+    PathList.Delimiter := '\';  // Split path by "\"
+    PathList.StrictDelimiter := True;  // Prevent ignoring empty parts
+    PathList.DelimitedText := APath;
+
+    // Trim spaces from each folder, except for the root (C:, D:, etc.)
+    for i := 1 to PathList.Count - 1 do
+    begin
+      PathList[i] := TrimRight(PathList[i]);
+    end;
+
+    // Reconstruct the cleaned path
+    Result := PathList.DelimitedText.Replace('"', '');  // Remove added quotes
+  finally
+    PathList.Free;
+  end;
+end;
+
+procedure TMainForm.SetAboutTextAttributes;
+var
+  i: Integer;
+  currentColor, textColor, linkColor: TColor;
+  fp: TFontParams;
+  styleRanges: array of record
+    Color: TColor;
+    StartPos, Length: Integer;
+    //Text: String; // For debugging which text is affected
+  end;
+  StyleRangesCount: Integer;
+begin
+  i := 0;
+  textColor := ColorToRGB(clWindowText); // Default text color
+  linkColor := ColorToRGB(clHighlight);  // Color for links
+
+  // Set the array ranges (1st entry is a dud and unused)
+  StyleRangesCount := 0;
+  SetLength(styleRanges, 1);
+
+  while i < rmAbout.GetTextLen do
+  begin
+    rmAbout.GetTextAttributes(i, fp);
+    currentColor := fp.Color;
+
+    if (currentColor = clBlue) then
+    begin
+      if (i = 0) or (i - styleRanges[StyleRangesCount].Length <> styleRanges[StyleRangesCount].StartPos) then
+      begin
+        Inc(StyleRangesCount);
+        SetLength(styleRanges, StyleRangesCount + 1);
+      end;
+
+      styleRanges[StyleRangesCount].Color := linkColor;
+      styleRanges[StyleRangesCount].StartPos := i - styleRanges[StyleRangesCount].Length;
+      Inc(styleRanges[StyleRangesCount].Length);
+      //styleRanges[StyleRangesCount].Text := rmAbout.GetText(styleRanges[StyleRangesCount].StartPos, styleRanges[StyleRangesCount].Length);
+    end;
+
+    Inc(i);
+  end;
+
+  // Set the default color for the entire text
+  rmAbout.SetRangeColor(0, -1, textColor);
+
+  // Apply the colors of stored ranges
+  for i := 1 to StyleRangesCount do
+  begin
+    rmAbout.SetRangeColor(styleRanges[i].StartPos, styleRanges[i].Length, styleRanges[i].Color);
+  end;
+
+  rmAbout.Refresh;
 end;
 
 procedure TMainForm.AddTextToInfo(const ATitle, AValue: String);
@@ -4958,15 +5475,27 @@ var
   s: string;
 begin
   s := Trim(FixWhiteSpace(AValue));
-  if s = '' then Exit;
+
+  if s = '' then
+  begin
+    Exit;
+  end;
+
   if ATitle = RS_InfoSummary then
+  begin
     s := Trim(StringBreaks(s));
+  end;
+
   with rmInformation do
   begin
     if Lines.Count > 0 then
+    begin
       Lines.Add('');
+    end;
+
     p := SelStart;
     GetTextAttributes(p, fp);
+    fp.Color := ColorToRGB(clWindowText);
     fp.Style += [fsBold, fsUnderline];
     Inc(fp.Size);
     SetTextAttributes(p, 0, fp);
@@ -4982,9 +5511,15 @@ end;
 procedure TMainForm.FillSaveTo;
 begin
   if LastUserPickedSaveTo = '' then
+  begin
     LastUserPickedSaveTo := Trim(settingsfile.ReadString('saveto', 'SaveTo', DEFAULT_PATH));
+  end;
+
   if LastUserPickedSaveTo = '' then
+  begin
     LastUserPickedSaveTo := DEFAULT_PATH;
+  end;
+
   edSaveTo.Text := LastUserPickedSaveTo;
 end;
 
@@ -4996,7 +5531,9 @@ begin
   begin
     s := TModuleContainer(AModule).Settings.OverrideSettings.SaveToPath;
     if s <> '' then
+    begin
       edSaveTo.Text := s;
+    end;
   end;
 end;
 
@@ -5004,29 +5541,41 @@ procedure TMainForm.ViewMangaInfo(const AModule: Pointer; const ALink, ATitle,
   ASaveTo: String; const ASender: TObject; const AMangaListNode: PVirtualNode);
 var
   fav: TFavoriteContainer;
+  fp: TFontParams;
 begin
-  if (ALink = '') or (AModule = nil) then Exit;
+  if (ALink = '') or (AModule = nil) then
+  begin
+    Exit;
+  end;
 
   // terminate exisiting getmangainfo thread
   if Assigned(GetInfosThread) then
+  begin
     try
       GetInfosThread.Terminate;
       GetInfosThread.WaitFor;
     except
     end;
+  end;
 
   // set the UI
   edURL.Text := FillHost(TModuleContainer(AModule).RootURL, ALink);
   pcMain.ActivePage := tsInformation;
   imCover.Picture.Assign(nil);
+
   rmInformation.Clear;
+  rmInformation.GetTextAttributes(0, fp);
+  fp.Color := ColorToRGB(clWindowText);
+  rmInformation.SetTextAttributes(0, -1, fp);
   rmInformation.Lines.Add(RS_Loading);
+
   clbChapterList.Clear;
   if Assigned(gifWaiting) then
   begin
     tmAnimateMangaInfo.Enabled := True;
     pbWait.Visible := True;
   end;
+
   btDownload.Enabled := False;
   btDownloadSplit.Enabled := btDownload.Enabled;
   btReadOnline.Enabled := True;
@@ -5035,11 +5584,10 @@ begin
   edSaveTo.Text := ASaveTo;
   LastViewMangaInfoSender := ASender;
   if edSaveTo.Text = '' then
+  begin
     FillSaveTo;
-  
-  if (LastViewMangaInfoSender <> miDownloadViewMangaInfo) and (LastViewMangaInfoSender <> miFavoritesViewInfos) then
     OverrideSaveTo(AModule);
-  
+  end;
 
   DisableAddToFavorites(AModule);
   //check if manga already in FavoriteManager list
@@ -5057,9 +5605,14 @@ begin
   // start the thread
   GetInfosThread := TGetMangaInfosThread.Create(AModule, ALink, AMangaListNode);
   if (ASender = miDownloadViewMangaInfo) or (ASender = miFavoritesViewInfos) then
-    GetInfosThread.Title := ''      // retrieve the original title so custom rename can remove them
+  begin
+    GetInfosThread.Title := ''; // retrieve the original title so custom rename can remove them
+  end
   else
+  begin
     GetInfosThread.Title := ATitle;
+  end;
+
   GetInfosThread.Start;
 end;
 
@@ -5077,12 +5630,21 @@ begin
       Lines.Clear;
       edURL.Text := mangaInfo.URL;
       AddTextToInfo(RS_InfoTitle, mangaInfo.Title);
+      AddTextToInfo(RS_InfoAltTitles, mangaInfo.AltTitles);
       AddTextToInfo(RS_InfoAuthors, mangaInfo.Authors);
       AddTextToInfo(RS_InfoArtists, mangaInfo.Artists);
       AddTextToInfo(RS_InfoGenres, mangaInfo.Genres);
       i := StrToIntDef(mangaInfo.Status, -1);
+
       if (i > -1) and (i < cbFilterStatus.Items.Count) then
+      begin
         AddTextToInfo(RS_InfoStatus, cbFilterStatus.Items[i]);
+      end
+      else
+      begin
+        AddTextToInfo(RS_InfoStatus, mangaInfo.Status);
+      end;
+
       AddTextToInfo(RS_InfoSummary, mangaInfo.Summary);
       CaretPos := Point(0, 0);
     finally
@@ -5093,19 +5655,29 @@ begin
   if Length(ChapterList) <> 0 then
   begin
     if miChapterListAscending.Checked then
-      j := 0
+    begin
+      j := 0;
+    end
     else
+    begin
       j := High(ChapterList);
+    end;
+
     for i := low(ChapterList) to High(ChapterList) do
     begin
       ChapterList[i].Index := j + 1;
       ChapterList[i].Title := mangaInfo.ChapterNames[j];
       ChapterList[i].Link := mangaInfo.ChapterLinks[j];
       ChapterList[i].Downloaded := False;
+
       if miChapterListAscending.Checked then
-        Inc(j)
+      begin
+        Inc(j);
+      end
       else
+      begin
         Dec(j);
+      end;
     end;
   end;
 
@@ -5114,7 +5686,9 @@ begin
   miChapterListHideDownloadedClick(nil);
   edFilterMangaInfoChaptersChange(nil);
   if (clbChapterList.RootNodeCount <> 0) and miChapterListAscending.Checked then
+  begin
     clbChapterList.FocusedNode := clbChapterList.GetLast();
+  end;
 
   btDownload.Enabled := (clbChapterList.RootNodeCount > 0);
   btDownloadSplit.Enabled := btDownload.Enabled;
@@ -5123,8 +5697,10 @@ end;
 
 procedure TMainForm.LoadOptions;
 begin
-  with settingsfile do begin
+  with settingsfile do
+  begin
     // general
+    cbDarkmode.ItemIndex := ReadInteger('darkmode', 'mode', 0);
     cbOptionOneInstanceOnly.Checked := ReadBool('general', 'OneInstanceOnly', True);
     cbOptionLiveSearch.Checked := ReadBool('general', 'LiveSearch', True);
     cbOptionMinimizeOnStart.Checked := ReadBool('general', 'MinimizeOnStart', False);
@@ -5141,6 +5717,7 @@ begin
     miChapterListAscending.Checked := ReadBool('general', 'SortChapterListAscending', True);
     miChapterListDescending.Checked := not miChapterListAscending.Checked;
     cbOptionVacuumDatabasesOnExit.Checked := ReadBool('general', 'VacuumDatabasesOnExit', False);
+    cbOptionEnableLongNamePaths.Checked := ReadBool('general', 'EnableLongNamePaths', False);
 
     // view
     cbOptionShowDownloadToolbar.Checked := ReadBool('view', 'ShowDownloadsToolbar', True);
@@ -5161,12 +5738,9 @@ begin
     // favorites
     OptionDefaultAction := ReadInteger('favorites', 'DefaultAction', OptionDefaultAction);
     case OptionDefaultAction of
-      1:
-        miFavoritesDefaultActionShowInfo.Checked := True;
-      2:
-        miFavoritesDefaultActionRename.Checked := True;
-      3:
-        miFavoritesDefaultActionCheckNewChapters.Checked := True;
+      1: miFavoritesDefaultActionShowInfo.Checked := True;
+      2: miFavoritesDefaultActionRename.Checked := True;
+      3: miFavoritesDefaultActionCheckNewChapters.Checked := True;
       else
         miFavoritesDefaultActionOpenFolder.Checked := True;
     end;
@@ -5187,7 +5761,10 @@ begin
     seOptionConnectionTimeout.Value := ReadInteger('connections', 'ConnectionTimeout', OptionConnectionTimeout);
     edOptionDefaultUserAgent.Text := ReadString('connections', 'DefaultUserAgent', DefaultUserAgent);
     if edOptionDefaultUserAgent.Text = '' then
+    begin
       edOptionDefaultUserAgent.Text := DefaultUserAgent;
+    end;
+
     // proxy
     cbOptionUseProxy.Checked := ReadBool('connections', 'UseProxy', False);
     cbOptionProxyType.Text := ReadString('connections', 'ProxyType', 'HTTP');
@@ -5199,7 +5776,10 @@ begin
     // saveto
     edOptionDefaultPath.Text := ReadString('saveto', 'SaveTo', DEFAULT_PATH);
     if Trim(edOptionDefaultPath.Text) = '' then
+    begin
       edOptionDefaultPath.Text := DEFAULT_PATH;
+    end;
+
     seOptionPDFQuality.Value := ReadInteger('saveto', 'PDFQuality', 100);
     rgOptionCompress.ItemIndex := ReadInteger('saveto', 'Compress', 0);
     cbOptionChangeUnicodeCharacter.Checked := ReadBool('saveto', 'ChangeUnicodeCharacter', False);
@@ -5208,11 +5788,17 @@ begin
     cbOptionGenerateMangaFolder.Checked := ReadBool('saveto', 'GenerateMangaFolder', True);
     edOptionMangaCustomRename.Text := ReadString('saveto', 'MangaCustomRename', DEFAULT_MANGA_CUSTOMRENAME);
     if Trim(edOptionMangaCustomRename.Text) = '' then
+    begin
       edOptionMangaCustomRename.Text := DEFAULT_MANGA_CUSTOMRENAME;
+    end;
+
     cbOptionGenerateChapterFolder.Checked := ReadBool('saveto', 'GenerateChapterFolder', True);
     edOptionChapterCustomRename.Text := ReadString('saveto', 'ChapterCustomRename', DEFAULT_CHAPTER_CUSTOMRENAME);
     if Trim(edOptionChapterCustomRename.Text) = '' then
+    begin
       edOptionChapterCustomRename.Text := DEFAULT_CHAPTER_CUSTOMRENAME;
+    end;
+
     cbOptionDigitVolume.Checked := ReadBool('saveto', 'ConvertDigitVolume', True);
     seOptionDigitVolume.Value := ReadInteger('saveto', 'DigitVolumeLength', 2);
     seOptionDigitVolume.Enabled := cbOptionDigitVolume.Checked;
@@ -5221,11 +5807,34 @@ begin
     seOptionDigitChapter.Enabled := cbOptionDigitChapter.Checked;
     edOptionFilenameCustomRename.Text := ReadString('saveto', 'FilenameCustomRename', DEFAULT_FILENAME_CUSTOMRENAME);
     if Trim(edOptionFilenameCustomRename.Text) = '' then
+    begin
       edOptionFilenameCustomRename.Text := DEFAULT_FILENAME_CUSTOMRENAME;
+    end;
+
     ckPNGSaveAsJPEG.Checked := ReadBool('saveto', 'PNGSaveAsJPEG', OptionPNGSaveAsJPEG);
     cbWebPSaveAs.ItemIndex := ReadInteger('saveto', 'ConvertWebP', OptionWebPSaveAs);
     cbPNGCompressionLevel.ItemIndex := ReadInteger('saveto', 'PNGCompressionLevel', OptionPNGCompressionLevel);
     seJPEGQuality.Value := ReadInteger('saveto', 'JPEGQuality', OptionJPEGQuality);
+
+    // imagemagick
+    if TImageMagickManager.Instance.PathFound then
+    begin
+      ckImageMagick.Checked := ReadBool('imagemagick', 'ImageMagickEnabled', False);
+    end;
+
+    cbImageMagickSaveAs.ItemIndex := cbImageMagickSaveAs.Items.IndexOf(ReadString('imagemagick', 'ImageMagickSaveAs', 'JPEG'));
+    if cbImageMagickSaveAs.ItemIndex = -1 then
+    begin
+      cbImageMagickSaveAs.ItemIndex := 0;
+    end;
+
+    cbImageMagickCompression.ItemIndex := cbImageMagickCompression.Items.IndexOf(ReadString('imagemagick', 'ImageMagickCompression', 'None'));
+    if cbImageMagickCompression.ItemIndex = -1 then
+    begin
+      cbImageMagickCompression.ItemIndex := 0;
+    end;
+
+    seImageMagickQuality.Value := ReadInteger('imagemagick', 'ImageMagickQuality', 75);
 
     // update
     cbOptionAutoCheckLatestVersion.Checked := ReadBool('update', 'AutoCheckLatestVersion', True);
@@ -5256,7 +5865,9 @@ begin
     ckEnableLogging.Checked := ReadBool('logger', 'Enabled', False);
     edLogFileName.Text := ReadString('logger', 'LogFileName', '');
     if edLogFileName.Text = '' then
+    begin
       edLogFileName.Text := DEFAULT_LOG_FILE;
+    end;
   end;
 end;
 
@@ -5272,19 +5883,32 @@ begin
       if cbSelectManga.Items.Count <> 0 then
       begin
         s := '';
+
         for i := 0 to cbSelectManga.Items.Count-1 do
         begin
           m := TModuleContainer(cbSelectManga.Items.Objects[i]);
           if m <> nil then
+          begin
             s += m.ID + ',';
+          end;
         end;
+
         s := s.TrimRight([',']);
         WriteString('general', 'MangaListSelect', s);
       end;
+
+      if cbDarkmode.ItemIndex > -1 then
+      begin
+        WriteInteger('darkmode', 'mode', cbDarkmode.ItemIndex);
+      end;
+
       WriteBool('general', 'LiveSearch', cbOptionLiveSearch.Checked);
       WriteBool('general', 'OneInstanceOnly', cbOptionOneInstanceOnly.Checked);
       if cbLanguages.ItemIndex > -1 then
+      begin
         WriteString('languages', 'Selected', AvailableLanguages.Names[cbLanguages.ItemIndex]);
+      end;
+
       WriteBool('general', 'MinimizeOnStart', cbOptionMinimizeOnStart.Checked);
       WriteBool('general', 'MinimizeToTray', cbOptionMinimizeToTray.Checked);
       WriteBool('general', 'DeleteCompletedTasksOnClose', cbOptionDeleteCompletedTasksOnClose.Checked);
@@ -5297,6 +5921,7 @@ begin
       WriteBool('general', 'HighlightNewManga', miHighlightNewManga.Checked);
       WriteBool('general', 'HighlightDownloadedChapters', miChapterListHighlight.Checked);
       WriteBool('general', 'VacuumDatabasesOnExit', cbOptionVacuumDatabasesOnExit.Checked);
+      WriteBool('general', 'EnableLongNamePaths', cbOptionEnableLongNamePaths.Checked);
 
       // view
       WriteBool('view', 'ShowDownloadsToolbar', cbOptionShowDownloadToolbar.Checked);
@@ -5307,7 +5932,9 @@ begin
       WriteBool('view', 'LoadMangaCover', cbOptionEnableLoadCover.Checked);
       WriteBool('view', 'ShowBalloonHint', cbOptionShowBalloonHint.Checked);
       if not (isExiting and Assigned(FormDropTarget)) then
+      begin
         SaveDropTargetFormInformation;
+      end;
 
       // connections downloads
       WriteInteger('connections', 'NumberOfTasks', seOptionMaxParallel.Value);
@@ -5324,9 +5951,13 @@ begin
       // connections general
       WriteInteger('connections', 'ConnectionTimeout', seOptionConnectionTimeout.Value);
       if DefaultUserAgent <> UserAgentDefault then
-	      WriteString('connections', 'DefaultUserAgent', DefaultUserAgent)
+      begin
+	WriteString('connections', 'DefaultUserAgent', DefaultUserAgent);
+      end
       else
-	      WriteString('connections', 'DefaultUserAgent', '');
+      begin
+	WriteString('connections', 'DefaultUserAgent', '');
+      end;
 
       // proxy
       WriteBool('connections', 'UseProxy', cbOptionUseProxy.Checked);
@@ -5338,32 +5969,57 @@ begin
 
       // saveto
       if Trim(edOptionDefaultPath.Text) = '' then
+      begin
         edOptionDefaultPath.Text := DEFAULT_PATH;
+      end;
+
       WriteString('saveto', 'SaveTo', edOptionDefaultPath.Text);
       WriteBool('saveto', 'ChangeUnicodeCharacter', cbOptionChangeUnicodeCharacter.Checked);
       WriteString('saveto', 'ChangeUnicodeCharacterStr', edOptionChangeUnicodeCharacterStr.Text);
       WriteBool('saveto', 'GenerateMangaFolder', cbOptionGenerateMangaFolder.Checked);
       if Trim(edOptionMangaCustomRename.Text) = '' then
+      begin
         edOptionMangaCustomRename.Text := DEFAULT_MANGA_CUSTOMRENAME;
+      end;
+
       WriteString('saveto', 'MangaCustomRename', edOptionMangaCustomRename.Text);
       WriteInteger('saveto', 'Compress', rgOptionCompress.ItemIndex);
       WriteInteger('saveto', 'PDFQuality', seOptionPDFQuality.Value);
       WriteBool('saveto', 'RemoveMangaNameFromChapter', cbOptionRemoveMangaNameFromChapter.Checked);
       WriteBool('saveto', 'GenerateChapterFolder', cbOptionGenerateChapterFolder.Checked);
       if Trim(edOptionChapterCustomRename.Text) = '' then
+      begin
         edOptionChapterCustomRename.Text := DEFAULT_CHAPTER_CUSTOMRENAME;
+      end;
+
       WriteString('saveto', 'ChapterCustomRename', edOptionChapterCustomRename.Text);
       WriteBool('saveto', 'ConvertDigitVolume', cbOptionDigitVolume.Checked);
       WriteBool('saveto', 'ConvertDigitChapter', cbOptionDigitChapter.Checked);
       WriteInteger('saveto', 'DigitVolumeLength', seOptionDigitVolume.Value);
       WriteInteger('saveto', 'DigitChapterLength', seOptionDigitChapter.Value);
       if Trim(edOptionFilenameCustomRename.Text) = '' then
+      begin
         edOptionFilenameCustomRename.Text := DEFAULT_FILENAME_CUSTOMRENAME;
+      end;
+
       WriteString('saveto', 'FilenameCustomRename', edOptionFilenameCustomRename.Text);
       WriteBool('saveto', 'PNGSaveAsJPEG', ckPNGSaveAsJPEG.Checked);
       WriteInteger('saveto', 'ConvertWebP', cbWebPSaveAs.ItemIndex);
       WriteInteger('saveto', 'PNGCompressionLevel', cbPNGCompressionLevel.ItemIndex);
       WriteInteger('saveto', 'JPEGQuality', seJPEGQuality.Value);
+
+      // imagemagick
+      WriteBool('imagemagick', 'ImageMagickEnabled', ckImageMagick.Checked);
+      if cbImageMagickSaveAs.ItemIndex > -1 then
+      begin
+        WriteString('imagemagick', 'ImageMagickSaveAs', cbImageMagickSaveAs.Items.ValueFromIndex[cbImageMagickSaveAs.ItemIndex]);
+      end;
+
+      if cbImageMagickCompression.ItemIndex > -1 then
+      begin
+        WriteString('imagemagick', 'ImageMagickCompression', cbImageMagickCompression.Items.ValueFromIndex[cbImageMagickCompression.ItemIndex]);
+      end;
+      WriteInteger('imagemagick', 'ImageMagickQuality', seImageMagickQuality.Value);
 
       // update
       WriteBool('update', 'AutoCheckLatestVersion', cbOptionAutoCheckLatestVersion.Checked);
@@ -5389,8 +6045,11 @@ begin
       // misc
       frmCustomColor.SaveToIniFile(settingsfile);
       WriteBool('logger', 'Enabled', ckEnableLogging.Checked);
+
       if edLogFileName.Text = '' then
+      begin
         edLogFileName.Text := DEFAULT_LOG_FILE;
+      end;
       WriteString('logger', 'LogFileName', edLogFileName.Text);
     finally
       UpdateFile;
@@ -5410,8 +6069,9 @@ begin
     // general
     // selected websites
     cbSelectManga.Clear;
+
     node := vtOptionMangaSiteSelection.GetFirstChecked();
-    while node<>nil do
+    while node <> nil do
     begin
       m := PNamePointerItem(vtOptionMangaSiteSelection.GetNodeData(node))^;
       cbSelectManga.Items.AddObject(m.Name, TModuleContainer(m.P));
@@ -5428,17 +6088,20 @@ begin
         Break;
       end;
     end;
+
     if not isStillHaveCurrentWebsite then
     begin
       if cbSelectManga.Items.Count > 0 then
       begin
         cbSelectManga.ItemIndex := 0;
+
         // Disable download manga list dialog when applying options:
-  	    b := cbOptionShowDownloadMangalistDialog.Checked;
-	      cbOptionShowDownloadMangalistDialog.Checked := False;
+  	b := cbOptionShowDownloadMangalistDialog.Checked;
+	cbOptionShowDownloadMangalistDialog.Checked := False;
         cbSelectMangaEditingDone(cbSelectManga);
-	      // Revert state back to like it was before:
-	      cbOptionShowDownloadMangalistDialog.Checked := b;
+
+	// Revert state back to like it was before:
+	cbOptionShowDownloadMangalistDialog.Checked := b;
       end
       else
       begin
@@ -5448,6 +6111,7 @@ begin
         lbMode.Caption := Format(RS_ModeAll, [0]);
       end;
     end;
+
     //FMDInstace
     if cbOptionOneInstanceOnly.Checked then
     begin
@@ -5468,6 +6132,7 @@ begin
         FreeAndNil(FMDInstance);
       end;
     end;
+
     OptionLetFMDDo := TFMDDo(cbOptionLetFMDDo.ItemIndex);
     OptionEnableLoadCover := cbOptionEnableLoadCover.Checked;
     OptionDeleteCompletedTasksOnClose := cbOptionDeleteCompletedTasksOnClose.Checked;
@@ -5475,7 +6140,7 @@ begin
     DLManager.DB.AutoVacuum:=cbOptionVacuumDatabasesOnExit.Checked;
     FavoriteManager.DB.AutoVacuum:=cbOptionVacuumDatabasesOnExit.Checked;
 
-    //view
+    // view
     ToolBarDownload.Visible := cbOptionShowDownloadToolbar.Checked;
     ToolBarDownloadLeft.Visible := cbOptionShowDownloadToolbarLeft.Checked;
     tbDownloadDeleteCompleted.Visible := cbOptionShowDownloadToolbarDeleteAll.Checked;
@@ -5485,7 +6150,7 @@ begin
     OptionShowFavoritesTabOnNewManga := cbOptionShowFavoritesTabOnNewManga.Checked;
     OptionShowDownloadsTabOnNewTasks := cbOptionShowDownloadsTabOnNewTasks.Checked;
 
-    //connection downloads
+    // connection downloads
     OptionMaxParallel := seOptionMaxParallel.Value;
     OptionMaxThreads := seOptionMaxThread.Value;
     OptionMaxRetry := seOptionMaxRetry.Value;
@@ -5503,17 +6168,25 @@ begin
     // connections general
     OptionConnectionTimeout := seOptionConnectionTimeout.Value;
     edOptionDefaultUserAgent.Text := Trim(edOptionDefaultUserAgent.Text);
+
     if edOptionDefaultUserAgent.Text = '' then
+    begin
       edOptionDefaultUserAgent.Text := UserAgentDefault;
+    end;
     DefaultUserAgent := edOptionDefaultUserAgent.Text;
+
     // proxy
     if cbOptionUseProxy.Checked then
+    begin
       SetDefaultProxyAndApply(cbOptionProxyType.Text, edOptionHost.Text,
-        edOptionPort.Text, edOptionUser.Text, edOptionPass.Text)
+        edOptionPort.Text, edOptionUser.Text, edOptionPass.Text);
+    end
     else
+    begin
       SetDefaultProxyAndApply('', '', '' ,'', '');
+    end;
 
-    //saveto
+    // saveto
     OptionPDFQuality := seOptionPDFQuality.Value;
     DLManager.CompressType := rgOptionCompress.ItemIndex;
     OptionChangeUnicodeCharacter := cbOptionChangeUnicodeCharacter.Checked;
@@ -5533,7 +6206,13 @@ begin
     OptionPNGCompressionLevel := cbPNGCompressionLevel.ItemIndex;
     OptionJPEGQuality := seJPEGQuality.Value;
 
-    //update
+    // imagemagick
+    TImageMagickManager.Instance.Enabled := ckImageMagick.Checked;
+    TImageMagickManager.Instance.SaveAs := cbImageMagickSaveAs.Items.ValueFromIndex[cbImageMagickSaveAs.ItemIndex];
+    TImageMagickManager.Instance.Compression := cbImageMagickCompression.Items.ValueFromIndex[cbImageMagickCompression.ItemIndex];
+    TImageMagickManager.Instance.Quality := seImageMagickQuality.Value;
+
+    // update
     OptionAutoCheckLatestVersion := cbOptionAutoCheckLatestVersion.Checked;
     OptionAutoCheckFavStartup := cbOptionAutoCheckFavStartup.Checked;
     OptionAutoCheckFavInterval := cbOptionAutoCheckFavInterval.Checked;
@@ -5558,24 +6237,28 @@ begin
     if ckEnableLogging.Checked and (not Logger.Enabled) then
     begin
       Logger.Enabled := True;
+
       if MainExceptionHandler.LogFileOK then
       begin
         FileLogger := TFileChannel.Create(edLogFileName.Text, [fcoShowHeader, fcoShowPrefix, fcoShowTime]);
         Logger.Channels.Add(FileLogger);
       end
       else
+      begin
         Logger.SendError('Log file error ' + MainExceptionHandler.LogFileStatus + '"' + edLogFileName.Text + '"');
-      Logger.Send(QuotedStrd(Application.Title)+' started [PID:'+IntToStr(GetProcessID)+']');
+      end;
+
+      Logger.Send(QuotedStrd(Application.Title) + ' started [PID:' + IntToStr(GetProcessID) + ']');
       Logger.SendStrings('Application info', SimpleException.GetApplicationInfo);
     end
-    else
-    if (not ckEnableLogging.Checked) and (Logger.Enabled) then
+    else if (not ckEnableLogging.Checked) and (Logger.Enabled) then
     begin
       if Assigned(FileLogger) then
       begin
         Logger.Channels.Remove(FileLogger);
         FreeAndNil(FileLogger);
       end;
+
       Logger.Enabled := False;
     end;
 
@@ -5731,37 +6414,49 @@ end;
 procedure TMainForm.edOptionDefaultPathButtonClick(Sender: TObject);
 begin
   with TSelectDirectoryDialog.Create(nil) do
+  begin
     try
-      InitialDir := edOptionDefaultPath.Text;
+      InitialDir := TrimPath(edOptionDefaultPath.Text);
       if Execute then
+      begin
         edOptionDefaultPath.Text := FileName;
+      end;
     finally
       Free;
     end;
+  end;
 end;
 
 procedure TMainForm.edOptionExternalPathButtonClick(Sender: TObject);
 begin
   with TOpenDialog.Create(nil) do
+  begin
     try
       InitialDir := ExtractFileDir(edOptionExternalPath.Text);
       if Execute then
+      begin
         edOptionExternalPath.Text := FileName;
+      end;
     finally
       Free;
     end;
+  end;
 end;
 
 procedure TMainForm.edSaveToButtonClick(Sender: TObject);
 begin
   with TSelectDirectoryDialog.Create(nil) do
+  begin
     try
-      InitialDir := edSaveTo.Text;
+      InitialDir := TrimPath(edSaveTo.Text);
       if Execute then
+      begin
         edSaveTo.Text := FileName;
+      end;
     finally
       Free;
     end;
+  end;
 end;
 
 procedure TMainForm.edURLButtonClick(Sender: TObject);
@@ -5787,7 +6482,7 @@ begin
   begin
     tmAnimateMangaInfo.Enabled := False;
     pbWait.Visible := False;
-    MessageDlg('', RS_DlgURLNotSupport, mtInformation, [mbYes], 0);
+    CenteredMessageDlg(Self, RS_DlgURLNotSupport, mtInformation, [mbOk], 0);
     Exit;
   end;
 
@@ -5799,10 +6494,13 @@ begin
   if (ssCtrl in Shift) and (ssShift in Shift) then
   begin
     if Key = VK_V then
-      medURLPasteandgoClick(medURLPasteandgo)
-    else
-    if Key = VK_C then
+    begin
+      medURLPasteandgoClick(medURLPasteandgo);
+    end
+    else if Key = VK_C then
+    begin
       Clipboard.AsText := edURL.Text;
+    end;
     Key := 0;
   end;
 end;
@@ -5810,7 +6508,9 @@ end;
 procedure TMainForm.UpdateVtChapter;
 begin
   if clbChapterList.RootNodeCount = Length(ChapterList) then
-    clbChapterList.Repaint
+  begin
+    clbChapterList.Repaint;
+  end
   else
   begin
     clbChapterList.BeginUpdate;
@@ -5827,7 +6527,9 @@ end;
 procedure TMainForm.UpdateVtFavorites;
 begin
   if vtFavorites.RootNodeCount = FavoriteManager.Items.Count then
-    vtFavorites.Repaint
+  begin
+    vtFavorites.Repaint;
+  end
   else
   begin
     vtFavorites.BeginUpdate;
@@ -5837,22 +6539,30 @@ begin
   end;
 
   if rbFavoritesShowEnabled.Checked then
-    rbFavoritesShowEnabledChange(rbFavoritesShowEnabled)
+  begin
+    rbFavoritesShowEnabledChange(rbFavoritesShowEnabled);
+  end
   else if rbFavoritesShowDisabled.Checked then
+  begin
     rbFavoritesShowDisabledChange(rbFavoritesShowDisabled);
+  end;
 end;
 
 procedure TMainForm.UpdateVtMangaListFilterStatus;
 begin
   if dataProcess.Filtered then
-    lbMode.Caption := Format(RS_ModeFiltered, [dataProcess.RecordCount])
+  begin
+    lbMode.Caption := Format(RS_ModeFiltered, [dataProcess.RecordCount]);
+  end
   else
+  begin
     lbMode.Caption := Format(RS_ModeAll, [dataProcess.RecordCount]);
+  end;
 end;
 
 procedure TMainForm.LoadFormInformation;
 
-  procedure restorevt(const vt: Laz.VirtualTrees.TLazVirtualStringTree; const name: String);
+  procedure restorevt(const vt: VirtualTrees.TVirtualStringTree; const name: String);
   var
     i: Integer;
   begin
@@ -5864,6 +6574,24 @@ procedure TMainForm.LoadFormInformation;
       begin
         Columns[i].Width := ReadInteger(name, 'Column' + IntToStr(i) + 'Width', Columns[i].Width);
         Columns[i].Position := ReadInteger(name, 'Column' + IntToStr(i) + 'Position', Columns[i].Position);
+      end;
+    end;
+  end;
+
+  function IsWithinAnyMonitor(ALeft, ATop, AWidth, AHeight: Integer): Boolean;
+  var
+    i: Integer;
+    MonitorRect: TRect;
+  begin
+    Result := False;
+    for i := 0 to Screen.MonitorCount - 1 do
+    begin
+      MonitorRect := Screen.Monitors[i].BoundsRect;
+      if (ALeft + AWidth > MonitorRect.Left) and (ALeft < MonitorRect.Right) and
+         (ATop + AHeight > MonitorRect.Top) and (ATop < MonitorRect.Bottom) then
+      begin
+        Result := True;
+        Exit;
       end;
     end;
   end;
@@ -5885,10 +6613,17 @@ begin
     Top := ReadInteger('form', 'MainFormTop', Top);
     Width := ReadInteger('form', 'MainFormWidth', Width);
     Height := ReadInteger('form', 'MainFormHeight', Height);
+
+    if not IsWithinAnyMonitor(Left, Top, Width, Height) then
+    begin
+      Left := 0;
+      Top := 0;
+    end;
+
     CurrentFormLeft := Left;
     CurrentFormTop := Top;
-    CurrentFormWidth := Width;
-    CurrentFormHeight := Height;
+    CurrentFormWidth := Min(Width, Screen.DesktopWidth);
+    CurrentFormHeight := Min(Height, Screen.DesktopHeight);
 
     if Screen.PixelsPerInch > 96 then begin
       Width := ScaleScreenTo96(Width);
@@ -5939,7 +6674,7 @@ end;
 
 procedure TMainForm.SaveFormInformation;
 
-  procedure savevt(const vt: Laz.VirtualTrees.TLazVirtualStringTree; const name: String);
+  procedure savevt(const vt: VirtualTrees.TVirtualStringTree; const name: String);
   var
     i: Integer;
   begin
@@ -6050,6 +6785,7 @@ procedure TMainForm.ApplyLanguage;
 var
   idxSelectManga,
   idxLanguages,
+  idxDarkmode,
   idxFilterStatus,
   idxOptionLetFMDDo,
   idxOptionProxyType,
@@ -6061,13 +6797,15 @@ begin
   if AvailableLanguages.Count = 0 then Exit;
   if cbLanguages.ItemIndex < 0 then Exit;
   if cbLanguages.ItemIndex >= AvailableLanguages.Count then Exit;
+  if winBuildNumber < 17763 then cbDarkmode.Enabled := False else cbDarkmode.Enabled := True;
   if SimpleTranslator.LastSelected <> AvailableLanguages.Names[cbLanguages.ItemIndex] then
   begin
     // TCombobox.Items will be cleared upon changing language,
     // and ItemIndex will fall to -1
     // save TComboBox.ItemIndex
-    idxSelectManga:=cbSelectManga.ItemIndex;
+    idxSelectManga := cbSelectManga.ItemIndex;
     idxLanguages := cbLanguages.ItemIndex;
+    idxDarkmode := cbDarkmode.ItemIndex;
     idxFilterStatus := cbFilterStatus.ItemIndex;
     idxOptionLetFMDDo := cbOptionLetFMDDo.ItemIndex;
     idxOptionProxyType := cbOptionProxyType.ItemIndex;
@@ -6078,12 +6816,14 @@ begin
     if SimpleTranslator.SetLangByIndex(cbLanguages.ItemIndex) then
     begin
       // assign new value
+      lbDarkmodeHint.Hint := lbDarkmodeHint.Hint;
       lbOptionExternalParamsHint.Hint := Format(RS_LblOptionExternalParamsHint,
         [EXPARAM_PATH, EXPARAM_CHAPTER, EXPARAM_PATH, EXPARAM_CHAPTER]);
-      lbOptionPDFQualityHint.Hint:=lbOptionPDFQuality.Hint;
+      lbOptionPDFQualityHint.Hint := lbOptionPDFQuality.Hint;
 
       cbFilterStatus.Items.Text := RS_FilterStatusItems;
       cbOptionLetFMDDo.Items.Text := RS_OptionFMDDoItems;
+      cbDarkmode.Items.Text := RS_Darkmode;
       rgDropTargetMode.Items.Text := RS_DropTargetModeItems;
       rgOptionCompress.Items.Text := RS_OptionCompress;
       cbWebPSaveAs.Items.Text := RS_WebPConvertTo;
@@ -6092,6 +6832,7 @@ begin
       // restore ItemIndex
       cbSelectManga.ItemIndex:=idxSelectManga;
       cbLanguages.ItemIndex := idxLanguages;
+      cbDarkmode.ItemIndex := idxDarkmode;
       cbFilterStatus.ItemIndex := idxFilterStatus;
       cbOptionLetFMDDo.ItemIndex := idxOptionLetFMDDo;
       cbOptionProxyType.ItemIndex := idxOptionProxyType;
@@ -6100,6 +6841,7 @@ begin
       cbWebPSaveAs.ItemIndex := idxOptionWebPConvertTo;
       cbPNGCompressionLevel.ItemIndex := idxOptionWebPPNGLevel;
       Self.Repaint;
+      Self.Caption := Self.Caption + ' v' + FMD_VERSION_STRING;
       vtMangaList.Repaint;
       tvDownloadFilterRefresh(True);
 
@@ -6248,6 +6990,7 @@ begin
   begin
     Link := dataProcess.Value[Node^.Index, DATA_PARAM_LINK];
     Title := dataProcess.Value[Node^.Index, DATA_PARAM_TITLE];
+    AltTitles := dataProcess.Value[Node^.Index, DATA_PARAM_ALTTITLES];
     Authors := dataProcess.Value[Node^.Index, DATA_PARAM_AUTHORS];
     Artists := dataProcess.Value[Node^.Index, DATA_PARAM_ARTISTS];
     Genres := dataProcess.Value[Node^.Index, DATA_PARAM_GENRES];

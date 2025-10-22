@@ -17,7 +17,7 @@ interface
 
 uses
   SysUtils, Graphics, Dialogs, uBaseUnit, uData, FMDOptions, BaseThread,
-  ImgInfos, webp, MultiLog, MemBitmap, Laz.VirtualTrees;
+  ImgInfos, webp, MultiLog, MemBitmap, VirtualTrees;
 
 type
 
@@ -48,7 +48,7 @@ type
 implementation
 
 uses
-  frmMain, WebsiteModules, FMDVars;
+  frmMain, frmCustomMessageDlg, WebsiteModules, FMDVars;
 
 procedure TGetMangaInfosThread.MainThreadSyncInfos;
 begin
@@ -75,6 +75,7 @@ var
       begin
         if FInfo.MangaInfo.Title = '' then
           FInfo.MangaInfo.Title := data^.Title;
+        FInfo.MangaInfo.AltTitles := data^.AltTitles;
         FInfo.MangaInfo.Link := data^.Link;
         FInfo.MangaInfo.Authors := data^.Authors;
         FInfo.MangaInfo.Artists := data^.Artists;
@@ -103,6 +104,8 @@ var
         begin
           if not(m.InformationAvailable) then
           begin
+            if FInfo.MangaInfo.AltTitles = '' then
+              FInfo.MangaInfo.AltTitles := data^.AltTitles;
             if FInfo.MangaInfo.Authors = '' then
               FInfo.MangaInfo.Authors := data^.Authors;
             if FInfo.MangaInfo.Artists = '' then
@@ -155,8 +158,7 @@ end;
 
 procedure TGetMangaInfosThread.MainThreadShowCannotGetInfo;
 begin
-  MessageDlg('', RS_DlgCannotGetMangaInfo,
-    mtInformation, [mbYes], 0);
+  CenteredMessageDlg(MainForm, RS_DlgCannotGetMangaInfo, mtInformation, [mbOk], 0);
   MainForm.rmInformation.Clear;
   MainForm.tmAnimateMangaInfo.Enabled := False;
   MainForm.pbWait.Visible := False;

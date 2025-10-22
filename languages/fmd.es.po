@@ -36,6 +36,7 @@ msgstr "Abortar"
 
 #: dbupdater.rs_downloading
 #, object-pascal-format
+msgctxt "dbupdater.rs_downloading"
 msgid "Downloading %s"
 msgstr "Descargando %s"
 
@@ -94,6 +95,7 @@ msgid "Invalid"
 msgstr "Inválido"
 
 #: frmaccountmanager.rs_unknown
+msgctxt "frmaccountmanager.rs_unknown"
 msgid "Unknown"
 msgstr "Desconocido"
 
@@ -106,23 +108,74 @@ msgstr "OK"
 msgid "Username or password can't be empty!"
 msgstr "¡Nombre de usuario o contraseña no puede estar vacio!"
 
+#: frmcustommessagedlg.rs_dialogconfirmation
+msgctxt "frmcustommessagedlg.rs_dialogconfirmation"
+msgid "Confirmation"
+msgstr ""
+
+#: frmcustommessagedlg.rs_dialogcustom
+msgctxt "frmcustommessagedlg.rs_dialogcustom"
+msgid "Message"
+msgstr ""
+
+#: frmcustommessagedlg.rs_dialogerror
+msgctxt "frmcustommessagedlg.rs_dialogerror"
+msgid "Error"
+msgstr ""
+
+#: frmcustommessagedlg.rs_dialoginformation
+msgctxt "frmcustommessagedlg.rs_dialoginformation"
+msgid "Information"
+msgstr ""
+
+#: frmcustommessagedlg.rs_dialogwarning
+msgctxt "frmcustommessagedlg.rs_dialogwarning"
+msgid "Warning"
+msgstr ""
+
 #: frmimportfavorites.rs_importcompleted
 msgid "Import completed."
 msgstr "Importar completado."
 
+#: frmimportfavorites.rs_importfailed
+msgid "Import could not find a suitable file."
+msgstr ""
+
+#: frmimportfavorites.rs_importthreadstatus
+msgid "Importing..."
+msgstr ""
+
 #: frmimportfavorites.rs_listunimportedcaption
 msgid "List of unimported manga"
 msgstr "Lista de manga sin importar"
+
+#: frmluamodulesupdater.rs_awaitingproceed
+msgid "Awaiting permission to proceed..."
+msgstr ""
 
 #: frmluamodulesupdater.rs_checking
 msgctxt "frmluamodulesupdater.rs_checking"
 msgid "Checking..."
 msgstr "Revisando..."
 
+#: frmluamodulesupdater.rs_checklocalmodules
+msgid "Checking local modules..."
+msgstr ""
+
 #: frmluamodulesupdater.rs_checkupdate
 msgctxt "frmluamodulesupdater.rs_checkupdate"
 msgid "Check update"
 msgstr "Revisar actualización"
+
+#: frmluamodulesupdater.rs_deletingflaggedmodules
+msgid "Deleting flagged modules..."
+msgstr ""
+
+#: frmluamodulesupdater.rs_downloadingmodule
+#, object-pascal-format
+msgctxt "frmluamodulesupdater.rs_downloadingmodule"
+msgid "Downloading %s"
+msgstr "Descargando %s"
 
 #: frmluamodulesupdater.rs_finishchecking
 msgid "Finish checking"
@@ -131,6 +184,21 @@ msgstr "Revisión finalizada"
 #: frmluamodulesupdater.rs_finishdownload
 msgid "Finish download"
 msgstr "Descarga terminada"
+
+#: frmluamodulesupdater.rs_githubconnectfail
+msgid ""
+"Failed to connect to GitHub API for latest module updates.\n"
+"Please try again later."
+msgstr ""
+
+#: frmluamodulesupdater.rs_githubconnecting
+msgid "Connecting to GitHub..."
+msgstr ""
+
+#: frmluamodulesupdater.rs_githubratestats
+#, object-pascal-format
+msgid "GitHub API core rate - call limit: %d, remaining calls: %d, used calls: %d, limit refresh: %s"
+msgstr ""
 
 #: frmluamodulesupdater.rs_modulesupdatedrestart
 msgid "Modules updated, restart now?"
@@ -205,6 +273,16 @@ msgstr "Revisando..."
 msgid "Custom"
 msgstr "Personalizado"
 
+#: frmmain.rs_darkmode
+msgid ""
+"System\n"
+"Dark\n"
+"Light"
+msgstr ""
+"Del sistema\n"
+"Oscuro\n"
+"Claro"
+
 #: frmmain.rs_dlgcannotconnecttoserver
 msgid "Cannot connect to the server."
 msgstr "No se puede conectar con el servidor."
@@ -263,8 +341,8 @@ msgid "Updater is running!"
 msgstr "¡Actualizador está Ejecutandose!"
 
 #: frmmain.rs_dlgupdaterwanttoupdatedb
-msgid "Do you want to download manga list from the server?"
-msgstr "¿Quieres Descargar la Lista de Manga del Servidor?"
+msgid "Do you want to download manga list from FMD server?"
+msgstr "¿Quieres Descargar la Lista de Manga del Servidor FMD?"
 
 #: frmmain.rs_dlgurlnotsupport
 msgid "URL not supported!"
@@ -297,10 +375,14 @@ msgstr "Habilitado"
 msgid ""
 "Completed\n"
 "Ongoing\n"
+"Hiatus\n"
+"Cancelled\n"
 "<none>"
 msgstr ""
 "Completado\n"
 "En Curso\n"
+"En pausa\n"
+"Cancelada\n"
 "<Nada>"
 
 #: frmmain.rs_fmdalreadyrunning
@@ -323,6 +405,10 @@ msgstr "Historial"
 msgid "Import"
 msgstr "Importar"
 
+#: frmmain.rs_infoalttitles
+msgid "Alternative Title(s):"
+msgstr ""
+
 #: frmmain.rs_infoartists
 msgid "Artist(s):"
 msgstr "Artista(s):"
@@ -338,6 +424,11 @@ msgstr "Género(s):"
 #: frmmain.rs_infostatus
 msgid "Status:"
 msgstr "Estado:"
+
+#: frmmain.rs_infostatus_unknown
+msgctxt "frmmain.rs_infostatus_unknown"
+msgid "Unknown"
+msgstr "Desconocido"
 
 #: frmmain.rs_infosummary
 msgid "Summary:"
@@ -522,6 +613,20 @@ msgctxt "frmtransferfavorites.rs_valid"
 msgid "Valid"
 msgstr "Valido"
 
+#: imagemagickmanager.rs_imagemagicknotfoundhint
+msgctxt "imagemagickmanager.rs_imagemagicknotfoundhint"
+msgid ""
+"Failed to detect an install of ImageMagick!\n"
+"Please install ImageMagick from www.imagemagick.org if you haven't already."
+msgstr ""
+
+#: imagemagickmanager.rs_imagemagickpreferencehint
+msgctxt "imagemagickmanager.rs_imagemagickpreferencehint"
+msgid ""
+"ImageMagick has been enabled!\n"
+"The following settings have been disabled because ImageMagick has taken preference."
+msgstr ""
+
 #: selfupdater.rs_buttoncancel
 msgctxt "selfupdater.rs_buttoncancel"
 msgid "Abort"
@@ -609,10 +714,6 @@ msgstr "Editar"
 msgid "Refresh"
 msgstr "Actualizar"
 
-#: taccountmanagerform.caption
-msgid "AccountManagerForm"
-msgstr "AccountManagerForm"
-
 #: taccountmanagerform.vtaccountlist.header.columns[1].text
 msgctxt "taccountmanagerform.vtaccountlist.header.columns[1].text"
 msgid "Website"
@@ -665,6 +766,10 @@ msgctxt "taccountsetform.label3.caption"
 msgid "Password"
 msgstr "Contraseña"
 
+#: tcustomcolorform.btresetcolors.caption
+msgid "Reset list colors"
+msgstr ""
+
 #: tcustomcolorform.caption
 msgid "CustomColorForm"
 msgstr "FormulariodeColorPersonalizado"
@@ -685,6 +790,10 @@ msgstr "Lista de Favoritos"
 msgid "Manga list"
 msgstr "Lista de Manga"
 
+#: tcustomcolorform.tsmodulelist.caption
+msgid "Module list"
+msgstr "Lista de Módulos"
+
 #: tformdroptarget.miaddtofavorites.caption
 msgctxt "tformdroptarget.miaddtofavorites.caption"
 msgid "Add to favorites"
@@ -702,6 +811,11 @@ msgstr "Descargar Todo"
 #: tformlogger.btnclearlog.caption
 msgid "Clear"
 msgstr "Limpiar"
+
+#: tformlogger.caption
+msgctxt "tformlogger.caption"
+msgid "Log"
+msgstr "Registro"
 
 #: tformlogger.ckstayontop.caption
 msgid "Stay on top"
@@ -747,8 +861,9 @@ msgid "Import list ..."
 msgstr "Importar Lista ..."
 
 #: timportfavorites.cbsoftware.text
-msgid "Domdomsoft Manga Downloader"
-msgstr "Domdomsoft Manga Downloader"
+msgctxt "timportfavorites.cbsoftware.text"
+msgid "Free Manga Downloader"
+msgstr "Free Manga Downloader"
 
 #: timportfavorites.edpath.texthint
 msgctxt "timportfavorites.edpath.texthint"
@@ -876,6 +991,14 @@ msgstr "Agregar a Descargas como Tarea Detenida"
 msgid "<none>"
 msgstr "<ninguno>"
 
+#: tmainform.cbimagemagickcompression.text
+msgid "None"
+msgstr ""
+
+#: tmainform.cbimagemagicksaveas.text
+msgid "JPEG"
+msgstr ""
+
 #: tmainform.cbonlynew.caption
 msgid "Search only new manga"
 msgstr "Buscar Solo Manga Nuevo"
@@ -932,6 +1055,10 @@ msgstr "Volumen"
 msgid "Enable load manga cover"
 msgstr "Habilitar Carga de Cover (Portada)"
 
+#: tmainform.cboptionenablelongnamepaths.caption
+msgid "Enable long name paths (can break most/all interaction with the file in Windows and other apps)"
+msgstr ""
+
 #: tmainform.cboptiongeneratechapterfolder.caption
 msgid "Auto generate chapter folder"
 msgstr "Generar Automáticamente Carpeta de Capítulo"
@@ -970,8 +1097,8 @@ msgid "Show balloon hint"
 msgstr "Mostrar globo de sugerencia"
 
 #: tmainform.cboptionshowdeletetaskdialog.caption
-msgid "Delete task/favorite"
-msgstr "Borrar Tarea/Favorito"
+msgid "Delete download/manga/favorite"
+msgstr "Borrar Tarea/Manga/Favorito"
 
 #: tmainform.cboptionshowdownloadmangalistdialog.caption
 msgid "Download manga list if empty"
@@ -1370,6 +1497,10 @@ msgstr "Yuri"
 msgid "This work usually involves intimate relationships between women."
 msgstr "Este trabajo involucra generalmente relaciones íntimas entre mujeres."
 
+#: tmainform.ckimagemagick.caption
+msgid "Enable ImageMagick Conversion"
+msgstr ""
+
 #: tmainform.ckoptionsalwaysstarttaskfromfailedchapters.caption
 msgctxt "tmainform.ckoptionsalwaysstarttaskfromfailedchapters.caption"
 msgid "Always start task from failed chapters"
@@ -1422,6 +1553,10 @@ msgctxt "tmainform.edmangalistsearch.texthint"
 msgid "Search title..."
 msgstr "Buscar Título..."
 
+#: tmainform.edoptionchangeunicodecharacterstr.texthint
+msgid "Character"
+msgstr ""
+
 #: tmainform.edoptionchaptercustomrename.texthint
 msgctxt "tmainform.edoptionchaptercustomrename.texthint"
 msgid "Custom rename"
@@ -1430,6 +1565,11 @@ msgstr "Nombre Personalizado"
 #: tmainform.edoptiondefaultpath.texthint
 msgid "Default download path"
 msgstr "Ruta de Descarga por Defecto"
+
+#: tmainform.edoptiondefaultuseragent.texthint
+msgctxt "tmainform.edoptiondefaultuseragent.texthint"
+msgid "Default user-agent"
+msgstr "Agente de Usuario Prederteminado"
 
 #: tmainform.edoptionexternalparams.texthint
 msgctxt "tmainform.edoptionexternalparams.texthint"
@@ -1489,6 +1629,10 @@ msgstr "Drop Box"
 msgid "Image Conversion"
 msgstr "Conversión de Imagen"
 
+#: tmainform.gbimagemagick.caption
+msgid "Image Magick"
+msgstr ""
+
 #: tmainform.gboptionexternal.caption
 msgid "External program"
 msgstr "Programa Externo"
@@ -1519,6 +1663,21 @@ msgstr "General"
 #: tmainform.gboptionsconnectiosmiscellaneous.caption
 msgid "Miscellaneous"
 msgstr "Misceláneo"
+
+#: tmainform.lbdarkmode.caption
+msgid "Theme (requires restart to take effect):"
+msgstr ""
+
+#: tmainform.lbdarkmodehint.caption
+msgctxt "tmainform.lbdarkmodehint.caption"
+msgid "[?]"
+msgstr "[?]"
+
+#: tmainform.lbdarkmodehint.hint
+msgid ""
+"Only supports Windows 10 1809 and above.\n"
+"Theme's auto disable on any unsupported versions."
+msgstr ""
 
 #: tmainform.lbdefaultdownloadpath.caption
 msgid "Choose the default download path:"
@@ -1591,6 +1750,33 @@ msgctxt "tmainform.lbfiltertitle.caption"
 msgid "Title"
 msgstr "Título"
 
+#: tmainform.lbimageconversionhint.caption
+#, fuzzy
+msgctxt "tmainform.lbimageconversionhint.caption"
+msgid "[?]"
+msgstr "[?]"
+
+#: tmainform.lbimagemagickcompression.caption
+msgctxt "tmainform.lbimagemagickcompression.caption"
+msgid "Image Compression type"
+msgstr ""
+
+#: tmainform.lbimagemagickhint.caption
+#, fuzzy
+msgctxt "tmainform.lbimagemagickhint.caption"
+msgid "[?]"
+msgstr "[?]"
+
+#: tmainform.lbimagemagickquality.caption
+msgctxt "tmainform.lbimagemagickquality.caption"
+msgid "Image quality"
+msgstr ""
+
+#: tmainform.lbimagemagicksaveas.caption
+msgctxt "tmainform.lbimagemagicksaveas.caption"
+msgid "Save Image as"
+msgstr ""
+
 #: tmainform.lbjpegquality.caption
 msgid "JPEG quality"
 msgstr "Calidad JPEG"
@@ -1647,6 +1833,7 @@ msgid "Connection timeout (seconds)"
 msgstr "Tiempo de Conexión Expiró (Segundos)"
 
 #: tmainform.lboptiondefaultuseragent.caption
+msgctxt "tmainform.lboptiondefaultuseragent.caption"
 msgid "Default user-agent"
 msgstr "Agente de Usuario Prederteminado"
 
@@ -2097,8 +2284,8 @@ msgid "Stop all"
 msgstr "Detener Todo"
 
 #: tmainform.mndownload1click.caption
-msgid "Download all lists from server at once"
-msgstr "Descargar Todas las Listas desde el Servidor Inmediatamente"
+msgid "Download all lists from FMD server at once"
+msgstr "Descargar Todas las Listas desde el Servidor FMD Inmediatamente"
 
 #: tmainform.mnfiltergenreallcheck.caption
 msgctxt "tmainform.mnfiltergenreallcheck.caption"
@@ -2119,8 +2306,8 @@ msgid "Update all lists at once"
 msgstr "Actualizar Todas las Listas Inmediatamente"
 
 #: tmainform.mnupdatedownfromserver.caption
-msgid "Download manga list from server"
-msgstr "Descargar la Lista de Manga desde el Servidor"
+msgid "Download manga list from FMD server"
+msgstr "Descargar la Lista de Manga desde el Servidor FMD"
 
 #: tmainform.mnupdatelist.caption
 msgctxt "TMAINFORM.MNUPDATELIST.CAPTION"
@@ -2265,6 +2452,7 @@ msgid "Manga Info"
 msgstr "Información del Manga"
 
 #: tmainform.tslog.caption
+msgctxt "tmainform.tslog.caption"
 msgid "Log"
 msgstr "Registro"
 
@@ -2370,19 +2558,26 @@ msgstr "Sitio Web"
 
 #: tmainform.vtfavorites.header.columns[4].text
 msgctxt "TMAINFORM.VTFAVORITES.HEADER.COLUMNS[4].TEXT"
-msgid "Save to"
-msgstr "Guardar en"
+msgid "Status"
+msgstr "Estado"
 
 #: tmainform.vtfavorites.header.columns[5].text
 msgctxt "tmainform.vtfavorites.header.columns[5].text"
+msgid "Save to"
+msgstr "Guardar en"
+
+#: tmainform.vtfavorites.header.columns[6].text
+msgctxt "tmainform.vtfavorites.header.columns[6].text"
 msgid "Date added"
 msgstr "Agregado el"
 
-#: tmainform.vtfavorites.header.columns[6].text
+#: tmainform.vtfavorites.header.columns[7].text
+msgctxt "tmainform.vtfavorites.header.columns[7].text"
 msgid "Last checked date"
 msgstr "Ultima Fecha de Verificación"
 
-#: tmainform.vtfavorites.header.columns[7].text
+#: tmainform.vtfavorites.header.columns[8].text
+msgctxt "tmainform.vtfavorites.header.columns[8].text"
 msgid "Last updated date"
 msgstr "Fecha de Última Actualización"
 
@@ -2433,6 +2628,11 @@ msgstr "&Abortar"
 #: tshutdowncounterform.btnow.caption
 msgid "&Now"
 msgstr "&Ahora"
+
+#: tshutdowncounterform.caption
+msgctxt "tshutdowncounterform.caption"
+msgid "Free Manga Downloader"
+msgstr "Free Manga Downloader"
 
 #: ttransferfavoritesform.btcancel.caption
 msgctxt "ttransferfavoritesform.btcancel.caption"
@@ -2521,6 +2721,10 @@ msgstr "Nombre de Opciones"
 #: udownloadsmanager.rs_compressing
 msgid "Compressing..."
 msgstr "Comprimiendo..."
+
+#: udownloadsmanager.rs_converting
+msgid "Converting..."
+msgstr ""
 
 #: udownloadsmanager.rs_disabled
 msgctxt "udownloadsmanager.rs_disabled"
@@ -2622,6 +2826,10 @@ msgstr "Cargando: %d/%d"
 #, object-pascal-format
 msgid "%s has %d new manga(s)"
 msgstr "%s Ha %d Encontrado Manga(s)"
+
+#: uupdatethread.rs_dlgupdatelistcheckisrunning
+msgid "Update list(s) is running!"
+msgstr ""
 
 #: uupdatethread.rs_gettingdirectory
 msgid "Getting directory"

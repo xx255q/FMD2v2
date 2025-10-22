@@ -18,8 +18,7 @@ object ShutdownCounterForm: TShutdownCounterForm
   OnKeyDown = FormKeyDown
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '1.7'
-  Visible = False
+  LCLVersion = '3.8.0.0'
   object pnBottom: TPanel
     Left = 0
     Height = 38
@@ -74,7 +73,6 @@ object ShutdownCounterForm: TShutdownCounterForm
     BorderSpacing.Top = 20
     BorderSpacing.Right = 6
     BorderSpacing.Bottom = 20
-    Color = clDefault
     ParentColor = False
     Transparent = False
   end
@@ -89,7 +87,7 @@ object ShutdownCounterForm: TShutdownCounterForm
   object itCounter: TIdleTimer
     Enabled = False
     OnTimer = itCounterTimer
-    left = 247
-    top = 24
+    Left = 247
+    Top = 24
   end
 end
